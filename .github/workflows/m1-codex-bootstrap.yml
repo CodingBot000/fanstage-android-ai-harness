@@ -1,0 +1,231 @@
+name: M1 Codex Android Foundation bootstrap
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/m1-codex-bootstrap.yml'
+      - '.github/codex/prompts/m1-002-foundation.md'
+      - '.github/codex/schemas/m1-002-report.schema.json'
+
+concurrency:
+  group: fanstage-m1-002-bootstrap
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    if: github.repository == 'CodingBot000/fanstage-android-ai-harness' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Checkout trusted M1 SDD
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Generate bounded Android foundation
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .github/codex/prompts/m1-002-foundation.md
+          output-file: m1-002-report.json
+          output-schema-file: .github/codex/schemas/m1-002-report.schema.json
+          permission-profile: ':workspace'
+          safety-strategy: drop-sudo
+          effort: medium
+          codex-args: '["--ephemeral"]'
+
+      - name: Validate generated scope and report
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          p = Path('m1-002-report.json')
+          assert p.is_file(), 'Codex JSON report missing'
+          obj = json.loads(p.read_text(encoding='utf-8'))
+          assert obj['task_id'] == 'M1-002', obj
+          assert obj['scope'] == 'ANDROID_FOUNDATION', obj
+          assert obj['code_generated'] is True, obj
+          assert obj['verification'] == 'NOT_RUN', obj
+          assert Path('android/settings.gradle.kts').is_file()
+          assert Path('android/gradle/libs.versions.toml').is_file()
+          assert Path('android/app/build.gradle.kts').is_file()
+          assert Path('android/core/model/build.gradle.kts').is_file()
+          assert Path('android/feature/live/build.gradle.kts').is_file()
+          assert not Path('backend').exists()
+          lines = subprocess.check_output(
+              ['git', 'status', '--porcelain', '--untracked-files=all'], text=True
+          ).splitlines()
+          modified = [line[3:] for line in lines]
+          assert modified and all(
+              x.startswith('android/') or x == 'm1-002-report.json'
+              for x in modified
+          ), modified
+          for path in Path('android').rglob('*'):
+              assert not path.is_symlink(), f'Unexpected symlink: {path}'
+          print('PASS: Codex output schema, Android-only scope, and no symlinks')
+          PY
+
+      - name: Upload generated sources without credentials
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-002-generated
+          path: |
+            android/
+            m1-002-report.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  verify:
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: m1-002-generated
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK API 37
+        run: sdkmanager --install 'platforms;android-37' 'build-tools;36.0.0' 'platform-tools'
+
+      - name: Create real Gradle wrapper and run Android gates
+        working-directory: android
+        shell: bash
+        run: |
+          set -euo pipefail
+          gradle wrapper --gradle-version 9.5.0 --distribution-type bin
+          chmod +x gradlew
+          ./gradlew --version
+          ./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/m1-002-gradle.log"
+
+      - name: Upload failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-002-gradle-failure
+          path: |
+            android/
+            m1-002-gradle.log
+            !android/**/build/**
+            !android/.gradle/**
+            !android/**/.gradle/**
+            !android/.kotlin/**
+          include-hidden-files: true
+          retention-days: 14
+
+      - name: Upload verified project for PR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m1-002-verified-source
+          path: |
+            android/
+            m1-002-report.json
+            m1-002-gradle.log
+            !android/**/build/**
+            !android/.gradle/**
+            !android/**/.gradle/**
+            !android/.kotlin/**
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout verified parent
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: m1-002-verified-source
+
+      - name: Validate artifact before publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          assert Path('android/app/build.gradle.kts').is_file()
+          assert Path('android/gradle/wrapper/gradle-wrapper.jar').is_file()
+          assert Path('m1-002-report.json').is_file()
+          for p in Path('android').rglob('*'):
+              assert not p.is_symlink(), p
+          PY
+
+      - name: Record evidence and proposed code review
+        shell: bash
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p harness/reviews
+          cp m1-002-report.json harness/reviews/M1-002-codex-report.json
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          status = Path('docs/STATUS.md')
+          data = status.read_text(encoding='utf-8')
+          data = data.replace('Current task: M1-001 (설계·공식 호환성 조사 완료), 다음 작업 M1-002', 'Current task: M1-002 (Android Foundation 소스 생성/CI 검증, PR 리뷰)')
+          data = data.replace('State: IN_PROGRESS', 'State: REVIEW')
+          data = data.replace('Next action: M1-002 Codex로 최소 Android 프로젝트 생성 → CI 클린 빌드·Lint·Unit 검증', 'Next action: M1-002 Android 소스·테스트와 CI 결과를 독립 리뷰 후 Merge; 실기기 검증은 별도 진행')
+          status.write_text(data, encoding='utf-8')
+          with Path('harness/build-log.md').open('a', encoding='utf-8') as out:
+              out.write('\n## M1-002 — Codex Android foundation source generation (2026-11-04)\n\n')
+              out.write(f"- Workflow: {os.environ['RUN_URL']}\n")
+              out.write(f"- Parent main SHA: \`{os.environ['SHA']}\`\n")
+              out.write('- Scope: Android root + app/core:model/feature:live only. M2+ not implemented.\n')
+              out.write('- PASS: GitHub hosted runner Gradle wrapper generation, :app:assembleDebug, :app:lintDebug and testDebugUnitTest; branch publish job is downstream of verify SUCCESS.\n')
+              out.write('- Raw evidence: m1-002-verified-source artifact + original Codex JSON at harness/reviews/M1-002-codex-report.json.\n')
+              out.write('- NOT_RUN: emulator/device install, M2 player, M3 chat transport, M4 backend.\n')
+              out.write('- Human review: PENDING. M1 overall gate not yet VERIFIED.\n')
+          PY
+
+      - name: Push feature branch and create code-review PR
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          branch="feat/m1-002-android-foundation-${GITHUB_RUN_ID}"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "$branch"
+          git add android/ docs/STATUS.md harness/build-log.md harness/reviews/M1-002-codex-report.json
+          git diff --cached --check
+          git commit -m 'feat(m1): bootstrap Compose Android foundation with CI evidence'
+          gh auth setup-git
+          git push origin "$branch"
+          gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$branch" \
+            --title "feat(m1): Android Foundation (Codex generated, CI verified)" \
+            --body "M1-002 only. Source generated by Codex via a credential-isolated job, followed by separate no-API-key Gradle assembleDebug/lintDebug/testDebugUnitTest gates. Evidence: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}. Human code review before merge; no M2+."
