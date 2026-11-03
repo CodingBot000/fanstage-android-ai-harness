@@ -23,3 +23,8 @@ This adds Android system-image download and emulator execution time to PR CI. It
 ## Amendment — preserve one Bash process inside emulator action (2026-11-04)
 
 The first PR run (#41724518589) failed with `/usr/bin/sh: 1: set: Illegal option -o pipefail` after emulator boot. The action's `script` lines are individually executed by `sh -c`; Bash flags and `EXIT` traps cannot persist across lines. We therefore invoke **one checked-in Bash script** from the runner, explicitly using `set -euo pipefail` around the test command piped to `tee`. The exit trap collects logcat whether instrumentation succeeds or fails. This fixes only the proven shell boundary; actual connected test correctness remains unverified until CI produces XML. Alternative `sh` without `pipefail` rejected because it could conceal a failed Gradle process.
+
+
+## Amendment — Kotlin test import compile failure (2026-11-04)
+
+Second PR attempt [#41734088258](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41734088258) proved the emulator/Bash integration runs but AndroidTest Kotlin compilation fails on `import androidx.compose.ui.test.assertExists`. The `assertExists()` call is a member of `SemanticsNodeInteraction` and requires no import. Remove that one incorrect import; do not replace the assertion or relax CI. Instrumentation, APK install and Compose navigation are still NOT_RUN until a new green connected-device test report is inspected.

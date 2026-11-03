@@ -151,3 +151,10 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - Proven cause in [emulator job #126227097645](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41724518589/job/126227097645) raw log: action executes each input script line as `/usr/bin/sh -c`; `set -euo pipefail` exits under Ubuntu Dash before Gradle runs. This also means a multiline `trap` would not persist.
 - Small repair: replace multi-line runner `script` with **one** `bash ../scripts/m1-004-emulator-smoke.sh` command; checked-in Bash script owns `set -euo pipefail`, Gradle+tee, exit trap/logcat, adb package check. Do not suppress a failing test or disable CI.
 - New repair's execution and connected XML remain **NOT_RUN until the next actual CI**. Preserve a single repair-triggered workflow run as evidence; no repeats for this attempt.
+
+
+### M1-004 verified AndroidTest compilation failure and minimal import repair (2026-11-04)
+
+- [Run #41734088258](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41734088258) on `1687a88b97733ae0c4e73af0e5579ca8c8584df8`: unchanged Android build/lint/unit **PASS**, API 35 emulator boots and one Bash script executes **PASS**, `:app:compileDebugAndroidTestKotlin` **FAIL** (`RoomNavigationSmokeTest.kt:3:33 Unresolved reference 'assertExists'`). AndroidTest APK/install and navigation assertions **NOT_RUN**; no connected test XML yet.
+- Fix only the invalid top-level import; `assertExists()` is a method on Compose `SemanticsNodeInteraction`, and the existing call remains unchanged. Leave all checks, instrumentation coverage, and failure propagation enabled.
+- [ ] Replacement commit must receive a **new** PR CI run with an actual connected test XML and assertion result before M1-004 can be PASS. Emulator/physical device requirements beyond this one flow remain NOT_RUN.
