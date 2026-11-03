@@ -3,11 +3,11 @@
 - Current milestone: M1 — Android Native Foundation
 - Current task: M1-004 — Emulator/Compose UI install and navigation evidence (NOT_RUN)
 - State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 pending)
-- Last approved commit: `65d4aefb3b2d08a778b710c1938fbd2883286abb` (PR #11, M1-002 Android Foundation)
+- Last approved commit: `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8` (PR #12 squash merge, M1-003 persistent CI)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
-- Latest verification: M1-003 independent [PR #12 CI Run #41700593263](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41700593263), source SHA `424b1c4d3917f1fa2175364808743bb0c555c3b4` — workflow and job PASS; 93 Gradle tasks executed (assembleDebug/lintDebug/feature:live unit). XML tests: 7 passed, 0 failed; `:app:testDebugUnitTest` NO-SOURCE. Android lint: 13 nonfatal warnings (details in build-log), so not zero-warning. Earlier M1-002 verified source PR #11 was merged as `65d4aefb3b2d08a778b710c1938fbd2883286abb`.
-- Current blockers: M1-004 Android Emulator/physical install, Compose screen navigation, and UI instrumentation remain NOT_RUN; M1 Gate stays open. PR #12 was reviewed with green CI; minor lint/deprecation warnings remain as documented risks.
-- Next action: Merge reviewed [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12), then scope M1-004 Android emulator installation and Compose UI/navigation tests. Never mark device Gate PASS without raw run evidence.
+- Latest verification: [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12) squash merged at `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8`; [main push CI Run #41715334883](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41715334883) **PASS** (job `126193724321`, 93 tasks, 7 JUnit tests, 0 failures/errors/skipped, lint PASS with 13 warnings). Original log and downloaded ZIP SHA-256 verified; see build-log.
+- Current blockers: M1-004 Emulator/physical install, Compose navigation and UI instrumentation remain NOT_RUN; M1 Gate remains open. Existing Android lint has 13 warnings, and the Actions Node20 deprecation warning remains.
+- Next action: Scope and implement one small M1-004 emulator install / Compose instrumentation evidence task under an SDD; do not mark device Gate PASS without a real installation and test log. No M2+ implementation.
 
 ## Milestone Checklist
 
