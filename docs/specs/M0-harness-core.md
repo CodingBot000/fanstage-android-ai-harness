@@ -1,6 +1,6 @@
 # M0 — Harness Core SDD
 
-- Status: DRAFT — M0-001 실행 승인은 SDD 또는 M0 완료 승인이 아니다.
+- Status: APPROVED (M0 작업 규칙). M0-001은 승인됨; M0-002 구현 승인, 실행 검증은 대기 중. M0 전체 완료는 아님.
 
 ## Goal
 
@@ -28,7 +28,7 @@ M0-001은 Git 초기화와 지정된 Harness 문서 작성·검증이다. Androi
 
 ## Test Plan
 
-필수 파일, 원본 동일성, 참조, 지침, 범위 및 민감정보를 명령으로 점검한다. Git 미추적 파일도 별도로 확인한다. Claude import는 실제 실행 시에만 검증한다. Android 빌드·테스트·CI는 아직 대상이 아니다.
+필수 파일, 원본 동일성, 참조, 지침, 범위 및 민감정보를 명령으로 점검한다. Git 미추적 파일도 별도로 확인한다. Codex API GitHub Action의 읽기 전용 계획 리허설을 실제 실행한 후에만 통과로 기록한다. Claude import는 선택 호환성 검사이며 Android 빌드·테스트·CI는 아직 대상이 아니다.
 
 ## Acceptance Criteria
 
@@ -39,18 +39,22 @@ M0-001은 Git 초기화와 지정된 Harness 문서 작성·검증이다. Androi
 - [ ] 허용 범위 밖 구현이 없고 검증 결과와 미실행 사유가 기록된다.
 - [ ] 사용자가 M0-001 결과를 리뷰하고 승인한다.
 
-### M0-002 — 별도 작업 후보
+### M0-002 — Codex API 읽기 전용 계획 리허설
 
-- [ ] Claude Code에서 `@AGENTS.md` import를 실제 검증한다.
-- [ ] 별도 plan-only 리허설을 실제 수행하고 보고 형식을 검토한다.
+- [ ] GitHub Actions `openai/codex-action@v1`이 Repository Secret `OPENAI_API_KEY`로 실제 실행된다.
+- [ ] Codex가 현재 M0, M1 구현 금지, 승인 게이트, Android 테스트 NOT_RUN을 구분한다.
+- [ ] `.github/codex/schemas/m0-002-result.schema.json`에 따른 결과를 출력하고 계약 검사가 통과한다.
+- [ ] `android/`·`backend/`를 생성하거나 소스 파일을 변경하지 않는다.
+- [ ] Actions Run URL, 결과 JSON, 실행 결과를 build-log에 기록한다.
+- [ ] 오류/보안 사고 시 자동 재시도·단계 전환 없이 중단한다.
 
-M0-002는 아직 승인되지 않았으며 실행되지 않았다.
+M0-002 실행은 승인됐지만 아직 결과는 확인되지 않았다. GitHub Actions에서 최초 성공을 확인한 후에만 위 항목을 체크한다.
 
 ### M0 전체 Exit Gate
 
 - [ ] [마스터 플랜 4.8절](../MASTER_PLAN.md)의 모든 Exit Gate를 충족하고 사람의 승인을 받는다.
 
-검증되지 않은 항목은 미완료로 유지한다. 위 M0-001 체크 항목도 사용자 승인 전 확정하지 않는다.
+검증되지 않은 항목은 미완료로 유지한다. M0-001 승인과 M0 전체 Exit Gate 통과는 별개다.
 
 ## Evidence / Commands
 
@@ -59,5 +63,5 @@ M0-002는 아직 승인되지 않았으며 실행되지 않았다.
 ## Open Questions / ADRs
 
 - Repository `CodingBot000/fanstage-android-ai-harness`는 Public으로 생성되었다. 라이선스는 미결정이다.
-- Claude Code import 실동작과 M0의 별도 계획-only 작업은 미검증이다.
+- Codex plan-only GitHub Actions 실행 결과가 미검증이다. Claude Code import는 선택 호환성 검사다.
 - [ADR-0001](../adr/ADR-0001-development-workflow.md): 사용자 리뷰 대기 중인 초안.

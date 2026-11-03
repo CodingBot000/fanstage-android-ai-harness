@@ -300,7 +300,7 @@ Harness는 프롬프트만 모아놓은 폴더가 아니다. 다음의 **제어�
 - 유사 코드/과한 추상화·모듈/의존성 확산을 제한하고, 변경한 기능과 관련된 검증을 우선 실행한다.
 - 매 작업 종료에 변경 파일, 테스트, 미실행, 리스크, 다음 단계 승인 필요 여부 보고.
 
-### 4.4 Claude Code 호환성
+### 4.4 Claude Code 호환성 (선택, Codex가 주 실행 에이전트)
 
 Claude Code는 기본적으로 `CLAUDE.md`를 읽는다. 공식 문서에서 권장하는 형태:
 
@@ -312,7 +312,7 @@ Claude Code는 기본적으로 `CLAUDE.md`를 읽는다. 공식 문서에서 권
 - 코드 리뷰 시 기능성만 아니라 Android 생명주기·Coroutine cancellation·메모리 누수·오래된 이벤트 반영 위험 점검.
 ```
 
-Codex와 Claude에 서로 다른 장문의 복제 지침을 넣지 않는다. Claude 전용 파일은 공통 규칙 import와 도구 특이사항에만 사용한다.
+Codex가 주 실행·검증 에이전트다. Codex와 Claude에 서로 다른 장문의 복제 지침을 넣지 않는다. Claude 전용 파일은 선택적인 호환성 인터페이스이며 M0의 필수 실행 게이트가 아니다.
 
 ### 4.5 Skills — 초기에 최소한만
 
@@ -371,7 +371,7 @@ M0에서 모든 Skills를 만들어야 한다는 뜻은 아니다. 공통 핵심
 - [ ] Repository 초기화와 첫 구조 생성 완료
 - [ ] `MASTER_PLAN.md` 복사 및 문서 버전 확인
 - [ ] `AGENTS.md`, `CLAUDE.md`, `STATUS.md` 작성
-- [ ] Claude에서 `@AGENTS.md` import 방식 확인(실제로 실행했을 때만 PASS)
+- [ ] Codex GitHub Actions에서 현재 단계·AGENTS 지침 인식을 읽기 전용으로 확인(실제 실행했을 때만 PASS; Claude import는 선택 호환성 검사)
 - [ ] M0 SDD와 ADR-0001 존재
 - [ ] 단계 변경 승인·로그 기록 규칙 존재
 - [ ] 최소 Harness 문서/링크 검증 명령이 동작하거나 미구현 사유 명시
@@ -960,5 +960,6 @@ docs/MASTER_PLAN.md를 최상위 요구사항으로 사용해 아래 항목만 �
 |---|---|---|
 | 2026-11-04 | v0.1 | FanStage 계획, Harness 우선, 마일스톤 M0~M8, 검증/인계 체계를 수립. 당시 구현·검증 결과 없음. |
 | 2026-11-04 | v0.1-public | 공개 저장소용 문서에서 개인 경력·특정 기업 지칭을 제외하고, 실제 진행 상태는 STATUS를 따르도록 분리. |
+| 2026-11-04 | v0.1.1-public | Codex를 주 실행 에이전트로 확정. Claude CLI import는 선택 호환성 검사로 변경하고, M0-002를 Codex API 기반 읽기 전용 리허설로 구체화. |
 
 **이 문서의 시작 작업은 M0-001이다. 최신 실행·승인 상태는 [STATUS.md](STATUS.md)를 따른다.**

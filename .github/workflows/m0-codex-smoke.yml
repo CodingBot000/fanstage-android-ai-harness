@@ -1,0 +1,73 @@
+name: M0 Codex plan-only rehearsal
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/m0-codex-smoke.yml'
+      - '.github/codex/prompts/m0-002-plan-only.md'
+      - '.github/codex/schemas/m0-002-result.schema.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fanstage-m0-codex-smoke
+  cancel-in-progress: false
+
+jobs:
+  rehearsal:
+    if: github.repository == 'CodingBot000/fanstage-android-ai-harness' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout trusted main
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Run Codex in read-only plan mode
+        id: codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: .github/codex/prompts/m0-002-plan-only.md
+          output-file: m0-002-result.json
+          output-schema-file: .github/codex/schemas/m0-002-result.schema.json
+          permission-profile: ':read-only'
+          safety-strategy: drop-sudo
+          codex-args: '["--ephemeral"]'
+
+      - name: Verify plan contract and prohibited changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("m0-002-result.json")
+          assert p.is_file(), "Codex report missing"
+          r = json.loads(p.read_text(encoding="utf-8"))
+          assert r["task_id"] == "M0-002", r
+          assert r["current_milestone"] == "M0", r
+          assert r["mode"] == "PLAN_ONLY", r
+          assert r["m1_permitted"] is False, r
+          assert r["human_gate"] == "REQUIRED", r
+          assert r["android_tests"] == "NOT_RUN", r
+          assert isinstance(r["proposed_next_steps"], list) and r["proposed_next_steps"], r
+          print("PASS: Codex plan-only structured contract")
+          PY
+          test ! -e android
+          test ! -e backend
+          test -z "$(git status --porcelain --untracked-files=all -- . ':(exclude)m0-002-result.json')"
+          echo "PASS: no tracked or untracked implementation changes"
+
+      - name: Preserve the plan-only evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: m0-002-codex-plan-only
+          path: m0-002-result.json
+          if-no-files-found: warn
+          retention-days: 30

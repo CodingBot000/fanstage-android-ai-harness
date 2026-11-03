@@ -1,0 +1,68 @@
+{
+  "type": "object",
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "enum": [
+        "M0-002"
+      ]
+    },
+    "current_milestone": {
+      "type": "string",
+      "enum": [
+        "M0"
+      ]
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "PLAN_ONLY"
+      ]
+    },
+    "m1_permitted": {
+      "type": "boolean",
+      "enum": [
+        false
+      ]
+    },
+    "human_gate": {
+      "type": "string",
+      "enum": [
+        "REQUIRED"
+      ]
+    },
+    "android_tests": {
+      "type": "string",
+      "enum": [
+        "NOT_RUN"
+      ]
+    },
+    "proposed_next_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verification_notes": {
+      "type": "string"
+    },
+    "open_issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "task_id",
+    "current_milestone",
+    "mode",
+    "m1_permitted",
+    "human_gate",
+    "android_tests",
+    "proposed_next_steps",
+    "verification_notes",
+    "open_issues"
+  ],
+  "additionalProperties": false
+}
