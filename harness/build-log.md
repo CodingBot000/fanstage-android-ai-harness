@@ -83,3 +83,15 @@
 - Artifacts: 결과 JSON 생성 실패로 업로드 항목 없음. 근거는 해당 Actions Run 및 Job 로그.
 - Risk/Recovery: Secret 키 교체는 사용자만 수행. 유효한 키 재등록 후 실패 Job을 재실행하여 별도 로그로 기록. 무한 자동 재시도 금지.
 - Human approval: 작업 실행은 사전 승인됨. **M0-002 Exit Gate PENDING / M0 전체 미완료**.
+
+## M0-002 — GitHub Actions Codex plan-only 재실행 PASS (2026-11-04)
+
+- Run: [#41692832207, attempt 2](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41692832207)
+- GitHub Actions: 결론 **success**, Codex 실행·JSON 검증·범위 검사·Artifact 업로드 단계 모두 SUCCESS (job `126120208006`).
+- Artifact: `m0-002-codex-plan-only` ID `13259075926`, SHA-256 `f059a39c696758d0e64ef57e5fb6f077c72be2e4496ffc02b24e285f186238d1` (ZIP digest, GitHub 제공), 자동 보관 30일. JSON 추출본은 [harness/reviews/M0-002-plan-only-result.json](reviews/M0-002-plan-only-result.json)에 복사해 지속 보관.
+- PASS: OpenAI API 키 변경 후 인증/실행, Codex `PLAN_ONLY` 응답, structured JSON 스키마 계약 체크, `android/`·`backend/` 미생성, Git 변경 없음 검사, 결과 Artifact 업로드.
+- 검토: Codex가 `task_id=M0-002`, `current_milestone=M0`, `mode=PLAN_ONLY`, `m1_permitted=false`, `human_gate=REQUIRED`, `android_tests=NOT_RUN`을 반환함. M1 실행을 시작하지 않았으며 다음 단계는 계획 후보만 작성.
+- FAIL/복구: 최초 attempt 1은 401 Unauthorized; 해당 이력은 별도 섹션으로 보존. attempt 2는 성공. Secret 원문은 취급하지 않음.
+- NOT_RUN: Android 빌드·Lint·Unit/UI 테스트(프로젝트 미생성), Claude Code import(선택 호환성), Android 실기기 성능(해당 단계 아님).
+- M0 Exit Gate: 문서 기반 초기화, 승인·기록 정책, 실제 계획-only Codex 호출과 보고 계약, 범위 검증을 충족. M0은 VERIFIED. 후속 M1 구현은 M1 SDD 및 공식 호환성 확인 후 별도 작업으로 진행.
+- Human approval: 사용자 포괄 승인 + 검증 증거에 따른 M0 Gate 적용.
