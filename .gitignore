@@ -1,0 +1,13 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+*.pem
+*.key
+local.properties
+.gradle/
+build/
+!/harness/build/
+.idea/
