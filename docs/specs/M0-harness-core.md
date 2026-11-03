@@ -1,6 +1,6 @@
 # M0 — Harness Core SDD
 
-- Status: APPROVED (M0 작업 규칙). M0-001은 승인됨; M0-002 구현 승인, 실행 검증은 대기 중. M0 전체 완료는 아님.
+- Status: VERIFIED — M0-001 및 M0-002 증거 검토 후 M0 Gate 충족 (2026-11-04).
 
 ## Goal
 
@@ -34,25 +34,25 @@ M0-001은 Git 초기화와 지정된 Harness 문서 작성·검증이다. Androi
 
 ### M0-001 — Repository 및 Harness 문서 초기화
 
-- [ ] 지정된 문서가 존재하고 공개판 마스터 플랜의 버전·변경 이유·진실의 원천이 명확하다. 초기 원본과 바이트 동일성은 공개판 수정 이전 로컬 검증 이력으로만 취급한다.
-- [ ] 지침·상태·참조와 검증 결과가 일관되고 승인 대기 상태다.
-- [ ] 허용 범위 밖 구현이 없고 검증 결과와 미실행 사유가 기록된다.
-- [ ] 사용자가 M0-001 결과를 리뷰하고 승인한다.
+- [x] 지정된 문서가 존재하고 공개판 마스터 플랜의 버전·변경 이유·진실의 원천이 명확하다. 초기 원본과 바이트 동일성은 공개판 수정 이전 로컬 검증 이력으로만 취급한다.
+- [x] 지침·상태·참조와 검증 결과가 일관되고 승인 대기 상태로 리뷰되었다.
+- [x] 허용 범위 밖 구현이 없고 검증 결과와 미실행 사유가 기록된다.
+- [x] 사용자가 M0-001 결과를 리뷰하고 승인했다.
 
 ### M0-002 — Codex API 읽기 전용 계획 리허설
 
-- [ ] GitHub Actions `openai/codex-action@v1`이 Repository Secret `OPENAI_API_KEY`로 실제 실행된다.
-- [ ] Codex가 현재 M0, M1 구현 금지, 승인 게이트, Android 테스트 NOT_RUN을 구분한다.
-- [ ] `.github/codex/schemas/m0-002-result.schema.json`에 따른 결과를 출력하고 계약 검사가 통과한다.
-- [ ] `android/`·`backend/`를 생성하거나 소스 파일을 변경하지 않는다.
-- [ ] Actions Run URL, 결과 JSON, 실행 결과를 build-log에 기록한다.
-- [ ] 오류/보안 사고 시 자동 재시도·단계 전환 없이 중단한다.
+- [x] GitHub Actions `openai/codex-action@v1`이 Repository Secret `OPENAI_API_KEY`로 실제 실행됐다.
+- [x] Codex가 현재 M0, M1 구현 금지, 승인 게이트, Android 테스트 NOT_RUN을 구분한다.
+- [x] `.github/codex/schemas/m0-002-result.schema.json`에 따른 결과를 출력하고 계약 검사가 통과한다.
+- [x] `android/`·`backend/`를 생성하거나 소스 파일을 변경하지 않았다 (Actions 검증 단계 PASS).
+- [x] Actions Run URL, 결과 JSON, 실행 결과를 build-log에 기록했다.
+- [x] 최초 인증 실패 후 자동 단계 전환 없이 중단했으며, 사용자 키 교체 후 명시적 재실행을 수행했다.
 
-M0-002 실행은 승인됐지만 아직 결과는 확인되지 않았다. GitHub Actions에서 최초 성공을 확인한 후에만 위 항목을 체크한다.
+M0-002 재실행 attempt 2는 최종 SUCCESS이며 [Actions Run](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41692832207)과 [검증된 구조화 결과](../../harness/reviews/M0-002-plan-only-result.json)를 참조한다. 최초 attempt 1 실패는 이력으로 유지한다.
 
 ### M0 전체 Exit Gate
 
-- [ ] [마스터 플랜 4.8절](../MASTER_PLAN.md)의 모든 Exit Gate를 충족하고 사람의 승인을 받는다.
+- [x] [마스터 플랜 4.8절](../MASTER_PLAN.md)의 모든 Exit Gate를 Codex 중심 검증 정책에 따라 충족하고 사람의 사전 포괄 승인을 확인했다.
 
 검증되지 않은 항목은 미완료로 유지한다. M0-001 승인과 M0 전체 Exit Gate 통과는 별개다.
 
@@ -63,5 +63,5 @@ M0-002 실행은 승인됐지만 아직 결과는 확인되지 않았다. GitHub
 ## Open Questions / ADRs
 
 - Repository `CodingBot000/fanstage-android-ai-harness`는 Public으로 생성되었다. 라이선스는 미결정이다.
-- Codex plan-only GitHub Actions 실행 결과가 미검증이다. Claude Code import는 선택 호환성 검사다.
-- [ADR-0001](../adr/ADR-0001-development-workflow.md): 사용자 리뷰 대기 중인 초안.
+- Codex plan-only GitHub Actions attempt 2가 검증을 통과했다. Claude Code import는 선택 호환성 검사로 NOT_RUN 상태를 유지한다.
+- [ADR-0001](../adr/ADR-0001-development-workflow.md): ACCEPTED.
