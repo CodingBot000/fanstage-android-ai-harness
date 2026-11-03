@@ -368,16 +368,16 @@ M0에서 모든 Skills를 만들어야 한다는 뜻은 아니다. 공통 핵심
 
 ### 4.8 M0 완료 기준(Exit Gate)
 
-- [ ] Repository 초기화와 첫 구조 생성 완료
-- [ ] `MASTER_PLAN.md` 복사 및 문서 버전 확인
-- [ ] `AGENTS.md`, `CLAUDE.md`, `STATUS.md` 작성
-- [ ] Codex GitHub Actions에서 현재 단계·AGENTS 지침 인식을 읽기 전용으로 확인(실제 실행했을 때만 PASS; Claude import는 선택 호환성 검사)
-- [ ] M0 SDD와 ADR-0001 존재
-- [ ] 단계 변경 승인·로그 기록 규칙 존재
-- [ ] 최소 Harness 문서/링크 검증 명령이 동작하거나 미구현 사유 명시
-- [ ] Codex로 **실제 한 번** 작은 계획-only 작업을 수행하고 지정된 보고 형식을 검토
-- [ ] 이후 단계 코드를 건드리지 않았음이 diff로 확인됨
-- [ ] `STATUS`에 M0 결과와 M1 진입 조건 기재
+- [x] Repository 초기화와 첫 구조 생성 완료
+- [x] `MASTER_PLAN.md` 복사 및 문서 버전 확인
+- [x] `AGENTS.md`, `CLAUDE.md`, `STATUS.md` 작성
+- [x] Codex GitHub Actions에서 현재 단계·AGENTS 지침 인식을 읽기 전용으로 확인(실제 실행했을 때만 PASS; Claude import는 선택 호환성 검사)
+- [x] M0 SDD와 ADR-0001 존재
+- [x] 단계 변경 승인·로그 기록 규칙 존재
+- [x] 최소 Harness 문서/링크 검증 명령이 동작하거나 미구현 사유 명시
+- [x] Codex로 **실제 한 번** 작은 계획-only 작업을 수행하고 지정된 보고 형식을 검토
+- [x] 이후 단계 코드를 건드리지 않았음이 diff로 확인됨
+- [x] `STATUS`에 M0 결과와 M1 진입 조건 기재
 
 ---
 
