@@ -151,3 +151,11 @@
 - Recovery: GitHub 연결의 별도 사용자 권한으로 [PR #11](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/11)을 생성. GitHub Actions의 PR 생성 제한 설정은 변경하지 않음.
 - Code review: 범위 `app/core:model/feature:live`를 점검. ViewModel load cancel/late response 방어, Error/Empty/Loading/Content, UI navigation placeholder, fake repository unit tests를 확인. 출시용 media/socket은 없으며 아직 M1 단계에 맞는 구조.
 - NOT_RUN: Emulator/UI instrumentation 및 실기기 동작, 장기 PR 자동 검증 (M1-003 예정). 따라서 M1 전체 Exit Gate는 미완료.
+
+## M1-003 — Persistent Android PR CI setup (2026-11-04)
+
+- Change scope: `.github/workflows/android-ci.yml` for `pull_request` / `push(main)` / manual execution. No app code change.
+- Gates: JDK 17, Gradle 9.5.0, Android SDK `platforms;android-37.0` via preinstalled SDK manager, `:app:assembleDebug`, `:app:lintDebug`, `testDebugUnitTest` plus log/test XML artifact.
+- Security: `permissions: contents:read`, checkout credentials not persisted, `OPENAI_API_KEY` never injected; untrusted PR may run code but cannot access project secrets through this job.
+- NOT_RUN: New workflow validation pending first GitHub Actions Run; Emulator/manual UI/physical device tests are M1-004.
+- Next: Review PR and capture actual CI result, then start instrumentation SDD/test work.
