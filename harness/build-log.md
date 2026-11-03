@@ -181,3 +181,16 @@
 - Main artifact: `android-pr-gate-evidence`, ID `13269957072`, ZIP SHA-256 `eee5760ab3c8e25d9157b882322f5d05500bfcdd858dbf85b077a4af376e9ca6`, downloaded hash matches GitHub digest. ZIP contains `android-ci.log`, lint HTML, and 2 test XML files. Original job log also inspected.
 - **FAIL**: none in merge or main CI. **NOT_RUN**: emulator/physical device install and launch, Compose instrumentation/navigation, rotation/process recovery, HLS LIVE and physical-device performance measurements. M1 milestone Gate **not** VERIFIED; M1-004 remains pending. Existing lint warnings and GitHub Actions Node20 deprecation warning are technical debt; tests/lint gates were not disabled.
 - Documentation-only evidence follow-up updates `docs/STATUS.md` and `harness/build-log.md`; no additional workflow execution intended. Next small unit: M1-004 device/emulator test design and real execution, under a separate approved work PR.
+
+## M1-004 — Emulator Compose instrumentation PR proposal (2026-11-04)
+
+- Base: `a4d06a0246e3c2b865ef6d4d45fd3ef97ae9fad7` (main, PR #13); before work checked MASTER_PLAN, STATUS, M1 SDD, this log, latest PRs and Actions. Open PRs: none; latest completed Android main CI [#41715334883](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41715334883) success; no in-progress Codex Action observed.
+- Scope: one proposed M1-004 Compose list → detail → back smoke, on API 35 emulator, with instrumentation-runner Gradle dependency wiring. Android feature implementation unchanged. Workflow job only runs after existing build/lint/unit gate; checkout/token read-only, no OPENAI_API_KEY.
+- Files: `.github/workflows/android-ci.yml`, `android/app/build.gradle.kts`, `android/gradle/libs.versions.toml`, `android/app/src/androidTest/kotlin/dev/fanstage/android/RoomNavigationSmokeTest.kt`, `docs/specs/M1-android-foundation.md`, `docs/adr/ADR-0003-emulator-compose-smoke.md`, `docs/STATUS.md`, `harness/build-log.md`.
+- Intended CI command (not yet executed at proposal time): `./gradlew :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace` from `android/`, plus `adb devices -l`, `adb shell getprop ro.build.version.sdk`, `adb shell pm path dev.fanstage.android`; see exact workflow for shell and selected logcat collection.
+- PASS: static read-only GitHub inspection of closed previous PRs and completed main CI; no new Android/Gradle task run locally in this proposal.
+- FAIL: none from this proposed change **yet**, not a prediction of future CI success.
+- NOT_RUN: new instrumentation build, emulator boot, APK installation, navigation assertions, rotation, real physical device, LIVE playback, device performance, M1 full Gate.
+- Run URL / artifact / source commit: **PENDING until PR-triggered workflow actually runs**, then inspect GitHub job logs and downloaded test XML; do not retroactively mislabel this proposal as executed.
+- Security: GitHub Actions generation/build/publish roles remain separated; this PR invokes no Codex generation and does not touch API key values.
+- Next: verify the single PR-triggered workflow and record true PASS/FAIL with original artifact references; merge only after review and risk assessment.

@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-004 — Emulator/Compose UI install and navigation evidence (NOT_RUN)
-- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 pending)
+- Current task: M1-004 — Emulator/Compose UI install + navigation smoke (PR proposed; actual CI result NOT_RUN until verified)
+- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 instrumentation and CI proposal; device gate pending)
 - Last approved commit: `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8` (PR #12 squash merge, M1-003 persistent CI)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
 - Latest verification: [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12) squash merged at `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8`; [main push CI Run #41715334883](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41715334883) **PASS** (job `126193724321`, 93 tasks, 7 JUnit tests, 0 failures/errors/skipped, lint PASS with 13 warnings). Original log and downloaded ZIP SHA-256 verified; see build-log.
 - Current blockers: M1-004 Emulator/physical install, Compose navigation and UI instrumentation remain NOT_RUN; M1 Gate remains open. Existing Android lint has 13 warnings, and the Actions Node20 deprecation warning remains.
-- Next action: Scope and implement one small M1-004 emulator install / Compose instrumentation evidence task under an SDD; do not mark device Gate PASS without a real installation and test log. No M2+ implementation.
+- Next action: Review the M1-004 PR emulator CI's original job log and test artifact. If tests pass, record real PASS with Run/SHA; if not, retain FAIL/NOT_RUN and repair only verified cause. Do not mark device Gate PASS without actual installed APK and instrumented navigation evidence. No M2+ implementation.
 
 ## Milestone Checklist
 

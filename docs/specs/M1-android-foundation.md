@@ -131,3 +131,15 @@ Strict direction: `app → feature:live → core:model`. The feature must never 
 M1-004 separately validates installation and navigation/Compose states with instrumentation on a running emulator/device. It must be NOT_RUN until executed.
 
 M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41700593263), source commit `424b1c4d3917f1fa2175364808743bb0c555c3b4`, job `126142531399`; 7 JUnit tests PASS / 0 failures / 0 skipped. Lint task PASS with 13 warnings (not zero-warning). Source verification precedes this documentation-only evidence commit. No emulator/Compose UI or physical device test was run; these remain M1-004 NOT_RUN.
+
+## M1-004 — Emulator / Compose UI smoke (one bounded task, 2026-11-04)
+
+- Scope: install the existing M1 Compose app in an Android API 35 x86_64 emulator and run **one** AndroidJUnitRunner Compose instrumentation test for Room List → Detail → Back. No media/chat/backend feature changes.
+- Configuration: same JDK 17, Gradle 9.5.0, AGP 9.3.3 / compile SDK 37.0 used by existing CI; stable API 35 Google APIs emulator is a **runtime** device, not a downgrade of compile SDK. Emulator runner pinned by full commit SHA.
+- The new `emulator-compose-smoke` job depends on successful unchanged compile/lint/unit job. PRs have `contents: read` token only; no OpenAI secret; no publish step. AndroidTest target app uses `androidx.test.runner.AndroidJUnitRunner`, Compose UI Test BOM, JUnit extensions.
+- Command from `android/`: `./gradlew :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace`. CI captures test stdout, connected XML/HTML reports, selected logcat, `adb devices`, device SDK and installed application package path in the job log.
+- [ ] **PASS only after actual GitHub Actions logs and test report confirm** emulator boot, app/test APK install, list/detail/back assertion, and zero failures. Recording code/config alone is NOT_RUN, not PASS.
+- [ ] Actual Run URL, job outcome, artifacts and source SHA reviewed independently and entered in build-log on completion.
+- [ ] M1 overall Gate reviewed separately; physical-device install, real performance, rotation and process recreation remain NOT_RUN until proved.
+- Failure policy: preserve original errors, avoid retries within same run, no skipped tests, no false success; fix only smallest verified cause next task.
+- Third-party emulator runner provenance: https://github.com/ReactiveCircus/android-emulator-runner ; stable AndroidX Test runner/ext.junit release table: https://developer.android.com/jetpack/androidx/releases/test ; Compose test dependencies: https://developer.android.com/develop/ui/compose/setup-compose-dependencies-and-compiler
