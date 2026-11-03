@@ -6,7 +6,7 @@
 - Last approved commit: `e7dc155c70e46929650d38541827fc2c8232c29d` (M0-001 공개판 정합성 PR #1 Squash Merge)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
 - Latest verification: PASS — M0-002 GitHub Actions [Run #41692832207, attempt 2](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41692832207). 최초 attempt 1의 401 인증 실패는 build-log에 기록
-- Current blockers: M1의 AGP/Kotlin 호환성은 공식 문서상 패치 버전 범위 밖 가능성이 있어 실제 CI 빌드로 확정 필요. Android 앱·테스트 아직 NOT_RUN
+- Current blockers: M1-002 첫 CI에서 Android SDK setup action이 미제공 `tools` 패키지를 요청하여 FAIL. 소스 생성 PASS지만 Gradle 빌드 NOT_RUN. 수정 워크플로 재실행 필요.
 - Next action: M1-002 Codex로 최소 Android 프로젝트 생성 → CI 클린 빌드·Lint·Unit 검증
 
 ## Milestone Checklist
