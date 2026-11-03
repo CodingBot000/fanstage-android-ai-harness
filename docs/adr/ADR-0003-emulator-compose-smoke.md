@@ -28,3 +28,8 @@ The first PR run (#41724518589) failed with `/usr/bin/sh: 1: set: Illegal option
 ## Amendment — Kotlin test import compile failure (2026-11-04)
 
 Second PR attempt [#41734088258](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41734088258) proved the emulator/Bash integration runs but AndroidTest Kotlin compilation fails on `import androidx.compose.ui.test.assertExists`. The `assertExists()` call is a member of `SemanticsNodeInteraction` and requires no import. Remove that one incorrect import; do not replace the assertion or relax CI. Instrumentation, APK install and Compose navigation are still NOT_RUN until a new green connected-device test report is inspected.
+
+
+## Amendment — passing connected test versus failing post-test check (2026-11-04)
+
+[Run #41741160963](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41741160963) confirms API35 emulator, instrumented MainActivity launch and list/detail/back test PASSED (1/1, errors=0) but the job still FAILS after Gradle succeeds: final `adb shell pm path dev.fanstage.android | grep '^package:'` returns nonzero. A package-path probe **after** Gradle's connected-test lifecycle is not a dependable proof of the earlier install/launch; its failure mode (uninstall versus adb/package issue) is not conclusively distinguished by current logs. Preserve test and pipeline failure gates; replace the brittle late assertion with validation of the produced test XML and real launch/instrumentation evidence in the next separate run. Overall PR merge remains blocked until CI itself passes.

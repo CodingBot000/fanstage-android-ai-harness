@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-004 — Emulator/Compose UI navigation smoke (PR #14 instrumentation Kotlin compile failure; one-import repair proposed)
-- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 emulator boot and Bash repair verified, AndroidTest compile FAIL; instrumentation NOT_RUN)
+- Current task: M1-004 — Emulator/Compose UI navigation smoke (one instrumentation test PASS; post-test package check FAIL)
+- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 AndroidTest instrumentation 1/1 PASS but overall PR #14 CI FAIL from post-test shell check)
 - Last approved commit: `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8` (PR #12 squash merge, M1-003 persistent CI)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
 - Latest verification: [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12) squash merged at `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8`; [main push CI Run #41715334883](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41715334883) **PASS** (job `126193724321`, 93 tasks, 7 JUnit tests, 0 failures/errors/skipped, lint PASS with 13 warnings). Original log and downloaded ZIP SHA-256 verified; see build-log.
-- Current blockers: [PR #14 CI #41734088258](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41734088258) FAIL at `:app:compileDebugAndroidTestKotlin` with `Unresolved reference 'assertExists'` from invalid import at test line 3. Emulator API 35 boot PASS; Bash repair executes. App/test APK installation and Compose assertions NOT_RUN. One-import repair now proposed; its CI outcome NOT_RUN until new Run. M1 Gate open; physical device, LIVE and performance NOT_RUN. 13 lint warnings and Actions Node20 warning remain.
-- Next action: remove only `androidx.compose.ui.test.assertExists` import (method already on `SemanticsNodeInteraction`); inspect one PR-triggered CI run, full job log and raw XML/artifacts. Do not merge or mark M1 Gate PASS without installed APK and passing assertions. No M2+ changes.
+- Current blockers: [PR #14 CI #41741160963](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41741160963) **FAIL** although Gradle `:app:connectedDebugAndroidTest` and actual Compose UI test `roomListOpensDetailAndReturns` 1/1 **PASS**, XML errors/failures/skips 0. Final `adb shell pm path dev.fanstage.android | grep '^package:'` post-test check returned exit 1 (whether Gradle uninstalled app after the test or adb failed is not independently established); CI job FAIL. M1 Gate open; physical device, rotation/process recovery, LIVE and performance NOT_RUN. 13 lint warnings and Actions Node20 warning remain.
+- Next action: repair only the fragile **post-test** `pm path | grep` check without weakening connected tests (prefer validating produced XML and passing instrumentation/launch evidence); inspect one subsequent PR CI run. PR #14 unmerged until entire workflow PASS and independent review. No M2+ changes.
 
 ## Milestone Checklist
 
