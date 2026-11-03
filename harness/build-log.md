@@ -133,3 +133,21 @@
 - NOT_RUN: Emulator/실기기 설치, UI instrumentation, M1 전체 Gate.
 - Scope-limited fix: `git -c core.whitespace=cr-at-eol diff --cached --check`로 CR at EOL을 유효한 줄끝으로 처리하며 다른 공백 검사 유지. 별도 로컬 재현에서 기본 diff --check는 오류, `cr-at-eol` 적용 검사는 PASS.
 - Recovery: 수정된 CI로 보존된 소스 artifact를 다시 검증한 뒤 새 소스 PR 생성. API 비용 발생하는 Codex 재생성은 금지.
+
+## M1-002 — Verified Android source ready for review (2026-11-04)
+
+- Build source: preserved Codex artifact from Run #41696988901; no additional Codex API invocation.
+- CI PASS: https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41699243951 verify job #126137862506: assembleDebug/lintDebug/testDebugUnitTest.
+- Publish source: validated artifact from that run; Android .gitignore extra blank newline removed without changing source code.
+- Original plan/report: harness/reviews/M1-002-codex-report.json.
+- NOT_RUN: emulator/device install and manual navigation UX; M1 Gate pending.
+- Human review: requested via PR.
+
+## M1-002 — Verified source branch pushed and independent PR created (2026-11-04)
+
+- GitHub publishing attempt [Run #41699908603](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41699908603).
+- PASS: 이전 [Run #41699243951](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41699243951)의 Verify job 성공 재검증, 검증된 Artifact 다운로드, `android/.gitignore`의 불필요한 마지막 빈 줄 한 개 정리, `git -c core.whitespace=cr-at-eol diff --cached --check`, Git commit `c542bd220f5a18fb814c274bafc9dd78c3acf201`, 브랜치 `feat/m1-002-android-foundation-verified` 원격 Push.
+- FAIL: `gh pr create`는 GitHub Repository의 Actions 봇 PR 생성 금지 정책으로 실패. 빌드/테스트 실패가 아니다.
+- Recovery: GitHub 연결의 별도 사용자 권한으로 [PR #11](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/11)을 생성. GitHub Actions의 PR 생성 제한 설정은 변경하지 않음.
+- Code review: 범위 `app/core:model/feature:live`를 점검. ViewModel load cancel/late response 방어, Error/Empty/Loading/Content, UI navigation placeholder, fake repository unit tests를 확인. 출시용 media/socket은 없으며 아직 M1 단계에 맞는 구조.
+- NOT_RUN: Emulator/UI instrumentation 및 실기기 동작, 장기 PR 자동 검증 (M1-003 예정). 따라서 M1 전체 Exit Gate는 미완료.

@@ -1,0 +1,43 @@
+{
+  "task_id": "M1-002",
+  "scope": "ANDROID_FOUNDATION",
+  "code_generated": true,
+  "summary": "Created the three-module Kotlin/Compose foundation with room list/detail navigation, deterministic fake data, immutable StateFlow, cancellation handling, and unit test sources. Changes are confined to android/.",
+  "changed_files": [
+    "android/.gitignore",
+    "android/README.md",
+    "android/settings.gradle.kts",
+    "android/build.gradle.kts",
+    "android/gradle.properties",
+    "android/gradle/libs.versions.toml",
+    "android/gradle/wrapper/gradle-wrapper.properties",
+    "android/app/build.gradle.kts",
+    "android/app/src/main/AndroidManifest.xml",
+    "android/app/src/main/kotlin/dev/fanstage/android/MainActivity.kt",
+    "android/app/src/main/res/values/strings.xml",
+    "android/app/src/main/res/values/themes.xml",
+    "android/core/model/build.gradle.kts",
+    "android/core/model/src/main/kotlin/dev/fanstage/android/core/model/Room.kt",
+    "android/core/model/src/main/kotlin/dev/fanstage/android/core/model/RoomRepository.kt",
+    "android/feature/live/build.gradle.kts",
+    "android/feature/live/src/main/AndroidManifest.xml",
+    "android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/FakeRoomRepository.kt",
+    "android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/RoomListViewModel.kt",
+    "android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/RoomScreens.kt",
+    "android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/RoomUiState.kt",
+    "android/feature/live/src/main/res/values/strings.xml",
+    "android/feature/live/src/test/kotlin/dev/fanstage/android/feature/live/FakeRoomRepositoryTest.kt",
+    "android/feature/live/src/test/kotlin/dev/fanstage/android/feature/live/RoomListViewModelTest.kt"
+  ],
+  "verification": "NOT_RUN",
+  "next_checks": [
+    "In android/, with CI-provided Gradle 9.5.0: gradle wrapper --gradle-version 9.5.0 --distribution-type bin",
+    "With JDK 17 and Android SDK 37: ./gradlew clean :app:assembleDebug :app:lintDebug :feature:live:lintDebug :feature:live:testDebugUnitTest :core:model:test",
+    "On a device or emulator, verify launch, list/detail/back navigation, and rotation."
+  ],
+  "known_risks": [
+    "AGP 9.3.3 exceeds Kotlin 2.4.21's documented fully supported AGP maximum of 9.3.1; CI validation is mandatory.",
+    "Pinned dependency resolution, compilation, lint, and unit tests remain unverified.",
+    "Wrapper scripts and JAR require generation by the separate CI setup job; no binaries were downloaded."
+  ]
+}

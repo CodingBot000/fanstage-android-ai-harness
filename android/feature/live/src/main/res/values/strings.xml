@@ -1,0 +1,18 @@
+<resources>
+    <string name="live_rooms">Live rooms</string>
+    <string name="loading_rooms">Loading rooms</string>
+    <string name="no_rooms">No rooms are available yet.</string>
+    <string name="retry">Retry</string>
+    <string name="refresh">Refresh</string>
+    <string name="room_host">Hosted by %1$s</string>
+    <plurals name="room_viewers">
+        <item quantity="one">%1$d viewer</item>
+        <item quantity="other">%1$d viewers</item>
+    </plurals>
+    <string name="room_detail">Room detail</string>
+    <string name="room_identifier">Room: %1$s</string>
+    <string name="player_placeholder">Video player placeholder</string>
+    <string name="chat_placeholder">Chat placeholder</string>
+    <string name="placeholder_description">This foundation demo uses fictional room data.</string>
+    <string name="back_to_rooms">Back to rooms</string>
+</resources>
