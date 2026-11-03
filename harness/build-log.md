@@ -124,3 +124,12 @@
 - Source Artifact: `m1-002-generated` ID `13260927048`; published no code PR because build gate failed.
 - Repair: add verify-only GitHub Actions job using preserved Artifact without calling OPENAI_API_KEY again; update SDK package identifier to `platforms;android-37.0`. Disable auto-push trigger on code generation workflow, leaving manual dispatch only, so infrastructure fixes do not repeat paid Codex runs.
 - Next: inspect verify-only CI build and publish first M1 source PR only if green.
+
+## M1-002 — Gradle 검증 PASS, 소스 게시 단계 FAIL (2026-11-04)
+
+- Run: [#41698095765](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41698095765) (기존 Codex artifact 재사용, API 키 없이 검증).
+- Verify job 126133860860 **PASS**: Android SDK 37.0, Gradle Wrapper 생성, `assembleDebug`, `lintDebug`, `testDebugUnitTest`; 실제 `:feature:live:testDebugUnitTest` 수행, `:app:testDebugUnitTest`는 NO-SOURCE.
+- Publish job 126136197146 **FAIL**: `git diff --cached --check`가 공식 Gradle Wrapper에서 생성한 Windows `android/gradlew.bat`의 CRLF를 trailing whitespace로 탐지하고 exit code 2. Git push/PR은 실행되지 않음.
+- NOT_RUN: Emulator/실기기 설치, UI instrumentation, M1 전체 Gate.
+- Scope-limited fix: `git -c core.whitespace=cr-at-eol diff --cached --check`로 CR at EOL을 유효한 줄끝으로 처리하며 다른 공백 검사 유지. 별도 로컬 재현에서 기본 diff --check는 오류, `cr-at-eol` 적용 검사는 PASS.
+- Recovery: 수정된 CI로 보존된 소스 artifact를 다시 검증한 뒤 새 소스 PR 생성. API 비용 발생하는 Codex 재생성은 금지.
