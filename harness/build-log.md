@@ -95,3 +95,13 @@
 - NOT_RUN: Android 빌드·Lint·Unit/UI 테스트(프로젝트 미생성), Claude Code import(선택 호환성), Android 실기기 성능(해당 단계 아님).
 - M0 Exit Gate: 문서 기반 초기화, 승인·기록 정책, 실제 계획-only Codex 호출과 보고 계약, 범위 검증을 충족. M0은 VERIFIED. 후속 M1 구현은 M1 SDD 및 공식 호환성 확인 후 별도 작업으로 진행.
 - Human approval: 사용자 포괄 승인 + 검증 증거에 따른 M0 Gate 적용.
+
+## M1-001 — Android Native Foundation SDD·호환성 조사 (2026-11-04)
+
+- Approved scope: M1 SDD/ADR 및 현재 상태 기록. Android 프로젝트 생성은 후속 M1-002로 분리.
+- Source of truth: [M1 SDD](../docs/specs/M1-android-foundation.md), [ADR-0002](../docs/adr/ADR-0002-android-foundation-stack.md).
+- Research: Android AGP 9.3 release compatibility, Kotlin KGP 2.4.21 compatibility table, Compose compiler migration, built-in Kotlin, Compose BOM official documents (URLs in ADR/SDD).
+- Result: AGP 9.3.3 / Kotlin 2.4.21 is an **unverified candidate**; Kotlin's documented max fully supported AGP is 9.3.1, so CI verification is mandatory before fixating. AGP 9.3.3 includes fixes absent in 9.3.1. Do not infer compatibility.
+- PASS: Evidence-backed version *candidate* and SDD contracts/Out of Scope recorded.
+- NOT_RUN: Android project, Gradle, lint, unit tests, device install, UI tests (no project yet).
+- Next: M1-002 minimal Gradle/Compose multi-module skeleton and clean build/test in Github Actions, with API key not exposed to build tests.
