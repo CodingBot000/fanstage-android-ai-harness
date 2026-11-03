@@ -122,10 +122,12 @@ Strict direction: `app → feature:live → core:model`. The feature must never 
 
 ## M1-003 — Persistent PR quality gate
 
-- [ ] `.github/workflows/android-ci.yml` is actually triggered on Android PR/main changes.
-- [ ] PR CI validates `:app:assembleDebug`, `:app:lintDebug`, and `testDebugUnitTest` on JDK17/Gradle9.5/Android SDK37.0.
-- [ ] This gate is pull_request safe: GITHUB_TOKEN contents:read, checkout credentials not persisted, OPENAI_API_KEY not injected.
-- [ ] Attach actual Run URL/commit and Gradle outputs to build-log before checking.
+- [x] `.github/workflows/android-ci.yml` is actually triggered on Android PR/main changes.
+- [x] PR CI validates `:app:assembleDebug`, `:app:lintDebug`, and `testDebugUnitTest` on JDK17/Gradle9.5/Android SDK37.0.
+- [x] This gate is pull_request safe: GITHUB_TOKEN contents:read, checkout credentials not persisted, OPENAI_API_KEY not injected.
+- [x] Attach actual Run URL/commit and Gradle outputs to build-log before checking.
 - [ ] CI success is not evidence of emulator/device UX.
 
 M1-004 separately validates installation and navigation/Compose states with instrumentation on a running emulator/device. It must be NOT_RUN until executed.
+
+M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41700593263), source commit `424b1c4d3917f1fa2175364808743bb0c555c3b4`, job `126142531399`; 7 JUnit tests PASS / 0 failures / 0 skipped. Lint task PASS with 13 warnings (not zero-warning). Source verification precedes this documentation-only evidence commit. No emulator/Compose UI or physical device test was run; these remain M1-004 NOT_RUN.
