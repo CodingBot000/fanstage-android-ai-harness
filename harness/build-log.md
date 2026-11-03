@@ -70,3 +70,16 @@
 - Changes (구성 예정): `.github/workflows/m0-codex-smoke.yml`, `.github/codex/prompts/m0-002-plan-only.md`, `.github/codex/schemas/m0-002-result.schema.json`, 관련 SDD·ADR·상태·로그.
 - M0-002 검증: NOT_RUN (워크플로 병합 전); API 사용량 과금 가능, job 시간 20분 제한, `contents: read`, 에이전트 read-only.
 - 실패 시 Exit Gate 미통과, 자동 재시도/다음 단계 전환 금지.
+
+## M0-002 — GitHub Actions Codex plan-only 최초 실행 FAIL (2026-11-04)
+
+- Workflow: [M0 Codex plan-only rehearsal, Run #41692832207](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41692832207)
+- 실행 SHA: `1a22b55afa5cdc9d9d21f3ed52006fdbd453dae4` (PR #2 Squash Merge)
+- Trigger: `push` to `main` (M0-002 워크플로 추가)
+- Agent/Tool: `openai/codex-action@v1`, OpenAI Codex CLI v0.166.0 (GitHub Actions 로그에서 확인)
+- PASS: GitHub-hosted runner 시작, 저장소 체크아웃, Codex CLI 설치 및 실행 시작
+- FAIL: 첫 Responses API 호출에서 `401 Unauthorized: Incorrect API key provided`. GitHub Secret의 실제 원문은 출력·검토하지 않음. 등록 값이 유효한 OpenAI API secret인지 사용자 재확인 필요.
+- NOT_RUN: Codex 출력 JSON 생성과 schema assertion, 변경 없음 검증 단계(선행 API 인증 실패로 skip), Android 빌드·테스트·실기기·CI(미구현).
+- Artifacts: 결과 JSON 생성 실패로 업로드 항목 없음. 근거는 해당 Actions Run 및 Job 로그.
+- Risk/Recovery: Secret 키 교체는 사용자만 수행. 유효한 키 재등록 후 실패 Job을 재실행하여 별도 로그로 기록. 무한 자동 재시도 금지.
+- Human approval: 작업 실행은 사전 승인됨. **M0-002 Exit Gate PENDING / M0 전체 미완료**.
