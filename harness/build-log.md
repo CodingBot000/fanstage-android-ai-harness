@@ -151,3 +151,22 @@
 - Recovery: GitHub 연결의 별도 사용자 권한으로 [PR #11](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/11)을 생성. GitHub Actions의 PR 생성 제한 설정은 변경하지 않음.
 - Code review: 범위 `app/core:model/feature:live`를 점검. ViewModel load cancel/late response 방어, Error/Empty/Loading/Content, UI navigation placeholder, fake repository unit tests를 확인. 출시용 media/socket은 없으며 아직 M1 단계에 맞는 구조.
 - NOT_RUN: Emulator/UI instrumentation 및 실기기 동작, 장기 PR 자동 검증 (M1-003 예정). 따라서 M1 전체 Exit Gate는 미완료.
+
+## M1-003 — Persistent Android PR CI setup (2026-11-04)
+
+- Change scope: `.github/workflows/android-ci.yml` for `pull_request` / `push(main)` / manual execution. No app code change.
+- Gates: JDK 17, Gradle 9.5.0, Android SDK `platforms;android-37.0` via preinstalled SDK manager, `:app:assembleDebug`, `:app:lintDebug`, `testDebugUnitTest` plus log/test XML artifact.
+- Security: `permissions: contents:read`, checkout credentials not persisted, `OPENAI_API_KEY` never injected; untrusted PR may run code but cannot access project secrets through this job.
+- NOT_RUN: New workflow validation pending first GitHub Actions Run; Emulator/manual UI/physical device tests are M1-004.
+- Next: Review PR and capture actual CI result, then start instrumentation SDD/test work.
+
+## M1-003 — Persistent Android PR CI evidence/review (2026-11-04)
+
+- Scope: [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12), `.github/workflows/android-ci.yml`, source commit `424b1c4d3917f1fa2175364808743bb0c555c3b4`. Existing Android source is from merged [PR #11](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/11) (`65d4aefb3b2d08a778b710c1938fbd2883286abb`). No new code generation or OpenAI API-key request.
+- Actual CI: [Run #41700593263](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41700593263), job [build-lint-unit #126142531399](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41700593263/job/126142531399), conclusion `success`. Environment: ubuntu-24.04; Temurin JDK 17, Gradle 9.5.0, Android SDK `platforms;android-37.0` installed using preinstalled SDK Manager, AGP 9.3.3 reported by lint.
+- Actual commands (working directory `android/`): `chmod +x gradlew`; `./gradlew --version`; `./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace` (stdout/stderr piped to `tee "$GITHUB_WORKSPACE/android-ci.log"`; shell `set -euo pipefail` preserves failures).
+- PASS: `:app:assembleDebug`, `:app:lintDebug`, `:feature:live:testDebugUnitTest`; Gradle `BUILD SUCCESSFUL in 1m 13s` / `93 actionable tasks: 93 executed`. XML report `FakeRoomRepositoryTest`: 2 tests, `RoomListViewModelTest`: 5 tests. **Total 7 tests; failures=0, errors=0, skipped=0**. `:app:testDebugUnitTest` is explicitly `NO-SOURCE`, not counted as an executed test.
+- Lint result **PASS task with 13 nonfatal WARNINGS**, not clean of warnings: targetSdk lower than newest (1), obsolete AGP (3), outdated Gradle dependencies (5), newer library version (2), missing data extraction rules (1), missing application icon (1). Review these before final release; no lint gate disabled or suppressed. Node 20 action deprecation warning occurred for v4 actions, but did not fail this run.
+- Artifact verified: `android-pr-gate-evidence`, ID `13262019517`, expires 2026-11-17 19:11 UTC, GitHub digest `sha256:b57910dcb1814466595a3f25f4ba3fd33ee7fe106e3e568259092245758bac17`; downloaded ZIP hash matches GitHub digest. ZIP contains raw `android-ci.log`, app lint HTML, and the two JUnit XML suites. Original job log was reviewed independently; all verify/upload steps concluded success.
+- Security/review: PR-only and main-push gates use `contents: read`, checkout `persist-credentials: false`, no `OPENAI_API_KEY`/publishing token. `workflow_dispatch` is manual but this Android gate has no API billing. Same workflow source revision was verified before this documentation-only commit. No unreviewed Android source modifications in this M1-003 change.
+- FAIL: none in M1-003 CI. NOT_RUN: Android Emulator/device install, Compose UI instrumentation, navigation/rotation/manual UX, performance/live HLS, M1 overall Gate. Do **not** mark M1 VERIFIED on this result. Next authorized unit: M1-004 device/emulator test proof.

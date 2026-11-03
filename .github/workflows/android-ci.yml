@@ -1,0 +1,74 @@
+name: Android PR build and unit gates
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-lint-unit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout source without retained credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 9.5
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - name: Set up preinstalled Android SDK manager and API 37
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          manager="$sdk_root/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$manager"
+          "$manager" --version
+          "$manager" --channel=3 --install 'platforms;android-37.0' 'build-tools;36.0.0' 'platform-tools'
+          echo "ANDROID_HOME=$sdk_root" >> "$GITHUB_ENV"
+
+      - name: Build Android and run deterministic PR gates
+        working-directory: android
+        shell: bash
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          ./gradlew --version
+          ./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
+
+      - name: Upload logs and unit test XML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-pr-gate-evidence
+          path: |
+            android-ci.log
+            android/**/build/test-results/testDebugUnitTest/*.xml
+            android/**/build/reports/lint-results-*.html
+          if-no-files-found: warn
+          retention-days: 14

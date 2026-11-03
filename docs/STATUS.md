@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-002 — verified source PR review
-- State: REVIEW
-- Last approved commit: `5ad713453e594aeaa185df1740dd456df6ee1032` (PR #10, M1 verified-source publishing workflow)
+- Current task: M1-004 — Emulator/Compose UI install and navigation evidence (NOT_RUN)
+- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 pending)
+- Last approved commit: `65d4aefb3b2d08a778b710c1938fbd2883286abb` (PR #11, M1-002 Android Foundation)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
-- Latest verification: Android Gradle assembleDebug/lintDebug/feature:live unit PASS — [Run #41699243951 verify job](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41699243951). 전체 Run은 Actions PR 생성권한 때문에 FAIL, 직접 GitHub 연결로 [PR #11](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/11) 생성됨.
-- Current blockers: M1 전체 Gate의 지속 실행 PR CI 및 Emulator/실기기 설치·화면 이동 테스트는 아직 NOT_RUN. 이번 M1-002 소스 PR의 독립 리뷰·병합 후 M1-003 진행.
-- Next action: M1-002 source PR code review/merge then M1-003 persistent PR CI and emulator testing
+- Latest verification: M1-003 independent [PR #12 CI Run #41700593263](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41700593263), source SHA `424b1c4d3917f1fa2175364808743bb0c555c3b4` — workflow and job PASS; 93 Gradle tasks executed (assembleDebug/lintDebug/feature:live unit). XML tests: 7 passed, 0 failed; `:app:testDebugUnitTest` NO-SOURCE. Android lint: 13 nonfatal warnings (details in build-log), so not zero-warning. Earlier M1-002 verified source PR #11 was merged as `65d4aefb3b2d08a778b710c1938fbd2883286abb`.
+- Current blockers: M1-004 Android Emulator/physical install, Compose screen navigation, and UI instrumentation remain NOT_RUN; M1 Gate stays open. PR #12 was reviewed with green CI; minor lint/deprecation warnings remain as documented risks.
+- Next action: Merge reviewed [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12), then scope M1-004 Android emulator installation and Compose UI/navigation tests. Never mark device Gate PASS without raw run evidence.
 
 ## Milestone Checklist
 
