@@ -113,3 +113,9 @@ Strict direction: `app → feature:live → core:model`. The feature must never 
 - AGP 9.3.3 with Kotlin/Compose plugin 2.4.21 is a *candidate*, not listed as fully supported by Kotlin's table (9.3.1 maximum); verify and fall back to fully supported combination as needed.
 - Determine actual Navigation, lifecycle/Activity, Hilt versions from compatible stable releases before adding.
 - M1 should not introduce backend, HLS/Media3, or chat transport.
+
+## SDK API 37 package ID validation
+
+- Android SDK Manager publishes Android 17 preview SDK as `platforms;android-37.0`; do not assume `platforms;android-37` exists.
+- `compileSdk = 37` is the Gradle integer DSL, distinct from SDK package identifier.
+- First two CI runs did **not** compile the Android app; see build-log, and prefer re-verifying preserved source artifacts over re-running paid generation when only CI infrastructure is broken.
