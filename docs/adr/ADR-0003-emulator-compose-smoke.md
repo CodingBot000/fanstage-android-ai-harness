@@ -18,3 +18,8 @@ Add one dependent `emulator-compose-smoke` job to the existing read-only Android
 ## Trade-offs and acceptance
 
 This adds Android system-image download and emulator execution time to PR CI. Its passing result proves only the tested list/detail/back path on the recorded emulator image, **not** full device compatibility, accessibility, process death, rotation, LIVE playback, performance or physical hardware behavior. Real device metrics and untested paths remain NOT_RUN. Preserve Gradle connected test XML, CI job logs and narrow logcat excerpt for diagnosis. No special service or recurring paid server is introduced.
+
+
+## Amendment — preserve one Bash process inside emulator action (2026-11-04)
+
+The first PR run (#41724518589) failed with `/usr/bin/sh: 1: set: Illegal option -o pipefail` after emulator boot. The action's `script` lines are individually executed by `sh -c`; Bash flags and `EXIT` traps cannot persist across lines. We therefore invoke **one checked-in Bash script** from the runner, explicitly using `set -euo pipefail` around the test command piped to `tee`. The exit trap collects logcat whether instrumentation succeeds or fails. This fixes only the proven shell boundary; actual connected test correctness remains unverified until CI produces XML. Alternative `sh` without `pipefail` rejected because it could conceal a failed Gradle process.

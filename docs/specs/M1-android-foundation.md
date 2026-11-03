@@ -143,3 +143,11 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - [ ] M1 overall Gate reviewed separately; physical-device install, real performance, rotation and process recreation remain NOT_RUN until proved.
 - Failure policy: preserve original errors, avoid retries within same run, no skipped tests, no false success; fix only smallest verified cause next task.
 - Third-party emulator runner provenance: https://github.com/ReactiveCircus/android-emulator-runner ; stable AndroidX Test runner/ext.junit release table: https://developer.android.com/jetpack/androidx/releases/test ; Compose test dependencies: https://developer.android.com/develop/ui/compose/setup-compose-dependencies-and-compiler
+
+
+### M1-004 verified CI shell failure and bounded repair (2026-11-04)
+
+- First attempt [Run #41724518589](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41724518589) on `b67cd7dfc523434eec213445ddd83d8575573c3e`: build/lint/unit **PASS**, emulator **boot PASS**, instrumentation **NOT_RUN**, full workflow **FAIL**.
+- Proven cause in [emulator job #126227097645](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41724518589/job/126227097645) raw log: action executes each input script line as `/usr/bin/sh -c`; `set -euo pipefail` exits under Ubuntu Dash before Gradle runs. This also means a multiline `trap` would not persist.
+- Small repair: replace multi-line runner `script` with **one** `bash ../scripts/m1-004-emulator-smoke.sh` command; checked-in Bash script owns `set -euo pipefail`, Gradle+tee, exit trap/logcat, adb package check. Do not suppress a failing test or disable CI.
+- New repair's execution and connected XML remain **NOT_RUN until the next actual CI**. Preserve a single repair-triggered workflow run as evidence; no repeats for this attempt.

@@ -126,15 +126,9 @@ jobs:
           arch: x86_64
           working-directory: android
           emulator-boot-timeout: 600
-          script: |
-            set -euo pipefail
-            chmod +x gradlew
-            adb devices -l
-            adb shell getprop ro.build.version.sdk
-            adb logcat -c
-            trap 'adb logcat -d -t 1200 -s AndroidRuntime:E TestRunner:I ActivityTaskManager:I > "$GITHUB_WORKSPACE/android-emulator-logcat.txt" || true' EXIT
-            ./gradlew :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-emulator-test.log"
-            adb shell pm path dev.fanstage.android
+          # The emulator action runs each 'script' entry through sh -c.
+          # Use one Bash process for pipefail, EXIT logcat trap and Gradle result.
+          script: bash ../scripts/m1-004-emulator-smoke.sh
 
       - name: Upload original connected test result and error logs
         if: always()

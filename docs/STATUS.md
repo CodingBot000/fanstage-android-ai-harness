@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-004 — Emulator/Compose UI install + navigation smoke (PR proposed; actual CI result NOT_RUN until verified)
-- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 instrumentation and CI proposal; device gate pending)
+- Current task: M1-004 — Emulator/Compose UI navigation smoke (PR #14 failure triaged; minimal Bash repair proposed)
+- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 first emulator CI failed before instrumentation; Bash fix awaiting CI)
 - Last approved commit: `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8` (PR #12 squash merge, M1-003 persistent CI)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
 - Latest verification: [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12) squash merged at `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8`; [main push CI Run #41715334883](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41715334883) **PASS** (job `126193724321`, 93 tasks, 7 JUnit tests, 0 failures/errors/skipped, lint PASS with 13 warnings). Original log and downloaded ZIP SHA-256 verified; see build-log.
-- Current blockers: M1-004 Emulator/physical install, Compose navigation and UI instrumentation remain NOT_RUN; M1 Gate remains open. Existing Android lint has 13 warnings, and the Actions Node20 deprecation warning remains.
-- Next action: Review the M1-004 PR emulator CI's original job log and test artifact. If tests pass, record real PASS with Run/SHA; if not, retain FAIL/NOT_RUN and repair only verified cause. Do not mark device Gate PASS without actual installed APK and instrumented navigation evidence. No M2+ implementation.
+- Current blockers: [PR #14 CI #41724518589](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41724518589) FAIL on `/usr/bin/sh: 1: set: Illegal option -o pipefail`; emulator boot PASS, Android instrumentation/installed APK and Compose navigation NOT_RUN. M1 Gate remains open; physical device, LIVE and performance remain NOT_RUN. Existing 13 lint warnings and Actions Node20 warning remain.
+- Next action: inspect only the single PR #14 repair-triggered CI run, full job log and raw XML/artifact; do not merge or pass M1 Gate until actual assertions run and pass. No M2+ changes.
 
 ## Milestone Checklist
 
