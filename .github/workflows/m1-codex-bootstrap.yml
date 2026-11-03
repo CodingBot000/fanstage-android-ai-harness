@@ -114,7 +114,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          sdkmanager --install 'platforms;android-37.0' 'build-tools;36.0.0' 'platform-tools'
+          sdkmanager --channel=3 --install 'platforms;android-37.0' 'build-tools;36.0.0' 'platform-tools'
 
       - name: Create real Gradle wrapper and run Android gates
         working-directory: android
