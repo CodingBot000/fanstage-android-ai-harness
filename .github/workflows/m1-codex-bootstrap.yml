@@ -105,10 +105,22 @@ jobs:
         with:
           gradle-version: '9.5.0'
 
-      - uses: android-actions/setup-android@v3
+      - name: Use preinstalled GitHub-hosted Android SDK tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          manager="$sdk_root/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$manager"
+          echo "$sdk_root/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "ANDROID_HOME=$sdk_root" >> "$GITHUB_ENV"
+          "$manager" --version
 
       - name: Install Android SDK API 37
-        run: sdkmanager --install 'platforms;android-37' 'build-tools;36.0.0' 'platform-tools'
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager --install 'platforms;android-37' 'build-tools;36.0.0' 'platform-tools'
 
       - name: Create real Gradle wrapper and run Android gates
         working-directory: android
