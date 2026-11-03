@@ -209,7 +209,7 @@ jobs:
           with Path('harness/build-log.md').open('a', encoding='utf-8') as out:
               out.write('\n## M1-002 — Codex Android foundation source generation (2026-11-04)\n\n')
               out.write(f"- Workflow: {os.environ['RUN_URL']}\n")
-              out.write(f"- Parent main SHA: \`{os.environ['SHA']}\`\n")
+              out.write(f"- Parent main SHA: {os.environ['SHA']}\n")
               out.write('- Scope: Android root + app/core:model/feature:live only. M2+ not implemented.\n')
               out.write('- PASS: GitHub hosted runner Gradle wrapper generation, :app:assembleDebug, :app:lintDebug and testDebugUnitTest; branch publish job is downstream of verify SUCCESS.\n')
               out.write('- Raw evidence: m1-002-verified-source artifact + original Codex JSON at harness/reviews/M1-002-codex-report.json.\n')
@@ -228,7 +228,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git switch -c "$branch"
           git add android/ docs/STATUS.md harness/build-log.md harness/reviews/M1-002-codex-report.json
-          git diff --cached --check
+          git -c core.whitespace=cr-at-eol diff --cached --check
           git commit -m 'feat(m1): bootstrap Compose Android foundation with CI evidence'
           gh auth setup-git
           git push origin "$branch"
