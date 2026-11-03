@@ -8,7 +8,7 @@
 
 ## In Scope / Out of Scope
 
-M0-001은 Git 초기화와 지정된 Harness 문서 작성·검증이다. Android/Backend 구현, 의존성, CI 구축, 유료 서비스, 커밋·push와 M0-002 실행은 제외한다. M0 전체의 나머지 Exit Gate는 별도 승인된 작업에서 다룬다.
+M0-001은 Git 초기화와 지정된 Harness 문서 작성·검증이다. Android/Backend 구현, 의존성, CI 구축, 유료 서비스와 M0-002 실행은 제외한다. 최초 지시의 커밋·push 제한은 이후 사용자의 별도 승인으로 초기 공개 커밋에 한해 해제되었으며, 이것이 M0-001의 완료 승인을 뜻하지는 않는다. M0 전체의 나머지 Exit Gate는 별도 승인된 작업에서 다룬다.
 
 ## Input / Output / Contracts
 
@@ -34,7 +34,7 @@ M0-001은 Git 초기화와 지정된 Harness 문서 작성·검증이다. Androi
 
 ### M0-001 — Repository 및 Harness 문서 초기화
 
-- [ ] 지정된 문서가 존재하고 원본 마스터 플랜이 변경 없이 복사됨을 확인한다.
+- [ ] 지정된 문서가 존재하고 공개판 마스터 플랜의 버전·변경 이유·진실의 원천이 명확하다. 초기 원본과 바이트 동일성은 공개판 수정 이전 로컬 검증 이력으로만 취급한다.
 - [ ] 지침·상태·참조와 검증 결과가 일관되고 승인 대기 상태다.
 - [ ] 허용 범위 밖 구현이 없고 검증 결과와 미실행 사유가 기록된다.
 - [ ] 사용자가 M0-001 결과를 리뷰하고 승인한다.
@@ -58,6 +58,6 @@ M0-002는 아직 승인되지 않았으며 실행되지 않았다.
 
 ## Open Questions / ADRs
 
-- Repository 이름과 라이선스는 미결정이다. 추후 푸시가 필요하면 공개 저장소를 사용한다.
+- Repository `CodingBot000/fanstage-android-ai-harness`는 Public으로 생성되었다. 라이선스는 미결정이다.
 - Claude Code import 실동작과 M0의 별도 계획-only 작업은 미검증이다.
 - [ADR-0001](../adr/ADR-0001-development-workflow.md): 사용자 리뷰 대기 중인 초안.
