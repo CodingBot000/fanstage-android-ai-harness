@@ -119,3 +119,13 @@ Strict direction: `app → feature:live → core:model`. The feature must never 
 - Android SDK Manager publishes Android 17 preview SDK as `platforms;android-37.0`; do not assume `platforms;android-37` exists.
 - `compileSdk = 37` is the Gradle integer DSL, distinct from SDK package identifier.
 - First two CI runs did **not** compile the Android app; see build-log, and prefer re-verifying preserved source artifacts over re-running paid generation when only CI infrastructure is broken.
+
+## M1-003 — Persistent PR quality gate
+
+- [ ] `.github/workflows/android-ci.yml` is actually triggered on Android PR/main changes.
+- [ ] PR CI validates `:app:assembleDebug`, `:app:lintDebug`, and `testDebugUnitTest` on JDK17/Gradle9.5/Android SDK37.0.
+- [ ] This gate is pull_request safe: GITHUB_TOKEN contents:read, checkout credentials not persisted, OPENAI_API_KEY not injected.
+- [ ] Attach actual Run URL/commit and Gradle outputs to build-log before checking.
+- [ ] CI success is not evidence of emulator/device UX.
+
+M1-004 separately validates installation and navigation/Compose states with instrumentation on a running emulator/device. It must be NOT_RUN until executed.
