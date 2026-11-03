@@ -133,3 +133,12 @@
 - NOT_RUN: Emulator/실기기 설치, UI instrumentation, M1 전체 Gate.
 - Scope-limited fix: `git -c core.whitespace=cr-at-eol diff --cached --check`로 CR at EOL을 유효한 줄끝으로 처리하며 다른 공백 검사 유지. 별도 로컬 재현에서 기본 diff --check는 오류, `cr-at-eol` 적용 검사는 PASS.
 - Recovery: 수정된 CI로 보존된 소스 artifact를 다시 검증한 뒤 새 소스 PR 생성. API 비용 발생하는 Codex 재생성은 금지.
+
+## M1-002 — Verified Android source ready for review (2026-11-04)
+
+- Build source: preserved Codex artifact from Run #41696988901; no additional Codex API invocation.
+- CI PASS: https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41699243951 verify job #126137862506: assembleDebug/lintDebug/testDebugUnitTest.
+- Publish source: validated artifact from that run; Android .gitignore extra blank newline removed without changing source code.
+- Original plan/report: harness/reviews/M1-002-codex-report.json.
+- NOT_RUN: emulator/device install and manual navigation UX; M1 Gate pending.
+- Human review: requested via PR.

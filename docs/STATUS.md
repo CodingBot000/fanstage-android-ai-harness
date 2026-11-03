@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-001 (설계·공식 호환성 조사 완료), 다음 작업 M1-002
-- State: IN_PROGRESS
+- Current task: M1-002 — verified source PR review
+- State: REVIEW
 - Last approved commit: `e7dc155c70e46929650d38541827fc2c8232c29d` (M0-001 공개판 정합성 PR #1 Squash Merge)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
 - Latest verification: PASS — M0-002 GitHub Actions [Run #41692832207, attempt 2](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41692832207). 최초 attempt 1의 401 인증 실패는 build-log에 기록
 - Current blockers: M1-002 Run #41698095765의 Android compile/lint/unit PASS. 하지만 게시 단계에서 Gradle 생성 `gradlew.bat` CRLF를 Git 공백 오류로 처리하여 소스 PR 게시 FAIL. CRLF 인식 설정 후 재검증·게시 필요.
-- Next action: M1-002 Codex로 최소 Android 프로젝트 생성 → CI 클린 빌드·Lint·Unit 검증
+- Next action: M1-002 source PR code review/merge then M1-003 persistent PR CI and emulator testing
 
 ## Milestone Checklist
 
@@ -30,3 +30,5 @@
 - 공개용 `docs/MASTER_PLAN.md`는 초기 로컬 원본을 복사한 뒤 개인·기업 관련 맥락을 제거해 수정했다. 과거 원본 SHA-256은 현재 공개판의 해시가 아니다.
 
 - 2026-11-04: [M1 SDD](specs/M1-android-foundation.md) 및 [ADR-0002](adr/ADR-0002-android-foundation-stack.md)에서 공식 호환성 근거와 후보 버전을 기록했다. M1-001은 문서 작업이고 M1-002부터 실제 앱을 생성한다.
+
+- M1-002 saved Android source reviewed in PR; CI build/lint/unit PASS, emulator NOT_RUN.
