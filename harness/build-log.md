@@ -105,3 +105,12 @@
 - PASS: Evidence-backed version *candidate* and SDD contracts/Out of Scope recorded.
 - NOT_RUN: Android project, Gradle, lint, unit tests, device install, UI tests (no project yet).
 - Next: M1-002 minimal Gradle/Compose multi-module skeleton and clean build/test in Github Actions, with API key not exposed to build tests.
+
+## M1-002 — First generation PASS, SDK bootstrap FAIL (2026-11-04)
+
+- Workflow: [Run #41696126585](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41696126585), commit `eeb33249e0f8b2db727ce55169270cbeb3468559`.
+- Generate job: PASS. Codex created 3 Android modules and test sources, with JSON report verified and no out-of-scope writes. Artifact `m1-002-generated` (ID `13260921238`) is preserved for 14 days.
+- Verify job: FAIL at `android-actions/setup-android@v3`: its SDK manager invocation tried to install an unavailable legacy package named `tools` and returned exit code 1.
+- NOT_RUN: Android SDK 37 installation, Gradle wrapper, assembleDebug, lintDebug, unit tests, device installation and UI tests.
+- Publish: SKIPPED because CI verify failed; no Android source PR was published.
+- Repair: use preinstalled GitHub runner Android SDK manager directly, then run actual Gradle gates. Do not claim source compile success before test results.
