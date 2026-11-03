@@ -114,3 +114,13 @@
 - NOT_RUN: Android SDK 37 installation, Gradle wrapper, assembleDebug, lintDebug, unit tests, device installation and UI tests.
 - Publish: SKIPPED because CI verify failed; no Android source PR was published.
 - Repair: use preinstalled GitHub runner Android SDK manager directly, then run actual Gradle gates. Do not claim source compile success before test results.
+
+## M1-002 — SDK package ID mismatch and artifact reuse (2026-11-04)
+
+- Second run: [#41696988901](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41696988901), commit `7413145fb00cab842bc60575570711fcf40a71d1`.
+- PASS: Codex source generation job; SDK manager discovery and initialization.
+- FAIL: SDK Manager install of `platforms;android-37` returned 'Failed to find package'; Android 17 SDK is published as `platforms;android-37.0` (see https://developer.android.com/about/versions/17/setup-sdk and package identifier notes in upstream https://github.com/flutter/flutter/issues/192478).
+- NOT_RUN: Gradle wrapper, assembleDebug, lintDebug, unit tests, device.
+- Source Artifact: `m1-002-generated` ID `13260927048`; published no code PR because build gate failed.
+- Repair: add verify-only GitHub Actions job using preserved Artifact without calling OPENAI_API_KEY again; update SDK package identifier to `platforms;android-37.0`. Disable auto-push trigger on code generation workflow, leaving manual dispatch only, so infrastructure fixes do not repeat paid Codex runs.
+- Next: inspect verify-only CI build and publish first M1 source PR only if green.
