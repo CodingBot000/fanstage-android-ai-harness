@@ -59,3 +59,14 @@
 - 검토 발견 사항: 공개판 수정 전 SHA-256은 현재 공개 문서의 해시가 아님; 로컬 전용 원본의 상대 링크가 공개 저장소에서 깨짐; Repository 이름 및 초기 커밋 상태 기록이 오래됨. 본 문서 수정으로 공개판 기록을 정리하고, 공개용 마스터 계획의 개인 경력 중심 문구를 정비한다.
 - NOT_RUN: Claude Code 실제 import, plan-only 리허설, Android 빌드·테스트·CI, 로컬 재실행 검증.
 - Human approval: PENDING. M0-001은 REVIEW 상태이며 M0-002 및 M1은 시작하지 않는다.
+
+## M0-001 — 승인·Merge 및 M0-002 실행 준비 (2026-11-04)
+
+- 사용자 승인: M0-001 리뷰 보완 및 후속 단계의 실행을 포괄 승인. 이는 **검증이 되지 않은 결과의 PASS 처리**를 의미하지 않는다.
+- PR #1: [공개 문서 정합성 보완](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/1), Squash Merge 성공.
+- Merge SHA: `e7dc155c70e46929650d38541827fc2c8232c29d`.
+- M0-001: APPROVED (문서 기반 범위); M0 전체: NOT_VERIFIED.
+- 현재 작업 M0-002: Codex GitHub Action을 이용한 읽기 전용 plan-only 실동작 검증.
+- Changes (구성 예정): `.github/workflows/m0-codex-smoke.yml`, `.github/codex/prompts/m0-002-plan-only.md`, `.github/codex/schemas/m0-002-result.schema.json`, 관련 SDD·ADR·상태·로그.
+- M0-002 검증: NOT_RUN (워크플로 병합 전); API 사용량 과금 가능, job 시간 20분 제한, `contents: read`, 에이전트 read-only.
+- 실패 시 Exit Gate 미통과, 자동 재시도/다음 단계 전환 금지.
