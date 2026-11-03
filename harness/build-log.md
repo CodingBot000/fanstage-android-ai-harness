@@ -1,5 +1,7 @@
 # 작업 및 검증 기록
 
+> **공개 기록 주의:** 아래 초기 M0-001의 '원본 바이트 동일성' 및 SHA-256은 공개판 수정 **이전** 로컬 검증 당시의 기록이다. 현재 GitHub의 `docs/MASTER_PLAN.md`와 같은 내용·해시라는 뜻이 아니다. 비공개 원본 파일은 저장소에 게시하지 않았다.
+
 ## M0-001 — Harness Core 초기화 (2026-11-04)
 
 - Spec: [M0 SDD](../docs/specs/M0-harness-core.md) (DRAFT)
@@ -11,7 +13,7 @@
 - PASS: 필수 파일 및 문서 참조, 원본 v0.1 바이트 동일성, CLAUDE 첫 줄, 범위 내 파일 목록 및 상태 확인. 원본 SHA-256: `6adbd5e8b0607b171069f50ba41259c25e020ef951cef9032c172994b9c9931f`. 기본 민감정보 패턴 검사에서 일치 없음 (포괄적인 보안 감사는 아님).
 - FAIL: 없음.
 - NOT_RUN: Claude Code의 실제 import 검증 (실행하지 않음); Android Gradle Build, Android Test, Emulator Test, Android CI (프로젝트 및 CI 미구현); G1~G5 (해당 실행 환경·구현 없음). M0 전체 Exit Gate의 별도 계획-only 작업도 미실행.
-- Evidence paths: 이 기록, [상태](../docs/STATUS.md), [원본](../docs/FanStage_Android_AI_Harness_Master_Plan_v0.1.md) 및 [사본](../docs/MASTER_PLAN.md). 별도 로그 파일은 생성하지 않음; 명령 결과는 작업 세션에 출력됨.
+- Evidence paths: 이 기록, [상태](../docs/STATUS.md), `docs/FanStage_Android_AI_Harness_Master_Plan_v0.1.md` (당시 로컬 원본, 공개 저장소에 없음) 및 [당시 사본의 공개판](../docs/MASTER_PLAN.md). 별도 로그 파일은 생성하지 않음; 명령 결과는 작업 세션에 출력됨.
 - 문제점 / 미해결: 문서 지침 자체는 자동 차단 장치가 아니다. M0 전체와 SDD/ADR 승인, Claude import 검증은 대기 중이다. 추후 푸시가 필요한 경우 공개 저장소 사용은 사용자 지정; 이번 작업의 푸시는 범위 밖이다.
 - Next action: M0-001 사용자 리뷰 및 승인.
 - Human approval: PENDING
@@ -46,3 +48,14 @@
 - **FAIL:** 없음. 보완 전 `/build/`는 루트에만 적용되는 기존 결함으로 확인되었고 `build/`와 Harness 예외로 수정했다.
 - **NOT_RUN:** Claude Code 실제 import, plan-only 리허설(M0-002 미승인), Android 빌드·테스트·에뮬레이터·CI(미구현), 마스터 플랜 내부 예제 링크와 앵커 검증. M0 전체 Exit Gate 및 사람의 승인도 미완료.
 - Next action: M0-001 사용자 리뷰 및 승인. M0-002와 M1은 시작하지 않는다.
+
+## M0-001 — 초기 공개 커밋과 원격 리뷰 (2026-11-04)
+
+- 별도 사용자 지시로 최초 M0-001의 commit/push 제외 조건이 초기 공개 업로드에 한해 변경되었다.
+- Repository: [CodingBot000/fanstage-android-ai-harness](https://github.com/CodingBot000/fanstage-android-ai-harness), visibility: Public, branch: `main`.
+- 초기 공개 Commit: [`93304b079cb20ccb470afd7dcd1737a41eaa9a7a`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/93304b079cb20ccb470afd7dcd1737a41eaa9a7a).
+- 검증 주체/방법: 로컬 Codex의 push 완료 보고 + ChatGPT의 GitHub 연결을 통한 읽기 전용 원격 확인. 로컬 CLI 검증과 구분한다.
+- PASS (원격): Public 저장소, main HEAD, 초기 커밋 및 지정된 11개 파일 확인. `AGENTS.md` 공통 참조와 `CLAUDE.md` 첫 줄 확인. 지정된 회사명 키워드에 대한 11개 공개 파일 검사에서 일치 항목 없음(패턴 기반 검사의 한계가 있음).
+- 검토 발견 사항: 공개판 수정 전 SHA-256은 현재 공개 문서의 해시가 아님; 로컬 전용 원본의 상대 링크가 공개 저장소에서 깨짐; Repository 이름 및 초기 커밋 상태 기록이 오래됨. 본 문서 수정으로 공개판 기록을 정리하고, 공개용 마스터 계획의 개인 경력 중심 문구를 정비한다.
+- NOT_RUN: Claude Code 실제 import, plan-only 리허설, Android 빌드·테스트·CI, 로컬 재실행 검증.
+- Human approval: PENDING. M0-001은 REVIEW 상태이며 M0-002 및 M1은 시작하지 않는다.
