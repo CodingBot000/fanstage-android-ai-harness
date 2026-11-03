@@ -142,3 +142,12 @@
 - Original plan/report: harness/reviews/M1-002-codex-report.json.
 - NOT_RUN: emulator/device install and manual navigation UX; M1 Gate pending.
 - Human review: requested via PR.
+
+## M1-002 — Verified source branch pushed and independent PR created (2026-11-04)
+
+- GitHub publishing attempt [Run #41699908603](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41699908603).
+- PASS: 이전 [Run #41699243951](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41699243951)의 Verify job 성공 재검증, 검증된 Artifact 다운로드, `android/.gitignore`의 불필요한 마지막 빈 줄 한 개 정리, `git -c core.whitespace=cr-at-eol diff --cached --check`, Git commit `c542bd220f5a18fb814c274bafc9dd78c3acf201`, 브랜치 `feat/m1-002-android-foundation-verified` 원격 Push.
+- FAIL: `gh pr create`는 GitHub Repository의 Actions 봇 PR 생성 금지 정책으로 실패. 빌드/테스트 실패가 아니다.
+- Recovery: GitHub 연결의 별도 사용자 권한으로 [PR #11](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/11)을 생성. GitHub Actions의 PR 생성 제한 설정은 변경하지 않음.
+- Code review: 범위 `app/core:model/feature:live`를 점검. ViewModel load cancel/late response 방어, Error/Empty/Loading/Content, UI navigation placeholder, fake repository unit tests를 확인. 출시용 media/socket은 없으며 아직 M1 단계에 맞는 구조.
+- NOT_RUN: Emulator/UI instrumentation 및 실기기 동작, 장기 PR 자동 검증 (M1-003 예정). 따라서 M1 전체 Exit Gate는 미완료.
