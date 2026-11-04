@@ -21,6 +21,10 @@
 - [ ] M7 Globalization/Polish
 - [ ] M8 Portfolio Release
 
+## M1-008 문서 현행화 (리뷰 대기)
+
+- Android README의 기존 CI·기기 검증 설명을 현행화했다. M1-007 로컬 clean build는 [PR #19](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19)의 별도 미병합 증거다. 이 문서 변경과 해당 PR의 검토·병합 전에는 M1을 완료로 표시하지 않는다.
+
 ## 결정 및 진입 조건
 
 - 2026-11-04: 사용자가 M0-001 보완 및 후속 작업 실행을 포괄 승인했다. [PR #1](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/1)을 Squash Merge하여 M0-001 문서 기반 산출물은 승인 처리했다.

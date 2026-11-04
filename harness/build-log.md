@@ -1,5 +1,14 @@
 # 작업 및 검증 기록
 
+
+## M1-008 — Android README evidence reconciliation (2026-11-04)
+
+- Scope: update `android/README.md` to describe the existing wrapper, pinned versions, actual main CI and emulator evidence, and the separate pending M1-007 local clean build PR. Preserve the distinction between verified scenarios and NOT_RUN device/lifecycle cases; no Android behavior or dependencies change.
+- Base: `main` `7fbcc7108d87ecc03951de168c5b3aeb4c29ff52`; [PR #19](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19) remains unmerged and its local result is attributed to its source and mode fix, not to unchanged main. This entry is proposed on a separate branch; commit SHA is available from Git history.
+- Evidence: prior [main CI run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) documented in the M1-006 audit; [M1-007 PR](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19) and local clean-build log referenced there. GitHub API `gh run view 41790821988 --json status,conclusion,jobs` returned completed/success for both build-lint-unit and emulator jobs; this is job-status verification, not a reinspection of their raw test reports.
+- Verification: `git diff --check`; local Markdown file link check and README source/evidence review. No Gradle or new local device test is claimed for this documentation task; CI status is attached to the PR.
+- M1 remains incomplete pending review; physical device, actual rotation and process death remain NOT_RUN. No M2 work.
+
 > **공개 기록 주의:** 아래 초기 M0-001의 '원본 바이트 동일성' 및 SHA-256은 공개판 수정 **이전** 로컬 검증 당시의 기록이다. 현재 GitHub의 `docs/MASTER_PLAN.md`와 같은 내용·해시라는 뜻이 아니다. 비공개 원본 파일은 저장소에 게시하지 않았다.
 
 ## M0-001 — Harness Core 초기화 (2026-11-04)
