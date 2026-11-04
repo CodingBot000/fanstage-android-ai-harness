@@ -24,7 +24,7 @@
 
 ## M1-008 문서 현행화 (리뷰 대기)
 
-- Android README의 기존 CI·기기 검증 설명을 현행화했다. M1-007 로컬 clean build는 [PR #19](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19)의 별도 미병합 증거다. 이 문서 변경과 해당 PR의 검토·병합 전에는 M1을 완료로 표시하지 않는다.
+- Android README의 기존 CI·기기 검증 설명을 현행화했다. M1-007 로컬 clean build는 [PR #19](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19)에서 병합된 별도 증거다. 이 문서 변경의 검토·병합 전에는 M1을 완료로 표시하지 않는다.
 
 ## 결정 및 진입 조건
 

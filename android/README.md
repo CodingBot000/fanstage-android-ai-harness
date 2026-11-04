@@ -21,9 +21,7 @@ wrapper regeneration is required. From `android/`:
 bash ./gradlew clean :app:assembleDebug :app:lintDebug testDebugUnitTest --no-daemon --stacktrace
 ```
 
-`bash` also works on the current `main` where the wrapper lacks its executable
-bit. [PR #19](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19)
-proposes fixing that mode; its local validation used `./gradlew` after the fix.
+The wrapper executable bit was corrected in [PR #19](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19); its local validation used `./gradlew` after the fix.
 
 The version catalog pins AGP 9.3.3, Kotlin/Compose compiler 2.4.21 and Compose
 BOM 2026.09.00. The project uses AGP built-in Kotlin for Android modules and
@@ -39,11 +37,11 @@ particular combination do not extend that published support range.
   seven unit tests. Lint reported 13 warnings. The same run passed one API 35
   emulator instrumentation test covering list → detail → Activity recreation →
   back; it installed and launched the app on the emulator.
-- **Developer-local clean build PASS, pending merge:** [PR #19](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19)
+- **Developer-local clean build PASS:** [PR #19](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/19)
   records a macOS arm64 JDK 17 build on base `7fbcc7108d87ecc03951de168c5b3aeb4c29ff52`
   with the wrapper mode fixed. The command in that PR passed clean, assemble,
   lint and seven unit tests; lint reported 13 warnings. Its local log and SHA-256
-  are recorded in the PR branch's build log.
+  are recorded in the [build log](../harness/build-log.md).
 - **NOT_RUN:** physical-device installation, actual orientation change and system
   process-death/relaunch. Activity recreation is not proof of those scenarios.
   LIVE playback and performance measurements belong to later milestones.
