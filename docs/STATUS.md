@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-005 — Activity recreation navigation restoration instrumentation (PR pending CI)
-- State: IN_PROGRESS (M1-004 main CI PASS; M1-005 test proposed, result NOT_RUN; M1 overall Gate open)
-- Last approved main code commit: `ede28dc8ef8416986a586d3c41ca7a5617b845fb` (PR #14 squash merge)
+- Current task: M1 Exit Gate independent audit after M1-005 Activity recreation verification
+- State: IN_PROGRESS (M1-005 PR #16 squash merged; post-merge main CI PASS; M1 overall Exit Gate NOT VERIFIED)
+- Last approved main code commit: `e22bb4042173d6b0160b9d46c50837cbfde6bb56` (PR #16 squash merge)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
-- Latest verification: [PR #14](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/14) merged; [main CI Run #41755701493](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41755701493) **PASS**, build/lint + JUnit 7/7, emulator API 35 Compose navigation 1/1, 0 test failures/errors/skips. Original logs and downloaded ZIPs verified against GitHub SHA-256; see build-log.
-- Current blockers: M1 clean **local** build still NOT_RUN (CI fresh-runner build PASS); M1-005 Activity recreation CI NOT_RUN; full M1 Exit Gate checklist and independent lifecycle review remain pending. Physical-device install, rotation/process recreation, HLS LIVE playback, and physical-device performance remain NOT_RUN (some belong to later gates). Existing lint warnings (13) and Actions Node20 deprecation warnings remain visible; no gate suppressed.
-- Next action: inspect the one M1-005 PR-triggered Android CI and raw connected XML, then perform a separate M1 Exit Gate audit. Do not mark M1 VERIFIED or start M2 from source changes alone.
+- Latest verification: [PR #16](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/16) squash merged; [post-merge main CI Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) **PASS**, Gradle build/lint, JUnit 7/7 and API35 Compose Activity recreation/navigation 1/1. Both job logs and two raw ZIP artifacts independently checked against GitHub SHA-256; see build-log.
+- Current blockers: M1 clean **local** build remains NOT_RUN (CI fresh-runner build PASS). M1 Exit Gate's independent checklist audit remains pending. Explicit device rotation, low-memory process death/relaunch, physical-device install, LIVE playback, release-like device performance remain NOT_RUN (some are later milestones). Existing Android Lint warnings (13 previously observed), deprecated Compose UI test factory, and Actions Node20/setup-java@v4 warnings remain; no gate suppressed.
+- Next action: independently audit every M1 Exit Gate criterion against source/CI evidence and distinguish later milestone gates. Do not start M2 until a separate evidence-backed M1 gate decision.
 
 ## Milestone Checklist
 
@@ -34,3 +34,5 @@
 - M1-002 source CI build/lint/unit PASS; M1-004 API 35 emulator navigation PASS (PR #14 / main Run #41755701493). Physical-device and broader lifecycle verification NOT_RUN.
 
 - 2026-11-04: M1-005 extends the existing one-test emulator smoke with ActivityScenario recreation on the detail route (ADR-0004). **NOT_RUN** until PR CI proves it; rotation/real process-death are separate NOT_RUN blockers.
+
+- 2026-11-04: M1-005 [PR #16](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/16) merged as `e22bb4042173d6b0160b9d46c50837cbfde6bb56`; [main Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) completed PASS (unit 7/7, Compose Activity recreation/navigation 1/1). Actual rotation, process death, physical device and M1 Gate audit remain NOT_RUN/NOT VERIFIED.

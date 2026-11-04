@@ -190,3 +190,10 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - Rationale/trade-off: [ADR-0004](../adr/ADR-0004-m1-activity-recreation.md). Activity recreation is **not** proof of screen orientation change, process death/relaunch, or LIVE restoration.
 - Required connected evidence: one executed test (not zero), zero failures/errors/skips, strict XML and runner exit check; inspect original logs. Existing build/lint/unit and emulator gates remain unchanged.
 - Initial state: source change proposed; PR-triggered CI result **NOT_RUN until executed**. Local Android SDK/physical device: **NOT_RUN**. M1 Exit Gate: **NOT VERIFIED**.
+
+## M1-005 — merged and independently verified on main (2026-11-04)
+
+- PR [#16](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/16), source head `dc49a4a54f6aad3848b159140f26938b414ae764`, squash merge commit `e22bb4042173d6b0160b9d46c50837cbfde6bb56`.
+- PR [Run #41763099229](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41763099229) PASS after reading original job logs and ZIP test XML; Codex code review for that exact head completed without findings. Existing strict runner checks remain unchanged.
+- Post-merge [main Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235), event `push`, attempt 1, completed SUCCESS. Build/lint/unit job `126372936584` PASS (93 Gradle tasks, seven JUnit tests). API 35 emulator job `126373527054` PASS (88 Gradle tasks, exactly one connected Compose test); instrumentation exit-code `0`, XML errors/failures/skips `0`. See build-log for commands and artifact digests.
+- Only `ActivityScenario.recreate()`/new Activity instance and detail route/Back assertions were executed. **NOT_RUN**: real orientation switch, low-memory process death/relaunch, physical device, LIVE/HLS, performance, local workstation clean build. **M1 overall Gate remains NOT VERIFIED** until separate acceptance audit; this single passing test must not count for other lifecycle cases.

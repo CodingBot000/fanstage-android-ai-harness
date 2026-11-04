@@ -1,7 +1,7 @@
 # ADR-0004 — Verify M1 navigation restoration with ActivityScenario recreation
 
 - Date: 2026-11-04
-- Status: PROPOSED (until M1-005 CI and independent review)
+- Status: ACCEPTED FOR M1-005 (post-merge main CI verified; M1 overall Gate remains open)
 - Milestone: M1; scope M1-005 only
 
 ## Decision
@@ -22,3 +22,9 @@ Run the original workflow on the new PR commit, verify `:app:assembleDebug :app:
 
 No Android production code, server, API key, or permissions change. CI uses read-only token without `OPENAI_API_KEY`. No Codex generation, no extra paid resources.
 
+
+## Verification and limits (2026-11-04)
+
+- [PR #16](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/16) squash merged into `main` at `e22bb4042173d6b0160b9d46c50837cbfde6bb56` after PR Code Review (no findings) and [PR Run #41763099229](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41763099229) passed.
+- [Post-merge main Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) PASS: build/lint and 7/7 JUnit; API35 emulator actual AndroidTest 1/1, XML failures/errors/skips=0, exit 0. Original job logs, test XML and ZIP SHA-256 verified. This validates Activity recreation/state restoration **only**.
+- Explicit rotation, system process death/relaunch, real device install, LIVE and release-like performance remain **NOT_RUN**. Do not infer them from ActivityScenario recreation. M1 Exit Gate stays open pending independent review.
