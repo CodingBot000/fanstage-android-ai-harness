@@ -29,6 +29,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.fanstage.android.feature.live.chat.ChatPanel
+import dev.fanstage.android.feature.live.chat.ChatViewModel
 
 @Composable
 fun RoomListRoute(viewModel: RoomListViewModel, onRoomClick: (String) -> Unit) {
@@ -86,7 +88,7 @@ fun RoomListScreen(
 }
 
 @Composable
-fun RoomDetailScreen(roomId: String, onBack: () -> Unit) {
+fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, onBack: () -> Unit) {
     Scaffold { padding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp).testTag("room_detail"),
@@ -98,9 +100,7 @@ fun RoomDetailScreen(roomId: String, onBack: () -> Unit) {
             Text(stringResource(R.string.room_detail), style = MaterialTheme.typography.headlineMedium)
             Text(stringResource(R.string.room_identifier, roomId))
             PlayerPanel(roomId)
-            Card(Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.chat_placeholder), Modifier.padding(24.dp))
-            }
+            ChatPanel(chatViewModel)
             Text(stringResource(R.string.placeholder_description))
         }
     }
