@@ -88,7 +88,7 @@ fun RoomListScreen(
 }
 
 @Composable
-fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, onBack: () -> Unit) {
+fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, onBack: () -> Unit) {
     Scaffold { padding ->
         Column(
             modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp).testTag("room_detail"),
@@ -100,7 +100,7 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, onBack: () ->
             Text(stringResource(R.string.room_detail), style = MaterialTheme.typography.headlineMedium)
             Text(stringResource(R.string.room_identifier, roomId))
             PlayerPanel(roomId)
-            ChatPanel(chatViewModel)
+            ChatPanel(chatViewModel, developmentControls)
             Text(stringResource(R.string.placeholder_description))
         }
     }

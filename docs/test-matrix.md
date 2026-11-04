@@ -8,7 +8,7 @@
 | G1 | Android assembleDebug, lintDebug | M1-003, PR/main Android CI | main [#41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) PASS; Lint 13 warning 부채; M1-007 로컬 clean PASS는 build-log 참조 |
 | G2 | FakeRepository/ViewModel JUnit | M1-003, PR/main Android CI | main Run의 XML 7/7 PASS; `:app:testDebugUnitTest` NO-SOURCE |
 | G3 | API 35 Emulator Compose / Activity 재생성 | M1-004/005, 연결된 Android CI | main Run XML 1/1 PASS; 실제 회전·프로세스 종료/재실행·실기기 검증은 NOT_RUN |
-| G4 | LIVE/채팅 회복 | M2~M5 각 SDD | M3 Fake 채팅 로컬 단위·에뮬레이터 검증 PASS; 실제 네트워크/장애 복구는 M4~M5 NOT_RUN |
+| G4 | LIVE/채팅 회복 | M2~M5 각 SDD | M3 Fake 및 M4 로컬 실제 WS/HTTP 재접속 복구 PASS; 대규모 장애 주입은 M5 NOT_RUN |
 | G5 | 실기기 성능/benchmark | M6 | NOT_RUN; raw 결과 없이는 성능 개선 주장 금지 |
 | G6 | 독립 코드·품질 리뷰 | 각 변경 PR 및 단계 Gate | PR 리뷰·소스 감사 별도 확인; CI 초록색 배지는 리뷰 대체 불가 |
 
