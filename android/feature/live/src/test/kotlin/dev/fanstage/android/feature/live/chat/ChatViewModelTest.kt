@@ -271,6 +271,23 @@ class ChatViewModelTest {
         assertEquals(Delivery.SENT, vm.uiState.value.messages.last().delivery)
     }
 
+    @Test fun `alternate transports without local cache still share process screen budget`() = runTest {
+        val first = Controlled(); val second = Controlled()
+        val a = ViewModelProvider(store, ChatViewModel.Factory("a", first))["transport-a", ChatViewModel::class.java]
+        val b = ViewModelProvider(store, ChatViewModel.Factory("b", second))["transport-b", ChatViewModel::class.java]
+        runCurrent()
+        repeat(550) {
+            first.stream.emit(ChatEvent.Message(msg(it + 1L, room = "a")))
+            second.stream.emit(ChatEvent.Message(msg(it + 1L, room = "b")))
+            runCurrent()
+        }
+        assertEquals(1_000, a.totalLogicalMessages)
+        assertEquals(1_000, b.totalLogicalMessages)
+        assertEquals(1_000, a.retainedMessageCount + b.retainedMessageCount)
+        store.clear(); advanceUntilIdle()
+        assertEquals(0, ProcessChatMemory.budget.size)
+    }
+
     @Test fun `overlapping rooms share process budget and release slots on close`() = runTest {
         val budget = ChatMemoryBudget()
         val first = FakeChatTransport("a", simulateIncoming = false, memoryBudget = budget)

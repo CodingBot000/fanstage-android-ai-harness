@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class ChatViewModel(private val transport: ChatTransport, initialRoomId: String) : ViewModel() {
     private val mutableState = MutableStateFlow(ChatUiState(initialRoomId))
     val uiState: StateFlow<ChatUiState> = mutableState.asStateFlow()
-    private val budget = transport.memoryBudget ?: ChatMemoryBudget()
+    private val budget = transport.memoryBudget ?: ProcessChatMemory.budget
     private val budgetOwner = Any()
     private val confirmed = TreeMap<Long, ServerMessage>()
     private val pending = LinkedHashMap<String, ChatMessage>()
