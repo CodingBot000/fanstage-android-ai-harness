@@ -1,13 +1,14 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-006 independent Exit Gate audit documented; next M1 work is to close evidenced blockers, not start M2
-- State: IN_PROGRESS / M1 EXIT GATE BLOCKED (prior M1-005 main CI PASS, explicit local clean build NOT_RUN; documentation/README drift identified)
+- Current task: M1-007 developer-local clean build — results under review
+- State: REVIEW / M1 EXIT GATE BLOCKED (local clean build PASS; android/README.md drift remains)
 - Last approved main code commit: `e22bb4042173d6b0160b9d46c50837cbfde6bb56` (PR #16 squash merge)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
-- Latest verification: [PR #16](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/16) squash merged; [post-merge main CI Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) **PASS**, Gradle build/lint, JUnit 7/7 and API35 Compose Activity recreation/navigation 1/1. Both job logs and two raw ZIP artifacts independently checked against GitHub SHA-256; see build-log.
-- Current blockers: MASTER_PLAN M1 Gate explicitly requires a **developer-local clean build AND CI**; local clean is NOT_RUN (fresh-runner CI compile PASS but does not meet the local condition). `android/README.md` still incorrectly describes build/device tests as NOT_RUN and calls versions unverified despite completed CI; fix as a separate Android-path PR/CI unit. Real rotation and process death/relaunch, physical-device install are NOT_RUN; HLS LIVE and physical performance are later M2/M6 gates, also NOT_RUN. Existing Lint warning debt (13), Compose test factory deprecation and Actions Node20/setup-java@v4 warnings persist; no checks suppressed.
-- Next action: review [M1-006 independent audit](reviews/M1-006-exit-gate-audit.md). Keep M1 BLOCKED until literal local clean build evidence is available and README drift is fixed; no M2 work or false promotion of future gates.
+- Latest prior main CI verification: [PR #16](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/16) squash merged; [post-merge main CI Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) **PASS**, Gradle build/lint, JUnit 7/7 and API35 Compose Activity recreation/navigation 1/1. Both job logs and two raw ZIP artifacts independently checked against GitHub SHA-256; see build-log.
+- Latest local verification: M1-007 clean/assemble/lint/unit **PASS** on macOS arm64, JDK 17 and Android SDK 37.0; 7/7 unit tests and 0 lint errors / 13 warnings. Source base `7fbcc7108d87ecc03951de168c5b3aeb4c29ff52` plus Gradle wrapper executable-bit fix; details in [build-log](../harness/build-log.md).
+- Current blockers: `android/README.md` still describes verified build/device checks as NOT_RUN and versions as unverified; correct separately. Real rotation, process death/relaunch and physical-device install remain NOT_RUN. LIVE and physical performance belong to later milestones. Existing lint and CI deprecation warnings remain.
+- Next action: correct `android/README.md` build and device verification drift in a separately reviewed M1 task. M1 remains incomplete; no M2 work.
 
 ## Milestone Checklist
 
@@ -42,3 +43,5 @@
 - 2026-11-04: M1-005 [PR #16](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/16) merged as `e22bb4042173d6b0160b9d46c50837cbfde6bb56`; [main Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) completed PASS (unit 7/7, Compose Activity recreation/navigation 1/1). Actual rotation, process death, physical device and M1 Gate audit remain NOT_RUN/NOT VERIFIED.
 
 - 2026-11-04 M1-006: independently audited MASTER_PLAN M1 Gate against current source (three-module dependency graph, Compose navigation/ViewModel), prior main [Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) original job logs and artifact metadata, and latest PR/Actions list (no open PR/active workflows at audit start). Gate remains **BLOCKED**, primarily developer-local explicit clean build NOT_RUN; see [audit](reviews/M1-006-exit-gate-audit.md). Documentation-only PR; no new CI/Codex invocation, no device/live/performance claim.
+
+- 2026-11-04 M1-007: local clean build, lint and 7 unit tests PASS; wrapper mode fixed from 100644 to 100755 after initial permission-denied failure. See [build-log](../harness/build-log.md). M1 overall approval remains pending.
