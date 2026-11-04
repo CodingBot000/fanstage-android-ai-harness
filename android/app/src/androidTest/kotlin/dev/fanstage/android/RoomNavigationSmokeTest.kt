@@ -5,8 +5,11 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.lifecycle.Lifecycle
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.SystemClock
 import androidx.media3.common.MediaItem
@@ -52,7 +55,14 @@ class RoomNavigationSmokeTest {
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
-        composeRule.onNodeWithTag("room_back").performClick()
+        // The controls must remain reachable after a real emulator orientation change.
+        composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
+        composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
+        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_play").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithTag("player_play").performScrollTo().assertIsDisplayed()
+        composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+        composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
+        composeRule.onNodeWithTag("room_back").performScrollTo().performClick()
         composeRule.onNodeWithTag("room_studio-session").assertIsDisplayed()
         repeat(3) {
             composeRule.onNodeWithTag("room_studio-session").performClick()

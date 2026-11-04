@@ -1,5 +1,7 @@
 package dev.fanstage.android.feature.live
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -87,7 +89,7 @@ fun RoomListScreen(
 fun RoomDetailScreen(roomId: String, onBack: () -> Unit) {
     Scaffold { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp).testTag("room_detail"),
+            modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp).testTag("room_detail"),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             TextButton(onClick = onBack, modifier = Modifier.testTag("room_back")) {

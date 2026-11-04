@@ -43,7 +43,7 @@ particular combination do not extend that published support range.
   with the wrapper mode fixed. The command in that PR passed clean, assemble,
   lint and seven unit tests; lint reported 13 warnings. Its local log and SHA-256
   are recorded in the [build log](../harness/build-log.md).
-- **NOT_RUN:** physical-device installation, actual orientation change and system
+- **NOT_RUN:** physical-device installation or orientation change and system
   process-death/relaunch. Activity recreation is not proof of those scenarios.
   LIVE playback and performance measurements belong to later milestones.
 

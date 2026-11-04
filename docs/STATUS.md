@@ -5,7 +5,7 @@
 - State: IN_PROGRESS / M2 전체 VERIFIED 아님 (실기기 검증 미실행)
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - Latest baseline: M1 핵심 Gate 완료. 로컬 clean/build/lint/unit PASS, CI build/lint/unit 및 API35 emulator PASS; CI가 `clean`을 명시적으로 실행하지 않은 점은 이력 참조.
-- M2 verification: 로컬 API36 emulator VOD 재생·pause/resume·Activity recreation·반복 이탈·오류/재시도 및 별도 로컬 LIVE playlist 갱신/재생 PASS; build/lint와 unit 9/9 PASS. 상세 및 제한은 [build-log](../harness/build-log.md) 참조. 실제 회전·시스템 process death, 실기기 VOD/LIVE 및 성능은 NOT_RUN. M2 전체 실기기 Gate는 미완료.
+- M2 verification: 로컬 API36 emulator VOD 재생·pause/resume·Activity recreation·반복 이탈·오류/재시도 및 별도 로컬 LIVE playlist 갱신/재생 PASS; build/lint와 unit 9/9 PASS. 상세 및 제한은 [build-log](../harness/build-log.md) 참조. 에뮬레이터 실제 방향 전환 후 재생 버튼 접근 PASS. 실기기 회전·시스템 process death, 실기기 VOD/LIVE 및 성능은 NOT_RUN. M2 전체 실기기 Gate는 미완료.
 - Next action: M2 기능 PR CI 및 리뷰 확인; 핵심 P0/P1 통과 시 병합 후 실기기 Gate 검증.
 
 ## Milestone Checklist
