@@ -270,11 +270,17 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
     }
 
     private fun publish(gap: Boolean = mutableState.value.gapUnresolved, sendBlocked: Boolean = false) {
-        val resolved = confirmed.values.map {
+        // Pending messages follow confirmed ones; only convert the portion that
+        // can appear in the bounded display tail.
+        val visiblePending = pending.values.toList().takeLast(ChatLimits.DISPLAYED)
+        val remaining = ChatLimits.DISPLAYED - visiblePending.size
+        val visibleConfirmed = confirmed.descendingMap().values.asSequence()
+            .take(remaining).toList().asReversed()
+        val resolved = visibleConfirmed.map {
             ChatMessage(it.clientMessageId?.let { id -> "client:$id" } ?: "server:${it.messageId}", it.clientMessageId, it.serverSequence, it.text, it.isOwn, Delivery.SENT)
         }
         mutableState.value = mutableState.value.copy(
-            messages = (resolved + pending.values).takeLast(ChatLimits.DISPLAYED),
+            messages = resolved + visiblePending,
             gapUnresolved = gap || invalidEvent,
             sendBlocked = sendBlocked,
             transportUncertain = uncertainIds.isNotEmpty(),
