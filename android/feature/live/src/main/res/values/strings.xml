@@ -47,6 +47,7 @@
     <string name="chat_connected">Local chat connected</string>
     <string name="chat_reconnecting">Chat disconnected; reconnecting…</string>
     <string name="chat_disconnected">Local chat disconnected</string>
+    <string name="chat_retry_connection">Reconnect chat</string>
     <string name="chat_connection_error">Unable to authenticate with the local chat server.</string>
     <string name="chat_config_error">Check the local server URL and test token.</string>
     <string name="chat_switch_blocked">Resolve unconfirmed messages before switching.</string>

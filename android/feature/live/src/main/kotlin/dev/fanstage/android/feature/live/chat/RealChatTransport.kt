@@ -8,6 +8,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -56,6 +57,7 @@ class RealChatTransport(
     private val mutableConnection = MutableStateFlow(ChatConnectionStatus.CONNECTING)
     override val connectionState = mutableConnection.asStateFlow()
     private val epoch = AtomicLong()
+    private val manualReconnect = Channel<Unit>(Channel.CONFLATED)
     private val pending = ConcurrentHashMap<String, Attempt>()
     @Volatile private var active: WebSocket? = null
     @Volatile private var connecting: WebSocket? = null
@@ -66,24 +68,45 @@ class RealChatTransport(
         mutableConnection.value = ChatConnectionStatus.CONNECTING
         require(roomId.matches(Regex("[a-z0-9][a-z0-9-]{0,63}")))
         var backoff = initialReconnectDelayMillis
+        var reconnects = 0
         while (currentCoroutineContext().isActive && !stopped) {
+            val openedAt = AtomicLong(0)
             try {
-                connect(roomId).collect { emit(it) }
-                backoff = initialReconnectDelayMillis
+                connect(roomId, openedAt).collect { emit(it) }
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (auth: AuthenticationFailure) { throw auth }
             catch (_: IOException) { /* Preserve pending as uncertain and resubscribe. */ }
-            if (!stopped) { delay(backoff); backoff = (backoff * 2).coerceAtMost(30_000L) }
+            if (stopped) break
+            // A stable connection resets the consecutive-failure budget; brief
+            // connect/close loops cannot reset it indefinitely.
+            if (openedAt.get() != 0L && System.nanoTime() - openedAt.get() >= TimeUnit.SECONDS.toNanos(30)) {
+                reconnects = 0
+                backoff = initialReconnectDelayMillis
+            }
+            if (reconnects >= 6) {
+                mutableConnection.value = ChatConnectionStatus.DISCONNECTED
+                if (manualReconnect.receiveCatching().isClosed || stopped) break
+                mutableConnection.value = ChatConnectionStatus.CONNECTING
+                reconnects = 0
+                backoff = initialReconnectDelayMillis
+                continue
+            }
+            delay(backoff)
+            reconnects++
+            backoff = (backoff * 2).coerceAtMost(30_000L)
         }
     }
 
-    private fun connect(roomId: String): Flow<ChatEvent> = callbackFlow {
+    override fun retryConnection() { if (!stopped && mutableConnection.value == ChatConnectionStatus.DISCONNECTED) manualReconnect.trySend(Unit) }
+
+    private fun connect(roomId: String, openedAt: AtomicLong): Flow<ChatEvent> = callbackFlow {
         val generation = epoch.incrementAndGet()
         val request = Request.Builder().url(base.newBuilder().addPathSegments("ws/rooms/$roomId").build())
             .header("Authorization", "Bearer $token").build()
         val listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 if (stopped || epoch.get() != generation) { webSocket.cancel(); return }
+                openedAt.set(System.nanoTime())
                 activeRoom = roomId
                 active = webSocket
                 mutableConnection.value = ChatConnectionStatus.CONNECTED
@@ -220,6 +243,7 @@ class RealChatTransport(
 
     override fun close() {
         stopped = true
+        manualReconnect.close()
         mutableConnection.value = ChatConnectionStatus.DISCONNECTED
         epoch.incrementAndGet()
         connecting?.cancel()

@@ -13,7 +13,7 @@ trap 'adb logcat -d -t 1200 -s AndroidRuntime:E TestRunner:I ActivityTaskManager
 ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RoomNavigationSmokeTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-emulator-test.log"
 # Capture Media3 instance creation/release after the completed test.
 adb logcat -d -s ExoPlayerImpl:I > "$GITHUB_WORKSPACE/android-player-lifecycle.log"
-adb logcat -d -s TestRunner:I > "$GITHUB_WORKSPACE/android-test-runner.log"
+adb logcat -d -s TestRunner:I M5Traffic:I > "$GITHUB_WORKSPACE/android-test-runner.log"
 python3 - <<'PYPLAYER'
 import collections
 import re

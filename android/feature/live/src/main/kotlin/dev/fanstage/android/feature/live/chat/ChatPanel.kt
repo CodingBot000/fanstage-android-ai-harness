@@ -102,6 +102,11 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
                 ChatConnectionStatus.DISCONNECTED -> R.string.chat_disconnected
                 null -> R.string.chat_disconnected
             }), Modifier.testTag("chat_connection_status"))
+            if (state.connectionStatus == ChatConnectionStatus.DISCONNECTED && !state.connectionError) {
+                TextButton(onClick = viewModel::retryConnection, modifier = Modifier.testTag("chat_retry_connection")) {
+                    Text(stringResource(R.string.chat_retry_connection))
+                }
+            }
         }
         if (state.connectionError) Text(stringResource(R.string.chat_connection_error), Modifier.testTag("chat_connection_error"))
         if (state.sendBlocked) Text(stringResource(R.string.chat_capacity))

@@ -17,6 +17,9 @@ import uuid
 BASE = "http://127.0.0.1:18765"
 A, B = os.environ["FANSTAGE_TOKEN_ALICE"], os.environ["FANSTAGE_TOKEN_BOB"]
 ROOM = "test-" + uuid.uuid4().hex[:16]
+PROJECT = os.environ.get("FANSTAGE_TEST_COMPOSE_PROJECT", "fanstage-m4-validation")
+if PROJECT not in {"fanstage-m4-validation", "fanstage-m5-validation"}:
+    raise ValueError("integration test requires an isolated validation project")
 
 
 def http(path, token=None):
@@ -181,7 +184,7 @@ def main():
     BEGIN IF NEW.body = 'synthetic-commit-abort' THEN RAISE EXCEPTION 'synthetic commit abort'; END IF; RETURN NEW; END $$;
     CREATE CONSTRAINT TRIGGER fanstage_test_abort_trigger AFTER INSERT ON chat_messages
     DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION fanstage_test_abort();"""
-    subprocess.run(["docker", "exec", "-i", "fanstage-m4-validation-db-1", "psql", "-U", os.environ["FANSTAGE_DB_USER"], "-d", "fanstage", "-v", "ON_ERROR_STOP=1"], input=sql, text=True, check=True, stdout=subprocess.DEVNULL)
+    subprocess.run(["docker", "exec", "-i", f"{PROJECT}-db-1", "psql", "-U", os.environ["FANSTAGE_DB_USER"], "-d", "fanstage", "-v", "ON_ERROR_STOP=1"], input=sql, text=True, check=True, stdout=subprocess.DEVNULL)
     ws = WS(A); bad = str(uuid.uuid4()); send(ws, bad, "synthetic-commit-abort")
     while True:
         result = ws.recv()
@@ -190,11 +193,11 @@ def main():
     assert result["code"] == "unknown"
     assert len(history(A)) == 22
     cleanup = "DROP TRIGGER fanstage_test_abort_trigger ON chat_messages; DROP FUNCTION fanstage_test_abort();"
-    subprocess.run(["docker", "exec", "-i", "fanstage-m4-validation-db-1", "psql", "-U", os.environ["FANSTAGE_DB_USER"], "-d", "fanstage", "-v", "ON_ERROR_STOP=1"], input=cleanup, text=True, check=True, stdout=subprocess.DEVNULL)
+    subprocess.run(["docker", "exec", "-i", f"{PROJECT}-db-1", "psql", "-U", os.environ["FANSTAGE_DB_USER"], "-d", "fanstage", "-v", "ON_ERROR_STOP=1"], input=cleanup, text=True, check=True, stdout=subprocess.DEVNULL)
     send(ws, bad, "after-rollback"); assert ws.until("ack")["message"]["serverSequence"] == 23
     ws.close(); print("PASS: deferred COMMIT failure produced no ACK and rolled back sequence", flush=True)
 
-    subprocess.run(["docker", "compose", "-p", "fanstage-m4-validation", "restart", "db", "chat"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["docker", "compose", "-p", PROJECT, "restart", "db", "chat"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for _ in range(60):
         try:
             with urllib.request.urlopen(BASE + "/health", timeout=1) as r:
