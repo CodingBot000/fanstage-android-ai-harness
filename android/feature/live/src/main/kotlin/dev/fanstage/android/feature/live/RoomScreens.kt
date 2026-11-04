@@ -95,9 +95,7 @@ fun RoomDetailScreen(roomId: String, onBack: () -> Unit) {
             }
             Text(stringResource(R.string.room_detail), style = MaterialTheme.typography.headlineMedium)
             Text(stringResource(R.string.room_identifier, roomId))
-            Card(Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.player_placeholder), Modifier.padding(24.dp))
-            }
+            PlayerPanel(roomId)
             Card(Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.chat_placeholder), Modifier.padding(24.dp))
             }

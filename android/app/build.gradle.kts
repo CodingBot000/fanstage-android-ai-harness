@@ -40,5 +40,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.media3.exoplayer)
+    androidTestImplementation(libs.media3.hls)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

@@ -1,13 +1,12 @@
 # FanStage 작업 현황
 
-- Current milestone: M1 — Android Native Foundation 완료; M2 계획 준비
-- Current task: Fast Track v1 정책 전환 및 M2 계획
-- State: IN_PROGRESS — Fast Track v1 및 M2 계획; M2 기능 구현은 정책 전환 작업 범위 밖
-- Last approved main code commit: `e22bb4042173d6b0160b9d46c50837cbfde6bb56` (PR #16); wrapper mode correction PR #19 merged as `468065ae0f8fff0f41e48d5f8a07a99b94bcdf52`.
+- Current milestone: M2 — Media3 HLS Player
+- Current task: M2 기능 PR — 실제 VOD/LIVE fixture 및 lifecycle 검증
+- State: IN_PROGRESS / M2 전체 VERIFIED 아님 (실기기 검증 미실행)
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
-- Latest verification: M1-007 local clean/build/lint/unit PASS (7/7, lint 13 warnings); main CI build/lint/unit and API 35 emulator PASS [#41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235); PR #20 updated-head CI PASS [#41792416136](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41792416136). CI used fresh runners but did not explicitly run Gradle `clean`.
-- M1 Gate: core evidence reviewed, local clean and corresponding CI build/lint/unit passed, dependency direction and code review completed, README corrected in PR #20. Physical-device install, actual rotation and process-death/relaunch remain NOT_RUN; emulator Activity recreation does not prove them. No test is claimed for those cases. Lint and CI action warnings remain P2.
-- Next action: [M2 HLS player](specs/M2-hls-player.md)의 재생 정책 등 중요한 미결정을 확인하고, 승인 범위의 독립적인 설계·검증부터 진행한다.
+- Latest baseline: M1 핵심 Gate 완료. 로컬 clean/build/lint/unit PASS, CI build/lint/unit 및 API35 emulator PASS; CI가 `clean`을 명시적으로 실행하지 않은 점은 이력 참조.
+- M2 verification: 로컬 API36 emulator VOD 재생·pause/resume·Activity recreation·반복 이탈·오류/재시도 및 별도 로컬 LIVE playlist 갱신/재생 PASS; build/lint와 unit 9/9 PASS. 상세 및 제한은 [build-log](../harness/build-log.md) 참조. 실제 회전·시스템 process death, 실기기 VOD/LIVE 및 성능은 NOT_RUN. M2 전체 실기기 Gate는 미완료.
+- Next action: M2 기능 PR CI 및 리뷰 확인; 핵심 P0/P1 통과 시 병합 후 실기기 Gate 검증.
 
 ## Milestone Checklist
 
@@ -46,3 +45,5 @@
 - 2026-11-04 M1-007: local clean build, lint and 7 unit tests PASS; wrapper mode fixed from 100644 to 100755 after initial permission-denied failure. See [build-log](../harness/build-log.md). M1 overall approval remains pending.
 
 - 2026-11-04 Fast Track v1: M0~M8 사용자 사전 승인, P0/P1 차단 및 P2 이월·M8 재평가를 [ADR-0005](adr/ADR-0005-fast-track.md)에 기록. M1 핵심 Gate와 미실행 항목은 위에 분리 기록.
+
+- 2026-11-04 M2: 사용자가 최초 foreground 자동재생, background pause와 수동 재개, 화면 이탈 해제, PIP/백그라운드 오디오 제외 및 제한된 재시도 정책을 제시했다. [ADR-0006](adr/ADR-0006-m2-playback-lifecycle.md) 참조.
