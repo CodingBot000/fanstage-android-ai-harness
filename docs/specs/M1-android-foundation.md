@@ -131,3 +131,44 @@ Strict direction: `app → feature:live → core:model`. The feature must never 
 M1-004 separately validates installation and navigation/Compose states with instrumentation on a running emulator/device. It must be NOT_RUN until executed.
 
 M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41700593263), source commit `424b1c4d3917f1fa2175364808743bb0c555c3b4`, job `126142531399`; 7 JUnit tests PASS / 0 failures / 0 skipped. Lint task PASS with 13 warnings (not zero-warning). Source verification precedes this documentation-only evidence commit. No emulator/Compose UI or physical device test was run; these remain M1-004 NOT_RUN.
+
+## M1-004 — Emulator / Compose UI smoke (one bounded task, 2026-11-04)
+
+- Scope: install the existing M1 Compose app in an Android API 35 x86_64 emulator and run **one** AndroidJUnitRunner Compose instrumentation test for Room List → Detail → Back. No media/chat/backend feature changes.
+- Configuration: same JDK 17, Gradle 9.5.0, AGP 9.3.3 / compile SDK 37.0 used by existing CI; stable API 35 Google APIs emulator is a **runtime** device, not a downgrade of compile SDK. Emulator runner pinned by full commit SHA.
+- The new `emulator-compose-smoke` job depends on successful unchanged compile/lint/unit job. PRs have `contents: read` token only; no OpenAI secret; no publish step. AndroidTest target app uses `androidx.test.runner.AndroidJUnitRunner`, Compose UI Test BOM, JUnit extensions.
+- Command from `android/`: `./gradlew :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace`. CI captures test stdout, connected XML/HTML reports, selected logcat, `adb devices`, device SDK and installed application package path in the job log.
+- [ ] **PASS only after actual GitHub Actions logs and test report confirm** emulator boot, app/test APK install, list/detail/back assertion, and zero failures. Recording code/config alone is NOT_RUN, not PASS.
+- [ ] Actual Run URL, job outcome, artifacts and source SHA reviewed independently and entered in build-log on completion.
+- [ ] M1 overall Gate reviewed separately; physical-device install, real performance, rotation and process recreation remain NOT_RUN until proved.
+- Failure policy: preserve original errors, avoid retries within same run, no skipped tests, no false success; fix only smallest verified cause next task.
+- Third-party emulator runner provenance: https://github.com/ReactiveCircus/android-emulator-runner ; stable AndroidX Test runner/ext.junit release table: https://developer.android.com/jetpack/androidx/releases/test ; Compose test dependencies: https://developer.android.com/develop/ui/compose/setup-compose-dependencies-and-compiler
+
+
+### M1-004 verified CI shell failure and bounded repair (2026-11-04)
+
+- First attempt [Run #41724518589](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41724518589) on `b67cd7dfc523434eec213445ddd83d8575573c3e`: build/lint/unit **PASS**, emulator **boot PASS**, instrumentation **NOT_RUN**, full workflow **FAIL**.
+- Proven cause in [emulator job #126227097645](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41724518589/job/126227097645) raw log: action executes each input script line as `/usr/bin/sh -c`; `set -euo pipefail` exits under Ubuntu Dash before Gradle runs. This also means a multiline `trap` would not persist.
+- Small repair: replace multi-line runner `script` with **one** `bash ../scripts/m1-004-emulator-smoke.sh` command; checked-in Bash script owns `set -euo pipefail`, Gradle+tee, exit trap/logcat, adb package check. Do not suppress a failing test or disable CI.
+- New repair's execution and connected XML remain **NOT_RUN until the next actual CI**. Preserve a single repair-triggered workflow run as evidence; no repeats for this attempt.
+
+
+### M1-004 verified AndroidTest compilation failure and minimal import repair (2026-11-04)
+
+- [Run #41734088258](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41734088258) on `1687a88b97733ae0c4e73af0e5579ca8c8584df8`: unchanged Android build/lint/unit **PASS**, API 35 emulator boots and one Bash script executes **PASS**, `:app:compileDebugAndroidTestKotlin` **FAIL** (`RoomNavigationSmokeTest.kt:3:33 Unresolved reference 'assertExists'`). AndroidTest APK/install and navigation assertions **NOT_RUN**; no connected test XML yet.
+- Fix only the invalid top-level import; `assertExists()` is a method on Compose `SemanticsNodeInteraction`, and the existing call remains unchanged. Leave all checks, instrumentation coverage, and failure propagation enabled.
+- [ ] Replacement commit must receive a **new** PR CI run with an actual connected test XML and assertion result before M1-004 can be PASS. Emulator/physical device requirements beyond this one flow remain NOT_RUN.
+
+
+### M1-004 third CI run: connected instrumentation PASS, workflow still FAIL (2026-11-04)
+
+- Commit `1099d9d812e07efdca23fe5b1228956f620ccea0`, [Run #41741160963](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41741160963): Kotlin AndroidTest compilation **PASS**, emulator API35 boot **PASS**, actual `:app:connectedDebugAndroidTest` **PASS**. Downloaded connected XML: 1 executed test `roomListOpensDetailAndReturns`, 0 failures/errors/skips; instrumentation runner `OK (1 test)` and MainActivity START/Displayed in logcat.
+- **Overall CI FAIL:** Bash exits 1 *after* Gradle `BUILD SUCCESSFUL` because the final `adb shell pm path dev.fanstage.android | grep '^package:'` post-test assertion fails. The available log does not prove whether test teardown removed the package or a different adb/package-status problem caused the empty result. Do not claim full M1-004 PASS from the successful instrumentation subtest alone.
+- Next constrained correction is to replace/reposition the redundant post-test package-path assumption with a durable validation of actual instrumentation XML/Gradle success and installation/launch proof; preserve shell `pipefail`, test count, and test assertions. No second CI triggered in this run.
+
+### M1-004 fourth PR CI and bounded post-test repair (2026-11-04)
+
+- A documentation-only commit triggered another Android CI because PR path filters consider the entire PR diff. Fourth Run https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41742429212 (head 9970e56ef81a7a4b4105afe358b167c9e45e2cd7): build/lint/unit PASS; API 35 emulator, Gradle and 1/1 Compose connected test PASS; whole CI FAIL after Gradle at the redundant adb package-path check. No manual rerun.
+- Downloaded original emulator artifact id 13281658056, ZIP SHA-256 0d929058d51fcd17f12600eaefe6e31f0b62fb7473b070f30dbacae8fd6786d9 independently verified. AndroidTest XML has tests=1, failures=0, errors=0, skipped=0; runner exit 0; logcat MainActivity START/Displayed and TestRunner finished.
+- Only replace the late package-path check with a Python3 standard-library assertion for exactly one matching test case, zero XML errors/failures/skips and zero runner exit. Keep Gradle pipefail, Compose assertions, logs and artifact upload. Original XML positive check PASS; deliberate tests=0 negative control exits 1 PASS. This is offline replay, NOT_RUN for new CI until executed.
+- Real physical device, rotation/process death, LIVE and performance remain NOT_RUN; M1 overall Gate remains open.

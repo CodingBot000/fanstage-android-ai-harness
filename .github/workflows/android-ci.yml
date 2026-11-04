@@ -72,3 +72,73 @@ jobs:
             android/**/build/reports/lint-results-*.html
           if-no-files-found: warn
           retention-days: 14
+
+  emulator-compose-smoke:
+    name: Emulator API 35 / Compose navigation smoke
+    needs: build-lint-unit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout without retained credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 9.5
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+
+      - name: Install compilation SDK 37.0 independently from emulator API 35
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          manager="$sdk_root/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$manager"
+          "$manager" --channel=3 --install 'platforms;android-37.0' 'build-tools;36.0.0' 'platform-tools'
+          echo "ANDROID_HOME=$sdk_root" >> "$GITHUB_ENV"
+
+      - name: Enable KVM on Linux runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          test -e /dev/kvm
+
+      # v2 annotated tag resolves to this commit (2026-07-05).
+      # No secret or write-capable GITHUB_TOKEN is supplied to this third-party action.
+      - name: Boot emulator and run connected Compose smoke
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          working-directory: android
+          emulator-boot-timeout: 600
+          # The emulator action runs each 'script' entry through sh -c.
+          # Use one Bash process for pipefail, EXIT logcat trap and Gradle result.
+          script: bash ../scripts/m1-004-emulator-smoke.sh
+
+      - name: Upload original connected test result and error logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-emulator-compose-smoke-evidence
+          path: |
+            android-emulator-test.log
+            android-emulator-logcat.txt
+            android/app/build/outputs/androidTest-results/connected/**
+            android/app/build/reports/androidTests/connected/**
+          if-no-files-found: warn
+          retention-days: 14

@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-004 — Emulator/Compose UI install and navigation evidence (NOT_RUN)
-- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 pending)
-- Last approved commit: `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8` (PR #12 squash merge, M1-003 persistent CI)
+- Current task: M1-004 — repair post-test package-path assertion while retaining Compose instrumentation
+- State: IN_PROGRESS (PR #14 repair pending CI; previous connected test 1/1 PASS, whole CI FAIL)
+- Last approved main commit: `a4d06a0246e3c2b865ef6d4d45fd3ef97ae9fad7` (PR #13 squash merge, M1-003 evidence)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
 - Latest verification: [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12) squash merged at `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8`; [main push CI Run #41715334883](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41715334883) **PASS** (job `126193724321`, 93 tasks, 7 JUnit tests, 0 failures/errors/skipped, lint PASS with 13 warnings). Original log and downloaded ZIP SHA-256 verified; see build-log.
-- Current blockers: M1-004 Emulator/physical install, Compose navigation and UI instrumentation remain NOT_RUN; M1 Gate remains open. Existing Android lint has 13 warnings, and the Actions Node20 deprecation warning remains.
-- Next action: Scope and implement one small M1-004 emulator install / Compose instrumentation evidence task under an SDD; do not mark device Gate PASS without a real installation and test log. No M2+ implementation.
+- Current blockers: latest [PR #14 Run #41742429212](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41742429212) FAIL despite emulator/Gradle/Compose test PASS; late post-test adb package-path assertion exited 1 (root cause not proven). Original XML confirms 1/1, runner exit 0, MainActivity launch in logcat. Corrected XML gate pending new CI. M1 Gate open; physical device, rotation/process recovery, LIVE and performance NOT_RUN; lint 13 warnings/Actions Node20 warning remain.
+- Next action: inspect one new PR #14 CI run and original connected test XML/logcat, only then consider merge. Do not rerun Codex, weaken tests, or start M2.
 
 ## Milestone Checklist
 
