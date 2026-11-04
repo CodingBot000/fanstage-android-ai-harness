@@ -1,7 +1,7 @@
 # M1 — Android Native Foundation SDD
 
 - Status: APPROVED FOR IMPLEMENTATION (2026-11-04, 사용자 포괄 실행 승인). 검증 Gate는 별도 PASS 필요.
-- Current work: M1-004 emulator/Compose navigation merged and verified; overall M1 Exit Gate remains open.
+- Current work: M1-006 independent Exit Gate audit following M1-005 merged lifecycle smoke. **MASTER_PLAN M1 Gate takes precedence**: local clean build AND CI, not local OR CI. M1 overall Exit Gate BLOCKED; see [audit](../reviews/M1-006-exit-gate-audit.md).
 
 ## Goal
 
@@ -88,19 +88,22 @@ Strict direction: `app → feature:live → core:model`. The feature must never 
 - [x] M1 SDD, boundaries, contracts, test plan and gates described.
 - [x] Android/Backend implementation untouched.
 
-### M1-002
-- [ ] Android project + Gradle wrapper and minimal multi-module dependency graph created.
-- [ ] Room list and detail in Compose with Fake data and Loading/Content/Empty/Error states.
-- [ ] Unit tests for state/repository path.
-- [ ] CI attempt logs exact compile/lint/unit results; unexecuted steps marked NOT_RUN.
-- [ ] API secret not passed to build/test commands for untrusted generated code.
+### M1-002 (retrospective evidence audit, 2026-11-04)
+- [x] Android project + Gradle wrapper and minimal three-module dependency graph exist.
+- [x] Room list and detail in Compose with Fake data and Loading/Content/Empty/Error state branches; only Content navigation is instrumented.
+- [x] Seven JUnit tests cover FakeRepository and ViewModel state/retry/cancellation.
+- [x] Actual main CI compile/lint/unit + emulator logs and NOT_RUN limitations are recorded.
+- [x] Build/test workflow grants contents:read and passes no API secret to untrusted code.
 
-### M1 Gate
-- [ ] Clean local or CI build and matching test suite PASS.
-- [ ] Minimal module deps and navigation/UiState checked.
-- [ ] Emulator or physical install/launch result accurately stated.
-- [ ] Build versions/environment/commands captured in `harness/build-log.md`.
-- [ ] Actual review before marking VERIFIED.
+### M1 Gate — **BLOCKED, not VERIFIED**
+- [ ] MASTER_PLAN requires an explicit developer-local `clean` build **AND** CI. Local clean **NOT_RUN**; fresh CI build alone cannot check it.
+- [x] Main CI build/lint + Unit 7/7 + Emulator 1/1 PASS: [Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235). Lint warnings persist.
+- [x] Static dependency graph is `:app → :feature:live → :core:model`, without reverse/circular project edges in checked Gradle files.
+- [x] Basic Compose list/detail/back, Activity recreation and ViewModel Loading/Empty/Error/Content logic checked; alternate UI branches have not been instrumented.
+- [x] Emulator install/launch evidence and build versions/environment/commands recorded in `harness/build-log.md`. Physical device/real rotation/process death **NOT_RUN**.
+- [x] Source-scoped independent static review performed for app/feature/core contracts, state cancellation, navigation, Compose state collection and CI secret boundary. Review does not prove every runtime lifecycle scenario; details in audit.
+- [ ] Existing `android/README.md` contains stale pre-CI claims; current setup/status reproducibility documentation needs separate correction.
+- [ ] Exit Gate approval: unresolved local clean build and README/documentation accuracy blockers remain; **do not begin M2**.
 
 ## Evidence / Commands
 
@@ -197,3 +200,7 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - PR [Run #41763099229](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41763099229) PASS after reading original job logs and ZIP test XML; Codex code review for that exact head completed without findings. Existing strict runner checks remain unchanged.
 - Post-merge [main Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235), event `push`, attempt 1, completed SUCCESS. Build/lint/unit job `126372936584` PASS (93 Gradle tasks, seven JUnit tests). API 35 emulator job `126373527054` PASS (88 Gradle tasks, exactly one connected Compose test); instrumentation exit-code `0`, XML errors/failures/skips `0`. See build-log for commands and artifact digests.
 - Only `ActivityScenario.recreate()`/new Activity instance and detail route/Back assertions were executed. **NOT_RUN**: real orientation switch, low-memory process death/relaunch, physical device, LIVE/HLS, performance, local workstation clean build. **M1 overall Gate remains NOT VERIFIED** until separate acceptance audit; this single passing test must not count for other lifecycle cases.
+
+## M1-006 — independent Gate audit (2026-11-04)
+
+[Review and evidence matrix](../reviews/M1-006-exit-gate-audit.md) compares the **strict MASTER_PLAN** local-clean + CI requirement with actual logs and source. Prior main [Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) remains PASS for build/lint/unit/emulator; this docs-only audit does not re-run it. Local clean NOT_RUN, stale android/README and future lifecycle/physical/LIVE/performance evidence NOT_RUN. No Gate promotion.
