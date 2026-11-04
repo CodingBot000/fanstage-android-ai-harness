@@ -6,6 +6,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Assert.assertNotSame
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -22,6 +23,12 @@ class RoomNavigationSmokeTest {
         }
         composeRule.onNodeWithTag("rooms_content").assertExists()
         composeRule.onNodeWithTag("room_studio-session").performClick()
+        composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
+        // ActivityScenario.recreate() verifies Activity/nav state restoration, not rotation or process death.
+        val originalActivity = composeRule.activity
+        composeRule.activityRule.scenario.recreate()
+        assertNotSame(originalActivity, composeRule.activity)
+        composeRule.waitForIdle()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.onNodeWithTag("room_back").performClick()
         composeRule.onNodeWithTag("room_studio-session").assertIsDisplayed()
