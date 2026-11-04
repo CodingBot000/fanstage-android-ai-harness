@@ -13,17 +13,25 @@ trap 'adb logcat -d -t 1200 -s AndroidRuntime:E TestRunner:I ActivityTaskManager
 ./gradlew :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-emulator-test.log"
 # Capture Media3 instance creation/release after the completed test.
 adb logcat -d -s ExoPlayerImpl:I > "$GITHUB_WORKSPACE/android-player-lifecycle.log"
+adb logcat -d -s TestRunner:I > "$GITHUB_WORKSPACE/android-test-runner.log"
 python3 - <<'PYPLAYER'
 import collections
 import re
 from pathlib import Path
 import sys
 log = Path("../android-player-lifecycle.log").read_text()
-starts = collections.Counter(re.findall(r"ExoPlayerImpl: Init ([0-9a-f]+)", log))
-ends = collections.Counter(re.findall(r"ExoPlayerImpl: Release ([0-9a-f]+)", log))
+runner = Path("../android-test-runner.log").read_text()
+# Match the exact instrumentation case's process, not unrelated emulator apps.
+pids = set(re.findall(r"^\S+\s+\S+\s+(\d+)\s+\d+\s+I\s+TestRunner:\s+finished: roomListOpensDetailAndReturns\(dev\.fanstage\.android\.RoomNavigationSmokeTest\)", runner, re.M))
+if len(pids) != 1:
+    sys.exit(f"FAIL: could not uniquely identify instrumentation process: {pids}")
+pid = next(iter(pids))
+lines = [line for line in log.splitlines() if re.match(rf"^\S+\s+\S+\s+{pid}\s+\d+\s+I\s+ExoPlayerImpl:", line)]
+starts = collections.Counter(re.findall(r"ExoPlayerImpl: Init ([0-9a-f]+)", "\n".join(lines)))
+ends = collections.Counter(re.findall(r"ExoPlayerImpl: Release ([0-9a-f]+)", "\n".join(lines)))
 if sum(starts.values()) < 7 or starts != ends:
-    sys.exit(f"FAIL: Media3 init/release mismatch: init={starts}, release={ends}")
-print(f"PASS: {sum(starts.values())} Media3 instances released; ids match")
+    sys.exit(f"FAIL: Media3 init/release mismatch for PID {pid}: init={starts}, release={ends}")
+print(f"PASS: {sum(starts.values())} Media3 instances released in instrumentation PID {pid}; ids match")
 PYPLAYER
 # Connected test Gradle has already installed/launched the app; avoid a teardown-time pm path assumption.
 python3 - <<'PY'

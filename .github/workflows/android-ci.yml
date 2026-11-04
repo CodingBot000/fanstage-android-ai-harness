@@ -139,6 +139,7 @@ jobs:
             android-emulator-test.log
             android-emulator-logcat.txt
             android-player-lifecycle.log
+            android-test-runner.log
             android/app/build/outputs/androidTest-results/connected/**
             android/app/build/reports/androidTests/connected/**
           if-no-files-found: warn
