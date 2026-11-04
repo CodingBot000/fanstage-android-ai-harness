@@ -10,7 +10,10 @@ android {
     }
     targetProjectPath = ":app"
     buildTypes {
-        create("benchmark") { matchingFallbacks += listOf("release") }
+        create("benchmark") {
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += listOf("release")
+        }
     }
     experimentalProperties["android.experimental.self-instrumenting"] = true
 }
