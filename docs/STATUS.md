@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1 Exit Gate review after M1-004 emulator navigation proof
-- State: IN_PROGRESS (M1-004 PR #14 merged and main CI PASS; M1 overall Gate remains open)
+- Current task: M1-005 — Activity recreation navigation restoration instrumentation (PR pending CI)
+- State: IN_PROGRESS (M1-004 main CI PASS; M1-005 test proposed, result NOT_RUN; M1 overall Gate open)
 - Last approved main code commit: `ede28dc8ef8416986a586d3c41ca7a5617b845fb` (PR #14 squash merge)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
 - Latest verification: [PR #14](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/14) merged; [main CI Run #41755701493](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41755701493) **PASS**, build/lint + JUnit 7/7, emulator API 35 Compose navigation 1/1, 0 test failures/errors/skips. Original logs and downloaded ZIPs verified against GitHub SHA-256; see build-log.
-- Current blockers: M1 clean **local** build still NOT_RUN (CI fresh-runner build PASS); full M1 Exit Gate checklist and independent lifecycle review remain pending. Physical-device install, rotation/process recreation, HLS LIVE playback, and physical-device performance remain NOT_RUN (some belong to later gates). Existing lint warnings (13) and Actions Node20 deprecation warnings remain visible; no gate suppressed.
-- Next action: review the remaining M1 Exit Gate criteria with actual independent evidence; do not mark M1 VERIFIED or start M2 solely because this one Compose path passed.
+- Current blockers: M1 clean **local** build still NOT_RUN (CI fresh-runner build PASS); M1-005 Activity recreation CI NOT_RUN; full M1 Exit Gate checklist and independent lifecycle review remain pending. Physical-device install, rotation/process recreation, HLS LIVE playback, and physical-device performance remain NOT_RUN (some belong to later gates). Existing lint warnings (13) and Actions Node20 deprecation warnings remain visible; no gate suppressed.
+- Next action: inspect the one M1-005 PR-triggered Android CI and raw connected XML, then perform a separate M1 Exit Gate audit. Do not mark M1 VERIFIED or start M2 from source changes alone.
 
 ## Milestone Checklist
 
@@ -32,3 +32,5 @@
 - 2026-11-04: [M1 SDD](specs/M1-android-foundation.md) 및 [ADR-0002](adr/ADR-0002-android-foundation-stack.md)에서 공식 호환성 근거와 후보 버전을 기록했다. M1-001은 문서 작업이고 M1-002부터 실제 앱을 생성한다.
 
 - M1-002 source CI build/lint/unit PASS; M1-004 API 35 emulator navigation PASS (PR #14 / main Run #41755701493). Physical-device and broader lifecycle verification NOT_RUN.
+
+- 2026-11-04: M1-005 extends the existing one-test emulator smoke with ActivityScenario recreation on the detail route (ADR-0004). **NOT_RUN** until PR CI proves it; rotation/real process-death are separate NOT_RUN blockers.
