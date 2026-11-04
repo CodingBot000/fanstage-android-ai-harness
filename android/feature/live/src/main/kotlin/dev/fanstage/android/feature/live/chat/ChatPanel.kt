@@ -10,6 +10,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -27,9 +28,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.fanstage.android.feature.live.R
 
 @Composable
-fun ChatPanel(viewModel: ChatViewModel) {
+fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
+    var endpoint by remember { mutableStateOf("http://10.0.2.2:18765") }
+    var token by remember { mutableStateOf("") }
+    var configError by remember { mutableStateOf(false) }
     var followLatest by remember(state.roomId) { mutableStateOf(true) }
     var forceLatest by remember(state.roomId) { mutableStateOf(false) }
     LaunchedEffect(listState) {
@@ -47,6 +51,22 @@ fun ChatPanel(viewModel: ChatViewModel) {
     }
     Column(Modifier.fillMaxWidth().testTag("chat_panel")) {
         Text(stringResource(R.string.chat_title))
+        if (developmentControls) {
+            Text(stringResource(R.string.chat_dev_warning))
+            Text(stringResource(if (state.localServer) R.string.chat_mode_real else R.string.chat_mode_fake), Modifier.testTag("chat_mode"))
+            OutlinedTextField(value = endpoint, onValueChange = { endpoint = it }, label = { Text(stringResource(R.string.chat_endpoint)) }, modifier = Modifier.fillMaxWidth().testTag("chat_endpoint"))
+            OutlinedTextField(value = token, onValueChange = { token = it }, label = { Text(stringResource(R.string.chat_token)) }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().testTag("chat_token"))
+            Row {
+                TextButton(onClick = {
+                    val transport = runCatching { RealChatTransport(endpoint, token, allowInsecure = true) }.getOrNull()
+                    configError = transport == null
+                    if (transport != null && viewModel.replaceTransport(transport)) token = ""
+                }, modifier = Modifier.testTag("chat_use_real")) { Text(stringResource(R.string.chat_use_real)) }
+                TextButton(onClick = { if (viewModel.useOfflineFake()) { token = ""; configError = false } }, modifier = Modifier.testTag("chat_use_fake")) { Text(stringResource(R.string.chat_use_fake)) }
+            }
+            if (configError) Text(stringResource(R.string.chat_config_error))
+            if (state.switchBlocked) Text(stringResource(R.string.chat_switch_blocked))
+        }
         LazyColumn(Modifier.fillMaxWidth().height(200.dp).testTag("chat_messages"), state = listState) {
             items(state.messages, key = { it.key }) { message ->
                 Column(Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag("chat_message")) {
@@ -58,10 +78,12 @@ fun ChatPanel(viewModel: ChatViewModel) {
                             Delivery.SENT -> R.string.chat_sent
                             Delivery.FAILED -> R.string.chat_failed
                         }))
-                        if (message.delivery == Delivery.FAILED && message.clientMessageId != null) {
+                        if ((message.delivery == Delivery.FAILED || message.isUncertain) && message.clientMessageId != null) {
                             Row {
                                 TextButton(onClick = { viewModel.retry(message.clientMessageId) }) { Text(stringResource(R.string.retry)) }
-                                TextButton(onClick = { viewModel.dismissFailed(message.clientMessageId) }) { Text(stringResource(R.string.chat_remove_failed)) }
+                                if (message.delivery == Delivery.FAILED) {
+                                    TextButton(onClick = { viewModel.dismissFailed(message.clientMessageId) }) { Text(stringResource(R.string.chat_remove_failed)) }
+                                }
                             }
                         }
                     }
@@ -72,6 +94,16 @@ fun ChatPanel(viewModel: ChatViewModel) {
             Text(stringResource(R.string.chat_gap))
             TextButton(onClick = viewModel::retryGap) { Text(stringResource(R.string.retry)) }
         }
+        if (state.localServer && state.connectionStatus != null) {
+            Text(stringResource(when (state.connectionStatus) {
+                ChatConnectionStatus.CONNECTING -> R.string.chat_connecting
+                ChatConnectionStatus.CONNECTED -> R.string.chat_connected
+                ChatConnectionStatus.RECONNECTING -> R.string.chat_reconnecting
+                ChatConnectionStatus.DISCONNECTED -> R.string.chat_disconnected
+                null -> R.string.chat_disconnected
+            }), Modifier.testTag("chat_connection_status"))
+        }
+        if (state.connectionError) Text(stringResource(R.string.chat_connection_error), Modifier.testTag("chat_connection_error"))
         if (state.sendBlocked) Text(stringResource(R.string.chat_capacity))
         if (state.inputTooLong) Text(stringResource(R.string.chat_too_long))
         if (state.transportUncertain) Text(stringResource(R.string.chat_uncertain))

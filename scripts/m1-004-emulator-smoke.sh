@@ -10,7 +10,7 @@ printf 'Emulator API: %s\n' "$device_api"
 test "$device_api" = "35"
 adb logcat -c
 trap 'adb logcat -d -t 1200 -s AndroidRuntime:E TestRunner:I ActivityTaskManager:I > "$GITHUB_WORKSPACE/android-emulator-logcat.txt" || true' EXIT
-./gradlew :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-emulator-test.log"
+./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RoomNavigationSmokeTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-emulator-test.log"
 # Capture Media3 instance creation/release after the completed test.
 adb logcat -d -s ExoPlayerImpl:I > "$GITHUB_WORKSPACE/android-player-lifecycle.log"
 adb logcat -d -s TestRunner:I > "$GITHUB_WORKSPACE/android-test-runner.log"

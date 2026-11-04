@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
-- Current milestone: M3 — Fake Realtime Chat
-- Current task: M3 기능 구현·검증 PR
-- State: M3 VERIFIED — 핵심 Gate 로컬 단위·에뮬레이터 검증 PASS; PR CI·리뷰 통과 후 병합한다.
+- Current milestone: M4 — 로컬 Spring Boot WebSocket·PostgreSQL 채팅
+- Current task: M4 기능 PR — 실제 서버 및 Android 연결 검증
+- State: M4 핵심 로컬 검증 및 PR #25 소스 검증 PASS. 최종 PR head의 CI 통과 후 병합한다.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
-- 사용자 결정 (2026-11-04): 화면과 Fake 서버의 전체 활성 룸을 합친 고유 논리 메시지 최대 1,000개, 표시 최대 500개, 메시지당 최대 1,000 Unicode 코드포인트. 향후 선택은 권장안을 적용해 질문 없이 진행한다.
-- Latest verification: 로컬 API 36 emulator에서 채팅 전송·ACK 및 기존 Player 통합 회귀 PASS; 전체 단위 테스트 36/36, Android build·lint PASS (lint 경고 13개). 정확한 증거는 [build-log](../harness/build-log.md)와 PR CI 참조.
-- M2 이월 NOT_RUN: 원격 네트워크 LIVE, 합성 LIVE의 실기기 첫 프레임, 실제 LMK, 장시간 heap/성능 검증. M3는 실제 WebSocket/Backend를 구현하지 않으며 실 서버 정합성은 M4에서 검증한다.
-- Next action: M3 PR의 CI·코드 리뷰를 확인하고 핵심 Gate 통과 시 병합한다. 이후 M4 실제 WebSocket 계약과 로컬 서버를 진행한다.
+- 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. 이후 선택은 권장안을 적용해 질문 없이 진행한다.
+- Latest verification: 실제 로컬 PostgreSQL/WS의 동시 순번·중복·충돌·commit 실패·구독 경계·재시작 영속성 PASS. Android API 36 emulator에서 실제 서버 접속·재접속 누락 보충·룸 전환·UI 전송·Player 독립성 PASS; build/lint/unit 41/41 및 release 평문 차단 PASS. 자세한 증거는 [build-log](../harness/build-log.md)와 PR CI 참조.
+- NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS·대규모 장애 주입/성능. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
+- Next action: M4 PR의 최종 head CI와 코드 리뷰 확인 후 Gate 통과 시 병합하고, M5 장애 주입·복구를 진행한다.
 
 ## Milestone Checklist
 
@@ -15,7 +15,7 @@
 - [x] M1 Android Foundation
 - [x] M2 HLS Player
 - [x] M3 Fake Chat
-- [ ] M4 Real Chat Server
+- [x] M4 Real Chat Server (핵심 검증 완료; 최종 PR head CI는 병합 조건)
 - [ ] M5 Fault & Recovery
 - [ ] M6 Performance
 - [ ] M7 Globalization/Polish

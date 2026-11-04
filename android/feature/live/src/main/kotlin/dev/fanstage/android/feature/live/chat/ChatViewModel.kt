@@ -15,10 +15,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ChatViewModel(private val transport: ChatTransport, initialRoomId: String) : ViewModel() {
+class ChatViewModel(private var transport: ChatTransport, initialRoomId: String) : ViewModel() {
     private val mutableState = MutableStateFlow(ChatUiState(initialRoomId))
     val uiState: StateFlow<ChatUiState> = mutableState.asStateFlow()
-    private val budget = transport.memoryBudget ?: ProcessChatMemory.budget
+    private var budget = transport.memoryBudget ?: ProcessChatMemory.budget
     private val budgetOwner = Any()
     private val confirmed = TreeMap<Long, ServerMessage>()
     private val pending = LinkedHashMap<String, ChatMessage>()
@@ -27,6 +27,7 @@ class ChatViewModel(private val transport: ChatTransport, initialRoomId: String)
     private var highestObserved = 0L
     private var generation = 0L
     private var roomJob: Job? = null
+    private var connectionJob: Job? = null
     private var recoveryJob: Job? = null
     private val sendJobs = mutableSetOf<Job>()
     private var invalidEvent = false
@@ -39,6 +40,7 @@ class ChatViewModel(private val transport: ChatTransport, initialRoomId: String)
     fun openRoom(roomId: String) {
         generation++
         roomJob?.cancel()
+        connectionJob?.cancel()
         recoveryJob?.cancel()
         recoveryJob = null
         sendJobs.toList().forEach { it.cancel() }
@@ -51,8 +53,15 @@ class ChatViewModel(private val transport: ChatTransport, initialRoomId: String)
         cursor = 0
         highestObserved = 0
         invalidEvent = false
-        mutableState.value = ChatUiState(roomId)
+        mutableState.value = ChatUiState(roomId, localServer = transport is RealChatTransport)
         val epoch = generation
+        connectionJob = transport.connectionState?.let { connection ->
+            viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
+                connection.collect { status ->
+                    if (epoch == generation) mutableState.value = mutableState.value.copy(connectionStatus = status)
+                }
+            }
+        }
         roomJob = viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
             try {
                 transport.events(roomId).collect { event ->
@@ -63,11 +72,45 @@ class ChatViewModel(private val transport: ChatTransport, initialRoomId: String)
                     if (highestObserved > cursor) recover()
                 }
             } catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: ChatConnectionFailure) {
+                currentCoroutineContext().ensureActive()
+                if (epoch == generation) mutableState.value = mutableState.value.copy(connectionError = true)
+            }
             catch (_: Exception) {
                 currentCoroutineContext().ensureActive()
                 if (epoch == generation) mutableState.value = mutableState.value.copy(gapUnresolved = true)
             }
         }
+    }
+
+    /** Switching is explicit and must not silently discard unconfirmed messages. */
+    fun replaceTransport(next: ChatTransport): Boolean {
+        if (pending.isNotEmpty()) {
+            next.close()
+            mutableState.value = mutableState.value.copy(switchBlocked = true)
+            return false
+        }
+        val room = mutableState.value.roomId
+        generation++
+        roomJob?.cancel()
+        connectionJob?.cancel()
+        recoveryJob?.cancel()
+        sendJobs.toList().forEach { it.cancel() }
+        confirmed.values.forEach { budget.release(it.memoryKey(), budgetOwner) }
+        confirmed.clear()
+        transport.close()
+        transport = next
+        budget = next.memoryBudget ?: ProcessChatMemory.budget
+        openRoom(room)
+        return true
+    }
+
+    fun useOfflineFake(): Boolean {
+        if (pending.isNotEmpty()) {
+            mutableState.value = mutableState.value.copy(switchBlocked = true)
+            return false
+        }
+        return replaceTransport(FakeChatTransport(mutableState.value.roomId, memoryBudget = ProcessChatMemory.budget))
     }
 
     fun updateDraft(text: String) {
@@ -105,8 +148,8 @@ class ChatViewModel(private val transport: ChatTransport, initialRoomId: String)
 
     fun retry(clientMessageId: String) {
         val message = pending[clientMessageId] ?: return
-        if (message.delivery != Delivery.FAILED) return
-        pending[clientMessageId] = message.copy(delivery = Delivery.PENDING)
+        if (message.delivery != Delivery.FAILED && clientMessageId !in uncertainIds) return
+        pending[clientMessageId] = message.copy(delivery = Delivery.PENDING, isUncertain = false)
         uncertainIds.remove(clientMessageId)
         publish()
         dispatch(clientMessageId, message.text)
@@ -140,7 +183,11 @@ class ChatViewModel(private val transport: ChatTransport, initialRoomId: String)
             } catch (_: Exception) {
                 currentCoroutineContext().ensureActive()
                 // A timeout/unknown outcome is not proof of rejection; keep Pending.
-                if (epoch == generation && pending.containsKey(id)) { uncertainIds.add(id); publish() }
+                if (epoch == generation && pending.containsKey(id)) {
+                    uncertainIds.add(id)
+                    pending[id]?.let { pending[id] = it.copy(isUncertain = true) }
+                    publish()
+                }
             }
         }
         sendJobs.add(job)
@@ -235,6 +282,7 @@ class ChatViewModel(private val transport: ChatTransport, initialRoomId: String)
     override fun onCleared() {
         generation++
         roomJob?.cancel()
+        connectionJob?.cancel()
         recoveryJob?.cancel()
         sendJobs.toList().forEach { it.cancel() }
         confirmed.values.forEach { budget.release(it.memoryKey(), budgetOwner) }

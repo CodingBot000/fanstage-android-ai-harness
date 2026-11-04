@@ -1,0 +1,77 @@
+name: M4 PostgreSQL and real Android chat
+on:
+  pull_request:
+    branches: [main]
+    paths: ['backend/**', 'compose.yaml', 'android/**', 'scripts/m4-*', '.github/workflows/m4-integration.yml']
+  push:
+    branches: [main]
+    paths: ['backend/**', 'compose.yaml', 'android/**', 'scripts/m4-*', '.github/workflows/m4-integration.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: m4-integration-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  integration:
+    name: PostgreSQL and Android real WebSocket
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.5.0'
+      - name: Install compilation SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdk_root="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          "$sdk_root/cmdline-tools/latest/bin/sdkmanager" --channel=3 --install 'platforms;android-37.0' 'build-tools;36.0.0' 'platform-tools'
+          echo "ANDROID_HOME=$sdk_root" >> "$GITHUB_ENV"
+      - name: Start isolated local Compose stack
+        run: bash scripts/m4-ci-env.sh
+      - name: Run real server concurrency, rollback and restart tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          source "$RUNNER_TEMP/fanstage-m4.env"
+          python3 backend/chat-server/tests/integration.py 2>&1 | tee "$RUNNER_TEMP/fanstage-m4-server.log"
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+          test -e /dev/kvm
+      - name: Verify Android against the actual server
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          emulator-boot-timeout: 600
+          script: bash scripts/m4-emulator-smoke.sh
+      - name: Prepare sanitized evidence
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "$RUNNER_TEMP/fanstage-m4.env" ]; then source "$RUNNER_TEMP/fanstage-m4.env"; fi
+          python3 scripts/m4-sanitize-artifacts.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: m4-integration-evidence
+          path: ${{ runner.temp }}/fanstage-m4-sanitized/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Remove isolated test stack and its synthetic data
+        if: always()
+        shell: bash
+        run: |
+          if [ -f "$RUNNER_TEMP/fanstage-m4.env" ]; then source "$RUNNER_TEMP/fanstage-m4.env"; docker compose -p fanstage-m4-validation down --volumes --remove-orphans; fi

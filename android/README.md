@@ -8,8 +8,10 @@ or networking dependency.
 
 The room list supports loading, content, empty, and error with retry. The default
 fake returns three fictional rooms. Detail uses a Media3 HLS player with a locally
-generated synthetic VOD fixture; an in-memory Fake chat transport exercises ACK, ordering and gap recovery. Actual WebSocket transport remains unimplemented. The
+generated synthetic VOD fixture; an in-memory Fake chat transport exercises ACK, ordering and gap recovery. A debug-only selector can connect the same chat contract to the local WebSocket/HTTP server. The
 separate instrumentation test exercises a changing local LIVE playlist.
+
+For the local real-server setup, emulator host address and optional physical-device LAN configuration, see [server README](../backend/chat-server/README.md). Cleartext is explicitly disabled in release and enabled only in debug; use disposable test credentials only.
 
 ## Build and test
 

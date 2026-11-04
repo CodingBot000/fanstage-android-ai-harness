@@ -36,4 +36,18 @@
     <string name="chat_send">Send</string>
     <string name="chat_remove_failed">Remove failed message</string>
     <string name="chat_too_long">Messages can contain at most 1,000 Unicode characters.</string>
+    <string name="chat_dev_warning">Development only: switching clears confirmed chat history. Do not use real credentials.</string>
+    <string name="chat_endpoint">Local server URL</string>
+    <string name="chat_token">Temporary test token</string>
+    <string name="chat_mode_real">Local server</string>
+    <string name="chat_mode_fake">Offline fake</string>
+    <string name="chat_use_real">Use local server</string>
+    <string name="chat_use_fake">Use offline fake</string>
+    <string name="chat_connecting">Connecting to local chat…</string>
+    <string name="chat_connected">Local chat connected</string>
+    <string name="chat_reconnecting">Chat disconnected; reconnecting…</string>
+    <string name="chat_disconnected">Local chat disconnected</string>
+    <string name="chat_connection_error">Unable to authenticate with the local chat server.</string>
+    <string name="chat_config_error">Check the local server URL and test token.</string>
+    <string name="chat_switch_blocked">Resolve unconfirmed messages before switching.</string>
 </resources>

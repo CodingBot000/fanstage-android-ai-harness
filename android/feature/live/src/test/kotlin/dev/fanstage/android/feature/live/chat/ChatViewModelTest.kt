@@ -10,6 +10,7 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -80,6 +81,20 @@ class ChatViewModelTest {
         assertEquals(1, vm.uiState.value.messages.size)
         assertEquals(before.key, vm.uiState.value.messages.single().key)
         assertEquals(Delivery.SENT, vm.uiState.value.messages.single().delivery)
+    }
+
+    @Test fun `uncertain send may be retried with the same id without duplicate`() = runTest {
+        val t = Controlled(); val vm = create(t); runCurrent()
+        t.sendAction = { _, _, _ -> error("outcome unknown") }
+        vm.send("try again"); advanceUntilIdle()
+        val message = vm.uiState.value.messages.single()
+        assertTrue(message.isUncertain)
+        t.sendAction = { room, id, text -> t.stream.emit(ChatEvent.Ack(ServerMessage(room, "s1", id, 1, text, true))) }
+        vm.retry(message.clientMessageId!!); advanceUntilIdle()
+        assertEquals(1, vm.uiState.value.messages.size)
+        assertEquals(message.key, vm.uiState.value.messages.single().key)
+        assertEquals(Delivery.SENT, vm.uiState.value.messages.single().delivery)
+        assertFalse(vm.uiState.value.transportUncertain)
     }
 
     @Test fun `fake transport supports switching rooms while cancelling old send`() = runTest {
@@ -301,6 +316,56 @@ class ChatViewModelTest {
         assertTrue(a.retainedMessageCount + b.retainedMessageCount <= 1_000)
         store.clear(); advanceUntilIdle()
         assertEquals(0, budget.size)
+    }
+
+    @Test fun `connection status distinguishes reconnection from uncertain message`() = runTest {
+        val inner = Controlled()
+        val connection = MutableStateFlow(ChatConnectionStatus.CONNECTING)
+        val t = object : ChatTransport by inner { override val connectionState = connection }
+        val vm = create(t); runCurrent()
+        assertEquals(ChatConnectionStatus.CONNECTING, vm.uiState.value.connectionStatus)
+        connection.value = ChatConnectionStatus.RECONNECTING; runCurrent()
+        assertEquals(ChatConnectionStatus.RECONNECTING, vm.uiState.value.connectionStatus)
+        assertFalse(vm.uiState.value.transportUncertain)
+        connection.value = ChatConnectionStatus.CONNECTED; runCurrent()
+        assertEquals(ChatConnectionStatus.CONNECTED, vm.uiState.value.connectionStatus)
+    }
+
+    @Test fun `terminal authentication failure differs from message gap`() = runTest {
+        val t = object : ChatTransport {
+            override fun events(roomId: String): Flow<ChatEvent> = flow { throw ChatConnectionFailure() }
+            override suspend fun send(roomId: String, clientMessageId: String, text: String) = Unit
+            override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = emptyList<ServerMessage>()
+        }
+        val vm = create(t); advanceUntilIdle()
+        assertTrue(vm.uiState.value.connectionError)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertFalse(vm.uiState.value.transportUncertain)
+    }
+
+    @Test fun `transport switch rejects unresolved sends and closes unused transport`() = runTest {
+        val t = Controlled(); t.sendAction = { _, _, _ -> awaitCancellation() }
+        val vm = create(t); runCurrent(); vm.send("pending"); runCurrent()
+        var closed = false
+        val next = object : ChatTransport by Controlled() { override fun close() { closed = true } }
+        assertFalse(vm.replaceTransport(next))
+        assertTrue(closed)
+        assertTrue(vm.uiState.value.switchBlocked)
+        val before = vm.totalLogicalMessages
+        assertFalse(vm.useOfflineFake())
+        assertEquals(before, vm.totalLogicalMessages)
+        assertEquals(Delivery.PENDING, vm.uiState.value.messages.single().delivery)
+    }
+
+    @Test fun `switch clears confirmed history and subscribes to replacement`() = runTest {
+        val first = Controlled(); val vm = create(first); runCurrent()
+        first.stream.emit(ChatEvent.Message(msg(1))); runCurrent()
+        val next = Controlled()
+        assertTrue(vm.replaceTransport(next)); runCurrent()
+        assertTrue(vm.uiState.value.messages.isEmpty())
+        assertEquals(1, first.cancellations)
+        next.stream.emit(ChatEvent.Message(msg(1))); advanceUntilIdle()
+        assertEquals(1, vm.uiState.value.messages.size)
     }
 
     @Test fun `a new fake room does not crash when all shared slots are pinned`() = runTest {

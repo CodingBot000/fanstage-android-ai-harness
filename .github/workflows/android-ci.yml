@@ -5,11 +5,15 @@ on:
     branches: [main]
     paths:
       - 'android/**'
+      - 'scripts/m1-004-emulator-smoke.sh'
+      - 'scripts/m4-check-manifests.py'
       - '.github/workflows/android-ci.yml'
   push:
     branches: [main]
     paths:
       - 'android/**'
+      - 'scripts/m1-004-emulator-smoke.sh'
+      - 'scripts/m4-check-manifests.py'
       - '.github/workflows/android-ci.yml'
   workflow_dispatch:
 
@@ -59,7 +63,8 @@ jobs:
           set -euo pipefail
           chmod +x gradlew
           ./gradlew --version
-          ./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
+          ./gradlew :app:assembleDebug :app:assembleRelease :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
+          python3 ../scripts/m4-check-manifests.py
 
       - name: Upload logs and unit test XML
         if: always()

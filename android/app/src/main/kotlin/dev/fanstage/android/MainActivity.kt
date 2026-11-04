@@ -55,6 +55,7 @@ private fun FanStageApp() {
             RoomDetailScreen(
                 roomId = roomId,
                 chatViewModel = chatViewModel,
+                developmentControls = BuildConfig.DEBUG,
                 onBack = { navController.popBackStack() },
             )
         }

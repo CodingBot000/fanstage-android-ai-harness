@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:17-alpine@sha256:6f30057d31f5861b66f3545d4821f987aacf1dd920765f0acadea0c58ff975b1
+    environment:
+      POSTGRES_DB: fanstage
+      POSTGRES_USER: ${FANSTAGE_DB_USER:?Set FANSTAGE_DB_USER}
+      POSTGRES_PASSWORD: ${FANSTAGE_DB_PASSWORD:?Set FANSTAGE_DB_PASSWORD}
+    volumes:
+      - chat-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  chat:
+    build: ./backend/chat-server
+    environment:
+      FANSTAGE_JDBC_URL: jdbc:postgresql://db:5432/fanstage
+      FANSTAGE_SERVER_BIND: 0.0.0.0
+      FANSTAGE_DB_USER: ${FANSTAGE_DB_USER:?Set FANSTAGE_DB_USER}
+      FANSTAGE_DB_PASSWORD: ${FANSTAGE_DB_PASSWORD:?Set FANSTAGE_DB_PASSWORD}
+      FANSTAGE_TOKEN_ALICE: ${FANSTAGE_TOKEN_ALICE:?Set FANSTAGE_TOKEN_ALICE}
+      FANSTAGE_TOKEN_BOB: ${FANSTAGE_TOKEN_BOB:?Set FANSTAGE_TOKEN_BOB}
+    ports:
+      - "${FANSTAGE_BIND_ADDRESS:-127.0.0.1}:${FANSTAGE_PORT:-18765}:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+volumes:
+  chat-db:
