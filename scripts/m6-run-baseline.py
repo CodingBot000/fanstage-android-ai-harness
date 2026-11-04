@@ -70,8 +70,14 @@ for name, meta in artifacts().items():
     source = Path(name); relative = source.relative_to(ANDROID / 'macrobenchmark' / 'build' / 'outputs')
     dest = raw / relative; dest.parent.mkdir(parents=True, exist_ok=True); shutil.copy2(source, dest)
     files.append({'path': str(dest.relative_to(out)), 'sha256': hashlib.sha256(dest.read_bytes()).hexdigest(), 'bytes': dest.stat().st_size})
+apks = {}
+for label, path in {
+    'target': ANDROID / 'app/build/outputs/apk/benchmark/app-benchmark.apk',
+    'test': ANDROID / 'macrobenchmark/build/outputs/apk/benchmark/macrobenchmark-benchmark.apk',
+}.items():
+    if path.is_file(): apks[label] = hashlib.sha256(path.read_bytes()).hexdigest()
 manifest = {'source_commit': sha, 'gradle_command': cmd, 'exit_code': result.returncode,
-            'elapsed_seconds': round(time.monotonic()-start, 3), 'raw_files': files,
+            'elapsed_seconds': round(time.monotonic()-start, 3), 'raw_files': files, 'apk_sha256': apks,
             'target_package': 'dev.fanstage.android.benchmark', 'compilation_mode': 'None',
             'note': 'Device identifier intentionally omitted; traces and log remain local and may contain private system data.'}
 (out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
