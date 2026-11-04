@@ -182,3 +182,11 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - **Artifact integrity:** unit `android-pr-gate-evidence` ID `13288307072` ZIP SHA-256 `bae7921d913d1b6f76ace26bef660f673587288c8f62913af50496e840d5f7ec`; emulator `android-emulator-compose-smoke-evidence` ID `13287838197` ZIP SHA-256 `6ad1fedf5d8d7479be1577f5901389ac8afd238e7cec164c36e4765279a01cec`. Both independently downloaded/hashed; match GitHub artifact digests. Original job logs/XML/exit file inspected, not just green badges.
 - **Warnings/limitations:** Android Lint task PASS with **13 nonfatal warnings**; GitHub Actions Node20 deprecation and `setup-java@v4` warning remain. **FAIL:** none in this main CI. **NOT_RUN/blockers:** clean build on local developer machine, physical-device install, rotation/process recreation, LIVE streaming, release-like device performance; M1 full Exit Gate **NOT VERIFIED**. No Codex generation, API key reads or paid infrastructure in this work unit. Only one Android Actions run was triggered by merging PR #14; evidence-only follow-up is outside Android path filters.
 
+
+## M1-005 — Activity recreation navigation contract (2026-11-04)
+
+- Scope: one extension of the existing `RoomNavigationSmokeTest.roomListOpensDetailAndReturns` test; no new test method, app production code, dependency or workflow changes.
+- Scenario: launch list, open a detail, verify it is displayed, call `activityRule.scenario.recreate()`, confirm a different Activity instance, verify detail route restored, then use in-app Back to return to the original list.
+- Rationale/trade-off: [ADR-0004](../adr/ADR-0004-m1-activity-recreation.md). Activity recreation is **not** proof of screen orientation change, process death/relaunch, or LIVE restoration.
+- Required connected evidence: one executed test (not zero), zero failures/errors/skips, strict XML and runner exit check; inspect original logs. Existing build/lint/unit and emulator gates remain unchanged.
+- Initial state: source change proposed; PR-triggered CI result **NOT_RUN until executed**. Local Android SDK/physical device: **NOT_RUN**. M1 Exit Gate: **NOT VERIFIED**.
