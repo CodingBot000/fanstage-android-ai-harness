@@ -4,7 +4,7 @@
 
 - 2026-11-05 KST, Samsung Galaxy S10+ 계열 SM-G975N, Android 12/API 31, 약 60 Hz. 사용자가 구형·저속 기기라고 설명했다. 다른 기기와 일반 성능을 대표하지 않는다.
 - 소스 `66fa029497fac181caf54818c19ab38238260925`, 버전 0.1.0, JDK 17, Gradle 9.5.0, AndroidX Macrobenchmark 1.5.0. `benchmark` 변형은 release 설정을 상속하고 non-debuggable·shell profileable, 로컬 서명, 고유 applicationId, benchmark 전용 ProfileInstaller 및 fixture Activity가 추가된다. 이는 일반 release와 동일 APK가 아니다. 두 APK SHA-256은 실행 후 로컬 빌드 산출물에서 확인했다: target `c03d09f492dac449f2e4a8e5cd6383df3ed4bd240c85f876e37c77c6f5dcc2e6`, test `87d3db843a0c8df6985c5d50963a8e9a0e3eb469b5db51f066814c0cec1b5dd2`.
-- 두 시나리오 모두 `CompilationMode.None`, 각 10회, 실행 중 추가 ADB 진단 조회 없음. AC 전원 유지, 배터리 64→70%, 배터리 온도 32.7→33.4 °C; 배터리 충전과 기기 온도는 완전히 고정되지 않았다. UI fixture는 합성 메시지·로컬 VOD만 사용하며 서버 요청은 없다. 다른 앱의 백그라운드 상태 및 실제 네트워크 연결 상태는 기록하지 못했다.
+- 두 시나리오 모두 `CompilationMode.None`, 각 10회, 실행 중 추가 ADB 진단 조회 없음. Cold는 앱 프로세스 시작을 뜻하며 기기 재부팅이나 OS 파일 캐시 초기화는 수행하지 않았다. AC 전원 유지, 배터리 64→70%, 배터리 온도 32.7→33.4 °C; 배터리 충전과 기기 온도는 완전히 고정되지 않았다. UI fixture는 합성 메시지·로컬 VOD만 사용하며 서버 요청은 없다. 다른 앱의 백그라운드 상태 및 실제 네트워크 연결 상태는 기록하지 못했다.
 - 원본 JSON SHA-256 `b769c91b345b5026cafd84dcca12463bfd78a1069c0013fe035c68f9b4c2c01c`; 20개 Perfetto trace 및 개별 SHA-256을 포함한 로컬 `~/Library/Logs/FanStage/M6/20261105-001656/manifest.json` SHA-256 `1dc9ef9093a8e9480c15df73ec22ed5410316100bbd3ed69d2fdede8e08b24bd`. 원본은 개인 기기 정보가 포함될 수 있으므로 저장소에 올리지 않는다. 분석 CSV와 세부 절차는 [build-log](../../harness/build-log.md) 참고.
 
 ## 결과
