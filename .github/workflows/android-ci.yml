@@ -7,6 +7,7 @@ on:
       - 'android/**'
       - 'scripts/m1-004-emulator-smoke.sh'
       - 'scripts/m4-check-manifests.py'
+      - 'scripts/m6-check-manifests.py'
       - '.github/workflows/android-ci.yml'
   push:
     branches: [main]
@@ -14,6 +15,7 @@ on:
       - 'android/**'
       - 'scripts/m1-004-emulator-smoke.sh'
       - 'scripts/m4-check-manifests.py'
+      - 'scripts/m6-check-manifests.py'
       - '.github/workflows/android-ci.yml'
   workflow_dispatch:
 
@@ -63,8 +65,11 @@ jobs:
           set -euo pipefail
           chmod +x gradlew
           ./gradlew --version
-          ./gradlew :app:assembleDebug :app:assembleRelease :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
+          ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
           python3 ../scripts/m4-check-manifests.py
+          python3 ../scripts/m6-check-manifests.py
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify app/build/outputs/apk/benchmark/app-benchmark.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify macrobenchmark/build/outputs/apk/benchmark/macrobenchmark-benchmark.apk
 
       - name: Upload logs and unit test XML
         if: always()

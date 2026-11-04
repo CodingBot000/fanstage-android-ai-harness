@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
-- Current milestone: M5 — 장애 주입 및 복구
-- Current task: M5 실제 서버·Android 장애 주입 및 복구
-- State: M5 핵심 Gate VERIFIED (로컬 및 PR 소스 CI PASS; 아래 NOT_RUN은 이월). 최종 PR head CI 확인 후 병합한다.
+- Current milestone: M6 — Performance Baseline & Optimization
+- Current task: M6-001 실제 기기 성능 기준선
+- State: M6-001 실기기 cold startup 및 합성 500행 스크롤 기준선 확보; 미측정 항목은 아래와 같다. PR CI·리뷰 대기. M6 전체는 변경 전후 비교와 두 건의 사례가 없어 미완료다.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. 이후 선택은 권장안을 적용해 질문 없이 진행한다.
-- Latest verification: M5 로컬 서버 ACK 유실·동일 ID 재전송, Android 10초 재접속·Snapshot 지연·룸 전환, HLS 장애와 제한된 채팅 부하 및 lifecycle 검증 PASS. 상세 범위는 [M5 SDD](specs/M5-fault-recovery.md)와 [build-log](../harness/build-log.md) 참조.
-- NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증, M6 성능. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
-- Next action: M5 최종 PR head CI 확인 후 병합하고, 다음 단계로 M6 Performance Baseline & Optimization을 준비한다.
+- Latest verification: SM-G975N/API 31 실기기에서 release-like cold startup과 합성 500행·Player 동시 스크롤 각 10회 및 raw trace 확보. 프레임 지연이 일부 반복에 집중되어 불안정; 상세는 [기준선](reviews/M6-001-baseline.md)과 [build-log](../harness/build-log.md) 참조.
+- NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
+- Next action: M6-001 PR CI·리뷰 후 병합하고 [기준선 보고서](reviews/M6-001-baseline.md)의 후보를 M6-002에서 동일 조건으로 검증한다.
 
 ## Milestone Checklist
 
@@ -16,7 +16,7 @@
 - [x] M2 HLS Player
 - [x] M3 Fake Chat
 - [x] M4 Real Chat Server (PR #25 병합; main CI PASS)
-- [x] M5 Fault & Recovery (핵심 Gate VERIFIED; 최종 PR head CI 병합 조건)
+- [x] M5 Fault & Recovery (PR #26 병합; main CI PASS)
 - [ ] M6 Performance
 - [ ] M7 Globalization/Polish
 - [ ] M8 Portfolio Release

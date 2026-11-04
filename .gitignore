@@ -13,3 +13,6 @@ build/
 .idea/
 __pycache__/
 *.py[cod]
+
+# Local performance artifacts may contain device/system data.
+/benchmark-results/

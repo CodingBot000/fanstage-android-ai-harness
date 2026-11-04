@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "FanStage"
-include(":app", ":core:model", ":feature:live")
+include(":app", ":core:model", ":feature:live", ":macrobenchmark")
