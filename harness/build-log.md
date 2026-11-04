@@ -292,3 +292,14 @@
 - Local evidence: `~/Library/Logs/FanStage/M1-007/clean-build.log`, SHA-256 `ecc46550faa9955b56032d317f67f1a69336108b500c7e778e5bd0e86e65e7ec`; SDK installation log `~/Library/Logs/FanStage/M1-007/sdk-install.log`. Local generated JUnit XML under `android/feature/live/build/test-results/testDebugUnitTest/`; lint report under `android/app/build/reports/`. These local artifacts are not committed and may be removed by future clean builds; the raw log may contain local paths.
 - **FAIL:** initial command permission failure, fixed and successfully rerun as above. **NOT_RUN:** new emulator/device tests, actual rotation, process death, physical install, LIVE/HLS and performance. Existing CI evidence is distinct; no new CI result is asserted here.
 - M1 overall remains BLOCKED / human approval pending: `android/README.md` documentation drift remains a separate task. No M2 work.
+
+
+## Fast Track v1 정책 전환 및 M1 Gate 검토 (2026-11-04)
+
+- 사용자 승인 범위: M0~M8 개발·commit/push/PR/merge 사전 승인, M9 제외. 이 작업에서는 M2 계획만 작성하고 기능 코드는 작성하지 않는다. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인 대상이다.
+- PR #19: head `591b562bbfd48fda9e9d87f65da03945d64ae443`, [CI #41790821988](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41790821988) 두 job PASS; squash merge `468065ae0f8fff0f41e48d5f8a07a99b94bcdf52`. 로컬 build-log SHA-256을 실제 재확인했다.
+- PR #20: 최신 head `f8b3751b142e80d995942fca227439a8d3fcdb21`, [CI #41792416136](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41792416136) 빌드 및 에뮬레이터 job PASS; squash merge `d189e258e84537d9e2bfeb1a9eda72402171f69b`. PR #19 반영 후 README의 미병합 표현을 고치고 해당 head CI를 재검증했다.
+- M1 핵심 Gate: 개발자 로컬 clean/assemble/lint/unit PASS; CI fresh runner에서 assemble/lint/unit PASS (CI에서 명시적 Gradle `clean`은 NOT_RUN). 소스 의존 방향 및 제한된 리뷰 PASS, API 35 emulator의 list/detail/recreate/back 1/1 PASS, README 및 환경 증거 정리. M1 핵심 완료로 평가하며 사용자가 Fast Track에서 별도 단계 승인을 면제했다.
+- 여전히 NOT_RUN: 실제 회전, 시스템 프로세스 종료/복구, 실기기 설치, 로컬 외 환경 성능 및 LIVE 검증. 일부는 후속 M2/M5/M6 필수 Gate이며 이월 시 M8에서 재평가한다. 13개 Lint 경고 및 GitHub Actions deprecation 경고는 P2. 과거 검증·실패 기록은 유지한다.
+- 정책: [ADR-0005](../docs/adr/ADR-0005-fast-track.md), [테스트 매트릭스](../docs/test-matrix.md); [M2 계획](../docs/specs/M2-hls-player.md). 기존 정책 문구의 현재 효력을 수정하고 역사적 초기 지시문은 과거 기록으로 표시했다.
+- 수행: PR diff와 GitHub 체크 상태 검토, `shasum -a 256` 로컬 clean-build 원본 해시 확인, 문서 링크/범위 및 `git diff --check`. 본 정책 작업에서는 Gradle·에뮬레이터를 새로 실행하지 않았다. PR #19/#20의 CI 결과는 별도 실행의 결과다.
