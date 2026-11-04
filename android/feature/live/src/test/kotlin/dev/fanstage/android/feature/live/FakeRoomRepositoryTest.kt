@@ -1,6 +1,8 @@
 package dev.fanstage.android.feature.live
 
 import dev.fanstage.android.core.model.Room
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.async
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -20,6 +22,13 @@ class FakeRoomRepositoryTest {
         assertEquals(expected, repository.getRooms())
         assertEquals(expected.size, expected.map { it.id }.distinct().size)
         assertTrue(expected.all { it.viewerCount >= 0 })
+    }
+
+    @Test
+    fun `in-memory fixtures do not require an extra scheduler turn`() = runTest {
+        val result = async(start = CoroutineStart.UNDISPATCHED) { FakeRoomRepository().getRooms() }
+        assertTrue("in-memory snapshot should be available in the caller turn", result.isCompleted)
+        assertEquals(3, result.await().size)
     }
 
     @Test
