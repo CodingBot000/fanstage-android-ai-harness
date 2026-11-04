@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M6 — Performance Baseline & Optimization
-- Current task: M6-001 실제 기기 성능 기준선
-- State: M6-001 실기기 cold startup 및 합성 500행 스크롤 기준선 확보; 미측정 항목은 아래와 같다. PR CI·리뷰 대기. M6 전체는 변경 전후 비교와 두 건의 사례가 없어 미완료다.
+- Current task: M6-002 성능 가설 검증 및 독립 전후 측정
+- State: M6-001 PR #27 병합, M6-002 진행 중. 최적화 전 비교 기준과 원인 검증을 준비하며 M6 전체는 미완료다.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. 이후 선택은 권장안을 적용해 질문 없이 진행한다.
 - Latest verification: SM-G975N/API 31 실기기에서 release-like cold startup과 합성 500행·Player 동시 스크롤 각 10회 및 raw trace 확보. 프레임 지연이 일부 반복에 집중되어 불안정; 상세는 [기준선](reviews/M6-001-baseline.md)과 [build-log](../harness/build-log.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
-- Next action: M6-001 PR CI·리뷰 후 병합하고 [기준선 보고서](reviews/M6-001-baseline.md)의 후보를 M6-002에서 동일 조건으로 검증한다.
+- Next action: [M6-002 SDD](specs/M6-002-ab-optimization.md)의 대조·baseline을 확보하고 두 가설을 독립적으로 전후 검증한다.
 
 ## Milestone Checklist
 

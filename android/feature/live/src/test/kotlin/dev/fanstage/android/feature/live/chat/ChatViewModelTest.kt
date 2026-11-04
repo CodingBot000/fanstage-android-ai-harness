@@ -293,6 +293,29 @@ class ChatViewModelTest {
         assertTrue(t.cancellations >= 1)
     }
 
+    @Test fun `display tail includes newest confirmed messages followed by pending in insertion order`() = runTest {
+        val transport = Controlled(); transport.sendAction = { _, _, _ -> awaitCancellation() }
+        val vm = create(transport); runCurrent()
+        repeat(750) { transport.stream.emit(ChatEvent.Message(msg(it + 1L))); runCurrent() }
+        repeat(10) { assertTrue(vm.send("pending-$it")) }; runCurrent()
+        val visible = vm.uiState.value.messages
+        assertEquals(500, visible.size)
+        assertEquals((261L..750L).toList(), visible.take(490).map { it.sequence })
+        assertEquals((0..9).map { "pending-$it" }, visible.takeLast(10).map { it.text })
+        assertTrue(visible.takeLast(10).all { it.delivery == Delivery.PENDING })
+    }
+
+    @Test fun `display tail keeps newest pending items if pending alone exceeds display limit`() = runTest {
+        val transport = Controlled(); transport.sendAction = { _, _, _ -> awaitCancellation() }
+        val vm = create(transport); runCurrent()
+        repeat(20) { transport.stream.emit(ChatEvent.Message(msg(it + 1L))); runCurrent() }
+        repeat(510) { assertTrue(vm.send("pending-$it")) }; runCurrent()
+        val visible = vm.uiState.value.messages
+        assertEquals(500, visible.size)
+        assertEquals((10..509).map { "pending-$it" }, visible.map { it.text })
+        assertTrue(visible.all { it.delivery == Delivery.PENDING })
+    }
+
     @Test fun `eviction respects both limits and does not lose cursor progress`() = runTest {
         val t = Controlled(); val vm = create(t); runCurrent()
         repeat(1_100) { t.stream.emit(ChatEvent.Message(msg(it + 1L))); runCurrent() }
