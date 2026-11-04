@@ -1,7 +1,7 @@
 # M1 — Android Native Foundation SDD
 
 - Status: APPROVED FOR IMPLEMENTATION (2026-11-04, 사용자 포괄 실행 승인). 검증 Gate는 별도 PASS 필요.
-- Current work: M1-001 (설계·공식 호환성 후보 수집). 후속 작업 M1-002는 **최소 Android 프로젝트·2개 화면 및 FakeRepository** 구현.
+- Current work: M1-004 emulator/Compose navigation merged and verified; overall M1 Exit Gate remains open.
 
 ## Goal
 
@@ -138,9 +138,9 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - Configuration: same JDK 17, Gradle 9.5.0, AGP 9.3.3 / compile SDK 37.0 used by existing CI; stable API 35 Google APIs emulator is a **runtime** device, not a downgrade of compile SDK. Emulator runner pinned by full commit SHA.
 - The new `emulator-compose-smoke` job depends on successful unchanged compile/lint/unit job. PRs have `contents: read` token only; no OpenAI secret; no publish step. AndroidTest target app uses `androidx.test.runner.AndroidJUnitRunner`, Compose UI Test BOM, JUnit extensions.
 - Command from `android/`: `./gradlew :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace`. CI captures test stdout, connected XML/HTML reports, selected logcat, `adb devices`, device SDK and installed application package path in the job log.
-- [ ] **PASS only after actual GitHub Actions logs and test report confirm** emulator boot, app/test APK install, list/detail/back assertion, and zero failures. Recording code/config alone is NOT_RUN, not PASS.
-- [ ] Actual Run URL, job outcome, artifacts and source SHA reviewed independently and entered in build-log on completion.
-- [ ] M1 overall Gate reviewed separately; physical-device install, real performance, rotation and process recreation remain NOT_RUN until proved.
+- [x] **PASS only after actual GitHub Actions logs and test report confirm** emulator boot, app/test APK install, list/detail/back assertion, and zero failures. Recording code/config alone is NOT_RUN, not PASS.
+- [x] Actual Run URL, job outcome, artifacts and source SHA reviewed independently and entered in build-log on completion.
+- [x] M1 overall Gate reviewed separately (**NOT VERIFIED**); physical-device install, real performance, rotation and process recreation remain NOT_RUN until proved.
 - Failure policy: preserve original errors, avoid retries within same run, no skipped tests, no false success; fix only smallest verified cause next task.
 - Third-party emulator runner provenance: https://github.com/ReactiveCircus/android-emulator-runner ; stable AndroidX Test runner/ext.junit release table: https://developer.android.com/jetpack/androidx/releases/test ; Compose test dependencies: https://developer.android.com/develop/ui/compose/setup-compose-dependencies-and-compiler
 
@@ -172,3 +172,13 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - Downloaded original emulator artifact id 13281658056, ZIP SHA-256 0d929058d51fcd17f12600eaefe6e31f0b62fb7473b070f30dbacae8fd6786d9 independently verified. AndroidTest XML has tests=1, failures=0, errors=0, skipped=0; runner exit 0; logcat MainActivity START/Displayed and TestRunner finished.
 - Only replace the late package-path check with a Python3 standard-library assertion for exactly one matching test case, zero XML errors/failures/skips and zero runner exit. Keep Gradle pipefail, Compose assertions, logs and artifact upload. Original XML positive check PASS; deliberate tests=0 negative control exits 1 PASS. This is offline replay, NOT_RUN for new CI until executed.
 - Real physical device, rotation/process death, LIVE and performance remain NOT_RUN; M1 overall Gate remains open.
+
+## M1-004 — merged PR and main CI proof (2026-11-04)
+
+- **Scope/PR:** [#14](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/14) squash merged after code diff, resolved Codex P1 thread, and successful [PR Run #41748827365](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41748827365) were reviewed. Merge commit `ede28dc8ef8416986a586d3c41ca7a5617b845fb`, PR head `953aba5fb4e419fcd266ce9018164e860d847c77`.
+- **Post-merge verification:** [main push Run #41755701493](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41755701493), head `ede28dc8ef8416986a586d3c41ca7a5617b845fb`, completed SUCCESS; build job [#126331170470](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41755701493/job/126331170470) and emulator job [#126332262156](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41755701493/job/126332262156) both PASS.
+- **Actual commands:** from `android/`: `./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace` under Bash `set -euo pipefail` with `tee`; emulator runner invokes `bash ../scripts/m1-004-emulator-smoke.sh`, which runs `./gradlew :app:connectedDebugAndroidTest --no-daemon --max-workers=2 --stacktrace` plus strict connected XML and instrumentation exit-code verification. Ubuntu 24.04, JDK 17, Gradle 9.5.0, compilation SDK package `platforms;android-37.0`, emulator API 35 x86_64 Google APIs.
+- **PASS:** main Android Gradle build/lint/unit `BUILD SUCCESSFUL in 2m 13s`, 93 tasks; two unit XML suites total 7/7 tests, failures=0/errors=0/skipped=0. Emulator boot, `:app:connectedDebugAndroidTest` `BUILD SUCCESSFUL in 1m 48s`; `RoomNavigationSmokeTest.roomListOpensDetailAndReturns` 1/1, failures=0/errors=0/skipped=0; result-exit-code file `0`; original TestRunner logcat shows 1 completed, 0 failed.
+- **Artifact integrity:** unit `android-pr-gate-evidence` ID `13288307072` ZIP SHA-256 `bae7921d913d1b6f76ace26bef660f673587288c8f62913af50496e840d5f7ec`; emulator `android-emulator-compose-smoke-evidence` ID `13287838197` ZIP SHA-256 `6ad1fedf5d8d7479be1577f5901389ac8afd238e7cec164c36e4765279a01cec`. Both independently downloaded/hashed; match GitHub artifact digests. Original job logs/XML/exit file inspected, not just green badges.
+- **Warnings/limitations:** Android Lint task PASS with **13 nonfatal warnings**; GitHub Actions Node20 deprecation and `setup-java@v4` warning remain. **FAIL:** none in this main CI. **NOT_RUN/blockers:** clean build on local developer machine, physical-device install, rotation/process recreation, LIVE streaming, release-like device performance; M1 full Exit Gate **NOT VERIFIED**. No Codex generation, API key reads or paid infrastructure in this work unit. Only one Android Actions run was triggered by merging PR #14; evidence-only follow-up is outside Android path filters.
+

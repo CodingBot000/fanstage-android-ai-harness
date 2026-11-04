@@ -1,7 +1,7 @@
 # ADR-0003 — Separate emulator-based Compose smoke in Android PR CI
 
 - Date: 2026-11-04
-- Status: PROPOSED; awaiting actual CI/device evidence
+- Status: ACCEPTED for M1-004 emulator smoke only; overall M1 Exit Gate pending (2026-11-04)
 - Scope: M1-004 only
 
 ## Decision
@@ -38,3 +38,7 @@ Second PR attempt [#41734088258](https://github.com/CodingBot000/fanstage-androi
 
 Fourth PR Run https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41742429212 reproduces Gradle AndroidTest PASS followed by post-test package-path exit 1. Whether the APK was uninstalled during teardown is not established; do not assert this as fact.
 Replace only the redundant late probe with strict standard-library parsing of the persisted connected test XML and runner exit-code text, requiring exactly the Compose room list/detail/back test with one success and zero errors/failures/skips. Gradle still runs under Bash pipefail with captured stdout and logcat; an absent report must fail. This avoids a teardown timing dependency without reducing coverage. No physical-device, rotation, LIVE or performance claim.
+
+## Acceptance evidence — merged PR #14 (2026-11-04)
+
+[PR #14](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/14) merged as `ede28dc8ef8416986a586d3c41ca7a5617b845fb`. Independently checked [PR CI #41748827365](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41748827365) and [main CI #41755701493](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41755701493): Android build/lint/unit 7/7, API 35 connected navigation 1/1, zero failures/errors/skips, strict test XML/exit 0; original jobs and ZIP digests verified in `harness/build-log.md`. This ADR acceptance does not grant M1 overall verification: local clean build, physical-device, rotation, LIVE and performance proof remain NOT_RUN or later-stage gates. No testing gates were disabled.
