@@ -7,8 +7,9 @@ state and factory use the model contract; the model has no Android, UI, storage,
 or networking dependency.
 
 The room list supports loading, content, empty, and error with retry. The default
-fake returns three fictional rooms. Detail contains video and chat placeholders;
-no HLS player or chat transport is implemented.
+fake returns three fictional rooms. Detail uses a Media3 HLS player with a locally
+generated synthetic VOD fixture; chat transport remains unimplemented. The
+separate instrumentation test exercises a changing local LIVE playlist.
 
 ## Build and test
 
@@ -42,7 +43,7 @@ particular combination do not extend that published support range.
   with the wrapper mode fixed. The command in that PR passed clean, assemble,
   lint and seven unit tests; lint reported 13 warnings. Its local log and SHA-256
   are recorded in the [build log](../harness/build-log.md).
-- **NOT_RUN:** physical-device installation, actual orientation change and system
+- **NOT_RUN:** physical-device installation or orientation change and system
   process-death/relaunch. Activity recreation is not proof of those scenarios.
   LIVE playback and performance measurements belong to later milestones.
 
@@ -50,3 +51,5 @@ CI and local results are evidence for their recorded source revisions and
 conditions, not a guarantee for every environment. M1 core gates have been
 reviewed; the unrun scenarios above remain unverified. See [STATUS](../docs/STATUS.md)
 and [build log](../harness/build-log.md) for the current project state.
+
+M2 player behavior and fixture provenance are documented in the [M2 SDD](../docs/specs/M2-hls-player.md). M2 real-device validation remains NOT_RUN.

@@ -15,4 +15,12 @@
     <string name="chat_placeholder">Chat placeholder</string>
     <string name="placeholder_description">This foundation demo uses fictional room data.</string>
     <string name="back_to_rooms">Back to rooms</string>
+    <string name="player_loading">Loading player</string>
+    <string name="player_buffering">Buffering</string>
+    <string name="player_playing">Playing</string>
+    <string name="player_paused">Paused</string>
+    <string name="player_error">Playback failed</string>
+    <string name="player_retry">Retry playback</string>
+    <string name="player_pause">Pause</string>
+    <string name="player_play">Play</string>
 </resources>
