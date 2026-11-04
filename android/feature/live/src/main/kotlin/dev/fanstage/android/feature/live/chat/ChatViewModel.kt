@@ -166,6 +166,8 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
 
     fun retryGap() { if (highestObserved > cursor) recover() }
 
+    fun retryConnection() { transport.retryConnection() }
+
     private fun dispatch(id: String, text: String) {
         val epoch = generation
         val room = mutableState.value.roomId

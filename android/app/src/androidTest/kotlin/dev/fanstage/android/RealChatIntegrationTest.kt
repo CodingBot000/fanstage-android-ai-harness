@@ -260,8 +260,48 @@ class RealChatIntegrationTest {
         }
     }
 
+    private fun verifyM5BoundedReconnect() {
+        val server = ServerSocket(0, 10, InetAddress.getByName("127.0.0.1"))
+        val attempts = java.util.concurrent.atomic.AtomicInteger()
+        val worker = thread(name = "m5-reconnect-server", isDaemon = true) {
+            try {
+                while (!server.isClosed) {
+                    server.accept().use { socket ->
+                        socket.soTimeout = 2_000
+                        val request = StringBuilder()
+                        while (!request.endsWith("\r\n\r\n") && request.length < 16_384) {
+                            val byte = socket.getInputStream().read(); if (byte < 0) break; request.append(byte.toChar())
+                        }
+                        attempts.incrementAndGet()
+                        socket.getOutputStream().write("HTTP/1.1 503 Service Unavailable\r\nContent-Length: 0\r\nConnection: close\r\n\r\n".toByteArray()); socket.getOutputStream().flush()
+                    }
+                }
+            } catch (_: IOException) { }
+        }
+        val transport = RealChatTransport("http://127.0.0.1:${server.localPort}", "synthetic", allowInsecure = true, initialReconnectDelayMillis = 5)
+        val store = androidx.lifecycle.ViewModelStore()
+        composeRule.runOnUiThread {
+            val chat = ViewModelProvider(store, ChatViewModel.Factory("retry-test", transport))[ChatViewModel::class.java]
+            composeRule.activity.setContent { MaterialTheme { Column(Modifier.verticalScroll(rememberScrollState())) { ChatPanel(chat, developmentControls = true) } } }
+        }
+        try {
+            composeRule.waitUntil(5_000) { transport.connectionState.value == ChatConnectionStatus.DISCONNECTED }
+            val stoppedAt = attempts.get()
+            assertEquals("one initial attempt and six bounded retries", 7, stoppedAt)
+            Thread.sleep(300)
+            assertEquals("retries must stop without user action", stoppedAt, attempts.get())
+            composeRule.onNodeWithTag("chat_retry_connection").performScrollTo().performClick()
+            runBlocking { withTimeout(3_000) { while (attempts.get() == stoppedAt) delay(10) } }
+            assertTrue("explicit retry must open another connection", attempts.get() > stoppedAt)
+        } finally {
+            composeRule.runOnUiThread { store.clear() }
+            server.close(); worker.join(2_000)
+        }
+    }
+
     @Test fun androidRealWebSocketHistoryReconnectAndPlayerIsolation() {
         verifyServerInitiatedGracefulClose()
+        verifyM5BoundedReconnect()
         val arguments = InstrumentationRegistry.getArguments()
         val alice = requireNotNull(arguments.getString("fanTokenA")) { "Missing temporary test token A" }
         val bob = requireNotNull(arguments.getString("fanTokenB")) { "Missing temporary test token B" }

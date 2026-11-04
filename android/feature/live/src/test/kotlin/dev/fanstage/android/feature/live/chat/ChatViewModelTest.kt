@@ -372,6 +372,21 @@ class ChatViewModelTest {
         assertEquals(0, budget.size)
     }
 
+    @Test fun `manual reconnect retains uncertain pending message and its id`() = runTest {
+        val inner = Controlled(); inner.sendAction = { _, _, _ -> throw java.io.IOException("unknown") }
+        val status = MutableStateFlow(ChatConnectionStatus.DISCONNECTED); var retries = 0
+        val transport = object : ChatTransport by inner {
+            override val connectionState = status
+            override fun retryConnection() { retries++ }
+        }
+        val vm = create(transport); runCurrent(); assertTrue(vm.send("pending")); advanceUntilIdle()
+        val pending = vm.uiState.value.messages.single()
+        assertTrue(pending.isUncertain)
+        vm.retryConnection(); runCurrent()
+        assertEquals(1, retries)
+        assertEquals(pending, vm.uiState.value.messages.single())
+    }
+
     @Test fun `connection status distinguishes reconnection from uncertain message`() = runTest {
         val inner = Controlled()
         val connection = MutableStateFlow(ChatConnectionStatus.CONNECTING)

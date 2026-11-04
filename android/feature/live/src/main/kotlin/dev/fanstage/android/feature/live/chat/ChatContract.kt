@@ -43,6 +43,7 @@ interface ChatTransport {
     /** Shared only for an in-process transport; a remote transport has no retained local history. */
     val memoryBudget: ChatMemoryBudget? get() = null
     val connectionState: StateFlow<ChatConnectionStatus>? get() = null
+    fun retryConnection() {}
     fun close() {}
     fun events(roomId: String): Flow<ChatEvent>
     suspend fun send(roomId: String, clientMessageId: String, text: String)
