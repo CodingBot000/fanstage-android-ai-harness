@@ -1,5 +1,7 @@
 package dev.fanstage.android
 
+import androidx.activity.compose.setContent
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -21,14 +23,17 @@ import org.junit.Assert.assertTrue
 import java.io.File
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
+import java.lang.ref.WeakReference
 import dev.fanstage.android.feature.live.Media3PlayerController
 import dev.fanstage.android.feature.live.PlaybackState
+import dev.fanstage.android.feature.live.PlayerPanel
 import org.junit.Assert.assertNotSame
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Exercises the real MainActivity and its production FakeRoomRepository on an emulator. */
+/** Exercises the real MainActivity and its production FakeRoomRepository on a connected Android device. */
 @RunWith(AndroidJUnit4::class)
 class RoomNavigationSmokeTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()
@@ -55,7 +60,7 @@ class RoomNavigationSmokeTest {
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
-        // The controls must remain reachable after a real emulator orientation change.
+        // The controls must remain reachable after a real device orientation change.
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
         composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_play").fetchSemanticsNodes().isNotEmpty() }
@@ -64,7 +69,7 @@ class RoomNavigationSmokeTest {
         composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
         composeRule.onNodeWithTag("room_back").performScrollTo().performClick()
         composeRule.onNodeWithTag("room_studio-session").assertIsDisplayed()
-        repeat(3) {
+        repeat(5) {
             composeRule.onNodeWithTag("room_studio-session").performClick()
             composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithTag("room_back").performClick()
@@ -72,6 +77,46 @@ class RoomNavigationSmokeTest {
         }
         verifyLivePlaylistRefresh()
         verifyPlaybackErrorAndRetry()
+        verifyReleasedListenerCanBeCollected()
+        verifyErrorRetryUi()
+    }
+
+    private fun verifyErrorRetryUi() {
+        composeRule.activityRule.scenario.onActivity {
+            it.setContent {
+                MaterialTheme { PlayerPanel("missing-fixture", "asset:///hls/missing.m3u8") }
+            }
+        }
+        composeRule.waitUntil(20_000L) { composeRule.onAllNodesWithTag("player_retry").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithTag("player_retry").assertIsDisplayed().performClick()
+        composeRule.waitUntil(20_000L) { composeRule.onAllNodesWithTag("player_retry").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithTag("player_retry").assertIsDisplayed()
+    }
+
+    /** Checks reachability after release, not a whole-process heap leak audit. */
+    private fun verifyReleasedListenerCanBeCollected() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val references = AtomicReference<Pair<WeakReference<Any>, WeakReference<Any>>>()
+        instrumentation.runOnMainSync {
+            val controller = Media3PlayerController(instrumentation.targetContext, "asset:///hls/missing.m3u8")
+            val field = Media3PlayerController::class.java.getDeclaredField("listener").apply { isAccessible = true }
+            references.set(WeakReference<Any>(controller) to WeakReference(field.get(controller)))
+            controller.release()
+        }
+        // Drain queued player callbacks and do not keep WeakReference.get() temporaries
+        // live on the test thread's stack while requesting collection.
+        instrumentation.waitForIdleSync()
+        fun cleared(ref: WeakReference<Any>) = ref.get() == null
+        val end = SystemClock.elapsedRealtime() + 15_000
+        while (SystemClock.elapsedRealtime() < end) {
+            instrumentation.runOnMainSync { }
+            System.gc()
+            System.runFinalization()
+            SystemClock.sleep(200)
+            if (cleared(references.get().first) && cleared(references.get().second)) break
+        }
+        assertTrue("released controller retained", cleared(references.get().first))
+        assertTrue("released player listener retained", cleared(references.get().second))
     }
 
     private fun verifyPlaybackErrorAndRetry() {

@@ -1,18 +1,19 @@
 # FanStage 작업 현황
 
-- Current milestone: M2 — Media3 HLS Player
-- Current task: M2 기능 PR — 실제 VOD/LIVE fixture 및 lifecycle 검증
-- State: IN_PROGRESS / M2 전체 VERIFIED 아님 (실기기 검증 미실행)
+- Current milestone: M2 — Media3 HLS Player 실기기 Exit Gate 검증 완료
+- Current task: M2 실기기 Gate 결과 PR 리뷰 및 CI
+- State: REVIEW / M2 VERIFIED (아래 확인 범위); 새 PR CI 결과는 PR 체크를 따른다.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
-- Latest baseline: M1 핵심 Gate 완료. 로컬 clean/build/lint/unit PASS, CI build/lint/unit 및 API35 emulator PASS; CI가 `clean`을 명시적으로 실행하지 않은 점은 이력 참조.
-- M2 verification: 로컬 API36 emulator VOD 재생·pause/resume·Activity recreation·반복 이탈·오류/재시도 및 별도 로컬 LIVE playlist 갱신/재생 PASS; build/lint와 unit 9/9 PASS. 상세 및 제한은 [build-log](../harness/build-log.md) 참조. 에뮬레이터 실제 방향 전환 후 재생 버튼 접근 PASS. 실기기 회전·시스템 process death, 실기기 VOD/LIVE 및 성능은 NOT_RUN. M2 전체 실기기 Gate는 미완료.
-- Next action: M2 기능 PR CI 및 리뷰 확인; 핵심 P0/P1 통과 시 병합 후 실기기 Gate 검증.
+- Latest verification: Android 16 / API 36 실기기에서 합성 VOD 첫 프레임·실제 HOME background/pause·수동 재개·가로/세로 전환·6회 진입/이탈·실제 오류/Retry UI 및 별도 로컬 합성 LIVE timeline 갱신/재생 PASS. `am kill`을 이용한 background process 종료 후 새 프로세스에서 상세 화면과 pause 상태 복원 PASS. 자세한 범위와 raw 로그 해시는 [build-log](../harness/build-log.md) 참조.
+- Resource evidence: 테스트 프로세스 Media3 player 13개 init/release 일치, codec Surface 30개 연결/해제 일치. 별도 controller/listener 약한 참조 수거 검사는 메인 큐 정리 후 실기기 반복 PASS. 최초 수거 검사 실패의 정확한 원인은 미확정이며 전체 heap 누수 부재를 증명하지 않는다.
+- NOT_RUN: 실제 저메모리 종료(LMK), 원격 네트워크 LIVE, LIVE의 물리적 화면 첫 프레임, 다양한 실기기·장시간 heap/profile 및 성능. 실기기 LIVE 검증은 file-backed 합성 playlist의 재생 상태·갱신만 확인했다.
+- Next action: 실기기 검증 PR CI·리뷰를 확인하고, 승인된 범위에서 다음 M3 Fake Chat 작업을 진행한다. M2의 위 미검증 항목은 후속 단계에서도 실제 실행 전까지 NOT_RUN으로 유지한다.
 
 ## Milestone Checklist
 
 - [x] M0 Harness Core
 - [x] M1 Android Foundation
-- [ ] M2 HLS Player
+- [x] M2 HLS Player
 - [ ] M3 Fake Chat
 - [ ] M4 Real Chat Server
 - [ ] M5 Fault & Recovery
@@ -47,3 +48,5 @@
 - 2026-11-04 Fast Track v1: M0~M8 사용자 사전 승인, P0/P1 차단 및 P2 이월·M8 재평가를 [ADR-0005](adr/ADR-0005-fast-track.md)에 기록. M1 핵심 Gate와 미실행 항목은 위에 분리 기록.
 
 - 2026-11-04 M2: 사용자가 최초 foreground 자동재생, background pause와 수동 재개, 화면 이탈 해제, PIP/백그라운드 오디오 제외 및 제한된 재시도 정책을 제시했다. [ADR-0006](adr/ADR-0006-m2-playback-lifecycle.md) 참조.
+
+- 2026-11-04 M2 실기기 Gate: API 36 실제 단말 합성 VOD·LIVE/lifecycle 및 반복 해제 증거를 검토해 위 범위에서 VERIFIED. 원격 LIVE·실제 LMK·전체 heap 누수 부재는 검증하지 않았다.

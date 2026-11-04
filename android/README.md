@@ -43,13 +43,12 @@ particular combination do not extend that published support range.
   with the wrapper mode fixed. The command in that PR passed clean, assemble,
   lint and seven unit tests; lint reported 13 warnings. Its local log and SHA-256
   are recorded in the [build log](../harness/build-log.md).
-- **NOT_RUN:** physical-device installation or orientation change and system
-  process-death/relaunch. Activity recreation is not proof of those scenarios.
-  LIVE playback and performance measurements belong to later milestones.
+- **Physical device:** see [build log](../harness/build-log.md) for API 36 VOD, rotation, background/resume, synthetic LIVE timeline and explicit `am kill` process-death evidence. `am kill` is not a low-memory-killer test.
+- **NOT_RUN:** remote-network LIVE, on-screen first frame for synthetic LIVE, actual low-memory process death, prolonged memory profiling and physical-device performance.
 
 CI and local results are evidence for their recorded source revisions and
 conditions, not a guarantee for every environment. M1 core gates have been
 reviewed; the unrun scenarios above remain unverified. See [STATUS](../docs/STATUS.md)
 and [build log](../harness/build-log.md) for the current project state.
 
-M2 player behavior and fixture provenance are documented in the [M2 SDD](../docs/specs/M2-hls-player.md). M2 real-device validation remains NOT_RUN.
+M2 player behavior and fixture provenance are documented in the [M2 SDD](../docs/specs/M2-hls-player.md). M2 physical-device validation is recorded with the stated limitations.
