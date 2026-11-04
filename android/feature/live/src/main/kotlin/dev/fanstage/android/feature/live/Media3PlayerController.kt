@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.asStateFlow
 class Media3PlayerController(context: Context, uri: String) : PlayerController {
     private val mutableState = MutableStateFlow<PlaybackState>(PlaybackState.Loading)
     override val state = mutableState.asStateFlow()
+    internal val hasRenderedFrame = MutableStateFlow(false)
     internal val player: ExoPlayer = ExoPlayer.Builder(context.applicationContext).build()
     private var released = false
     private val listener = object : Player.Listener {
@@ -27,6 +28,7 @@ class Media3PlayerController(context: Context, uri: String) : PlayerController {
                 else -> PlaybackState.Paused
             }
         }
+        override fun onRenderedFirstFrame() { hasRenderedFrame.value = true }
         override fun onPlayerError(error: PlaybackException) { mutableState.value = PlaybackState.Error }
     }
 
@@ -52,6 +54,7 @@ class Media3PlayerController(context: Context, uri: String) : PlayerController {
     override fun retry() {
         if (released) return
         mutableState.value = PlaybackState.Loading
+        hasRenderedFrame.value = false
         player.prepare()
         player.play()
     }
