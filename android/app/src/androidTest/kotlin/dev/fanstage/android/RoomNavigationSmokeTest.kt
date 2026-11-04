@@ -100,6 +100,8 @@ class RoomNavigationSmokeTest {
         }
         verifyLivePlaylistRefresh()
         verifyPlaybackErrorAndRetry()
+        verifyM5SegmentFaultsAndRecovery()
+        verifyM5BoundedTraffic()
         verifyReleasedListenerCanBeCollected()
         verifyChatFailureDoesNotInterruptPlayer()
         verifyErrorRetryUi()
@@ -186,6 +188,149 @@ class RoomNavigationSmokeTest {
         } finally {
             instrumentation.runOnMainSync { controller?.release(); controller?.release() }
         }
+    }
+
+    /** Loopback-only HLS fixture with one-shot network faults; never changes the server. */
+    private fun verifyM5SegmentFaultsAndRecovery() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val context = instrumentation.targetContext
+        val server = java.net.ServerSocket(0, 10, java.net.InetAddress.getByName("127.0.0.1"))
+        val mode = AtomicReference("404")
+        val requested = java.util.concurrent.atomic.AtomicInteger()
+        val workers = java.util.concurrent.CopyOnWriteArrayList<Thread>()
+        val listener = kotlin.concurrent.thread(name = "m5-media-01-fixture", isDaemon = true) {
+            try {
+                while (!server.isClosed) {
+                    val socket = server.accept()
+                    workers.add(kotlin.concurrent.thread(isDaemon = true) {
+                        try {
+                            socket.use {
+                                socket.soTimeout = 5_000
+                                val input = socket.getInputStream()
+                                val request = StringBuilder()
+                                while (!request.endsWith("\r\n\r\n") && request.length < 16_384) {
+                                    val byte = input.read(); if (byte < 0) break; request.append(byte.toChar())
+                                }
+                                val path = request.lineSequence().firstOrNull()?.split(" ")?.getOrNull(1).orEmpty().substringBefore('?')
+                                val isPlaylist = path.endsWith(".m3u8")
+                                val isSegment = path.endsWith(".ts")
+                                if (isSegment) requested.incrementAndGet()
+                                val fault = if (isSegment) mode.get() else "good"
+                                if (fault == "disconnect" && mode.compareAndSet("disconnect", "good")) return@thread
+                                if (fault == "timeout") {
+                                    SystemClock.sleep(12_000); return@thread
+                                }
+                                val ok = isPlaylist || (isSegment && fault != "404")
+                                val body = if (ok) context.assets.open(if (isPlaylist) "hls/vod.m3u8" else "hls/" + path.substringAfterLast('/')).use { it.readBytes() } else ByteArray(0)
+                                val output = socket.getOutputStream()
+                                output.write(("HTTP/1.1 " + (if (ok) "200 OK" else "404 Not Found") + "\r\nContent-Length: " + body.size + "\r\nConnection: close\r\n\r\n").toByteArray())
+                                output.write(body); output.flush()
+                            }
+                        } catch (_: java.io.IOException) { /* expected when client cancels a faulted request */ }
+                    })
+                }
+            } catch (_: java.io.IOException) { /* listener closed after scenario */ }
+        }
+        var controller: Media3PlayerController? = null
+        val chatStore = androidx.lifecycle.ViewModelStore()
+        lateinit var independentChat: ChatViewModel
+        instrumentation.runOnMainSync {
+            independentChat = ViewModelProvider(chatStore, ChatViewModel.Factory("media-fault", FakeChatTransport("media-fault", simulateIncoming = false)))[ChatViewModel::class.java]
+        }
+        fun start() = instrumentation.runOnMainSync {
+            controller = Media3PlayerController(context, "http://127.0.0.1:${server.localPort}/vod.m3u8")
+            controller!!.play()
+        }
+        fun release() = instrumentation.runOnMainSync { controller?.release(); controller = null }
+        fun waitState(state: PlaybackState, timeout: Long): Boolean {
+            val until = SystemClock.elapsedRealtime() + timeout
+            while (SystemClock.elapsedRealtime() < until && controller?.state?.value != state) SystemClock.sleep(100)
+            return controller?.state?.value == state
+        }
+        try {
+            start()
+            assertTrue("segment 404 must produce a player error", waitState(PlaybackState.Error, 30_000))
+            assertTrue("segment request was not made", requested.get() > 0)
+            instrumentation.runOnMainSync { assertTrue(independentChat.send("chat survives player error")) }
+            val chatDeadline = SystemClock.elapsedRealtime() + 10_000
+            while (SystemClock.elapsedRealtime() < chatDeadline && independentChat.uiState.value.messages.none { it.text == "chat survives player error" && it.delivery == dev.fanstage.android.feature.live.chat.Delivery.SENT }) SystemClock.sleep(50)
+            assertTrue("player error must not prevent chat delivery", independentChat.uiState.value.messages.any { it.text == "chat survives player error" && it.delivery == dev.fanstage.android.feature.live.chat.Delivery.SENT })
+            mode.set("good")
+            instrumentation.runOnMainSync { controller!!.retry() }
+            assertTrue("manual retry should resume after segment recovery", waitState(PlaybackState.Playing, 30_000))
+            release()
+            for (fault in listOf("disconnect", "timeout")) {
+                val before = requested.get(); mode.set(fault)
+                if (fault == "timeout") workers.add(kotlin.concurrent.thread(isDaemon = true) {
+                    SystemClock.sleep(10_000); mode.compareAndSet("timeout", "good")
+                })
+                val startedAt = SystemClock.elapsedRealtime(); start()
+                assertTrue("$fault must recover to playing", waitState(PlaybackState.Playing, 45_000))
+                if (fault == "timeout") assertTrue("timeout must wait for read deadline", SystemClock.elapsedRealtime() - startedAt >= 7_500)
+                assertTrue("$fault must cause another segment request", requested.get() >= before + 2)
+                release()
+            }
+        } finally {
+            release(); instrumentation.runOnMainSync { chatStore.clear() }
+            server.close(); listener.join(2_000)
+            workers.forEach { it.join(15_000) }
+        }
+    }
+
+    /** Bounded synthetic traffic with the actual Compose screen and main dispatcher. */
+    private fun verifyM5BoundedTraffic() {
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val stream = kotlinx.coroutines.flow.MutableSharedFlow<dev.fanstage.android.feature.live.chat.ChatEvent>()
+        val transport = object : dev.fanstage.android.feature.live.chat.ChatTransport {
+            override fun events(roomId: String) = stream
+            override suspend fun send(roomId: String, clientMessageId: String, text: String) = Unit
+            override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = emptyList<dev.fanstage.android.feature.live.chat.ServerMessage>()
+        }
+        val store = androidx.lifecycle.ViewModelStore()
+        lateinit var chat: ChatViewModel
+        instrumentation.runOnMainSync {
+            chat = ViewModelProvider(store, ChatViewModel.Factory("traffic", transport))[ChatViewModel::class.java]
+            composeRule.activity.setContent { MaterialTheme { ChatPanel(chat) } }
+        }
+        try {
+            kotlinx.coroutines.runBlocking {
+                kotlinx.coroutines.withTimeout(10_000) {
+                    while (stream.subscriptionCount.value == 0) kotlinx.coroutines.delay(10)
+                }
+                var seq = 0L
+                suspend fun emitOne() {
+                    seq++
+                    stream.emit(dev.fanstage.android.feature.live.chat.ChatEvent.Message(
+                        dev.fanstage.android.feature.live.chat.ServerMessage("traffic", "synthetic-$seq", null, seq, "m$seq", false)
+                    ))
+                }
+                repeat(750) { emitOne() }
+                for (rate in listOf(10, 50, 100)) {
+                    val begin = SystemClock.elapsedRealtime()
+                    var maxHeartbeat = 0L
+                    repeat(rate * 3) { index ->
+                        val wait = begin + index * 1_000L / rate - SystemClock.elapsedRealtime()
+                        if (wait > 0) kotlinx.coroutines.delay(wait)
+                        emitOne()
+                        if (index % 10 == 0) {
+                            val heartbeat = SystemClock.elapsedRealtime()
+                            instrumentation.runOnMainSync { }
+                            val latency = SystemClock.elapsedRealtime() - heartbeat
+                            maxHeartbeat = maxOf(maxHeartbeat, latency)
+                            assertTrue("main dispatcher heartbeat blocked for two seconds", latency < 2_000)
+                        }
+                    }
+                    val elapsed = SystemClock.elapsedRealtime() - begin
+                    android.util.Log.i("M5Traffic", "scenario=m5-net06-seed-73 target_per_s=$rate count=${rate * 3} elapsed_ms=$elapsed max_main_heartbeat_ms=$maxHeartbeat")
+                    assertTrue("bounded traffic fell more than five seconds behind schedule", elapsed < 8_000)
+                }
+                instrumentation.runOnMainSync { }
+                assertTrue("display limit exceeded", chat.uiState.value.messages.size <= 500)
+                val confirmed = ChatViewModel::class.java.getDeclaredField("confirmed").apply { isAccessible = true }.get(chat) as Map<*, *>
+                assertTrue("retention limit exceeded", confirmed.size <= 1_000)
+                assertTrue("last message was not consumed", chat.uiState.value.messages.last().sequence == seq)
+            }
+        } finally { instrumentation.runOnMainSync { store.clear() } }
     }
 
     private fun verifyLivePlaylistRefresh() {

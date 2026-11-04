@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -156,6 +157,59 @@ class ChatViewModelTest {
         assertEquals(4, vm.uiState.value.messages.size)
         assertEquals(pending.key, vm.uiState.value.messages.last().key)
         assertEquals(Delivery.SENT, vm.uiState.value.messages.last().delivery)
+    }
+
+    @Test fun `m5 NET-01 pending outcome remains uncertain after ten second disconnect and retries same id`() = runTest {
+        val t = Controlled(); val link = MutableStateFlow(ChatConnectionStatus.CONNECTED)
+        val vm = create(object : ChatTransport by t { override val connectionState = link }); runCurrent()
+        val finish = CompletableDeferred<Unit>(); var firstId = ""; var retriedId = ""
+        t.sendAction = { _, id, _ -> firstId = id; finish.await(); throw java.io.IOException("ack lost") }
+        assertTrue(vm.send("uncertain")); runCurrent()
+        link.value = ChatConnectionStatus.RECONNECTING; runCurrent()
+        advanceTimeBy(10_000); runCurrent()
+        assertEquals(Delivery.PENDING, vm.uiState.value.messages.single().delivery)
+        finish.complete(Unit); runCurrent()
+        assertEquals(Delivery.PENDING, vm.uiState.value.messages.single().delivery)
+        assertTrue(vm.uiState.value.messages.single().isUncertain)
+        link.value = ChatConnectionStatus.CONNECTED
+        t.sendAction = { room, id, text -> retriedId = id; t.stream.emit(ChatEvent.Ack(ServerMessage(room, "saved", id, 1, text, true))) }
+        vm.retry(firstId); advanceUntilIdle()
+        assertEquals(firstId, retriedId)
+        assertEquals(Delivery.SENT, vm.uiState.value.messages.single().delivery)
+    }
+
+    @Test fun `m5 NET-05 stale snapshot cannot overwrite later events or cursor`() = runTest {
+        val t = Controlled(); val vm = create(t); runCurrent()
+        val late = CompletableDeferred<List<ServerMessage>>()
+        t.fetchAction = { _, _, _, _ -> late.await() }
+        t.stream.emit(ChatEvent.Message(msg(3))); runCurrent()
+        t.stream.emit(ChatEvent.Message(msg(1))); runCurrent()
+        t.stream.emit(ChatEvent.Message(msg(2))); runCurrent()
+        t.stream.emit(ChatEvent.Message(msg(4))); runCurrent()
+        assertEquals(4L, vm.confirmedCursor)
+        late.complete(listOf(msg(1), msg(2), msg(3))); advanceUntilIdle()
+        assertEquals(4L, vm.confirmedCursor)
+        assertEquals(listOf(1L, 2L, 3L, 4L), vm.uiState.value.messages.map { it.sequence })
+        assertFalse(vm.uiState.value.gapUnresolved)
+    }
+
+    @Test fun `m5 NET-06 bounded virtual traffic retains limits at 10 50 and 100 per second`() = runTest {
+        val t = Controlled(); val vm = create(t); runCurrent()
+        var sequence = 0L
+        for (rate in listOf(10, 50, 100)) {
+            repeat(rate * 12) {
+                t.stream.emit(ChatEvent.Message(msg(++sequence)))
+                runCurrent()
+                assertTrue(vm.totalLogicalMessages <= 1_000)
+                assertTrue(vm.uiState.value.messages.size <= 500)
+                advanceTimeBy(1_000L / rate)
+            }
+            assertEquals(sequence, vm.confirmedCursor)
+        }
+        assertEquals(1_000, vm.retainedMessageCount)
+        assertEquals(500, vm.uiState.value.messages.size)
+        assertEquals(sequence, vm.uiState.value.messages.last().sequence)
+        assertFalse(vm.uiState.value.gapUnresolved)
     }
 
     @Test fun `large gap recovers in bounded pages without advancing across missing sequence`() = runTest {
