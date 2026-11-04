@@ -61,8 +61,17 @@ before = snapshot(); old = artifacts(); start = time.monotonic()
 print('Physical device preflight PASS; results are stored in a private local directory.', flush=True)
 cmd = ['./gradlew', ':macrobenchmark:connectedBenchmarkAndroidTest', '--no-daemon', '--stacktrace']
 with (out / 'gradle.log').open('w') as log:
-    result = subprocess.run(cmd, cwd=ANDROID, stdout=log, stderr=subprocess.STDOUT, env=os.environ.copy())
-after = snapshot(); (out / 'environment-after.json').write_text(json.dumps(after, indent=2) + '\n')
+    try:
+        result_code = subprocess.run(cmd, cwd=ANDROID, stdout=log, stderr=subprocess.STDOUT, env=os.environ.copy()).returncode
+    except OSError as exc:
+        log.write('Runner launch failed: ' + type(exc).__name__ + '\n')
+        result_code = 1
+try:
+    after = snapshot()
+except (OSError, subprocess.SubprocessError, ValueError) as exc:
+    # Device disconnect must not prevent preserving results already pulled by Gradle.
+    after = {'status': 'NOT_RUN', 'reason': type(exc).__name__}
+(out / 'environment-after.json').write_text(json.dumps(after, indent=2) + '\n')
 raw = out / 'raw'; raw.mkdir()
 files = []
 for name, meta in artifacts().items():
@@ -76,13 +85,15 @@ for label, path in {
     'test': ANDROID / 'macrobenchmark/build/outputs/apk/benchmark/macrobenchmark-benchmark.apk',
 }.items():
     if path.is_file(): apks[label] = hashlib.sha256(path.read_bytes()).hexdigest()
-manifest = {'source_commit': sha, 'gradle_command': cmd, 'exit_code': result.returncode,
+manifest = {'source_commit': sha, 'gradle_command': cmd, 'exit_code': result_code,
             'elapsed_seconds': round(time.monotonic()-start, 3), 'raw_files': files, 'apk_sha256': apks,
             'target_package': 'dev.fanstage.android.benchmark', 'compilation_mode': 'None',
             'note': 'Device identifier intentionally omitted; traces and log remain local and may contain private system data.'}
 (out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 print('Output directory:', out)
-print('Gradle exit code:', result.returncode, 'new raw files:', len(files))
-if result.returncode != 0: sys.exit(result.returncode)
+print('Gradle exit code:', result_code, 'new raw files:', len(files))
+if result_code != 0: sys.exit(result_code)
+if after.get('status') == 'NOT_RUN':
+    sys.exit('FAIL: post-run device environment unavailable; raw files were preserved')
 if not any(f['path'].endswith('benchmarkData.json') for f in files) or not any(f['path'].endswith('.perfetto-trace') for f in files):
     sys.exit('FAIL: successful runner did not yield both raw JSON and Perfetto trace')
