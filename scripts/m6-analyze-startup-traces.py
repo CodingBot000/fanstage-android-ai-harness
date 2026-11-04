@@ -8,8 +8,9 @@ from perfetto.trace_processor import TraceProcessor
 parser = argparse.ArgumentParser()
 parser.add_argument('directory', type=Path)
 parser.add_argument('--output', type=Path, required=True)
+parser.add_argument('--pattern', default='*ColdStartupBenchmark_coldStartup_iter*.perfetto-trace')
 args = parser.parse_args()
-traces = sorted(args.directory.rglob('*ColdStartupBenchmark_coldStartup_iter*.perfetto-trace'))
+traces = sorted(args.directory.rglob(args.pattern))
 if not traces: raise SystemExit('no startup trace files')
 query = """select round(max(case when s.name='bindApplication' then s.dur end)/1e6,2) bind_ms,
 round(max(case when s.name like 'Texture upload%' then s.dur end)/1e6,2) texture_ms,
