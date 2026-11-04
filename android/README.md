@@ -47,6 +47,6 @@ particular combination do not extend that published support range.
   LIVE playback and performance measurements belong to later milestones.
 
 CI and local results are evidence for their recorded source revisions and
-conditions, not a guarantee for every environment. M1 remains open pending
-review and its remaining Exit Gate requirements. See [STATUS](../docs/STATUS.md)
+conditions, not a guarantee for every environment. M1 core gates have been
+reviewed; the unrun scenarios above remain unverified. See [STATUS](../docs/STATUS.md)
 and [build log](../harness/build-log.md) for the current project state.
