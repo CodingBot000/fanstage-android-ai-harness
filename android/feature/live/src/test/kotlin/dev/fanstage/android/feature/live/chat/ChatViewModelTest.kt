@@ -315,6 +315,18 @@ class ChatViewModelTest {
         assertEquals(1_000, budget.size)
     }
 
+    @Test fun `draft remains in memory, rejects oversized edits, and clears on room change`() = runTest {
+        val t = Controlled(); val vm = create(t); runCurrent()
+        vm.updateDraft("😀".repeat(1_000))
+        assertEquals(1_000, vm.uiState.value.draft.codePointCount(0, vm.uiState.value.draft.length))
+        vm.updateDraft("😀".repeat(1_001))
+        assertTrue(vm.uiState.value.inputTooLong)
+        assertEquals(1_000, vm.uiState.value.draft.codePointCount(0, vm.uiState.value.draft.length))
+        vm.openRoom("b"); runCurrent()
+        assertEquals("", vm.uiState.value.draft)
+        assertFalse(vm.uiState.value.inputTooLong)
+    }
+
     @Test fun `message length counts unicode code points and rejects oversized input and events`() = runTest {
         val t = Controlled(); val vm = create(t); runCurrent()
         assertTrue(vm.send("😀".repeat(1_000)))

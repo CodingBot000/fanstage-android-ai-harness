@@ -70,6 +70,14 @@ class ChatViewModel(private val transport: ChatTransport, initialRoomId: String)
         }
     }
 
+    fun updateDraft(text: String) {
+        if (text.chatCodePoints() <= ChatLimits.MAX_CODE_POINTS) {
+            mutableState.value = mutableState.value.copy(draft = text, inputTooLong = false)
+        } else {
+            mutableState.value = mutableState.value.copy(inputTooLong = true)
+        }
+    }
+
     fun send(text: String): Boolean {
         val clean = text.trim()
         if (clean.isEmpty()) return false

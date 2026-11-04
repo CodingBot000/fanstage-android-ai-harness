@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -30,8 +29,6 @@ import dev.fanstage.android.feature.live.R
 @Composable
 fun ChatPanel(viewModel: ChatViewModel) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-    var draft by rememberSaveable(state.roomId) { mutableStateOf("") }
-    var tooLong by rememberSaveable(state.roomId) { mutableStateOf(false) }
     val listState = rememberLazyListState()
     var followLatest by remember(state.roomId) { mutableStateOf(true) }
     var forceLatest by remember(state.roomId) { mutableStateOf(false) }
@@ -76,14 +73,11 @@ fun ChatPanel(viewModel: ChatViewModel) {
             TextButton(onClick = viewModel::retryGap) { Text(stringResource(R.string.retry)) }
         }
         if (state.sendBlocked) Text(stringResource(R.string.chat_capacity))
-        if (tooLong || state.inputTooLong) Text(stringResource(R.string.chat_too_long))
+        if (state.inputTooLong) Text(stringResource(R.string.chat_too_long))
         if (state.transportUncertain) Text(stringResource(R.string.chat_uncertain))
         Row(Modifier.fillMaxWidth()) {
-            OutlinedTextField(value = draft, onValueChange = {
-                if (it.chatCodePoints() <= ChatLimits.MAX_CODE_POINTS) { draft = it; tooLong = false }
-                else tooLong = true
-            }, modifier = Modifier.weight(1f).testTag("chat_input"), label = { Text(stringResource(R.string.chat_message_label)) })
-            Button(onClick = { if (viewModel.send(draft)) { draft = ""; forceLatest = true } }, modifier = Modifier.testTag("chat_send")) { Text(stringResource(R.string.chat_send)) }
+            OutlinedTextField(value = state.draft, onValueChange = viewModel::updateDraft, modifier = Modifier.weight(1f).testTag("chat_input"), label = { Text(stringResource(R.string.chat_message_label)) })
+            Button(onClick = { if (viewModel.send(state.draft)) { viewModel.updateDraft(""); forceLatest = true } }, modifier = Modifier.testTag("chat_send")) { Text(stringResource(R.string.chat_send)) }
         }
     }
 }

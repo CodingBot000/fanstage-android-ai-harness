@@ -55,6 +55,7 @@ data class ChatUiState(
     val sendBlocked: Boolean = false,
     val transportUncertain: Boolean = false,
     val inputTooLong: Boolean = false,
+    val draft: String = "",
 )
 
 internal fun String.chatCodePoints(): Int = codePointCount(0, length)

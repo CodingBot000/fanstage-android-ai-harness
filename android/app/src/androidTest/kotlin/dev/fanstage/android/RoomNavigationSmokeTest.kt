@@ -8,6 +8,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -71,12 +73,15 @@ class RoomNavigationSmokeTest {
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
         composeRule.onNodeWithTag("player_play").performScrollTo().performClick()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+        // Draft stays in the retained ViewModel, not saved-state storage.
+        composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("draft survives")
         // ActivityScenario.recreate() verifies Activity/nav state restoration, not rotation or process death.
         val originalActivity = composeRule.activity
         composeRule.activityRule.scenario.recreate()
         assertNotSame(originalActivity, composeRule.activity)
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
+        composeRule.onNodeWithTag("chat_input").performScrollTo().assertTextContains("draft survives").performTextClearance()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
         // The controls must remain reachable after a real device orientation change.
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
