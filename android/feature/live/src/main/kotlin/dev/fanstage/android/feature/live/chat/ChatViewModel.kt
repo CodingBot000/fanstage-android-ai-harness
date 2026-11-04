@@ -274,13 +274,11 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
         // can appear in the bounded display tail.
         val visiblePending = pending.values.toList().takeLast(ChatLimits.DISPLAYED)
         val remaining = ChatLimits.DISPLAYED - visiblePending.size
-        val resolved = ArrayList<ChatMessage>(minOf(remaining, confirmed.size))
-        val newestFirst = confirmed.descendingMap().values.iterator()
-        while (resolved.size < remaining && newestFirst.hasNext()) {
-            val message = newestFirst.next()
-            resolved.add(ChatMessage(message.clientMessageId?.let { id -> "client:$id" } ?: "server:${message.messageId}", message.clientMessageId, message.serverSequence, message.text, message.isOwn, Delivery.SENT))
+        val visibleConfirmed = confirmed.descendingMap().values.asSequence()
+            .take(remaining).toList().asReversed()
+        val resolved = visibleConfirmed.map {
+            ChatMessage(it.clientMessageId?.let { id -> "client:$id" } ?: "server:${it.messageId}", it.clientMessageId, it.serverSequence, it.text, it.isOwn, Delivery.SENT)
         }
-        resolved.reverse()
         mutableState.value = mutableState.value.copy(
             messages = resolved + visiblePending,
             gapUnresolved = gap || invalidEvent,
