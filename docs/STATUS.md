@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-004 — repair post-test package-path assertion while retaining Compose instrumentation
-- State: IN_PROGRESS (PR #14 repair pending CI; previous connected test 1/1 PASS, whole CI FAIL)
-- Last approved main commit: `a4d06a0246e3c2b865ef6d4d45fd3ef97ae9fad7` (PR #13 squash merge, M1-003 evidence)
+- Current task: M1 Exit Gate review after M1-004 emulator navigation proof
+- State: IN_PROGRESS (M1-004 PR #14 merged and main CI PASS; M1 overall Gate remains open)
+- Last approved main code commit: `ede28dc8ef8416986a586d3c41ca7a5617b845fb` (PR #14 squash merge)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
-- Latest verification: [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12) squash merged at `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8`; [main push CI Run #41715334883](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41715334883) **PASS** (job `126193724321`, 93 tasks, 7 JUnit tests, 0 failures/errors/skipped, lint PASS with 13 warnings). Original log and downloaded ZIP SHA-256 verified; see build-log.
-- Current blockers: latest [PR #14 Run #41742429212](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41742429212) FAIL despite emulator/Gradle/Compose test PASS; late post-test adb package-path assertion exited 1 (root cause not proven). Original XML confirms 1/1, runner exit 0, MainActivity launch in logcat. Corrected XML gate pending new CI. M1 Gate open; physical device, rotation/process recovery, LIVE and performance NOT_RUN; lint 13 warnings/Actions Node20 warning remain.
-- Next action: inspect one new PR #14 CI run and original connected test XML/logcat, only then consider merge. Do not rerun Codex, weaken tests, or start M2.
+- Latest verification: [PR #14](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/14) merged; [main CI Run #41755701493](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41755701493) **PASS**, build/lint + JUnit 7/7, emulator API 35 Compose navigation 1/1, 0 test failures/errors/skips. Original logs and downloaded ZIPs verified against GitHub SHA-256; see build-log.
+- Current blockers: M1 clean **local** build still NOT_RUN (CI fresh-runner build PASS); full M1 Exit Gate checklist and independent lifecycle review remain pending. Physical-device install, rotation/process recreation, HLS LIVE playback, and physical-device performance remain NOT_RUN (some belong to later gates). Existing lint warnings (13) and Actions Node20 deprecation warnings remain visible; no gate suppressed.
+- Next action: review the remaining M1 Exit Gate criteria with actual independent evidence; do not mark M1 VERIFIED or start M2 solely because this one Compose path passed.
 
 ## Milestone Checklist
 
@@ -31,4 +31,4 @@
 
 - 2026-11-04: [M1 SDD](specs/M1-android-foundation.md) 및 [ADR-0002](adr/ADR-0002-android-foundation-stack.md)에서 공식 호환성 근거와 후보 버전을 기록했다. M1-001은 문서 작업이고 M1-002부터 실제 앱을 생성한다.
 
-- M1-002 saved Android source reviewed in PR; CI build/lint/unit PASS, emulator NOT_RUN.
+- M1-002 source CI build/lint/unit PASS; M1-004 API 35 emulator navigation PASS (PR #14 / main Run #41755701493). Physical-device and broader lifecycle verification NOT_RUN.
