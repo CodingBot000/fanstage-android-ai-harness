@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run isolated non-debuggable Macrobenchmarks on one explicitly selected physical device."""
+import argparse
 import hashlib
 import json
 import os
@@ -11,6 +12,11 @@ import sys
 import time
 from datetime import datetime, timezone
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--classes', help='Comma-separated dev.fanstage.benchmark test classes to run')
+args = parser.parse_args()
+if args.classes and not re.fullmatch(r'dev\.fanstage\.benchmark\.[A-Za-z0-9_,.]+', args.classes):
+    sys.exit('Invalid benchmark class selection')
 ROOT = Path(__file__).resolve().parents[1]
 ANDROID = ROOT / 'android'
 SERIAL = os.environ.get('ANDROID_SERIAL')
@@ -60,6 +66,7 @@ before = snapshot(); old = artifacts(); start = time.monotonic()
 (out / 'environment-before.json').write_text(json.dumps(before, indent=2) + '\n')
 print('Physical device preflight PASS; results are stored in a private local directory.', flush=True)
 cmd = ['./gradlew', ':macrobenchmark:connectedBenchmarkAndroidTest', '--no-daemon', '--stacktrace']
+if args.classes: cmd.append('-Pandroid.testInstrumentationRunnerArguments.class=' + args.classes)
 with (out / 'gradle.log').open('w') as log:
     try:
         result_code = subprocess.run(cmd, cwd=ANDROID, stdout=log, stderr=subprocess.STDOUT, env=os.environ.copy()).returncode
