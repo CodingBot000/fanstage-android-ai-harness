@@ -53,7 +53,7 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
         cursor = 0
         highestObserved = 0
         invalidEvent = false
-        mutableState.value = ChatUiState(roomId, localServer = transport is RealChatTransport)
+        mutableState.value = ChatUiState(roomId, localServer = transport is RealChatTransport, fictionalFixtures = transport is FakeChatTransport)
         val epoch = generation
         connectionJob = transport.connectionState?.let { connection ->
             viewModelScope.launch(start = CoroutineStart.UNDISPATCHED) {
@@ -271,7 +271,7 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
 
     private fun publish(gap: Boolean = mutableState.value.gapUnresolved, sendBlocked: Boolean = false) {
         val resolved = confirmed.values.map {
-            ChatMessage(it.clientMessageId?.let { id -> "client:$id" } ?: "server:${it.messageId}", it.clientMessageId, it.serverSequence, it.text, it.isOwn, Delivery.SENT)
+            ChatMessage(it.clientMessageId?.let { id -> "client:$id" } ?: "server:${it.messageId}", it.clientMessageId, it.serverSequence, it.text, it.isOwn, Delivery.SENT, sentAt = it.sentAt)
         }
         mutableState.value = mutableState.value.copy(
             messages = (resolved + pending.values).takeLast(ChatLimits.DISPLAYED),

@@ -50,6 +50,14 @@ class ChatViewModelTest {
         override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = fetchAction(roomId, afterSequence, upperSequence, limit)
     }
 
+    @Test fun `confirmed server timestamp survives into display state`() = runTest {
+        val transport = Controlled(); val vm = create(transport); runCurrent()
+        val timestamp = "2026-11-05T12:34:56.123456Z"
+        transport.stream.emit(ChatEvent.Message(ServerMessage("a", "server-timestamp", null, 1, "hello", false, timestamp)))
+        runCurrent()
+        assertEquals(timestamp, vm.uiState.value.messages.single().sentAt)
+    }
+
     @Test fun `fake seed sends pending then ack and duplicate echo converge`() = runTest {
         val fake = FakeChatTransport("a", seed = 73, simulateIncoming = false)
         val vm = create(fake)

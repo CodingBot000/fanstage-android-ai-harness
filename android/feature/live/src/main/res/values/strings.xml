@@ -51,4 +51,14 @@
     <string name="chat_connection_error">Unable to authenticate with the local chat server.</string>
     <string name="chat_config_error">Check the local server URL and test token.</string>
     <string name="chat_switch_blocked">Resolve unconfirmed messages before switching.</string>
+    <string name="room_error">Rooms could not be loaded. Please try again.</string>
+    <string name="room_studio_title">Studio session</string>
+    <string name="room_sketch_title">Afternoon sketch break</string>
+    <string name="room_tabletop_title">Tabletop night</string>
+    <string name="fake_welcome">Welcome to the room!</string>
+    <string name="fake_arrival">Glad to be here!</string>
+    <string name="player_description">Video player</string>
+    <string name="chat_retry_message">Retry message</string>
+    <string name="chat_retry_gap">Retry missing messages</string>
+    <string name="chat_timestamp">Sent %1$s</string>
 </resources>

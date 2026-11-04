@@ -423,13 +423,14 @@ class RealChatIntegrationTest {
             // Debug-only UI selects the local endpoint and transient synthetic credential.
             composeRule.onNodeWithTag("chat_token").performScrollTo().performTextInput(alice)
             composeRule.onNodeWithTag("chat_use_real").performScrollTo().performClick()
-            composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText("Local server").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_mode_real)).fetchSemanticsNodes().isNotEmpty() }
             // Allow subscription before sending; existing snapshot messages prove the handshake completed.
             composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithText("missed while offline").fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("android real send")
             composeRule.onNodeWithTag("chat_send").performScrollTo().performClick()
-            composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithText("Sent").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_sent)).fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithText("android real send").assertExists()
+            composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("chat_timestamp").fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithTag("player_state_playing").assertExists()
             // Background/foreground keeps the real chat owner while player pause remains independent.
             composeRule.activityRule.scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED)

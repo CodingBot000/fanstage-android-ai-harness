@@ -15,6 +15,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -33,6 +35,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
     val session = remember(controller) { PlaybackSession(controller, autoPlay) }
     val state by controller.state.collectAsStateWithLifecycle()
     val rendered by controller.hasRenderedFrame.collectAsStateWithLifecycle()
+    val playerDescription = stringResource(R.string.player_description)
 
     DisposableEffect(owner, session) {
         val observer = LifecycleEventObserver { _, event ->
@@ -58,7 +61,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
             factory = { PlayerView(it).apply { useController = false; player = controller.player } },
             update = { it.player = controller.player },
             onRelease = { it.player = null },
-            modifier = Modifier.fillMaxWidth().height(200.dp).testTag(if (rendered) "player_first_frame" else "player_surface"),
+            modifier = Modifier.fillMaxWidth().height(200.dp).semantics { contentDescription = playerDescription }.testTag(if (rendered) "player_first_frame" else "player_surface"),
         )
         Text(
             stringResource(when (state) {

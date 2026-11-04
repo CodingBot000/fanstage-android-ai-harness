@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
-- Current milestone: M6 — Performance Baseline & Optimization
-- Current task: M6-002 성능 가설 검증 및 독립 전후 측정
-- State: M6-001 PR #27 병합, M6-002 진행 중. 최적화 전 비교 기준과 원인 검증을 준비하며 M6 전체는 미완료다.
+- Current milestone: M7 — Globalization & UI/Product Polish
+- Current task: M7 한국어·영어, 접근성 및 오류 UX
+- State: M7 로컬 핵심 UX 검증 PASS; PR CI·리뷰 대기. M6 PR #28의 두 실험은 되돌렸고 개선 효과와 미측정 항목은 그대로 유지한다.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. 이후 선택은 권장안을 적용해 질문 없이 진행한다.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
-- Next action: [M6-002 SDD](specs/M6-002-ab-optimization.md)의 대조·baseline을 확보하고 두 가설을 독립적으로 전후 검증한다.
+- Next action: M7 PR의 최종 CI·리뷰를 확인하고 통과 시 병합한 뒤 M8을 준비한다.
 
 ## Milestone Checklist
 
@@ -18,7 +18,7 @@
 - [x] M4 Real Chat Server (PR #25 병합; main CI PASS)
 - [x] M5 Fault & Recovery (PR #26 병합; main CI PASS)
 - [ ] M6 Performance
-- [ ] M7 Globalization/Polish
+- [x] M7 Globalization/Polish (로컬 검증 PASS; PR 최종 CI 통과가 병합 조건)
 - [ ] M8 Portfolio Release
 
 ## M1-008 문서 현행화

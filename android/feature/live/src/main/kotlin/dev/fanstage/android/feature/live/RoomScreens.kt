@@ -65,7 +65,13 @@ fun RoomListScreen(
                             modifier = Modifier.fillMaxWidth().testTag("room_${room.id}"),
                         ) {
                             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Text(room.title, style = MaterialTheme.typography.titleMedium)
+                                val title = when (room.id to room.title) {
+                                    "studio-session" to "Studio session" -> stringResource(R.string.room_studio_title)
+                                    "sketch-break" to "Afternoon sketch break" -> stringResource(R.string.room_sketch_title)
+                                    "tabletop-night" to "Tabletop night" -> stringResource(R.string.room_tabletop_title)
+                                    else -> room.title
+                                }
+                                Text(title, style = MaterialTheme.typography.titleMedium)
                                 Text(stringResource(R.string.room_host, room.hostName))
                                 Text(pluralStringResource(R.plurals.room_viewers, room.viewerCount, room.viewerCount))
                             }
@@ -77,7 +83,7 @@ fun RoomListScreen(
                     Button(onClick = onRetry) { Text(stringResource(R.string.refresh)) }
                 }
                 is RoomUiState.Error -> Column(Modifier.testTag("rooms_error")) {
-                    Text(state.message, Modifier.padding(vertical = 16.dp))
+                    Text(stringResource(R.string.room_error), Modifier.padding(vertical = 16.dp))
                     Button(onClick = onRetry, modifier = Modifier.testTag("rooms_retry")) {
                         Text(stringResource(R.string.retry))
                     }
