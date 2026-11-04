@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M1 — Android Native Foundation
-- Current task: M1-004 — Emulator/Compose UI navigation smoke (one instrumentation test PASS; post-test package check FAIL)
-- State: IN_PROGRESS (M1-003 CI VERIFIED; M1-004 AndroidTest instrumentation 1/1 PASS but overall PR #14 CI FAIL from post-test shell check)
-- Last approved commit: `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8` (PR #12 squash merge, M1-003 persistent CI)
+- Current task: M1-004 — repair post-test package-path assertion while retaining Compose instrumentation
+- State: IN_PROGRESS (PR #14 repair pending CI; previous connected test 1/1 PASS, whole CI FAIL)
+- Last approved main commit: `a4d06a0246e3c2b865ef6d4d45fd3ef97ae9fad7` (PR #13 squash merge, M1-003 evidence)
 - Human approval: M0 전체 진행 및 결과에 대한 사용자 포괄 승인 (2026-11-04); M0-002의 성공 증거 기반 Exit Gate 충족
 - Latest verification: [PR #12](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/12) squash merged at `ecbd717ef97e78cdf1bd8f68b58f2100c3f21ec8`; [main push CI Run #41715334883](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41715334883) **PASS** (job `126193724321`, 93 tasks, 7 JUnit tests, 0 failures/errors/skipped, lint PASS with 13 warnings). Original log and downloaded ZIP SHA-256 verified; see build-log.
-- Current blockers: [PR #14 CI #41741160963](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41741160963) **FAIL** although Gradle `:app:connectedDebugAndroidTest` and actual Compose UI test `roomListOpensDetailAndReturns` 1/1 **PASS**, XML errors/failures/skips 0. Final `adb shell pm path dev.fanstage.android | grep '^package:'` post-test check returned exit 1 (whether Gradle uninstalled app after the test or adb failed is not independently established); CI job FAIL. M1 Gate open; physical device, rotation/process recovery, LIVE and performance NOT_RUN. 13 lint warnings and Actions Node20 warning remain.
-- Next action: repair only the fragile **post-test** `pm path | grep` check without weakening connected tests (prefer validating produced XML and passing instrumentation/launch evidence); inspect one subsequent PR CI run. PR #14 unmerged until entire workflow PASS and independent review. No M2+ changes.
+- Current blockers: latest [PR #14 Run #41742429212](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41742429212) FAIL despite emulator/Gradle/Compose test PASS; late post-test adb package-path assertion exited 1 (root cause not proven). Original XML confirms 1/1, runner exit 0, MainActivity launch in logcat. Corrected XML gate pending new CI. M1 Gate open; physical device, rotation/process recovery, LIVE and performance NOT_RUN; lint 13 warnings/Actions Node20 warning remain.
+- Next action: inspect one new PR #14 CI run and original connected test XML/logcat, only then consider merge. Do not rerun Codex, weaken tests, or start M2.
 
 ## Milestone Checklist
 
