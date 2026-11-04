@@ -23,4 +23,17 @@
     <string name="player_retry">Retry playback</string>
     <string name="player_pause">Pause</string>
     <string name="player_play">Play</string>
+    <string name="chat_title">Room chat</string>
+    <string name="chat_you">You</string>
+    <string name="chat_fixture">Fictional fan</string>
+    <string name="chat_pending">Sending</string>
+    <string name="chat_sent">Sent</string>
+    <string name="chat_failed">Failed</string>
+    <string name="chat_gap">Some messages are missing or inconsistent.</string>
+    <string name="chat_capacity">Too many unconfirmed messages. Try again after delivery.</string>
+    <string name="chat_uncertain">Delivery is unconfirmed.</string>
+    <string name="chat_message_label">Message</string>
+    <string name="chat_send">Send</string>
+    <string name="chat_remove_failed">Remove failed message</string>
+    <string name="chat_too_long">Messages can contain at most 1,000 Unicode characters.</string>
 </resources>

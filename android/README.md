@@ -8,7 +8,7 @@ or networking dependency.
 
 The room list supports loading, content, empty, and error with retry. The default
 fake returns three fictional rooms. Detail uses a Media3 HLS player with a locally
-generated synthetic VOD fixture; chat transport remains unimplemented. The
+generated synthetic VOD fixture; an in-memory Fake chat transport exercises ACK, ordering and gap recovery. Actual WebSocket transport remains unimplemented. The
 separate instrumentation test exercises a changing local LIVE playlist.
 
 ## Build and test

@@ -2,10 +2,18 @@ package dev.fanstage.android
 
 import androidx.activity.compose.setContent
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.ViewModelProvider
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -28,6 +36,9 @@ import java.lang.ref.WeakReference
 import dev.fanstage.android.feature.live.Media3PlayerController
 import dev.fanstage.android.feature.live.PlaybackState
 import dev.fanstage.android.feature.live.PlayerPanel
+import dev.fanstage.android.feature.live.chat.ChatPanel
+import dev.fanstage.android.feature.live.chat.ChatViewModel
+import dev.fanstage.android.feature.live.chat.FakeChatTransport
 import org.junit.Assert.assertNotSame
 import org.junit.Rule
 import org.junit.Test
@@ -48,10 +59,17 @@ class RoomNavigationSmokeTest {
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
         composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        // Chat is independent of playback: send via Fake, then verify the player is still playing.
+        composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("Hello from test")
+        composeRule.onNodeWithTag("chat_send").performScrollTo().performClick()
+        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText("Sent").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithTag("chat_messages").performScrollTo()
+        composeRule.onNodeWithText("Hello from test").assertExists()
+        composeRule.onNodeWithTag("player_state_playing").assertExists()
         composeRule.activityRule.scenario.moveToState(Lifecycle.State.CREATED)
         composeRule.activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
-        composeRule.onNodeWithTag("player_play").performClick()
+        composeRule.onNodeWithTag("player_play").performScrollTo().performClick()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
         // ActivityScenario.recreate() verifies Activity/nav state restoration, not rotation or process death.
         val originalActivity = composeRule.activity
@@ -78,7 +96,30 @@ class RoomNavigationSmokeTest {
         verifyLivePlaylistRefresh()
         verifyPlaybackErrorAndRetry()
         verifyReleasedListenerCanBeCollected()
+        verifyChatFailureDoesNotInterruptPlayer()
         verifyErrorRetryUi()
+    }
+
+    private fun verifyChatFailureDoesNotInterruptPlayer() {
+        composeRule.activityRule.scenario.onActivity { activity ->
+            val factory = ChatViewModel.Factory("chat-error", FakeChatTransport("chat-error", rejectSends = true, simulateIncoming = false))
+            val chat = ViewModelProvider(activity, factory)["chat-error", ChatViewModel::class.java]
+            activity.setContent {
+                MaterialTheme {
+                    Column(Modifier.verticalScroll(rememberScrollState())) {
+                        PlayerPanel("chat-error")
+                        ChatPanel(chat)
+                    }
+                }
+            }
+        }
+        composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("rejected test")
+        composeRule.onNodeWithTag("chat_send").performScrollTo().performClick()
+        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText("Failed").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithText("Retry").performScrollTo().performClick()
+        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText("Failed").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithTag("player_state_playing").assertExists()
     }
 
     private fun verifyErrorRetryUi() {

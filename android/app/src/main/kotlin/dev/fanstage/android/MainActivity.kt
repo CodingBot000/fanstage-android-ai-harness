@@ -18,6 +18,7 @@ import dev.fanstage.android.feature.live.FakeRoomRepository
 import dev.fanstage.android.feature.live.RoomDetailScreen
 import dev.fanstage.android.feature.live.RoomListRoute
 import dev.fanstage.android.feature.live.RoomListViewModel
+import dev.fanstage.android.feature.live.chat.ChatViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,8 +49,12 @@ private fun FanStageApp() {
             route = "rooms/{roomId}",
             arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
         ) { entry ->
+            val roomId = requireNotNull(entry.arguments?.getString("roomId"))
+            val chatFactory = remember(roomId) { ChatViewModel.Factory(roomId) }
+            val chatViewModel: ChatViewModel = viewModel(viewModelStoreOwner = entry, factory = chatFactory)
             RoomDetailScreen(
-                roomId = requireNotNull(entry.arguments?.getString("roomId")),
+                roomId = roomId,
+                chatViewModel = chatViewModel,
                 onBack = { navController.popBackStack() },
             )
         }
