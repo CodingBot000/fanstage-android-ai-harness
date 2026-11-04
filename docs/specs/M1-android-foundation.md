@@ -1,7 +1,7 @@
 # M1 — Android Native Foundation SDD
 
 - Status: APPROVED FOR IMPLEMENTATION (2026-11-04, 사용자 포괄 실행 승인). 검증 Gate는 별도 PASS 필요.
-- Current work: M1-006 independent Exit Gate audit following M1-005 merged lifecycle smoke. **MASTER_PLAN M1 Gate takes precedence**: local clean build AND CI, not local OR CI. M1 overall Exit Gate BLOCKED; see [audit](../reviews/M1-006-exit-gate-audit.md).
+- Current work: M1-007 local clean build evidence following the [M1-006 audit](../reviews/M1-006-exit-gate-audit.md). **MASTER_PLAN M1 Gate takes precedence**: local clean build AND CI. Local clean now PASS; M1 overall Exit Gate remains BLOCKED by README drift and pending review.
 
 ## Goal
 
@@ -96,14 +96,14 @@ Strict direction: `app → feature:live → core:model`. The feature must never 
 - [x] Build/test workflow grants contents:read and passes no API secret to untrusted code.
 
 ### M1 Gate — **BLOCKED, not VERIFIED**
-- [ ] MASTER_PLAN requires an explicit developer-local `clean` build **AND** CI. Local clean **NOT_RUN**; fresh CI build alone cannot check it.
+- [x] MASTER_PLAN requires developer-local `clean` build **AND** CI. M1-007 local clean/assemble/lint/unit PASS; prior main CI PASS. See [build-log](../../harness/build-log.md) for scope and source revision.
 - [x] Main CI build/lint + Unit 7/7 + Emulator 1/1 PASS: [Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235). Lint warnings persist.
 - [x] Static dependency graph is `:app → :feature:live → :core:model`, without reverse/circular project edges in checked Gradle files.
 - [x] Basic Compose list/detail/back, Activity recreation and ViewModel Loading/Empty/Error/Content logic checked; alternate UI branches have not been instrumented.
 - [x] Emulator install/launch evidence and build versions/environment/commands recorded in `harness/build-log.md`. Physical device/real rotation/process death **NOT_RUN**.
 - [x] Source-scoped independent static review performed for app/feature/core contracts, state cancellation, navigation, Compose state collection and CI secret boundary. Review does not prove every runtime lifecycle scenario; details in audit.
 - [ ] Existing `android/README.md` contains stale pre-CI claims; current setup/status reproducibility documentation needs separate correction.
-- [ ] Exit Gate approval: unresolved local clean build and README/documentation accuracy blockers remain; **do not begin M2**.
+- [ ] Exit Gate approval: README/documentation accuracy blocker and human review remain; **do not begin M2**.
 
 ## Evidence / Commands
 
@@ -147,7 +147,6 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - Failure policy: preserve original errors, avoid retries within same run, no skipped tests, no false success; fix only smallest verified cause next task.
 - Third-party emulator runner provenance: https://github.com/ReactiveCircus/android-emulator-runner ; stable AndroidX Test runner/ext.junit release table: https://developer.android.com/jetpack/androidx/releases/test ; Compose test dependencies: https://developer.android.com/develop/ui/compose/setup-compose-dependencies-and-compiler
 
-
 ### M1-004 verified CI shell failure and bounded repair (2026-11-04)
 
 - First attempt [Run #41724518589](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41724518589) on `b67cd7dfc523434eec213445ddd83d8575573c3e`: build/lint/unit **PASS**, emulator **boot PASS**, instrumentation **NOT_RUN**, full workflow **FAIL**.
@@ -155,13 +154,11 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - Small repair: replace multi-line runner `script` with **one** `bash ../scripts/m1-004-emulator-smoke.sh` command; checked-in Bash script owns `set -euo pipefail`, Gradle+tee, exit trap/logcat, adb package check. Do not suppress a failing test or disable CI.
 - New repair's execution and connected XML remain **NOT_RUN until the next actual CI**. Preserve a single repair-triggered workflow run as evidence; no repeats for this attempt.
 
-
 ### M1-004 verified AndroidTest compilation failure and minimal import repair (2026-11-04)
 
 - [Run #41734088258](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41734088258) on `1687a88b97733ae0c4e73af0e5579ca8c8584df8`: unchanged Android build/lint/unit **PASS**, API 35 emulator boots and one Bash script executes **PASS**, `:app:compileDebugAndroidTestKotlin` **FAIL** (`RoomNavigationSmokeTest.kt:3:33 Unresolved reference 'assertExists'`). AndroidTest APK/install and navigation assertions **NOT_RUN**; no connected test XML yet.
 - Fix only the invalid top-level import; `assertExists()` is a method on Compose `SemanticsNodeInteraction`, and the existing call remains unchanged. Leave all checks, instrumentation coverage, and failure propagation enabled.
 - [ ] Replacement commit must receive a **new** PR CI run with an actual connected test XML and assertion result before M1-004 can be PASS. Emulator/physical device requirements beyond this one flow remain NOT_RUN.
-
 
 ### M1-004 third CI run: connected instrumentation PASS, workflow still FAIL (2026-11-04)
 
@@ -185,7 +182,6 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 - **Artifact integrity:** unit `android-pr-gate-evidence` ID `13288307072` ZIP SHA-256 `bae7921d913d1b6f76ace26bef660f673587288c8f62913af50496e840d5f7ec`; emulator `android-emulator-compose-smoke-evidence` ID `13287838197` ZIP SHA-256 `6ad1fedf5d8d7479be1577f5901389ac8afd238e7cec164c36e4765279a01cec`. Both independently downloaded/hashed; match GitHub artifact digests. Original job logs/XML/exit file inspected, not just green badges.
 - **Warnings/limitations:** Android Lint task PASS with **13 nonfatal warnings**; GitHub Actions Node20 deprecation and `setup-java@v4` warning remain. **FAIL:** none in this main CI. **NOT_RUN/blockers:** clean build on local developer machine, physical-device install, rotation/process recreation, LIVE streaming, release-like device performance; M1 full Exit Gate **NOT VERIFIED**. No Codex generation, API key reads or paid infrastructure in this work unit. Only one Android Actions run was triggered by merging PR #14; evidence-only follow-up is outside Android path filters.
 
-
 ## M1-005 — Activity recreation navigation contract (2026-11-04)
 
 - Scope: one extension of the existing `RoomNavigationSmokeTest.roomListOpensDetailAndReturns` test; no new test method, app production code, dependency or workflow changes.
@@ -204,3 +200,7 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 ## M1-006 — independent Gate audit (2026-11-04)
 
 [Review and evidence matrix](../reviews/M1-006-exit-gate-audit.md) compares the **strict MASTER_PLAN** local-clean + CI requirement with actual logs and source. Prior main [Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235) remains PASS for build/lint/unit/emulator; this docs-only audit does not re-run it. Local clean NOT_RUN, stale android/README and future lifecycle/physical/LIVE/performance evidence NOT_RUN. No Gate promotion.
+
+## M1-007 — developer-local clean build (2026-11-04)
+
+Local clean/assemble/lint/unit PASS on macOS arm64 and JDK 17; seven unit tests passed, lint reported 13 warnings. An initial executable-bit failure was fixed in `android/gradlew` before rerun. Full command, source revision, environment, and local log hash are recorded in [build-log](../../harness/build-log.md). M1 overall is not approved or complete; README drift remains.
