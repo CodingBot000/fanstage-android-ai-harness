@@ -1,7 +1,7 @@
 # M1 — Android Native Foundation SDD
 
 - Status: APPROVED FOR IMPLEMENTATION (2026-11-04, 사용자 포괄 실행 승인). 검증 Gate는 별도 PASS 필요.
-- Current work: M1-007 local clean build evidence following the [M1-006 audit](../reviews/M1-006-exit-gate-audit.md). **MASTER_PLAN M1 Gate takes precedence**: local clean build AND CI. Local clean now PASS; M1 overall Exit Gate remains BLOCKED by README drift and pending review.
+- Current work: Fast Track v1 transition and M1 evidence review. Local clean and main CI compile/lint/unit PASS; README corrected in PR #20. CI used a fresh runner but did not explicitly run the `clean` task. Device/lifecycle limitations below remain NOT_RUN.
 
 ## Goal
 
@@ -95,15 +95,15 @@ Strict direction: `app → feature:live → core:model`. The feature must never 
 - [x] Actual main CI compile/lint/unit + emulator logs and NOT_RUN limitations are recorded.
 - [x] Build/test workflow grants contents:read and passes no API secret to untrusted code.
 
-### M1 Gate — **BLOCKED, not VERIFIED**
-- [x] MASTER_PLAN requires developer-local `clean` build **AND** CI. M1-007 local clean/assemble/lint/unit PASS; prior main CI PASS. See [build-log](../../harness/build-log.md) for scope and source revision.
+### M1 Gate — 검토 결과
+- [x] Local clean/assemble/lint/unit PASS and CI assemble/lint/unit PASS; CI on its fresh runner did not explicitly execute the `clean` task. See [build-log](../../harness/build-log.md) for source revisions and limitations.
 - [x] Main CI build/lint + Unit 7/7 + Emulator 1/1 PASS: [Run #41768660235](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41768660235). Lint warnings persist.
 - [x] Static dependency graph is `:app → :feature:live → :core:model`, without reverse/circular project edges in checked Gradle files.
 - [x] Basic Compose list/detail/back, Activity recreation and ViewModel Loading/Empty/Error/Content logic checked; alternate UI branches have not been instrumented.
 - [x] Emulator install/launch evidence and build versions/environment/commands recorded in `harness/build-log.md`. Physical device/real rotation/process death **NOT_RUN**.
 - [x] Source-scoped independent static review performed for app/feature/core contracts, state cancellation, navigation, Compose state collection and CI secret boundary. Review does not prove every runtime lifecycle scenario; details in audit.
-- [ ] Existing `android/README.md` contains stale pre-CI claims; current setup/status reproducibility documentation needs separate correction.
-- [ ] Exit Gate approval: README/documentation accuracy blocker and human review remain; **do not begin M2**.
+- [x] `android/README.md` verification and version descriptions corrected in PR #20.
+- [x] M1 core evidence reviewed under Fast Track v1. Physical-device installation, real rotation and process-death/relaunch remain NOT_RUN and are not represented by emulator Activity recreation.
 
 ## Evidence / Commands
 
@@ -203,4 +203,4 @@ M1-003 evidence reviewed: [Run #41700593263](https://github.com/CodingBot000/fan
 
 ## M1-007 — developer-local clean build (2026-11-04)
 
-Local clean/assemble/lint/unit PASS on macOS arm64 and JDK 17; seven unit tests passed, lint reported 13 warnings. An initial executable-bit failure was fixed in `android/gradlew` before rerun. Full command, source revision, environment, and local log hash are recorded in [build-log](../../harness/build-log.md). M1 overall is not approved or complete; README drift remains.
+Local clean/assemble/lint/unit PASS on macOS arm64 and JDK 17; seven unit tests passed, lint reported 13 warnings. An initial executable-bit failure was fixed in `android/gradlew` before rerun. Full command, source revision, environment, and local log hash are recorded in [build-log](../../harness/build-log.md). At that time M1 approval and README correction remained pending.
