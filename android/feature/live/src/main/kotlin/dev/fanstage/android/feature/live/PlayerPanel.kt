@@ -25,11 +25,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.ui.PlayerView
 
 @Composable
-internal fun PlayerPanel(roomId: String) {
+fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
-    var autoPlay by rememberSaveable(roomId) { mutableStateOf(true) }
-    val controller = remember(roomId) { Media3PlayerController(context, "asset:///hls/vod.m3u8") }
+    var autoPlay by rememberSaveable(roomId, sourceUri) { mutableStateOf(true) }
+    val controller = remember(roomId, sourceUri) { Media3PlayerController(context, sourceUri) }
     val session = remember(controller) { PlaybackSession(controller, autoPlay) }
     val state by controller.state.collectAsStateWithLifecycle()
     val rendered by controller.hasRenderedFrame.collectAsStateWithLifecycle()
