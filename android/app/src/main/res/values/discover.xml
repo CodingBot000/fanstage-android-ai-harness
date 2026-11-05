@@ -1,0 +1,18 @@
+<resources>
+<string name="discover">Discover</string><string name="community">Community</string><string name="more">More</string>
+<string name="discover_eyebrow">YOUR WORLD OF MUSIC</string><string name="discover_heading">Find your next favorite.</string>
+<string name="featured">FEATURED ARTIST</string><string name="hero_subtitle">A little closer to the music</string>
+<string name="communities">Meet the communities</string><string name="live_now">Live &amp; on stage</string>
+<string name="recommended">Made for your moment</string><string name="recommendation">Discover stories from artists you love.</string>
+<string name="discover_error">Could not load Discover.</string><string name="discover_retry">Try again</string>
+<string name="replay">Replay</string><string name="coming_soon">Coming soon</string>
+<string name="replay_play">Watch replay</string><string name="replay_back">Back to Discover</string>
+<string name="media">Media</string><string name="messages">Messages</string>
+<string name="community_empty">No posts yet.</string><string name="comment">Comment</string><string name="send_comment">Send</string>
+<string name="posts">Posts</string><string name="notices">Notices</string>
+<string name="all_media">All</string>
+<string name="local_demo">Local demo · messages stay on this device session</string><string name="messages_back">Back to messages</string><string name="local_sent">Saved locally</string><string name="message_input">Message</string>
+<string name="notice_title">Welcome to the community</string><string name="notice_body">This is a fictional community for the local demo.</string><string name="unread">Unread</string>
+<string name="community_error">Could not load the community.</string>
+<string name="demo_welcome">Welcome to our space!</string><string name="demo_post_body">A little moment from our world.</string>
+</resources>

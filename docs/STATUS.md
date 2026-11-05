@@ -1,14 +1,14 @@
 # FanStage 작업 현황
 
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
-- Current task: v0.1 포트폴리오 제출 준비 완료
+- Current task: UX-006 통합 검토 및 CI (v0.1 포트폴리오 준비 완료와 별도)
 - State: **Portfolio Ready — v0.1 (source-only)**. M8-001 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30), M8-002 [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31), 클린 체크아웃 재현 [PR #33](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/33), MIT/제3자 고지 [PR #34](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/34)가 병합됐다. 사용자 확인 범위에서 포트폴리오 제출 준비를 마감했다. 이는 공개 APK·운영 서비스 검증 완료나 모든 위험 해소를 뜻하지 않는다. 최초 WebSocket 타임아웃은 PR #30 한정 예외 아래 원인 미확정으로 보존한다. [최종 범위와 잔여 한계](reviews/M8-final-readiness.md).
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지. 프로젝트 직접 작성 코드·문서는 MIT, 저작권 표기는 `2026 FanStage contributors`; 제3자 조건은 별도 유지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
 - Latest source reproduction: 동일 개발 환경의 별도 `main` clone `e09beb205dcf1ae12510225dff710e3e05682cb8`에서 JDK 17 및 기존 SDK·Debug 키·Gradle 캐시로 README 빌드·lint·단위 51/51, API 36 에뮬레이터 기본 흐름 PASS. [재현 기록](reviews/M8-clean-clone-reproduction.md).
-- Next action: v0.1 GitHub 소스 포트폴리오를 지원서에 제출한다. 원격 LIVE, 공개 APK·서버 바이너리 배포, 운영 보안·성능 확장은 이번 종료 범위 밖이다. 필요 시 별도 승인과 재검증을 거친다.
+- Next action: UX 확장 PR의 CI와 독립 리뷰를 확인한다. v0.1은 소스 포트폴리오 제출 준비 상태이며 원격 LIVE, 공개 APK·서버 바이너리 배포, 운영 보안·성능 확장은 별도 승인과 재검증 대상이다.
 
 ## Milestone Checklist
 
@@ -51,3 +51,22 @@
 - 2026-11-04 M2: 사용자가 최초 foreground 자동재생, background pause와 수동 재개, 화면 이탈 해제, PIP/백그라운드 오디오 제외 및 제한된 재시도 정책을 제시했다. [ADR-0006](adr/ADR-0006-m2-playback-lifecycle.md) 참조.
 
 - 2026-11-04 M2 실기기 Gate: API 36 실제 단말 합성 VOD·LIVE/lifecycle 및 반복 해제 증거를 검토해 위 범위에서 VERIFIED. 원격 LIVE·실제 LMK·전체 heap 누수 부재는 검증하지 않았다.
+
+## UX-001 v0.2 작업 중 (2026-11-05)
+
+- [SDD](specs/UX-001-visual-foundation.md), `core:designsystem`, Discover 홈 및 기존 LIVE 연결을 작업 트리에 추가했다. M8 Gate 상태는 위와 동일하다.
+- API 36 에뮬레이터 [실제 홈 캡처](evidence/ux-001/home.png). 최종 코드 기준 `:app:assembleDebug`, `:app:lintDebug`, `DiscoverTest` 2건 PASS; 기존 `:feature:live:testDebugUnitTest` 51건 PASS. 기존 `RoomNavigationSmokeTest#roomListOpensDetailAndReturns`는 최종 소규모 UI/취소 처리 수정 전 PASS.
+- NOT_RUN: 최종 코드에서 전체 계측 테스트·벤치마크, 실기기 검증, Preview 렌더링 확인. 시작 화면이 바뀌므로 기존 시작 벤치마크 결과는 새 화면의 수치가 아니다.
+- 미완료: 커뮤니티와 추천 콘텐츠는 화면에 고정된 예시이며 별도 가상 아티스트/추천 모델과 이미지 카드가 부족하다. Replay는 준비 중 표시이며 재생 미구현이다. 이 상태를 UX-001 완료로 표시하지 않는다.
+
+- 2026-11-05: 사용자 지시에 따라 `codex/ux-continuous-batch` 브랜치에서 v0.3 UX 확장 트랙을 시작했다. UX-001 SDD 범위를 갱신했으며 구현·단계 완료는 아직 아니다. M8 Gate 상태는 변경하지 않는다.
+- UX-001 v0.3: 가상 아티스트 ID 및 카드 이미지 보강 진행. 빌드·lint·기존 live 단위 테스트 PASS. 새로운 UI 캡처, Replay 연결 및 나머지 UX 단계는 미완료다.
+- UX-001 v0.3: Discover와 LIVE/Replay 연결의 관련 검증 PASS; 커뮤니티 연결은 UX-003에서 구현 예정. 다음 작업 UX-002 공통 탐색. 전체 통합 검증 NOT_RUN_DEFERRED.
+- UX-002: 네 탭 탐색과 Discover 스크롤 복원 계측 PASS. 탭 내용·공통 TopBar 및 전체 상세 백스택은 UX-003~006에서 완성·검증한다. 다음 UX-003 Community.
+- UX-003: Community Fake 피드·상세·좋아요·댓글 및 Discover 연결 구현. API 36 관련 5건과 빌드·lint PASS. 공지 빈 상태이며 오류·빈 상태 주입과 전체 통합은 후속 검증. 다음 UX-004 Media.
+- UX-004: Media 그리드·필터 및 기존 LIVE/Replay 이동 구현, API 36 관련 6건·빌드·lint PASS. LIVE 상세 재디자인과 전체 서버 회귀는 미완료. 다음 UX-005 Messages.
+- UX-005: 메모리 로컬 대화 목록·상세·입력과 로컬 저장 표시 구현, API 36 관련 7건·빌드·lint PASS. 실제 DM 전송 및 읽음 상태는 미구현. 다음 UX-006 통합 및 UX-004 상세 보완.
+- 2026-11-05 일시 중단: 사용자 요청으로 안전 지점에서 중단. `codex/ux-continuous-batch` HEAD `6f7eb6a`. LIVE 상세에 Player/Chat 카드 표현 보완은 미커밋이다. 재개 시 UX-004 상세 화면 검토·캡처, UX-003 상태/공지 및 UX-005 읽음 표시 등 잔여 범위를 보완한 뒤 UX-006 전체 통합 검증을 수행한다. PR/CI/병합은 아직 하지 않았다.
+- UX-006 로컬 통합: 공통 TopBar, 공지·로컬 읽음·필터 복원·취소 경합 방어 및 LIVE 상세 표현 보완. 최종 작업 트리 전체 Android 계측 14/14(실제 서버 case 포함), 서버 통합·장애 주입, Debug/Release/Benchmark 빌드·lint·unit PASS. [통합 SDD](specs/UX-006-integration.md). 실기기 성능 A/B·전 화면 접근성·독립 리뷰·최종 CI는 NOT_RUN. 기존 M6 미검증 항목은 유지하며 v0.1 포트폴리오 준비 완료와 구분한다.
+- PR #36 최초 head API 35 CI는 새 홈의 첫 LIVE 카드가 초기 화면 밖이어서 기존 테스트의 스크롤 없는 대기가 실패했다. 테스트를 실제 스크롤 흐름으로 수정했으며 작은 화면 API 36에서 기존 4/4·신규 9/9 PASS; 수정 head 원격 CI 확인 필요. 로컬 테스트 시작 중 뒤늦게 연결된 실기기에서도 테스트가 일부 시작되어 즉시 중단했고, 결과는 사용하지 않았다. 상세는 build-log 참조.
+- PR #36 head `c205189`: Android build/lint/unit 및 API 35 탐색 CI [PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42036690895); PostgreSQL/실제 WebSocket CI [PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42036690215). 최초 head 실패 및 수정은 build-log에 보존한다. 이후 문서 기록 commit의 CI는 별도 확인한다. 독립 리뷰·실기기 성능 A/B는 NOT_RUN.

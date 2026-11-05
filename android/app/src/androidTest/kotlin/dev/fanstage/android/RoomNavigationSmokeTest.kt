@@ -19,6 +19,8 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.hasTestTag
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.lifecycle.Lifecycle
 import android.content.pm.ActivityInfo
@@ -108,10 +110,9 @@ class RoomNavigationSmokeTest {
 
     @Test fun roomListOpensDetailAndReturns() {
         composeRule.waitUntil(20_000L) {
-            composeRule.onAllNodesWithTag("room_studio-session")
-                .fetchSemanticsNodes().isNotEmpty()
+            composeRule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty()
         }
-        composeRule.onNodeWithTag("rooms_content").assertExists()
+        composeRule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
         composeRule.onNodeWithTag("room_studio-session").performClick()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
