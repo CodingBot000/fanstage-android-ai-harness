@@ -24,6 +24,7 @@ data class ChatMessage(
     val isOwn: Boolean,
     val delivery: Delivery,
     val isUncertain: Boolean = false,
+    val sentAt: String? = null,
 )
 
 sealed interface ChatEvent {
@@ -68,6 +69,7 @@ data class ChatUiState(
     val connectionError: Boolean = false,
     val connectionStatus: ChatConnectionStatus? = null,
     val localServer: Boolean = false,
+    val fictionalFixtures: Boolean = false,
     val draft: String = "",
 )
 

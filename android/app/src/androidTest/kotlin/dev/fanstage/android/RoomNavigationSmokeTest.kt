@@ -15,6 +15,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -64,7 +65,7 @@ class RoomNavigationSmokeTest {
         // Chat is independent of playback: send via Fake, then verify the player is still playing.
         composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("Hello from test")
         composeRule.onNodeWithTag("chat_send").performScrollTo().performClick()
-        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText("Sent").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_sent)).fetchSemanticsNodes().isNotEmpty() }
         composeRule.onNodeWithTag("chat_messages").performScrollTo()
         composeRule.onNodeWithText("Hello from test").assertExists()
         composeRule.onNodeWithTag("player_state_playing").assertExists()
@@ -105,6 +106,57 @@ class RoomNavigationSmokeTest {
         verifyReleasedListenerCanBeCollected()
         verifyChatFailureDoesNotInterruptPlayer()
         verifyErrorRetryUi()
+        verifyM7LocaleAndLargeText()
+    }
+
+    private fun verifyM7LocaleAndLargeText() {
+        val language = androidx.compose.runtime.mutableStateOf(java.util.Locale.US)
+        val large = androidx.compose.runtime.mutableStateOf(false)
+        val roomState = androidx.compose.runtime.mutableStateOf<dev.fanstage.android.feature.live.RoomUiState>(
+            dev.fanstage.android.feature.live.RoomUiState.Content(listOf(dev.fanstage.android.core.model.Room("studio-session", "Studio session", "Paper Lantern", 128)))
+        )
+        val store = androidx.lifecycle.ViewModelStore()
+        lateinit var chat: ChatViewModel
+        composeRule.activityRule.scenario.onActivity { activity ->
+            chat = ViewModelProvider(store, ChatViewModel.Factory("locale", FakeChatTransport("locale", simulateIncoming = false)))[ChatViewModel::class.java]
+            activity.setContent {
+                val config = android.content.res.Configuration(activity.resources.configuration).apply {
+                    setLocale(language.value); fontScale = if (large.value) 2f else 1f
+                }
+                val context = androidx.compose.runtime.remember(language.value, large.value) { activity.createConfigurationContext(config) }
+                androidx.compose.runtime.CompositionLocalProvider(
+                    androidx.compose.ui.platform.LocalContext provides context,
+                    androidx.compose.ui.platform.LocalConfiguration provides config,
+                    androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(context.resources.displayMetrics.density, config.fontScale),
+                ) {
+                    MaterialTheme {
+                        if (roomState.value is dev.fanstage.android.feature.live.RoomUiState.Content || roomState.value is dev.fanstage.android.feature.live.RoomUiState.Error) {
+                            dev.fanstage.android.feature.live.RoomListScreen(roomState.value, onRetry = {}, onRoomClick = {})
+                        } else {
+                            Column(Modifier.verticalScroll(rememberScrollState())) { PlayerPanel("locale"); ChatPanel(chat) }
+                        }
+                    }
+                }
+            }
+        }
+        try {
+            composeRule.onNodeWithText("Studio session").assertIsDisplayed()
+            composeRule.runOnUiThread { language.value = java.util.Locale.KOREA; large.value = true }
+            composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("스튜디오 라이브").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithText("스튜디오 라이브").assertIsDisplayed()
+            composeRule.runOnUiThread { roomState.value = dev.fanstage.android.feature.live.RoomUiState.Error("internal") }
+            composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("방 목록을 불러오지 못했습니다. 다시 시도해 주세요.").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithText("다시 시도").assertIsDisplayed()
+            composeRule.runOnUiThread { roomState.value = dev.fanstage.android.feature.live.RoomUiState.Empty }
+            composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("방에 오신 것을 환영합니다!").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("테스트")
+            composeRule.onNodeWithTag("chat_send").performScrollTo().assertIsDisplayed().performClick()
+            composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("전송됨").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithContentDescription("동영상 플레이어").performScrollTo().assertExists()
+            composeRule.runOnUiThread { language.value = java.util.Locale.US; large.value = false }
+            composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("Welcome to the room!").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithText("Sent").assertExists()
+        } finally { composeRule.runOnUiThread { store.clear() } }
     }
 
     private fun verifyChatFailureDoesNotInterruptPlayer() {
@@ -123,9 +175,9 @@ class RoomNavigationSmokeTest {
         composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
         composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("rejected test")
         composeRule.onNodeWithTag("chat_send").performScrollTo().performClick()
-        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText("Failed").fetchSemanticsNodes().isNotEmpty() }
-        composeRule.onNodeWithText("Retry").performScrollTo().performClick()
-        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText("Failed").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_failed)).fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_retry_message)).performScrollTo().performClick()
+        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_failed)).fetchSemanticsNodes().isNotEmpty() }
         composeRule.onNodeWithTag("player_state_playing").assertExists()
     }
 
