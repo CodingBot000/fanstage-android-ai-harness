@@ -37,4 +37,4 @@ curl -I http://127.0.0.1:18765/demo-media/demo-01.mp4
 curl -sS -D - -o /dev/null -H 'Range: bytes=0-1023' http://127.0.0.1:18765/demo-media/demo-01.mp4
 ```
 
-Use the Debug app in an emulator. Media → Replay contains the seven Local VOD cards. The first three open prerecorded video with a chat panel; the others open the replay player. This is HTTP Progressive VOD, not a live HLS stream. The files are served without authentication, so keep the host bind address loopback and do not expose the service. Server-unavailable fallback and invalid Range behavior are deferred.
+Use the Debug app in an emulator. Media → Replay contains the seven Local VOD cards. The first three open prerecorded video with a chat panel; the others open the replay player. This is HTTP Progressive VOD, not a live HLS stream. The files are served without authentication. The media Compose override forces host loopback even if the base bind address is changed; do not expose the service. The `!override` tag requires a recent Docker Compose version (verified locally with 2.40.3). Server-unavailable fallback and invalid Range behavior are deferred.
