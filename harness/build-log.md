@@ -1,5 +1,10 @@
 # 작업 및 검증 기록
 
+## M8-002 — 포트폴리오 산출물 병합 (2026-11-05)
+
+- [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31) head `a101856c673ccb52ae05a235c7bef100b57a9c15`의 독립 Codex 리뷰는 지적 없이 완료됐다. Markdown 링크·공백 및 영상 내용·형식은 아래 로컬 검증을 따른다. 문서·영상만 변경해 별도 Android CI는 실행되지 않았다. 기준 main `74e417ad604fab227a9fbca0f7e28f1728130859`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42004905245)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42004905195)는 PASS. PR #31은 `3a1f0d79d1d3a9939a715d3ddd7ad6e1c07838ce`로 Squash Merge됐다.
+- M8-002의 README·아키텍처·합성 화면 시연·소개 문안은 제공한다. 실제 네트워크 단절·복구 영상, 외부 개발자 재현, 제3자 고지 전수 검토는 미완료이며 루트 라이선스·공개 배포 서명은 미결정이다. M8 전체 VERIFIED를 선언하지 않는다.
+
 ## M8-002 — 포트폴리오 초안 (2026-11-05)
 
 - Base: M8-001 merge `74e417ad604fab227a9fbca0f7e28f1728130859`. [SDD](../docs/specs/M8-002-portfolio-packaging.md). README, 아키텍처·장애 검증·측정 근거, 시연 안내 및 포트폴리오 소개 문안을 작성했다. M6 개선 미입증과 기존 NOT_RUN을 유지한다.
