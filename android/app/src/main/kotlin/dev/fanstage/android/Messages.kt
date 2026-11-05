@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -58,13 +59,19 @@ class MessagesViewModel(repository: MessageRepository = FakeMessageRepository())
     val conversation = conversations.firstOrNull { it.artistId == artistId }
     val artist = fictionalArtists.firstOrNull { it.id == artistId }
     var draft by remember(artistId) { mutableStateOf("") }
+    val transcript = conversation?.messages.orEmpty()
+    val transcriptState = rememberLazyListState()
     LaunchedEffect(artistId) { viewModel.markRead(artistId) }
-    Column(Modifier.fillMaxSize().padding(16.dp).testTag("conversation_detail")) {
+    LaunchedEffect(artistId, transcript.size) {
+        if (transcript.isNotEmpty()) transcriptState.scrollToItem(transcript.lastIndex)
+    }
+    // With edge-to-edge enabled, keep the composer above the software keyboard.
+    Column(Modifier.fillMaxSize().imePadding().padding(16.dp).testTag("conversation_detail")) {
         TextButton(onClick = onBack) { Text(stringResource(R.string.messages_back)) }
         Text(artist?.name.orEmpty(), style = MaterialTheme.typography.headlineMedium)
         Text(stringResource(R.string.local_demo), style = MaterialTheme.typography.bodySmall)
-        LazyColumn(Modifier.weight(1f).fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(vertical = 16.dp)) {
-            items(conversation?.messages.orEmpty(), key = { it.id }) { message ->
+        LazyColumn(Modifier.weight(1f).fillMaxWidth(), state = transcriptState, verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(vertical = 16.dp)) {
+            items(transcript, key = { it.id }) { message ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = if (message.fromMe) Arrangement.End else Arrangement.Start) {
                     Surface(shape = RoundedCornerShape(18.dp), color = if (message.fromMe) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant) {
                         Column(Modifier.padding(12.dp)) { Text(if (message.id == 0L && !message.fromMe) stringResource(R.string.demo_welcome) else message.text); if (message.fromMe) Text(stringResource(R.string.local_sent), style = MaterialTheme.typography.labelSmall) }
