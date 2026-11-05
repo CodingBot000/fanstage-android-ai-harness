@@ -2,7 +2,7 @@
 
 - Current milestone: M7 — Globalization & UI/Product Polish
 - Current task: M7 한국어·영어, 접근성 및 오류 UX
-- State: M7 로컬 핵심 UX 검증 PASS; PR CI·리뷰 대기. M6 PR #28의 두 실험은 되돌렸고 개선 효과와 미측정 항목은 그대로 유지한다.
+- State: M7 핵심 UX 검증 및 PR 소스 CI PASS; 최종 PR head CI 확인 후 병합한다. M6 PR #28의 두 실험은 되돌렸고 개선 효과와 미측정 항목은 그대로 유지한다.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. 이후 선택은 권장안을 적용해 질문 없이 진행한다.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
@@ -18,7 +18,7 @@
 - [x] M4 Real Chat Server (PR #25 병합; main CI PASS)
 - [x] M5 Fault & Recovery (PR #26 병합; main CI PASS)
 - [ ] M6 Performance
-- [x] M7 Globalization/Polish (로컬 검증 PASS; PR 최종 CI 통과가 병합 조건)
+- [x] M7 Globalization/Polish (핵심 검증 PASS; 최종 PR head CI가 병합 조건)
 - [ ] M8 Portfolio Release
 
 ## M1-008 문서 현행화
