@@ -83,3 +83,4 @@
 - ARCH-002 Community: `:feature:community` 이동 및 관련 빌드/단위/계측 APK 컴파일 PASS; 전용 AVD에서 아티스트·Post 좋아요 왕복 확인. connected 자동 검증 NOT_RUN_DEFERRED. 다음 Media.
 - ARCH-002 Media: `:feature:media`와 독립 ViewModel 분리, feature 간 직접 의존 제거. 관련 빌드/단위·계측 APK 컴파일 PASS, 전용 AVD에서 Replay 필터·재생 확인. 전체 connected NOT_RUN_DEFERRED. 다음 Messages.
 - ARCH-002 Messages: `:feature:messages`로 이동, 기존 IME/스크롤 코드 유지. 관련 빌드·단위·계측 APK 컴파일 PASS, 전용 AVD에서 IME 입력·로컬 전송 확인. connected 전체 NOT_RUN_DEFERRED. 다음 ARCH-003 통합.
+- ARCH-003 진행: Replay 화면을 기존 `feature:live`로 이동, app에는 MainActivity/AppContainer만 남김. 경계 스크립트 PASS. 별도 ADB 서버에 전용 AVD 한 대만 연결해 기존 LIVE·새 화면 계측 13/13 PASS. 실제 서버 포함 전체 최종 검증은 진행 전.

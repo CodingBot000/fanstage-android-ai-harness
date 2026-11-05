@@ -62,4 +62,5 @@
     <string name="chat_retry_gap">Retry missing messages</string>
     <string name="chat_timestamp">Sent %1$s</string>
 <string name="demo_live_room">Demo LIVE room · synthetic video</string>
+<string name="replay_back_generic">Back</string><string name="replay_title">Replay</string>
 </resources>

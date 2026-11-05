@@ -19,8 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
-import dev.fanstage.android.feature.live.PlayerPanel
+import dev.fanstage.android.feature.live.ReplayScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -102,17 +101,7 @@ private fun FanStageApp() {
         composable("community/post/{postId}") { postEntry ->
             PostDetail(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
         }
-        composable("replay") {
-            Scaffold { padding ->
-                Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).testTag("replay_detail")) {
-                    TextButton(onClick = { navController.popBackStack() }, modifier = Modifier.testTag("replay_back")) { Text(stringResource(R.string.community_back)) }
-                    Text(stringResource(R.string.replay), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
-                    Text("Paper Lantern · Studio diary", style = MaterialTheme.typography.headlineMedium)
-                    Spacer(Modifier.height(16.dp))
-                    Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(12.dp)) { PlayerPanel("replay-studio-diary") } }
-                }
-            }
-        }
+        composable("replay") { ReplayScreen(onBack = { navController.popBackStack() }) }
         composable(
             route = "rooms/{roomId}",
             arguments = listOf(navArgument("roomId") { type = NavType.StringType }),

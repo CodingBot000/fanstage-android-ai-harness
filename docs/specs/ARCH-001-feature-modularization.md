@@ -26,3 +26,6 @@ Media 화면과 독립 MediaViewModel을 `:feature:media`로 이동하고 공유
 
 ## ARCH-002 Messages 이동 (2026-11-06)
 Messages 목록·대화 화면과 ViewModel을 `:feature:messages`로 이동했다. 모델과 Repository 계약은 core:model, Fake 상태는 app의 AppContainer가 주입하는 core:data 인스턴스다. 기존 IME padding·viewport/신규 메시지 스크롤과 태그를 유지한다. `:feature:messages:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 API 36 AVD에서 대화 진입·IME 위 입력 및 합성 메시지 로컬 전송 수동 확인. connected 자동 회귀는 다중 AVD로 NOT_RUN_DEFERRED. 다음 ARCH-003 경계 감사·통합.
+
+## ARCH-003 경계 점검 (진행 중, 2026-11-06)
+Replay 화면을 기존 `:feature:live`로 옮겨 app에는 MainActivity/Navigation과 AppContainer만 남겼다. `scripts/check-ux-module-boundaries.py`에서 승인된 각 feature→core 의존, 순수 모델의 Android 참조 금지, app 소스 경계를 검사한다. 스크립트 PASS. 전용 AVD만 보이는 별도 ADB 서버에서 Discover 및 기존 LIVE 계측 13/13 PASS. 전체 실제 서버 통합과 최종 CI는 별도 수행한다.
