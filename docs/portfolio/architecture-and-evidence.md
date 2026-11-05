@@ -1,8 +1,8 @@
 # 아키텍처와 검증 근거
 
-## UX-007~011 및 ARCH-001~003 작업 트리
+## UX-007~011 및 ARCH-001~003 병합된 아키텍처
 
-기준 `5bd022b`의 5개 모듈에서 app의 신규 기능 책임을 분리해 현재 11개 모듈(`app`, core 4개, feature 5개, macrobenchmark)로 구성했다. `core:artwork`는 여러 기능에서 같은 이미지 리소스를 쓰면서 feature→app 의존을 피하기 위해 추가했다. 새 화면 및 모듈 이동은 현재 브랜치에서 검증 중이며 기존 v0.1의 근거를 대체하지 않는다.
+기준 `5bd022b`의 5개 모듈에서 app의 신규 기능 책임을 분리해 현재 11개 모듈(`app`, core 4개, feature 5개, macrobenchmark)로 구성했다. `core:artwork`는 여러 기능에서 같은 이미지 리소스를 쓰면서 feature→app 의존을 피하기 위해 추가했다. 화면·모듈 변경은 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에서 최종 head CI·독립 리뷰 후 병합됐다. 기존 v0.1 기술 코어의 검증 근거를 대체하지 않는다.
 
 ```mermaid
 flowchart TD

@@ -1,14 +1,21 @@
 # FanStage 작업 현황
 
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
-- Current task: UX-001~006 Compose 확장 병합 완료 — 제출용 README 현행화
+- Current task: UX-007~011 비주얼 개편 및 ARCH-001~003 모듈화 병합 완료 — 제출용 문서 현행화
 - State: **Portfolio Ready — v0.1 (source-only)**. M8-001 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30), M8-002 [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31), 클린 체크아웃 재현 [PR #33](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/33), MIT/제3자 고지 [PR #34](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/34)가 병합됐다. 사용자 확인 범위에서 포트폴리오 제출 준비를 마감했다. 이는 공개 APK·운영 서비스 검증 완료나 모든 위험 해소를 뜻하지 않는다. 최초 WebSocket 타임아웃은 PR #30 한정 예외 아래 원인 미확정으로 보존한다. [최종 범위와 잔여 한계](reviews/M8-final-readiness.md).
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지. 프로젝트 직접 작성 코드·문서는 MIT, 저작권 표기는 `2026 FanStage contributors`; 제3자 조건은 별도 유지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
 - Latest source reproduction: 동일 개발 환경의 별도 `main` clone `e09beb205dcf1ae12510225dff710e3e05682cb8`에서 JDK 17 및 기존 SDK·Debug 키·Gradle 캐시로 README 빌드·lint·단위 51/51, API 36 에뮬레이터 기본 흐름 PASS. [재현 기록](reviews/M8-clean-clone-reproduction.md).
-- Next action: 새 Compose 화면 캡처와 UX-006 통합 증거를 README 첫 화면에 반영한다. 제출용 소스 포트폴리오에 포함하되 실기기 성능 A/B·전 화면 접근성·원격 LIVE·운영 서비스 검증으로 확대 주장하지 않는다.
+- Next action: 최신 11개 모듈과 Compose 화면 갤러리가 반영된 소스 포트폴리오를 제출한다. 실기기 성능 A/B·전 화면 큰 글꼴/TalkBack·원격 LIVE·운영 서비스 검증으로 확대 주장하지 않는다. 기존 PR #30 예외는 그 PR에만 적용한다.
+
+## 최신 UX·모듈화 결과 (2026-11-06)
+
+- **UX-007~011 및 ARCH-001~003 완료·병합:** [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) 최종 head `561afce227a40d552a7bed7e05d9c2c3f5360fb8`, Squash Merge `3c77a6305b5bf639fdd1e8b669ec6ed4a9f60ef9`. 가상 아티스트 WebP 자산 9개, Discover/Community/Media/Messages/LIVE/Replay 화면 리디자인, 총 11개 모듈 및 모듈 경계 검사 반영.
+- **PR head 검증:** [Android build/lint/unit·API 35 에뮬레이터 CI #42066922626](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922626) PASS, [실제 WebSocket·PostgreSQL CI #42066922691](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922691) PASS. Codex 독립 코드 리뷰는 최종 head에서 완료, 지적 0건·미해결 스레드 0건.
+- **로컬 기록:** 전용 API 36 에뮬레이터 전체 계측 14/14 및 별도 DiscoverTest 9/9·기존 LIVE 회귀 4/4, 서버 장애 회귀 PASS(정확한 실행 조건은 [ARCH SDD](specs/ARCH-001-feature-modularization.md)). 이미지 프롬프트·해시는 [자산 기록](portfolio/visual-assets.md); 화면·무음 영상은 README 참조.
+- **범위·한계:** 합성 VOD·Fake DM/커뮤니티, 실기기 성능 A/B 및 전체 TalkBack·큰 글꼴 검증 NOT_RUN. 이전 M6 개선 미입증과 M8 권리·타임아웃 위험 기록 유지. 로컬 미커밋 `.gitignore`는 이번 원격 문서 정리에서 접근·변경하지 않았다.
 
 ## Milestone Checklist
 
