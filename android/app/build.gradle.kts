@@ -57,6 +57,7 @@ dependencies {
     implementation(project(":feature:live"))
     implementation(project(":feature:discover"))
     implementation(project(":feature:community"))
+    implementation(project(":feature:media"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))

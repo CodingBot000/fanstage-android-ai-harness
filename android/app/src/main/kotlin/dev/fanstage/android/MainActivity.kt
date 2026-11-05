@@ -1,5 +1,7 @@
 package dev.fanstage.android
 
+import dev.fanstage.android.feature.media.*
+
 import dev.fanstage.android.feature.community.*
 
 import dev.fanstage.android.feature.discover.*
@@ -50,6 +52,7 @@ private fun FanStageApp() {
     val communityViewModel: CommunityViewModel = viewModel(factory = container.viewModelFactory)
     val discoverViewModel: DiscoverViewModel = viewModel(factory = container.viewModelFactory)
     val messagesViewModel: MessagesViewModel = viewModel(factory = container.viewModelFactory)
+    val mediaViewModel: MediaViewModel = viewModel(factory = container.viewModelFactory)
     val discoverState by discoverViewModel.state.collectAsStateWithLifecycle()
     val artists = (discoverState as? DiscoverState.Ready)?.data?.artists.orEmpty()
 
@@ -85,7 +88,7 @@ private fun FanStageApp() {
             ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
         }
         composable("media") {
-            MediaRoute(discoverViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") })
+            MediaRoute(mediaViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") })
         }
         composable("community") {
             CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, artists = artists)

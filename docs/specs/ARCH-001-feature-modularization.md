@@ -20,3 +20,6 @@
 
 ## ARCH-002 Community 이동 (2026-11-06)
 Community 화면·Route·상태·ViewModel 및 문자열을 `:feature:community`로 이동했다. 카탈로그와 Repository 계약을 상위 app에서 주입하며 feature→feature/data 의존은 추가하지 않았다. `:feature:community:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 API 36 AVD에서 아티스트→Post 좋아요 및 왕복 유지 수동 확인. connected 자동 검증은 다중 AVD로 NOT_RUN_DEFERRED. 다음 Media 이동.
+
+## ARCH-002 Media 이동 (2026-11-06)
+Media 화면과 독립 MediaViewModel을 `:feature:media`로 이동하고 공유 Repository 계약을 주입했다. Discover feature에 직접 의존하지 않는다. `:feature:media:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS; 취소된 Media 요청이 새 결과를 덮지 않는 단위 테스트 PASS. 전용 API 36 AVD에서 Media→Replay 필터→합성 재생 수동 확인. 전체 connected 자동 회귀 NOT_RUN_DEFERRED. 다음 Messages 이동.

@@ -1,6 +1,7 @@
 package dev.fanstage.android
 
 import dev.fanstage.android.feature.community.*
+import dev.fanstage.android.feature.media.*
 
 import dev.fanstage.android.feature.discover.*
 
@@ -59,4 +60,24 @@ class LoadCancellationTest {
             assertEquals(CommunityState.Ready(emptyList()), vm.state.value)
         } finally { Dispatchers.resetMain() }
     }
+    @Test fun cancelledMediaFailureCannotReplaceNewContent() = runTest {
+        Dispatchers.setMain(StandardTestDispatcher(testScheduler))
+        try {
+            val release = CompletableDeferred<Unit>()
+            var calls = 0
+            val latest = DiscoverData(emptyList(), emptyList())
+            val vm = MediaViewModel(object : DiscoverRepository {
+                override suspend fun load(): DiscoverData {
+                    calls++
+                    if (calls == 1) withContext(NonCancellable) { release.await(); throw IllegalStateException() }
+                    return latest
+                }
+            })
+            runCurrent(); vm.retry(); runCurrent()
+            assertEquals(MediaState.Ready(latest), vm.state.value)
+            release.complete(Unit); runCurrent()
+            assertEquals(MediaState.Ready(latest), vm.state.value)
+        } finally { Dispatchers.resetMain() }
+    }
+
 }

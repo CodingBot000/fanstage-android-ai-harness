@@ -81,3 +81,4 @@
 - ARCH-001 (2026-11-06): `core:model` 순수 모델/계약, `core:data` 세션 Fake, `core:artwork` resolver/리소스 및 AppContainer 도입. 관련 모듈·앱·계측 APK 빌드, 데이터/앱 단위와 lint PASS; 전용 AVD 수동 화면·좋아요 왕복 확인. [SDD](specs/ARCH-001-feature-modularization.md). 자동 connected 전체는 NOT_RUN_DEFERRED. 다음 ARCH-002 Discover 이동.
 - ARCH-002 Discover (2026-11-06): `:feature:discover`로 화면·VM 이동, 관련 빌드·단위 및 계측 APK 컴파일 PASS; 전용 AVD의 Home→LIVE 수동 확인. connected 자동 실행 NOT_RUN_DEFERRED. 다음 Community.
 - ARCH-002 Community: `:feature:community` 이동 및 관련 빌드/단위/계측 APK 컴파일 PASS; 전용 AVD에서 아티스트·Post 좋아요 왕복 확인. connected 자동 검증 NOT_RUN_DEFERRED. 다음 Media.
+- ARCH-002 Media: `:feature:media`와 독립 ViewModel 분리, feature 간 직접 의존 제거. 관련 빌드/단위·계측 APK 컴파일 PASS, 전용 AVD에서 Replay 필터·재생 확인. 전체 connected NOT_RUN_DEFERRED. 다음 Messages.
