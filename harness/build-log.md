@@ -8,6 +8,7 @@
 - PASS: 기존 설치 RC APK를 교체하지 않고 테스트 전용 APK로 API 36에서 Player 오류·재시도, Fake 실패·재시도, 불확실한 Pending 유지, Player listener 회수 및 Chat 이벤트 취소·transport 종료 확인. `:app:assembleRcLocalAndroidTest -PfanstageRcInstrumentation=true` 및 보고서의 `adb shell am instrument` 결과 2/2 PASS; RC APK SHA 불변. 로컬 로그 `/tmp/fanstage-m8-rc-instrument-test2.log`.
 - 공개물 제한 감사 및 CI 전용 임시 Debug 키 생성에 대한 사용자 승인, 의존성 고지 검토의 미완료 범위는 [보고서](../docs/reviews/M8-001-release-candidate.md)에 기록. NOT_RUN: RC 실기기 WebSocket 종료, 장시간 heap·전체 누수 부재, 제3자 고지 전수 확인, 변경 후 CI 및 독립 리뷰. 공개 Release 키·루트 라이선스 미결정. M8 전체 미완료.
 - Android 런타임 의존성 보고서에서 추출한 122개 좌표의 POM 메타데이터는 직접 또는 Guava parent 상속으로 Apache 2.0 계열 표기를 확인했다. 실제 포함물과 서버 의존성의 NOTICE·고지 전수 검토는 별도 미완료다.
+- 리뷰 보완: Android 사용자 디렉터리 변경 시 기본 경로와 실제 Debug signingConfig가 다를 수 있어 실제 설정의 키 파일 존재 여부로 판정하도록 수정했다. `:app:assembleRcLocal` 재실행 PASS, APK SHA 불변 및 `apksigner verify --verbose` PASS. 첫 복합 명령은 SDK 환경변수의 명령별 범위 때문에 마지막 apksigner 경로에서 FAIL(exit 127); 올바른 절대 SDK 경로로 재실행해 PASS.
 
 
 ## M1-008 — Android README evidence reconciliation (2026-11-04)

@@ -29,8 +29,9 @@ android {
             initWith(getByName("release"))
             applicationIdSuffix = ".rclocal"
             isDebuggable = false
-            if (file(System.getProperty("user.home") + "/.android/debug.keystore").isFile) {
-                signingConfig = signingConfigs.getByName("debug")
+            val existingDebugSigning = signingConfigs.getByName("debug")
+            if (existingDebugSigning.storeFile?.isFile == true) {
+                signingConfig = existingDebugSigning
             }
             matchingFallbacks += listOf("release")
         }
