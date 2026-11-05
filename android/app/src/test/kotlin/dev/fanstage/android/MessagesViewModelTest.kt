@@ -1,5 +1,7 @@
 package dev.fanstage.android
 
+import dev.fanstage.android.feature.messages.*
+
 import dev.fanstage.android.core.data.FakeMessageRepository
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

@@ -23,3 +23,6 @@ Community 화면·Route·상태·ViewModel 및 문자열을 `:feature:community`
 
 ## ARCH-002 Media 이동 (2026-11-06)
 Media 화면과 독립 MediaViewModel을 `:feature:media`로 이동하고 공유 Repository 계약을 주입했다. Discover feature에 직접 의존하지 않는다. `:feature:media:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS; 취소된 Media 요청이 새 결과를 덮지 않는 단위 테스트 PASS. 전용 API 36 AVD에서 Media→Replay 필터→합성 재생 수동 확인. 전체 connected 자동 회귀 NOT_RUN_DEFERRED. 다음 Messages 이동.
+
+## ARCH-002 Messages 이동 (2026-11-06)
+Messages 목록·대화 화면과 ViewModel을 `:feature:messages`로 이동했다. 모델과 Repository 계약은 core:model, Fake 상태는 app의 AppContainer가 주입하는 core:data 인스턴스다. 기존 IME padding·viewport/신규 메시지 스크롤과 태그를 유지한다. `:feature:messages:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 API 36 AVD에서 대화 진입·IME 위 입력 및 합성 메시지 로컬 전송 수동 확인. connected 자동 회귀는 다중 AVD로 NOT_RUN_DEFERRED. 다음 ARCH-003 경계 감사·통합.

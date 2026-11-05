@@ -516,3 +516,4 @@
 - ARCH-002 Discover: `:feature:discover:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 API 36 AVD 수동 Home→LIVE Playing 확인. 첫 UI dump는 화면 전환 중 null이었고 재시도에서 확인했다. connected 테스트는 다중 AVD로 NOT_RUN_DEFERRED.
 - ARCH-002 Community: `:feature:community:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 AVD에서 아티스트→Post 좋아요·재진입 유지 수동 확인. connected 자동 회귀는 다중 AVD로 NOT_RUN_DEFERRED.
 - ARCH-002 Media: `:feature:media:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS; 취소된 오래된 요청의 오류를 차단하는 Media 단위 테스트 추가 PASS. 전용 AVD 수동 Media→Replay 재생 확인. connected 자동 회귀 NOT_RUN_DEFERRED(다중 AVD).
+- ARCH-002 Messages: `:feature:messages:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 AVD 수동 대화·IME 입력·합성 전송 및 Saved locally 확인. connected 자동 회귀 NOT_RUN_DEFERRED(다중 AVD).

@@ -1,5 +1,7 @@
 package dev.fanstage.android
 
+import dev.fanstage.android.feature.messages.*
+
 import dev.fanstage.android.feature.media.*
 
 import dev.fanstage.android.feature.community.*
