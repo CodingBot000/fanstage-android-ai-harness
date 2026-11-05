@@ -29,3 +29,10 @@ Messages 목록·대화 화면과 ViewModel을 `:feature:messages`로 이동했�
 
 ## ARCH-003 경계 점검 (진행 중, 2026-11-06)
 Replay 화면을 기존 `:feature:live`로 옮겨 app에는 MainActivity/Navigation과 AppContainer만 남겼다. `scripts/check-ux-module-boundaries.py`에서 승인된 각 feature→core 의존, 순수 모델의 Android 참조 금지, app 소스 경계를 검사한다. 스크립트 PASS. 전용 AVD만 보이는 별도 ADB 서버에서 Discover 및 기존 LIVE 계측 13/13 PASS. 전체 실제 서버 통합과 최종 CI는 별도 수행한다.
+
+## ARCH-003 로컬 통합 (2026-11-06)
+기준 5개 모듈에서 app, core 4개, feature 5개 및 macrobenchmark 총 11개로 변경했다. app의 주 Kotlin 소스는 Navigation/MainActivity와 AppContainer 두 파일이다. `python3 scripts/check-ux-module-boundaries.py` PASS. 모듈별 관련 빌드 및 앱/데이터 단위 테스트, Debug·Release·Benchmark 빌드와 lint PASS.
+
+별도 ADB 서버에서 전용 API 36 에뮬레이터만 보이는지 계측 직전 확인하고, 격리된 로컬 PostgreSQL/WebSocket 서버를 사용한 전체 Android 계측 14/14(스킵 0), 서버 통합·ACK 유실·연결 중단 회귀 PASS. 이후 Activity 재생성 후 게시물·대화 상태 및 IME 위 전송 버튼 검사를 강화해 `DiscoverTest` 9/9 추가 PASS. 임시 합성 서버 자격·DB는 종료 시 삭제했다. 관련 UI 8개 캡처와 [16초 무음 4탭 시연](../portfolio/media/ux-premium-demo.mp4)을 기록했다. 시연은 실제 방송·서버 전달을 보여주지 않는다.
+
+NOT_RUN: 실기기 성능 A/B, 전 화면 큰 글꼴·TalkBack, 실제 DM/원격 LIVE, 독립 코드 리뷰 및 최종 PR CI. 이미지 생성 결과의 인물 동일성이나 모든 제3자 UI 권리 검토를 보증하지 않는다. M6 성능 미입증과 M8 예외·라이선스 한계를 보존한다. `ArtistId` 등은 현재 문자열 typealias여서 컴파일 시 다른 ID 유형 혼용을 강제 차단하지 못한다. 전체 connected 실행은 특별 ADB 서버에서 테스트용 에뮬레이터 하나만 보이는 것을 확인하고 실행했다.

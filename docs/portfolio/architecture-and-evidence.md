@@ -1,6 +1,28 @@
 # 아키텍처와 검증 근거
 
-## 경계와 소유권
+## UX-007~011 및 ARCH-001~003 작업 트리
+
+기준 `5bd022b`의 5개 모듈에서 app의 신규 기능 책임을 분리해 현재 11개 모듈(`app`, core 4개, feature 5개, macrobenchmark)로 구성했다. `core:artwork`는 여러 기능에서 같은 이미지 리소스를 쓰면서 feature→app 의존을 피하기 위해 추가했다. 새 화면 및 모듈 이동은 현재 브랜치에서 검증 중이며 기존 v0.1의 근거를 대체하지 않는다.
+
+```mermaid
+flowchart TD
+    APP[":app: Navigation / AppContainer"] --> DISC[":feature:discover"]
+    APP --> COMM[":feature:community"]
+    APP --> MEDIA[":feature:media"]
+    APP --> MSG[":feature:messages"]
+    APP --> LIVE[":feature:live"]
+    APP --> DATA[":core:data"]
+    DISC & COMM & MEDIA & MSG --> MODEL[":core:model"]
+    DISC & COMM & MEDIA & MSG --> ART[":core:artwork"]
+    DISC & COMM & MEDIA & MSG --> DESIGN[":core:designsystem"]
+    DATA --> MODEL
+    ART --> MODEL
+    LIVE --> MODEL
+```
+
+모델과 Repository 계약은 순수 Kotlin, Fake 상태는 세션 단위 core:data, 이미지 키의 Android 리소스 매핑은 core:artwork가 담당한다. `scripts/check-ux-module-boundaries.py`는 선언된 방향 및 app 소스 경계를 검사한다. 데이터는 로컬 데모이며 프로세스 종료 후 유지되지 않는다. 자세한 실행 상태는 [ARCH SDD](../specs/ARCH-001-feature-modularization.md)와 [STATUS](../STATUS.md)를 따른다.
+
+## v0.1 LIVE·Chat 경계와 소유권
 
 ```mermaid
 flowchart LR
@@ -18,7 +40,7 @@ flowchart LR
     SERVER --> DB[(PostgreSQL)]
 ```
 
-- `:app`은 Navigation과 화면별 ViewModel 생성을 담당합니다. `:feature:live`는 화면, Player 수명, 채팅 상태·전송 계층을 갖고, `:core:model`은 공통 모델을 제공합니다.
+- v0.1 기준 `:app`은 Navigation과 화면별 ViewModel 생성을 담당했고, `:feature:live`는 화면·Player 수명·채팅 전송을, `:core:model`은 공통 모델을 제공했습니다. 현재 작업 트리의 확장 경계는 위를 참조하세요.
 - `PlayerPanel`은 lifecycle에 맞춰 재생을 제어하고 화면에서 제거될 때 listener와 Player를 해제합니다. 채팅 연결과 재생은 독립적으로 동작합니다. 전체 heap 누수 부재를 증명한 것은 아닙니다.
 - `ChatViewModel`은 사용자 메시지를 Pending으로 표시합니다. ACK나 확인된 이벤트를 처리하며 중복과 순서를 관리합니다. 알 수 없는 전송 결과를 성공으로 확정하지 않고 동일 ID로 재시도할 수 있습니다.
 - Real transport는 WebSocket 실시간 이벤트와 HTTP snapshot을 사용합니다. 서버 등록과 snapshot 경계에서 이벤트가 겹칠 수 있으므로 ViewModel이 순서와 중복을 조정합니다. 로컬 개발 서버이며 공개 운영 배포가 아닙니다.

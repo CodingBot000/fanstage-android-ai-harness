@@ -2,21 +2,29 @@
 
 FanStage는 **Kotlin·Jetpack Compose로 구현한 가상의 아티스트 팬 커뮤니티 Android 포트폴리오**입니다. Discover·Community·Media·Messages를 탐색하고, 기존 Media3 HLS 재생과 채팅 화면으로 이어집니다. 기본 데이터와 DM·좋아요·댓글은 로컬 Fake이며, 실제 WebSocket/HTTP·Spring Boot·PostgreSQL 연동은 별도의 로컬 개발 서버에서 검증했습니다. 실제 방송·운영 팬 서비스는 아닙니다.
 
-**현재 상태: v0.1 기술 코어 + UX-001~006 Compose 확장([PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36) 병합)**. 소스·로컬 빌드 절차 제공, 공개 APK 없음. 기존 [v0.1 검증·한계](docs/reviews/M8-final-readiness.md)와 [UX 통합 근거](docs/specs/UX-006-integration.md)를 구분해 기록합니다.
+**현재 상태: v0.1 기술 코어 + UX-001~006 Compose 확장([PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36) 병합), UX-007~011 및 모듈 분리 작업 트리**. 소스·로컬 빌드 절차 제공, 공개 APK 없음. 기존 [v0.1 검증·한계](docs/reviews/M8-final-readiness.md)와 [UX 통합 근거](docs/specs/UX-006-integration.md)를 구분해 기록합니다.
 
 ## Compose 화면 미리보기
 
+UX-007~011 및 기능 모듈 분리 작업의 로컬 화면 캡처입니다. 합성 콘텐츠와 로컬 Fake 데이터이며 PR·CI 최종 검증은 별도로 확인합니다.
+
 | Discover Home | Community Feed |
 |:--:|:--:|
-| ![Discover Home — Hero 및 추천 콘텐츠](docs/evidence/ux-006/home.png) | ![Community — 아티스트와 피드](docs/evidence/ux-003/community.png) |
+| ![Discover Home — Hero 및 추천 콘텐츠](docs/evidence/ux-008/discover.png) | ![Community — 아티스트와 피드](docs/evidence/ux-009/artist.png) |
 | Media | Messages |
-| ![Media — 영상 그리드와 필터](docs/evidence/ux-004/media.png) | ![Messages — 로컬 대화 목록](docs/evidence/ux-005/messages.png) |
+| ![Media — 영상 그리드와 필터](docs/evidence/ux-010/media.png) | ![Messages — 로컬 대화 목록](docs/evidence/ux-011/messages.png) |
 
-[합성 영상 재생·채팅 상세 화면](docs/evidence/ux-006/live.png) · Discover·LIVE는 UX-006 통합 시점 캡처, Community·Media·Messages는 공통 TopBar 정리 이전 단계의 기록입니다. 모든 아티스트와 콘텐츠는 가상입니다.
+[LIVE 데모](docs/evidence/ux-010/live.png) · [Replay](docs/evidence/ux-010/replay.png) · [Post](docs/evidence/ux-009/post.png) · [Conversation](docs/evidence/ux-011/conversation.png) · 모든 아티스트와 콘텐츠는 가상입니다. 과거 UX-006 화면은 [기존 기록](docs/specs/UX-006-integration.md)에 보존합니다.
 
 | 무엇을 만들었나 | 어떤 문제를 다뤘나 | 어떻게 확인했나 |
 |---|---|---|
 | Compose 4개 메인 탭과 커뮤니티·게시물·대화·LIVE/Replay 상세, Media3 플레이어, Fake 및 실제 로컬 WebSocket 채팅 | 여러 화면의 상태·탭 복원, ACK 유실·중복·순서 역전·누락 복구, 화면 이탈 시 자원 해제 | UX 계측 14건 및 서버 장애 주입, CI·에뮬레이터·실기기에서 수행한 범위별 검증 |
+
+### UX 화면 시연
+
+[![UX 화면 시연 미리보기](docs/portfolio/media/ux-premium-demo-preview.png)](docs/portfolio/media/ux-premium-demo.mp4)
+
+[16초 무음 시연 보기](docs/portfolio/media/ux-premium-demo.mp4) · 전용 에뮬레이터에서 Discover·Community·Media·Messages 탭을 캡처했습니다. 실제 방송이나 서버 전달 장면은 포함하지 않습니다.
 
 ### 기존 LIVE/Chat 코어 시연 (UX 확장 이전 영상)
 
@@ -31,7 +39,7 @@ JDK 17과 Android SDK platform 37/build-tools 36.0.0이 필요합니다. Android
 ```sh
 export ANDROID_HOME="$HOME/Library/Android/sdk" # SDK 경로에 맞게 변경
 cd android
-./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest --no-daemon
+./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest :core:data:test --no-daemon
 ```
 
 Android Studio의 `app` Debug 구성을 에뮬레이터에 실행하면 Discover 홈에서 Community·Media·Messages를 탐색하고 LIVE/Replay 상세로 진입할 수 있습니다. 영상은 프로젝트에 포함된 무음 합성 VOD이고, 채팅은 장치 내부의 Fake 서버입니다. Debug 빌드는 Android 개발용 서명을 사용하며 처음 빌드하는 환경에서는 Android 도구가 Debug 키를 생성할 수 있습니다. **공개 APK는 제공하지 않습니다.** 다른 OS 설정과 자세한 빌드 안내는 [Android README](android/README.md)를 참조하세요.
@@ -50,6 +58,8 @@ Debug 상세 화면에는 로컬 서버 개발 설정이 먼저 나타납니다.
 실제 WebSocket 채팅은 별도 로컬 서버, Docker와 임시 테스트 자격값이 필요합니다. 실행·정리 절차는 [서버 README](backend/chat-server/README.md)에 있습니다. 개발 서버 선택은 Debug 전용이며 운영용 인증·TLS 구성이 아닙니다.
 
 ## 설계와 검증
+
+현재 작업 트리는 `:app`의 Navigation·AppContainer를 중심으로 `:feature:discover`, `:feature:community`, `:feature:media`, `:feature:messages`, 기존 `:feature:live`와 `:core:model`, `:core:data`, `:core:artwork`, `:core:designsystem`으로 구성합니다. [모듈 경계 및 검증 계획](docs/specs/ARCH-001-feature-modularization.md)을 참조하세요.
 
 - [UX-001~006 통합 기록](docs/specs/UX-006-integration.md) — 확장 화면·로컬 계측 14건·서버 연동·남은 한계.
 - [UX 통합 최종 PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36) — Android·서버 CI PASS와 독립 리뷰 P2 두 건 수정 및 해결 기록.
