@@ -2,11 +2,11 @@
 
 FanStage는 **Kotlin·Jetpack Compose로 구현한 가상의 아티스트 팬 커뮤니티 Android 포트폴리오**입니다. Discover·Community·Media·Messages를 탐색하고, 기존 Media3 HLS 재생과 채팅 화면으로 이어집니다. 기본 데이터와 DM·좋아요·댓글은 로컬 Fake이며, 실제 WebSocket/HTTP·Spring Boot·PostgreSQL 연동은 별도의 로컬 개발 서버에서 검증했습니다. 실제 방송·운영 팬 서비스는 아닙니다.
 
-**현재 상태: v0.1 기술 코어 + UX-001~006 Compose 확장([PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36) 병합), UX-007~011 및 모듈 분리 작업 트리**. 소스·로컬 빌드 절차 제공, 공개 APK 없음. 기존 [v0.1 검증·한계](docs/reviews/M8-final-readiness.md)와 [UX 통합 근거](docs/specs/UX-006-integration.md)를 구분해 기록합니다.
+**현재 상태: Portfolio Ready — 프리미엄 Compose UX + 11개 모듈**. 기본 기술 코어 [PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36)에 이어, 비주얼 개편·기능별 모듈 분리 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)가 병합됐습니다. 공개 APK 없이 소스와 로컬 빌드 절차를 제공합니다. [최종 아키텍처 기록](docs/specs/ARCH-001-feature-modularization.md), [v0.1 기술 코어의 검증·한계](docs/reviews/M8-final-readiness.md).
 
 ## Compose 화면 미리보기
 
-UX-007~011 및 기능 모듈 분리 작업의 로컬 화면 캡처입니다. 합성 콘텐츠와 로컬 Fake 데이터이며 PR·CI 최종 검증은 별도로 확인합니다.
+UX-007~011에서 에뮬레이터로 캡처한 화면입니다. 가상 아티스트·합성 콘텐츠와 로컬 Fake 데이터로 구성했습니다. 해당 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922626), [실제 WebSocket CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922691) 및 Codex 독립 리뷰는 최종 PR head에서 PASS했습니다.
 
 | Discover Home | Community Feed |
 |:--:|:--:|
@@ -59,7 +59,7 @@ Debug 상세 화면에는 로컬 서버 개발 설정이 먼저 나타납니다.
 
 ## 설계와 검증
 
-현재 작업 트리는 `:app`의 Navigation·AppContainer를 중심으로 `:feature:discover`, `:feature:community`, `:feature:media`, `:feature:messages`, 기존 `:feature:live`와 `:core:model`, `:core:data`, `:core:artwork`, `:core:designsystem`으로 구성합니다. [모듈 경계 및 검증 계획](docs/specs/ARCH-001-feature-modularization.md)을 참조하세요.
+현재 병합된 `main`은 `:app`의 Navigation·AppContainer를 중심으로 `:feature:discover`, `:feature:community`, `:feature:media`, `:feature:messages`, 기존 `:feature:live`와 `:core:model`, `:core:data`, `:core:artwork`, `:core:designsystem`으로 구성합니다. [모듈 경계 및 검증 결과](docs/specs/ARCH-001-feature-modularization.md)을 참조하세요.
 
 - [UX-001~006 통합 기록](docs/specs/UX-006-integration.md) — 확장 화면·로컬 계측 14건·서버 연동·남은 한계.
 - [UX 통합 최종 PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36) — Android·서버 CI PASS와 독립 리뷰 P2 두 건 수정 및 해결 기록.
