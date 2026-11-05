@@ -14,7 +14,7 @@
 - 타임아웃 RCA: 테스트 전용 phase/연결 상태/프록시 단계 및 비동기 예외 유형 기록과 CI의 태그 전용 sanitized artifact 추가. 동일 테스트를 격리 서버와 읽기 전용 API 36 에뮬레이터에서 3회 단독 실행 PASS(각 1/1), 양측 연결 대기 657/911/761ms. 최초 실패는 재현되지 않아 근본 원인과 P1 위험은 미해결. 첫 로컬 서버 기동은 테스트 토큰 길이 미달로 FAIL; 길이를 수정한 합성 테스트 입력으로 서버 기동 후 실행. 별도 격리 서버와 에뮬레이터만 정리했다. 최종 CI·리뷰 NOT_RUN.
 - 진단 실패 경로 검증: 격리 에뮬레이터에서 서버를 의도적으로 끄고 실행해 예상 FAIL(exit 1); 테스트 결과와 M8Rca 로그에 `ack.both_connected`, 연결 상태, `ConnectException`이 나타남. 최초 CI 타임아웃 재현이 아니다. 원문 로그와 태그 로그에서 임시 테스트 자격값 일치 없음.
 - 최종 진단 head `e0b9aeb4475e96017adc521555e0342948c7a400`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41996401282)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41996401209) PASS. 서버 artifact의 양측 연결 대기 50ms·단계 실패 0건; sanitizer 합성 자격값 치환 확인 PASS. 원래 타임아웃의 원인 미확인 및 최종 진단 변경 독립 리뷰 NOT_RUN으로 병합 보류.
-- `e0b9aeb` 독립 리뷰는 원본 예외 스택·원인 체인 소실을 P2로 지적했다. 메시지·파일명을 제거한 원인 유형과 코드 위치를 보존하도록 수정; 합성 민감 문자열·중첩 원인 회귀 계측 1/1 PASS(`/tmp/fanstage-m8-stack-test2.log`), 서버 미기동 인위적 실패의 단계·원인·줄 번호와 자격값 비노출 확인(`/tmp/fanstage-m8-stack-offline.log`). 기존 20초 타임아웃의 근본 원인은 여전히 미확정이며 해당 P1 Gate 해결로 추정하지 않는다. 수정 head CI NOT_RUN.
+- `e0b9aeb` 독립 리뷰는 원본 예외 스택·원인 체인 소실을 P2로 지적했다. 메시지·파일명을 제거한 원인 유형과 코드 위치를 보존하도록 수정; 합성 민감 문자열·중첩 원인 회귀 계측 1/1 PASS(`/tmp/fanstage-m8-stack-test2.log`), 서버 미기동 인위적 실패의 단계·원인·줄 번호와 자격값 비노출 확인(`/tmp/fanstage-m8-stack-offline.log`). 기존 20초 타임아웃의 근본 원인은 여전히 미확정이며 해당 P1 Gate 해결로 추정하지 않는다. 수정 head CI는 작성 시 NOT_RUN이며 최신 결과는 [PR 검사](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30/checks) 참조.
 
 
 ## M1-008 — Android README evidence reconciliation (2026-11-04)
