@@ -1,14 +1,14 @@
 # FanStage 작업 현황
 
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
-- Current task: v0.1 포트폴리오 제출 준비 완료
+- Current task: UX-006 통합 검토 및 CI (v0.1 포트폴리오 준비 완료와 별도)
 - State: **Portfolio Ready — v0.1 (source-only)**. M8-001 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30), M8-002 [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31), 클린 체크아웃 재현 [PR #33](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/33), MIT/제3자 고지 [PR #34](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/34)가 병합됐다. 사용자 확인 범위에서 포트폴리오 제출 준비를 마감했다. 이는 공개 APK·운영 서비스 검증 완료나 모든 위험 해소를 뜻하지 않는다. 최초 WebSocket 타임아웃은 PR #30 한정 예외 아래 원인 미확정으로 보존한다. [최종 범위와 잔여 한계](reviews/M8-final-readiness.md).
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지. 프로젝트 직접 작성 코드·문서는 MIT, 저작권 표기는 `2026 FanStage contributors`; 제3자 조건은 별도 유지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
 - Latest source reproduction: 동일 개발 환경의 별도 `main` clone `e09beb205dcf1ae12510225dff710e3e05682cb8`에서 JDK 17 및 기존 SDK·Debug 키·Gradle 캐시로 README 빌드·lint·단위 51/51, API 36 에뮬레이터 기본 흐름 PASS. [재현 기록](reviews/M8-clean-clone-reproduction.md).
-- Next action: v0.1 GitHub 소스 포트폴리오를 지원서에 제출한다. 원격 LIVE, 공개 APK·서버 바이너리 배포, 운영 보안·성능 확장은 이번 종료 범위 밖이다. 필요 시 별도 승인과 재검증을 거친다.
+- Next action: UX 확장 PR의 CI와 독립 리뷰를 확인한다. v0.1은 소스 포트폴리오 제출 준비 상태이며 원격 LIVE, 공개 APK·서버 바이너리 배포, 운영 보안·성능 확장은 별도 승인과 재검증 대상이다.
 
 ## Milestone Checklist
 
