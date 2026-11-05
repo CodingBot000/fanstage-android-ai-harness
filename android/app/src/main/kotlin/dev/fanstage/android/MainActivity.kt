@@ -41,6 +41,7 @@ private fun FanStageApp() {
     val navController = rememberNavController()
     val communityViewModel: CommunityViewModel = viewModel()
     val discoverViewModel: DiscoverViewModel = viewModel()
+    val messagesViewModel: MessagesViewModel = viewModel()
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
@@ -67,13 +68,9 @@ private fun FanStageApp() {
                 }
             }, onReplayClick = { navController.navigate("replay") { launchSingleTop = true } }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
         }
-        listOf("messages").forEach { route ->
-            composable(route) {
-                Column(Modifier.fillMaxSize().padding(24.dp).testTag("screen_$route")) {
-                    Text(stringResource(when (route) { "community" -> R.string.community; "media" -> R.string.media; else -> R.string.messages }), style = MaterialTheme.typography.headlineMedium)
-                    Text(stringResource(R.string.coming_soon))
-                }
-            }
+        composable("messages") { MessagesList(messagesViewModel, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
+        composable("messages/{artistId}") { messageEntry ->
+            ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), onBack = { navController.popBackStack() })
         }
         composable("media") {
             MediaRoute(discoverViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") })

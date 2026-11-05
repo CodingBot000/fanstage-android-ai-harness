@@ -26,9 +26,17 @@ class DiscoverTest {
         rule.onNodeWithTag("tab_media").performClick()
         rule.onNodeWithTag("media_screen").assertIsDisplayed()
         rule.onNodeWithTag("tab_messages").performClick()
-        rule.onNodeWithTag("screen_messages").assertIsDisplayed()
+        rule.onNodeWithTag("messages_list").assertIsDisplayed()
         rule.onNodeWithTag("tab_rooms").performClick()
         rule.onNodeWithTag("replay_card").assertIsDisplayed()
+    }
+    @Test fun localMessageCanBeSent() {
+        rule.onNodeWithTag("tab_messages").performClick()
+        rule.onNodeWithTag("conversation_paper-lantern").performClick()
+        rule.onNodeWithTag("dm_input").performTextInput("Hello artist")
+        rule.onNodeWithTag("dm_send").performClick()
+        rule.onNodeWithText("Hello artist").assertIsDisplayed()
+        rule.onNodeWithText(rule.activity.getString(R.string.local_sent)).assertIsDisplayed()
     }
     @Test fun mediaFilterAndReplay() {
         rule.onNodeWithTag("tab_media").performClick()

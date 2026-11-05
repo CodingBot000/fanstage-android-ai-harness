@@ -11,4 +11,5 @@
 <string name="community_empty">No posts yet.</string><string name="comment">Comment</string><string name="send_comment">Send</string>
 <string name="posts">Posts</string><string name="notices">Notices</string>
 <string name="all_media">All</string>
+<string name="local_demo">Local demo · messages stay on this device session</string><string name="messages_back">Back to messages</string><string name="local_sent">Saved locally</string><string name="message_input">Message</string>
 </resources>

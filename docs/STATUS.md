@@ -64,3 +64,4 @@
 - UX-002: 네 탭 탐색과 Discover 스크롤 복원 계측 PASS. 탭 내용·공통 TopBar 및 전체 상세 백스택은 UX-003~006에서 완성·검증한다. 다음 UX-003 Community.
 - UX-003: Community Fake 피드·상세·좋아요·댓글 및 Discover 연결 구현. API 36 관련 5건과 빌드·lint PASS. 공지 빈 상태이며 오류·빈 상태 주입과 전체 통합은 후속 검증. 다음 UX-004 Media.
 - UX-004: Media 그리드·필터 및 기존 LIVE/Replay 이동 구현, API 36 관련 6건·빌드·lint PASS. LIVE 상세 재디자인과 전체 서버 회귀는 미완료. 다음 UX-005 Messages.
+- UX-005: 메모리 로컬 대화 목록·상세·입력과 로컬 저장 표시 구현, API 36 관련 7건·빌드·lint PASS. 실제 DM 전송 및 읽음 상태는 미구현. 다음 UX-006 통합 및 UX-004 상세 보완.

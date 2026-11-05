@@ -12,4 +12,5 @@
 <string name="community_empty">아직 게시물이 없습니다.</string><string name="comment">댓글</string><string name="send_comment">보내기</string>
 <string name="posts">게시물</string><string name="notices">공지</string>
 <string name="all_media">전체</string>
+<string name="local_demo">로컬 데모 · 메시지는 현재 세션에만 보관됩니다</string><string name="messages_back">메시지로 돌아가기</string><string name="local_sent">로컬에 저장됨</string><string name="message_input">메시지</string>
 </resources>
