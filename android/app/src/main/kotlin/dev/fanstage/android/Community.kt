@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 data class CommunityPost(val id: String, val artistId: String, val title: String, val body: String, val image: Int, val liked: Boolean = false, val comments: List<String> = emptyList())
 interface CommunityRepository { suspend fun posts(): List<CommunityPost> }
 class FakeCommunityRepository : CommunityRepository {
-    override suspend fun posts() = fictionalArtists.map { CommunityPost("post-${it.id}", it.id, it.name, "A little moment from our world.", it.artwork) }
+    override suspend fun posts() = fictionalArtists.map { CommunityPost("post-${it.id}", it.id, it.name, "A little moment from our world.", it.feed) }
 }
 sealed interface CommunityState {
     data object Loading : CommunityState
@@ -59,7 +59,7 @@ class CommunityViewModel(private val repository: CommunityRepository = FakeCommu
             val artist = fictionalArtists.firstOrNull { it.id == artistId }
             if (artist != null) item {
                 Column {
-                    Image(painterResource(artist.artwork), null, Modifier.fillMaxWidth().height(180.dp).clip(RoundedCornerShape(20.dp)), contentScale = ContentScale.Crop)
+                    Image(painterResource(artist.cover), null, Modifier.fillMaxWidth().height(180.dp).clip(RoundedCornerShape(20.dp)), contentScale = ContentScale.Crop)
                     Text(artist.name, style = MaterialTheme.typography.headlineMedium)
                     TabRow(selectedTabIndex = selectedTab) {
                         Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text(stringResource(R.string.posts)) })

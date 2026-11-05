@@ -70,3 +70,7 @@
 - UX-006 로컬 통합: 공통 TopBar, 공지·로컬 읽음·필터 복원·취소 경합 방어 및 LIVE 상세 표현 보완. 최종 작업 트리 전체 Android 계측 14/14(실제 서버 case 포함), 서버 통합·장애 주입, Debug/Release/Benchmark 빌드·lint·unit PASS. [통합 SDD](specs/UX-006-integration.md). 실기기 성능 A/B·전 화면 접근성·독립 리뷰·최종 CI는 NOT_RUN. 기존 M6 미검증 항목은 유지하며 v0.1 포트폴리오 준비 완료와 구분한다.
 - PR #36 최초 head API 35 CI는 새 홈의 첫 LIVE 카드가 초기 화면 밖이어서 기존 테스트의 스크롤 없는 대기가 실패했다. 테스트를 실제 스크롤 흐름으로 수정했으며 작은 화면 API 36에서 기존 4/4·신규 9/9 PASS; 수정 head 원격 CI 확인 필요. 로컬 테스트 시작 중 뒤늦게 연결된 실기기에서도 테스트가 일부 시작되어 즉시 중단했고, 결과는 사용하지 않았다. 상세는 build-log 참조.
 - PR #36 최종 head `38ec99d`: Android build/lint/unit·API 35 탐색 [CI PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42040756558), PostgreSQL·실제 WebSocket [CI PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42040756538). Codex 독립 리뷰의 Messages P2(IME 입력창 가림·신규 메시지 미스크롤) 2건을 수정해 최신 head 재리뷰에서 추가 지적 없음·스레드 Resolved. [PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36)을 `7b5fb4cd523c3bab70cbe2f9d6d530a087dde296`로 Squash Merge. 실기기 성능 A/B·전 화면 접근성은 NOT_RUN.
+
+## UX-007~011 / ARCH-001~003 별도 확장 (2026-11-05)
+- 기준 `5bd022b`에서 새 브랜치 `codex/ux-premium-modular-batch`를 생성했다. 로컬 `.gitignore`의 plans 제외 규칙은 사용자 미커밋 변경으로 보존한다.
+- UX-007: 그룹별 원본·파생 자산 9개와 토큰을 추가하고 빠른 빌드·app 단위 테스트 PASS, 별도 API 36 에뮬레이터의 Hero 렌더 확인. [SDD](specs/UX-007-premium-visual.md), [자산 근거](portfolio/visual-assets.md). 기존 에뮬레이터와 개인 기기 데이터는 변경하지 않았다. 다음 UX-008. 전체 계측·서버·성능 NOT_RUN_DEFERRED.

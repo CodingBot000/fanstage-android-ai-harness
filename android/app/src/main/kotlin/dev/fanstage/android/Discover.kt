@@ -27,17 +27,17 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class FictionalArtist(val id: String, val name: String, val artwork: Int)
-data class DiscoverContent(val id: String, val title: String, val artist: String, val artistId: String = id, val artwork: Int = R.drawable.discover_hero)
+data class FictionalArtist(val id: String, val name: String, val artwork: Int, val cover: Int, val feed: Int)
+data class DiscoverContent(val id: String, val title: String, val artist: String, val artistId: String = id, val artwork: Int = R.drawable.paper_lantern_hero)
 val fictionalArtists = listOf(
-    FictionalArtist("paper-lantern", "Paper Lantern", R.drawable.discover_hero),
-    FictionalArtist("blue-pencil", "Blue Pencil", R.drawable.blue_pencil),
-    FictionalArtist("dice-garden", "Dice Garden", R.drawable.dice_garden),
+    FictionalArtist("paper-lantern", "Paper Lantern", R.drawable.paper_lantern_hero, R.drawable.paper_lantern_cover, R.drawable.paper_lantern_feed_01),
+    FictionalArtist("blue-pencil", "Blue Pencil", R.drawable.blue_pencil_hero, R.drawable.blue_pencil_cover, R.drawable.blue_pencil_feed_01),
+    FictionalArtist("dice-garden", "Dice Garden", R.drawable.dice_garden_hero, R.drawable.dice_garden_cover, R.drawable.dice_garden_feed_01),
 )
 data class DiscoverData(val artists: List<FictionalArtist>, val content: List<DiscoverContent>)
 interface DiscoverRepository { suspend fun load(): DiscoverData }
 class FakeDiscoverRepository : DiscoverRepository {
-    override suspend fun load() = DiscoverData(fictionalArtists, listOf(DiscoverContent("studio-session", "Studio session", "Paper Lantern", "paper-lantern"), DiscoverContent("sketch-break", "Afternoon sketch break", "Blue Pencil", "blue-pencil", R.drawable.blue_pencil), DiscoverContent("tabletop-night", "Tabletop night", "Dice Garden", "dice-garden", R.drawable.dice_garden)))
+    override suspend fun load() = DiscoverData(fictionalArtists, listOf(DiscoverContent("studio-session", "Studio session", "Paper Lantern", "paper-lantern"), DiscoverContent("sketch-break", "Afternoon sketch break", "Blue Pencil", "blue-pencil", R.drawable.blue_pencil_hero), DiscoverContent("tabletop-night", "Tabletop night", "Dice Garden", "dice-garden", R.drawable.dice_garden_hero)))
 }
 sealed interface DiscoverState {
     data object Loading : DiscoverState

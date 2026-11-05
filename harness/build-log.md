@@ -504,3 +504,7 @@
 - PR #36 head `b842cb6`: Android build/lint/unit 및 서버 CI PASS, API 35 탐색 테스트는 `RoomNavigationSmokeTest.kt:110`에서 첫 LIVE 항목이 초기 viewport 밖에 있어 20초 대기 FAIL. 새 홈에서 실제 사용자가 하듯 목록을 스크롤한 뒤 항목을 선택하도록 기존 테스트와 신규 테스트를 수정했다. API 36 에뮬레이터를 1080×1920으로 설정해 `RoomNavigationSmokeTest` 4/4 및 `DiscoverTest` 9/9 PASS 후 크기를 복구했다. 수정된 head의 API 35 CI는 별도 확인한다.
 - 로컬 재실행 초기에 실기기가 새로 연결된 것을 놓쳐 Gradle이 실기기에서도 테스트를 시작해 즉시 중단했다. 실기기 결과는 NOT_RUN으로 취급한다. 중단 후 테스트 프로세스와 debug 패키지는 목록에 없었고 기존 rclocal 패키지는 남아 있었다. 실행 전 debug 패키지 상태는 확인하지 못했다. 이후 모든 재실행은 에뮬레이터 serial을 명시했다.
 - PR #36 수정 head `c205189bd4926efa5e381768f5443ffcf6302041`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42036690895) PASS (build/lint/unit, API 35 Compose smoke), [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42036690215) PASS. 후속 문서 commit의 CI는 별도다. 독립 리뷰와 실기기 성능 A/B NOT_RUN.
+
+## UX-007 (2026-11-05)
+- 기준 `5bd022b`: 내장 imagegen 그룹별 9개 WebP 및 디자인 토큰. 프롬프트·원본/최종 해시와 크기 `docs/portfolio/visual-assets.md`. 기준 무드보드 직접 참조 시 세 그룹 인물이 반복되어 미채택, 1회 출력 안전 차단 후 별도 무대/스튜디오 요청으로 생성.
+- `:core:designsystem:assembleDebug :app:assembleDebug :app:testDebugUnitTest` PASS; debug APK 18,604,699 bytes. API 36 신규 전용 에뮬레이터에 대상 serial을 명시해 설치, `docs/evidence/ux-007/artwork-render.png`, `blue-render.png`에서 Hero 렌더 확인. connected 계측은 다른 에뮬레이터가 동시에 보이므로 실행하지 않았다. 전체 계측·서버·성능 NOT_RUN_DEFERRED. 사용자 `.gitignore` 미커밋 변경 보존.
