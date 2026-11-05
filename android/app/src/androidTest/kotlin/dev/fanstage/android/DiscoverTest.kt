@@ -11,8 +11,9 @@ import org.junit.runner.RunWith
 class DiscoverTest {
     @get:Rule val rule = createAndroidComposeRule<MainActivity>()
     @Test fun liveOpensAndReturns() {
-        rule.waitUntil(20_000) { rule.onAllNodesWithTag("room_studio-session").fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithTag("room_studio-session").performScrollTo().performClick()
+        rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
+        rule.onNodeWithTag("room_studio-session").performClick()
         rule.onNodeWithTag("room_detail").assertIsDisplayed()
         rule.onNodeWithTag("room_back").performClick()
         rule.onNodeWithTag("rooms_content").assertIsDisplayed()
