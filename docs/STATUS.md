@@ -86,3 +86,4 @@
 - ARCH-003 진행: Replay 화면을 기존 `feature:live`로 이동, app에는 MainActivity/AppContainer만 남김. 경계 스크립트 PASS. 별도 ADB 서버에 전용 AVD 한 대만 연결해 기존 LIVE·새 화면 계측 13/13 PASS. 실제 서버 포함 전체 최종 검증은 진행 전.
 - ARCH-003 로컬 통합 (2026-11-06): 11개 모듈·경계 검사 PASS, 별도 ADB 서버의 전용 API 36 AVD 및 격리 서버에서 전체 Android 계측 14/14·서버/장애 회귀 PASS. 이후 Activity 재생성 및 IME 접근 검사를 추가한 DiscoverTest 9/9 PASS. Debug/Release/Benchmark 빌드·lint·unit 및 core:data 테스트 PASS. [ARCH 기록](specs/ARCH-001-feature-modularization.md). 독립 리뷰·실기기 성능 A/B·전 화면 접근성·최종 CI는 NOT_RUN. 다음 통합 PR 및 CI 확인.
 - ARCH-003 CI: core:data 테스트와 경계 검사를 Android gate에 추가, 로컬 PASS. PR #38의 수정 head 원격 CI 및 독립 리뷰 확인 중.
+- ARCH-003 추가 감사: Discover 오류가 다른 탭 카탈로그를 비우지 않도록 공통 Fake 카탈로그를 독립 주입, 회귀 단위 테스트와 DiscoverTest 9/9 PASS. rcLocal 빌드·M4/M6 manifest 경계 PASS. 최종 head PR CI 별도 확인.

@@ -24,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -54,8 +53,7 @@ private fun FanStageApp() {
     val discoverViewModel: DiscoverViewModel = viewModel(factory = container.viewModelFactory)
     val messagesViewModel: MessagesViewModel = viewModel(factory = container.viewModelFactory)
     val mediaViewModel: MediaViewModel = viewModel(factory = container.viewModelFactory)
-    val discoverState by discoverViewModel.state.collectAsStateWithLifecycle()
-    val artists = (discoverState as? DiscoverState.Ready)?.data?.artists.orEmpty()
+    val artists = container.artists
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route

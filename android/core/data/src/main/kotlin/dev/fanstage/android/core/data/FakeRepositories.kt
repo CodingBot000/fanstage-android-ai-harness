@@ -7,6 +7,8 @@ internal val fictionalArtists: List<FictionalArtist> = listOf(
     FictionalArtist("blue-pencil", "Blue Pencil", ArtworkKey.BLUE_HERO, ArtworkKey.BLUE_COVER, ArtworkKey.BLUE_FEED),
     FictionalArtist("dice-garden", "Dice Garden", ArtworkKey.DICE_HERO, ArtworkKey.DICE_COVER, ArtworkKey.DICE_FEED),
 )
+object FakeCatalog { fun artists(): List<FictionalArtist> = fictionalArtists.toList() }
+
 class FakeDiscoverRepository : DiscoverRepository {
     override suspend fun load() = DiscoverData(fictionalArtists, listOf(
         DiscoverContent("studio-session", "Studio session", "Paper Lantern", "paper-lantern", ArtworkKey.PAPER_HERO),
