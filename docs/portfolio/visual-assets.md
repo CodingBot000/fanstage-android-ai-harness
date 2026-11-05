@@ -16,7 +16,7 @@
 | `dice_garden_cover` — portrait cover derived from Dice Garden master | `exec-549edafb-0430-4ccb-825e-378bf08625f8.png` `a3cb2f3c3497974d0e91d8e3525f07a5b2b5a60fe2f217ea489053ac0b922e8d` | `cdf592406c78d0c8a61f8a59dd028e1b78fb9683c28e5ff4913cc7a4b4c65a7c` | 148136 |
 | `dice_garden_feed_01` — keyboard scene derived from Dice Garden master | `exec-09e779b2-70cc-4a94-af2d-732b5050e655.png` `45a6994edfd7e67eb4a4675891960c1873ea098dd8dc3ebdebc42a5a51e8f84a` | `293a8607b51e4cab423cbfb8b0ee837f1ebdb09e73a19aead0452c217ddb5ec6` | 117644 |
 
-최종 파일은 `android/app/src/main/res/drawable-nodpi/`에 있다. Hero는 폭 1200px/품질 82, 커버·피드는 폭 900px/품질 80 WebP다. 실제 화면에서 Hero와 프로필을 확인했으며 커버·피드의 모든 크롭은 UX-009에서 추가 확인한다.
+최종 파일은 `android/core/artwork/src/main/res/drawable-nodpi/`에 있다. Hero는 폭 1200px/품질 82, 커버·피드는 폭 900px/품질 80 WebP다. 실제 화면에서 Hero와 프로필을 확인했으며 커버·피드의 모든 크롭은 UX-009에서 추가 확인한다.
 
 ## 생성 프롬프트
 

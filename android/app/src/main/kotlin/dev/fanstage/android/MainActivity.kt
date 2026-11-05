@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,9 +42,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun FanStageApp() {
     val navController = rememberNavController()
-    val communityViewModel: CommunityViewModel = viewModel()
-    val discoverViewModel: DiscoverViewModel = viewModel()
-    val messagesViewModel: MessagesViewModel = viewModel()
+    val container = remember { AppContainer() }
+    val communityViewModel: CommunityViewModel = viewModel(factory = container.viewModelFactory)
+    val discoverViewModel: DiscoverViewModel = viewModel(factory = container.viewModelFactory)
+    val messagesViewModel: MessagesViewModel = viewModel(factory = container.viewModelFactory)
+    val discoverState by discoverViewModel.state.collectAsStateWithLifecycle()
+    val artists = (discoverState as? DiscoverState.Ready)?.data?.artists.orEmpty()
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
@@ -72,19 +76,19 @@ private fun FanStageApp() {
                 }
             }, onReplayClick = { navController.navigate("replay") { launchSingleTop = true } }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
         }
-        composable("messages") { MessagesList(messagesViewModel, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
+        composable("messages") { MessagesList(messagesViewModel, artists, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
         composable("messages/{artistId}") { messageEntry ->
-            ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), onBack = { navController.popBackStack() })
+            ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
         }
         composable("media") {
             MediaRoute(discoverViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") })
         }
         composable("community") {
-            CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") })
+            CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, artists = artists)
         }
         composable("community/artist/{artistId}") { artistEntry ->
             val artistId = requireNotNull(artistEntry.arguments?.getString("artistId"))
-            CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, onBack = { navController.popBackStack() })
+            CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, onBack = { navController.popBackStack() }, artists = artists)
         }
         composable("community/post/{postId}") { postEntry ->
             PostDetail(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })

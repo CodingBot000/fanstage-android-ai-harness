@@ -78,3 +78,4 @@
 - UX-009 (2026-11-06): 커버·프로필·피드·상세 이미지 계층과 뒤로가기 문구 개선. 빌드/lint/unit PASS, 전용 에뮬레이터에서 가상 댓글·좋아요의 상세 왕복 보존을 수동 확인. [캡처](evidence/ux-009/artist.png). 자동 connected 테스트는 다중 AVD로 NOT_RUN_DEFERRED. 다음 UX-010.
 - UX-010 (2026-11-06): Media 이미지 크롭·데모 LIVE 라벨·Replay 상세 정리. 관련 빌드/lint/단위 PASS, 전용 API 36에서 합성 LIVE/Replay 재생·복귀 및 각 Player Init/Release 한 쌍 확인. [캡처](evidence/ux-010/media.png). 전체 계측·서버 회귀 NOT_RUN_DEFERRED. 다음 UX-011.
 - UX-011 (2026-11-06): 메시지 시각·아바타 개선, IME와 축소 viewport에서 마지막 메시지 및 과거 읽기 위치 수동 검증, 빈 입력·긴 메시지 단위 테스트 PASS. [대화 캡처](evidence/ux-011/conversation.png). connected 전체 검증은 ADB 다중 AVD로 NOT_RUN_DEFERRED. UX-007~011 실제 화면 증거 확보 후 다음 ARCH-001로 진행한다.
+- ARCH-001 (2026-11-06): `core:model` 순수 모델/계약, `core:data` 세션 Fake, `core:artwork` resolver/리소스 및 AppContainer 도입. 관련 모듈·앱·계측 APK 빌드, 데이터/앱 단위와 lint PASS; 전용 AVD 수동 화면·좋아요 왕복 확인. [SDD](specs/ARCH-001-feature-modularization.md). 자동 connected 전체는 NOT_RUN_DEFERRED. 다음 ARCH-002 Discover 이동.

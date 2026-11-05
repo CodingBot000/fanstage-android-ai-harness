@@ -19,6 +19,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.fanstage.android.core.designsystem.*
+import dev.fanstage.android.core.model.*
+import dev.fanstage.android.core.artwork.artworkResource
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
@@ -27,24 +29,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-data class FictionalArtist(val id: String, val name: String, val artwork: Int, val cover: Int, val feed: Int)
-data class DiscoverContent(val id: String, val title: String, val artist: String, val artistId: String = id, val artwork: Int = R.drawable.paper_lantern_hero)
-val fictionalArtists = listOf(
-    FictionalArtist("paper-lantern", "Paper Lantern", R.drawable.paper_lantern_hero, R.drawable.paper_lantern_cover, R.drawable.paper_lantern_feed_01),
-    FictionalArtist("blue-pencil", "Blue Pencil", R.drawable.blue_pencil_hero, R.drawable.blue_pencil_cover, R.drawable.blue_pencil_feed_01),
-    FictionalArtist("dice-garden", "Dice Garden", R.drawable.dice_garden_hero, R.drawable.dice_garden_cover, R.drawable.dice_garden_feed_01),
-)
-data class DiscoverData(val artists: List<FictionalArtist>, val content: List<DiscoverContent>)
-interface DiscoverRepository { suspend fun load(): DiscoverData }
-class FakeDiscoverRepository : DiscoverRepository {
-    override suspend fun load() = DiscoverData(fictionalArtists, listOf(DiscoverContent("studio-session", "Studio session", "Paper Lantern", "paper-lantern"), DiscoverContent("sketch-break", "Afternoon sketch break", "Blue Pencil", "blue-pencil", R.drawable.blue_pencil_hero), DiscoverContent("tabletop-night", "Tabletop night", "Dice Garden", "dice-garden", R.drawable.dice_garden_hero)))
-}
 sealed interface DiscoverState {
     data object Loading : DiscoverState
     data object Error : DiscoverState
     data class Ready(val data: DiscoverData) : DiscoverState
 }
-class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscoverRepository()) : ViewModel() {
+class DiscoverViewModel(private val repository: DiscoverRepository) : ViewModel() {
     private val mutableState = MutableStateFlow<DiscoverState>(DiscoverState.Loading)
     val state = mutableState.asStateFlow()
     private var loadJob: Job? = null
@@ -66,7 +56,7 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
                     LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(state.data.content, key = { it.id }) { content ->
                             Box(Modifier.fillParentMaxWidth(0.9f).aspectRatio(16f / 9f).clip(RoundedCornerShape(24.dp)).clickable { onRoomClick(content.id) }) {
-                                Image(painterResource(content.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
+                                Image(painterResource(artworkResource(content.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
                                 Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color(0xE91B1029)))))
                                 Column(Modifier.align(Alignment.BottomStart).padding(20.dp)) {
                                     Text(stringResource(R.string.featured), color = Color(0xFFFFD5E7), style = MaterialTheme.typography.labelMedium)
@@ -77,14 +67,14 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
                         }
                     }
                 }
-                item { Column { SectionTitle(stringResource(R.string.communities)); LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) { items(state.data.artists, key = { it.id }) { artist -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onArtistClick(artist.id) }.testTag("discover_artist_${artist.id}")) { Image(painterResource(artist.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape)); Spacer(Modifier.height(7.dp)); Text(artist.name, style = MaterialTheme.typography.labelSmall, maxLines = 2) } } } } }
+                item { Column { SectionTitle(stringResource(R.string.communities)); LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) { items(state.data.artists, key = { it.id }) { artist -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onArtistClick(artist.id) }.testTag("discover_artist_${artist.id}")) { Image(painterResource(artworkResource(artist.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape)); Spacer(Modifier.height(7.dp)); Text(artist.name, style = MaterialTheme.typography.labelSmall, maxLines = 2) } } } } }
                 item { SectionTitle(stringResource(R.string.live_now)) }
                 item {
                     LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(state.data.content, key = { it.id }) { content ->
                             Card(onClick = { onRoomClick(content.id) }, modifier = Modifier.width(190.dp).testTag("room_${content.id}"), colors = CardDefaults.cardColors(containerColor = Color.White)) {
                                 Column {
-                                    Image(painterResource(content.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().aspectRatio(16f / 10f))
+                                    Image(painterResource(artworkResource(content.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().aspectRatio(16f / 10f))
                                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                         Text(stringResource(R.string.demo_live), color = Color(0xFFD64B78), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                                         Text(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium, maxLines = 2)
@@ -112,7 +102,7 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
                         items(state.data.content, key = { it.id }) { content ->
                             Card(onClick = { onRoomClick(content.id) }, modifier = Modifier.width(180.dp)) {
                                 Column {
-                                    Image(painterResource(content.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().height(110.dp))
+                                    Image(painterResource(artworkResource(content.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().height(110.dp))
                                     Column(Modifier.padding(12.dp)) { Text(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium); Text(content.artist, style = MaterialTheme.typography.bodySmall) }
                                 }
                             }
@@ -124,7 +114,7 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
     }
 }
 @Composable private fun SectionTitle(text: String) { Text(text, Modifier.padding(start = 20.dp, end = 20.dp, bottom = 12.dp), style = MaterialTheme.typography.titleLarge) }
-@Preview(showBackground = true) @Composable private fun DiscoverReadyPreview() { FanStageTheme { DiscoverScreen(DiscoverState.Ready(DiscoverData(fictionalArtists, listOf(DiscoverContent("studio-session", "Studio session", "Paper Lantern")))), {}, {}) } }
+@Preview(showBackground = true) @Composable private fun DiscoverReadyPreview() { FanStageTheme { DiscoverScreen(DiscoverState.Ready(DiscoverData(emptyList(), listOf(DiscoverContent("studio-session", "Studio session", "Paper Lantern")))), {}, {}) } }
 @Preview(showBackground = true) @Composable private fun DiscoverLoadingPreview() { FanStageTheme { DiscoverScreen(DiscoverState.Loading, {}, {}) } }
 @Preview(showBackground = true) @Composable private fun DiscoverErrorPreview() { FanStageTheme { DiscoverScreen(DiscoverState.Error, {}, {}) } }
 

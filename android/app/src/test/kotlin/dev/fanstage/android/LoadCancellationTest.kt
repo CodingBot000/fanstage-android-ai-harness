@@ -1,5 +1,6 @@
 package dev.fanstage.android
 
+import dev.fanstage.android.core.model.*
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
@@ -40,6 +41,8 @@ class LoadCancellationTest {
             val release = CompletableDeferred<Unit>()
             var calls = 0
             val vm = CommunityViewModel(object : CommunityRepository {
+                override fun toggleLike(id: String) = emptyList<CommunityPost>()
+                override fun addComment(id: String, text: String) = emptyList<CommunityPost>()
                 override suspend fun posts(): List<CommunityPost> {
                     calls++
                     if (calls == 1) withContext(NonCancellable) { release.await(); throw IllegalStateException() }
