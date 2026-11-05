@@ -10,6 +10,7 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import dev.fanstage.android.feature.live.PlayerPanel
 import androidx.compose.runtime.getValue
@@ -59,7 +60,7 @@ private fun FanStageApp() {
                         launchSingleTop = true
                         restoreState = true
                     }
-                }, icon = { Text(listOf("✦", "◉", "▶", "✉")[index]) }, label = { Text(label) }, modifier = Modifier.testTag("tab_$route"))
+                }, icon = { Icon(painterResource(listOf(R.drawable.nav_discover, R.drawable.nav_community, R.drawable.nav_media, R.drawable.nav_messages)[index]), contentDescription = null) }, label = { Text(label) }, modifier = Modifier.testTag("tab_$route"))
             }
         }
     }) { shellPadding ->

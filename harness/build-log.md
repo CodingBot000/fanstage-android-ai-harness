@@ -508,3 +508,4 @@
 ## UX-007 (2026-11-05)
 - 기준 `5bd022b`: 내장 imagegen 그룹별 9개 WebP 및 디자인 토큰. 프롬프트·원본/최종 해시와 크기 `docs/portfolio/visual-assets.md`. 기준 무드보드 직접 참조 시 세 그룹 인물이 반복되어 미채택, 1회 출력 안전 차단 후 별도 무대/스튜디오 요청으로 생성.
 - `:core:designsystem:assembleDebug :app:assembleDebug :app:testDebugUnitTest` PASS; debug APK 18,604,699 bytes. API 36 신규 전용 에뮬레이터에 대상 serial을 명시해 설치, `docs/evidence/ux-007/artwork-render.png`, `blue-render.png`에서 Hero 렌더 확인. connected 계측은 다른 에뮬레이터가 동시에 보이므로 실행하지 않았다. 전체 계측·서버·성능 NOT_RUN_DEFERRED. 사용자 `.gitignore` 미커밋 변경 보존.
+- UX-008 (2026-11-06): `:app:assembleDebug :app:lintDebug :app:testDebugUnitTest` PASS. UI 증거 `docs/evidence/ux-008/discover.png`. 신규 전용 API 36 에뮬레이터를 serial 지정해 LIVE 카드→상세→뒤로가기→Community 수동 확인. 두 AVD가 동시에 보여 connected 계측 NOT_RUN_DEFERRED. 기존 사용자 `.gitignore` 미커밋 변경은 스테이징하지 않았다.

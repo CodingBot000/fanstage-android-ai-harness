@@ -65,7 +65,7 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
                 item {
                     LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(state.data.content, key = { it.id }) { content ->
-                            Box(Modifier.width(320.dp).height(220.dp).clip(RoundedCornerShape(24.dp)).clickable { onRoomClick(content.id) }) {
+                            Box(Modifier.fillParentMaxWidth(0.9f).aspectRatio(16f / 9f).clip(RoundedCornerShape(24.dp)).clickable { onRoomClick(content.id) }) {
                                 Image(painterResource(content.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
                                 Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color(0xE91B1029)))))
                                 Column(Modifier.align(Alignment.BottomStart).padding(20.dp)) {
@@ -79,7 +79,22 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
                 }
                 item { Column { SectionTitle(stringResource(R.string.communities)); LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) { items(state.data.artists, key = { it.id }) { artist -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onArtistClick(artist.id) }.testTag("discover_artist_${artist.id}")) { Image(painterResource(artist.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape)); Spacer(Modifier.height(7.dp)); Text(artist.name, style = MaterialTheme.typography.labelSmall, maxLines = 2) } } } } }
                 item { SectionTitle(stringResource(R.string.live_now)) }
-                items(state.data.content, key = { it.id }) { content -> Card(onClick = { onRoomClick(content.id) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("room_${content.id}"), colors = CardDefaults.cardColors(containerColor = Color.White)) { Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) { Image(painterResource(content.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(76.dp).clip(RoundedCornerShape(14.dp))); Spacer(Modifier.width(14.dp)); Column { Text("LIVE", color = Color(0xFFD64B78), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold); Text(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium); Text(content.artist, style = MaterialTheme.typography.bodySmall) } } } }
+                item {
+                    LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        items(state.data.content, key = { it.id }) { content ->
+                            Card(onClick = { onRoomClick(content.id) }, modifier = Modifier.width(190.dp).testTag("room_${content.id}"), colors = CardDefaults.cardColors(containerColor = Color.White)) {
+                                Column {
+                                    Image(painterResource(content.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().aspectRatio(16f / 10f))
+                                    Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Text(stringResource(R.string.demo_live), color = Color(0xFFD64B78), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                                        Text(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium, maxLines = 2)
+                                        Text(content.artist, style = MaterialTheme.typography.bodySmall)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 item { Column(Modifier.padding(horizontal = 20.dp)) {
                     Text(stringResource(R.string.replay), style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.height(12.dp))
