@@ -1,6 +1,11 @@
 package dev.fanstage.android
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,20 +52,28 @@ class CommunityViewModel(private val repository: CommunityRepository = FakeCommu
     fun comment(id: String, text: String) { val value = text.trim(); if (value.isNotEmpty()) update(id) { it.copy(comments = it.comments + value) } }
     private fun update(id: String, transform: (CommunityPost) -> CommunityPost) { val current = mutableState.value as? CommunityState.Ready ?: return; mutableState.value = current.copy(posts = current.posts.map { if (it.id == id) transform(it) else it }) }
 }
-@Composable fun CommunityRoute(viewModel: CommunityViewModel, artistId: String?, onArtist: (String) -> Unit, onPost: (String) -> Unit) {
+@Composable fun CommunityRoute(viewModel: CommunityViewModel, artistId: String?, onArtist: (String) -> Unit, onPost: (String) -> Unit, onBack: () -> Unit = {}) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CommunityScreen(state, artistId, viewModel::retry, onArtist, onPost)
+    CommunityScreen(state, artistId, viewModel::retry, onArtist, onPost, onBack)
 }
-@Composable fun CommunityScreen(state: CommunityState, artistId: String?, onRetry: () -> Unit, onArtist: (String) -> Unit, onPost: (String) -> Unit) {
+@Composable fun CommunityScreen(state: CommunityState, artistId: String?, onRetry: () -> Unit, onArtist: (String) -> Unit, onPost: (String) -> Unit, onBack: () -> Unit = {}) {
     var selectedTab by rememberSaveable(artistId) { mutableIntStateOf(0) }
     LazyColumn(Modifier.fillMaxSize().testTag("community_feed"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item { Text(stringResource(R.string.community), style = MaterialTheme.typography.headlineMedium) }
         if (artistId != null) {
             val artist = fictionalArtists.firstOrNull { it.id == artistId }
             if (artist != null) item {
-                Column {
-                    Image(painterResource(artist.cover), null, Modifier.fillMaxWidth().height(180.dp).clip(RoundedCornerShape(20.dp)), contentScale = ContentScale.Crop)
-                    Text(artist.name, style = MaterialTheme.typography.headlineMedium)
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    TextButton(onClick = onBack) { Text(stringResource(R.string.community_back)) }
+                    Box(Modifier.fillMaxWidth().height(240.dp).clip(RoundedCornerShape(24.dp))) {
+                        Image(painterResource(artist.cover), null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                        Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color(0xD921152C)))))
+                        Row(Modifier.align(Alignment.BottomStart).padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Image(painterResource(artist.artwork), null, Modifier.size(60.dp).clip(CircleShape), contentScale = ContentScale.Crop)
+                            Spacer(Modifier.width(12.dp))
+                            Column { Text(artist.name, color = Color.White, style = MaterialTheme.typography.headlineMedium); Text(stringResource(R.string.community), color = Color.White, style = MaterialTheme.typography.labelLarge) }
+                        }
+                    }
                     TabRow(selectedTabIndex = selectedTab) {
                         Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text(stringResource(R.string.posts)) })
                         Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text(stringResource(R.string.notices)) })
@@ -85,7 +98,7 @@ class CommunityViewModel(private val repository: CommunityRepository = FakeCommu
                 } else if (posts.isEmpty()) item { Text(stringResource(R.string.community_empty), Modifier.testTag("community_empty")) }
                 items(posts, key = { it.id }) { post ->
                     Card(onClick = { onPost(post.id) }, modifier = Modifier.fillMaxWidth().testTag("post_${post.id}")) {
-                        Column { Image(painterResource(post.image), null, Modifier.fillMaxWidth().height(180.dp), contentScale = ContentScale.Crop); Column(Modifier.padding(16.dp)) { Text(post.title, style = MaterialTheme.typography.titleLarge); Text(if (post.body == "A little moment from our world.") stringResource(R.string.demo_post_body) else post.body) } }
+                        Column { Image(painterResource(post.image), null, Modifier.fillMaxWidth().aspectRatio(1.25f), contentScale = ContentScale.Crop); Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) { Text(post.title, style = MaterialTheme.typography.titleLarge); Text(stringResource(R.string.community), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelMedium); Text(if (post.body == "A little moment from our world.") stringResource(R.string.demo_post_body) else post.body) } }
                     }
                 }
             }
@@ -97,9 +110,9 @@ class CommunityViewModel(private val repository: CommunityRepository = FakeCommu
     var comment by remember { mutableStateOf("") }
     val post = (state as? CommunityState.Ready)?.posts?.firstOrNull { it.id == postId }
     LazyColumn(Modifier.fillMaxSize().testTag("post_detail"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        item { TextButton(onClick = onBack) { Text(stringResource(R.string.replay_back)) } }
+        item { TextButton(onClick = onBack) { Text(stringResource(R.string.community_back)) } }
         if (post != null) {
-            item { Image(painterResource(post.image), null, Modifier.fillMaxWidth().height(200.dp), contentScale = ContentScale.Crop); Text(post.title, style = MaterialTheme.typography.headlineMedium); Text(if (post.body == "A little moment from our world.") stringResource(R.string.demo_post_body) else post.body) }
+            item { Image(painterResource(post.image), null, Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(20.dp)), contentScale = ContentScale.Crop); Spacer(Modifier.height(12.dp)); Text(post.title, style = MaterialTheme.typography.headlineMedium); Text(stringResource(R.string.community), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge); Text(if (post.body == "A little moment from our world.") stringResource(R.string.demo_post_body) else post.body) }
             item { Button(onClick = { viewModel.like(post.id) }, modifier = Modifier.testTag("post_like")) { Text(if (post.liked) "♥" else "♡") } }
             items(post.comments) { Text(it) }
             item { OutlinedTextField(value = comment, onValueChange = { comment = it }, label = { Text(stringResource(R.string.comment)) }, modifier = Modifier.testTag("comment_input")); Button(onClick = { viewModel.comment(post.id, comment); comment = "" }, modifier = Modifier.testTag("comment_send")) { Text(stringResource(R.string.send_comment)) } }

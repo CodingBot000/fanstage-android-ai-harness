@@ -75,3 +75,4 @@
 - 기준 `5bd022b`에서 새 브랜치 `codex/ux-premium-modular-batch`를 생성했다. 로컬 `.gitignore`의 plans 제외 규칙은 사용자 미커밋 변경으로 보존한다.
 - UX-007: 그룹별 원본·파생 자산 9개와 토큰을 추가하고 빠른 빌드·app 단위 테스트 PASS, 별도 API 36 에뮬레이터의 Hero 렌더 확인. [SDD](specs/UX-007-premium-visual.md), [자산 근거](portfolio/visual-assets.md). 기존 에뮬레이터와 개인 기기 데이터는 변경하지 않았다. 다음 UX-008. 전체 계측·서버·성능 NOT_RUN_DEFERRED.
 - UX-008 (2026-11-06): 16:9 Hero·가로 미디어·벡터 탐색·데모 LIVE 표시 적용, 빠른 빌드/lint/unit PASS, 전용 에뮬레이터 수동 LIVE 왕복·Community 이동 및 [캡처](evidence/ux-008/discover.png) 확인. 전체 connected 테스트는 두 AVD가 보이는 환경이라 NOT_RUN_DEFERRED. 다음 UX-009.
+- UX-009 (2026-11-06): 커버·프로필·피드·상세 이미지 계층과 뒤로가기 문구 개선. 빌드/lint/unit PASS, 전용 에뮬레이터에서 가상 댓글·좋아요의 상세 왕복 보존을 수동 확인. [캡처](evidence/ux-009/artist.png). 자동 connected 테스트는 다중 AVD로 NOT_RUN_DEFERRED. 다음 UX-010.
