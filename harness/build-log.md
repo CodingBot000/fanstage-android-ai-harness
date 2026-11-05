@@ -475,3 +475,4 @@
 - `:app:assembleDebug :app:lintDebug :feature:live:testDebugUnitTest` PASS. 신규 UI 실기기/에뮬레이터 캡처 및 통합 검증 NOT_RUN. UX-001 전체 미완료.
 - UX-001 v0.3: Hero/추천 캐러셀과 Replay 합성 VOD 연결 후 `:app:assembleDebug :app:lintDebug :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.DiscoverTest` PASS (API 36, 3/3; Replay 첫 프레임 포함). 홈 캡처 `docs/evidence/ux-001/home-v03.png` 확인. 전체 계측·서버 회귀·성능 NOT_RUN_DEFERRED.
 - UX-002: `:app:assembleDebug :app:lintDebug` PASS; API 36 `DiscoverTest` 4/4 PASS (탭 전환·Discover 스크롤 복원 포함). 캡처 `docs/evidence/ux-002/shell.png`. 전체 suite 및 서버 회귀 NOT_RUN_DEFERRED.
+- UX-003: `:app:assembleDebug :app:lintDebug :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.DiscoverTest` PASS, API 36 5/5 (게시물·좋아요·댓글 포함). 캡처 `docs/evidence/ux-003/community.png`. 오류/빈 상태 주입 및 전체 suite NOT_RUN_DEFERRED.

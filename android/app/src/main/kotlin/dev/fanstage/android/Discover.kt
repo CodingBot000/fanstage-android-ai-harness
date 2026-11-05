@@ -51,11 +51,11 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
     init { retry() }
     fun retry() { loadJob?.cancel(); loadJob = viewModelScope.launch { mutableState.value = DiscoverState.Loading; try { val content = repository.load(); currentCoroutineContext().ensureActive(); mutableState.value = DiscoverState.Ready(content) } catch (e: CancellationException) { throw e } catch (_: Exception) { mutableState.value = DiscoverState.Error } } }
 }
-@Composable fun DiscoverRoute(viewModel: DiscoverViewModel, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit) {
+@Composable fun DiscoverRoute(viewModel: DiscoverViewModel, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit, onArtistClick: (String) -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    DiscoverScreen(state, viewModel::retry, onRoomClick, onReplayClick)
+    DiscoverScreen(state, viewModel::retry, onRoomClick, onReplayClick, onArtistClick)
 }
-@Composable fun DiscoverScreen(state: DiscoverState, onRetry: () -> Unit, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit = {}) {
+@Composable fun DiscoverScreen(state: DiscoverState, onRetry: () -> Unit, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit = {}, onArtistClick: (String) -> Unit = {}) {
     Scaffold(containerColor = Color(0xFFFAF8FC)) { padding ->
         when (state) {
             DiscoverState.Loading -> Box(Modifier.fillMaxSize().padding(padding).testTag("discover_loading"), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
@@ -78,7 +78,7 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
                         }
                     }
                 }
-                item { Column { SectionTitle(stringResource(R.string.communities)); LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) { items(state.data.artists, key = { it.id }) { artist -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp)) { Image(painterResource(artist.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape)); Spacer(Modifier.height(7.dp)); Text(artist.name, style = MaterialTheme.typography.labelSmall, maxLines = 2) } } } } }
+                item { Column { SectionTitle(stringResource(R.string.communities)); LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) { items(state.data.artists, key = { it.id }) { artist -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onArtistClick(artist.id) }.testTag("discover_artist_${artist.id}")) { Image(painterResource(artist.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape)); Spacer(Modifier.height(7.dp)); Text(artist.name, style = MaterialTheme.typography.labelSmall, maxLines = 2) } } } } }
                 item { SectionTitle(stringResource(R.string.live_now)) }
                 items(state.data.content, key = { it.id }) { content -> Card(onClick = { onRoomClick(content.id) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).testTag("room_${content.id}"), colors = CardDefaults.cardColors(containerColor = Color.White)) { Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) { Image(painterResource(content.artwork), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(76.dp).clip(RoundedCornerShape(14.dp))); Spacer(Modifier.width(14.dp)); Column { Text("LIVE", color = Color(0xFFD64B78), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold); Text(content.title, style = MaterialTheme.typography.titleMedium); Text(content.artist, style = MaterialTheme.typography.bodySmall) } } } }
                 item { Column(Modifier.padding(horizontal = 20.dp)) {

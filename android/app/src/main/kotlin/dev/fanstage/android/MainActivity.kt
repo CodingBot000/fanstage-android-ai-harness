@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun FanStageApp() {
     val navController = rememberNavController()
+    val communityViewModel: CommunityViewModel = viewModel()
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
@@ -64,15 +65,25 @@ private fun FanStageApp() {
                 navController.navigate("rooms/${Uri.encode(roomId)}") {
                     launchSingleTop = true
                 }
-            }, onReplayClick = { navController.navigate("replay") { launchSingleTop = true } })
+            }, onReplayClick = { navController.navigate("replay") { launchSingleTop = true } }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
         }
-        listOf("community", "media", "messages").forEach { route ->
+        listOf("media", "messages").forEach { route ->
             composable(route) {
                 Column(Modifier.fillMaxSize().padding(24.dp).testTag("screen_$route")) {
                     Text(stringResource(when (route) { "community" -> R.string.community; "media" -> R.string.media; else -> R.string.messages }), style = MaterialTheme.typography.headlineMedium)
                     Text(stringResource(R.string.coming_soon))
                 }
             }
+        }
+        composable("community") {
+            CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") })
+        }
+        composable("community/artist/{artistId}") { artistEntry ->
+            val artistId = requireNotNull(artistEntry.arguments?.getString("artistId"))
+            CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") })
+        }
+        composable("community/post/{postId}") { postEntry ->
+            PostDetail(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
         }
         composable("replay") {
             Scaffold { padding ->

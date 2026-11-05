@@ -8,4 +8,6 @@
 <string name="replay">Replay</string><string name="coming_soon">Coming soon</string>
 <string name="replay_play">Watch replay</string><string name="replay_back">Back to Discover</string>
 <string name="media">Media</string><string name="messages">Messages</string>
+<string name="community_empty">No posts yet.</string><string name="comment">Comment</string><string name="send_comment">Send</string>
+<string name="posts">Posts</string><string name="notices">Notices</string>
 </resources>

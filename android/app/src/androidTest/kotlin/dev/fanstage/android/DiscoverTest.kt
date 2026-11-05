@@ -22,13 +22,25 @@ class DiscoverTest {
         rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("replay_card"))
         rule.onNodeWithTag("replay_card").assertIsDisplayed()
         rule.onNodeWithTag("tab_community").performClick()
-        rule.onNodeWithTag("screen_community").assertIsDisplayed()
+        rule.onNodeWithTag("community_feed").assertIsDisplayed()
         rule.onNodeWithTag("tab_media").performClick()
         rule.onNodeWithTag("screen_media").assertIsDisplayed()
         rule.onNodeWithTag("tab_messages").performClick()
         rule.onNodeWithTag("screen_messages").assertIsDisplayed()
         rule.onNodeWithTag("tab_rooms").performClick()
         rule.onNodeWithTag("replay_card").assertIsDisplayed()
+    }
+    @Test fun communityPostLikeAndComment() {
+        rule.onNodeWithTag("tab_community").performClick()
+        rule.waitUntil(20_000) { rule.onAllNodesWithTag("artist_paper-lantern").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("artist_paper-lantern").performClick()
+        rule.waitUntil(20_000) { rule.onAllNodesWithTag("post_post-paper-lantern").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("post_post-paper-lantern").performClick()
+        rule.onNodeWithTag("post_like").performScrollTo().performClick()
+        rule.onNodeWithText("♥").assertIsDisplayed()
+        rule.onNodeWithTag("comment_input").performScrollTo().performTextInput("Hello community")
+        rule.onNodeWithTag("comment_send").performScrollTo().performClick()
+        rule.onNodeWithText("Hello community").assertExists()
     }
     @Test fun replayPlaysAndReturns() {
         rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
