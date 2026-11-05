@@ -9,6 +9,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.IconButton
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
+import dev.fanstage.android.core.designsystem.SendIcon
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -126,9 +131,17 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
         if (state.sendBlocked) Text(stringResource(R.string.chat_capacity))
         if (state.inputTooLong) Text(stringResource(R.string.chat_too_long))
         if (state.transportUncertain) Text(stringResource(R.string.chat_uncertain))
-        Column(Modifier.fillMaxWidth()) {
-            OutlinedTextField(value = state.draft, onValueChange = viewModel::updateDraft, modifier = Modifier.fillMaxWidth().testTag("chat_input"), label = { Text(stringResource(R.string.chat_message_label)) })
-            Button(onClick = { if (viewModel.send(state.draft)) { viewModel.updateDraft(""); forceLatest = true } }, modifier = Modifier.testTag("chat_send")) { Text(stringResource(R.string.chat_send)) }
-        }
+        val submit: () -> Unit = { if (viewModel.send(state.draft)) { viewModel.updateDraft(""); forceLatest = true } }
+        val sendDescription = stringResource(R.string.chat_send)
+        OutlinedTextField(
+            value = state.draft,
+            onValueChange = viewModel::updateDraft,
+            modifier = Modifier.fillMaxWidth().testTag("chat_input"),
+            label = { Text(stringResource(R.string.chat_message_label)) },
+            trailingIcon = { IconButton(onClick = submit, modifier = Modifier.testTag("chat_send")) { SendIcon(sendDescription) } },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+            keyboardActions = KeyboardActions(onSend = { submit() }),
+            maxLines = 4,
+        )
     }
 }

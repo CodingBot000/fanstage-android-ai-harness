@@ -78,7 +78,7 @@ class DiscoverTest {
         rule.onNodeWithText(rule.activity.getString(R.string.local_sent)).assertIsDisplayed()
         rule.activityRule.scenario.recreate()
         rule.onNodeWithText("Hello artist").assertIsDisplayed()
-        rule.onNodeWithText(rule.activity.getString(R.string.messages_back)).performClick()
+        rule.onNodeWithTag("messages_back").performClick()
         rule.onNodeWithTag("unread_paper-lantern", useUnmergedTree = true).assertDoesNotExist()
     }
     @Test fun mediaFilterAndReplay() {

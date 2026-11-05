@@ -16,3 +16,6 @@ __pycache__/
 
 # Local performance artifacts may contain device/system data.
 /benchmark-results/
+
+# Local planning documents
+/docs/plans/

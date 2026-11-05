@@ -34,3 +34,9 @@
 4. `Square candid music editorial of the fictional artist from the reference arranging sketchbooks and blue paint beside an audio keyboard in a bright atelier, no text, logo, or watermark.`
 5. `Vertical 4:5 editorial portrait of the fictional synth-pop artist from the reference wearing a dark suit in an emerald night garden with violet flowers and glowing geometric dice; no text, logo, or watermark.`
 6. `Square candid editorial scene of the fictional synth-pop artist from the reference preparing a keyboard among emerald foliage, violet flowers and softly glowing geometric dice; no text, logo, or watermark.`
+
+## UX-012 앱 아이콘 (2026-11-06)
+
+- 도구: Codex 내장 imagegen. 프롬프트: `Create a polished original Android app launcher icon for FanStage, a premium music and fan community app. A single simple stylized white star formed by a stage spotlight and fan-shaped arcs, centered on a deep plum-to-violet background, crisp geometric vector-like shapes, strong contrast, readable at tiny size. Square canvas, full bleed, no lettering, no logos, no watermark.`
+- 원본: `$CODEX_HOME/generated_images/01a1ab5e-1eb3-7552-9209-f2169c41a3dc/exec-a138ed08-1215-4379-acfe-573304acc61c.png`, SHA-256 `f3a7f3baf1b9cb5bee1f639d0d8eba552ad6f338cfebd75c342a919e6c6c3444`.
+- 앱 리소스: `android/app/src/main/res/drawable-nodpi/fanstage_launcher.webp`, 512×512, 11,398 bytes, SHA-256 `e3b9bae4401795c16b24e6ec633166c9f813cdd1b418afd345872cc5c46c353c`. Android manifest의 icon/roundIcon에서 참조한다.

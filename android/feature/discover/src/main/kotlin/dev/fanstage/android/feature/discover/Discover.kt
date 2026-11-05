@@ -13,6 +13,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
@@ -60,14 +61,14 @@ class DiscoverViewModel(private val repository: DiscoverRepository) : ViewModel(
                                 Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Color(0xE91B1029)))))
                                 Column(Modifier.align(Alignment.BottomStart).padding(20.dp)) {
                                     Text(stringResource(R.string.featured), color = Color(0xFFFFD5E7), style = MaterialTheme.typography.labelMedium)
-                                    Text(content.artist, color = Color.White, style = MaterialTheme.typography.headlineMedium)
-                                    Text(localizedContentTitle(content), color = Color.White)
+                                    Text(content.artist, color = Color.White, style = MaterialTheme.typography.headlineMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                                    Text(localizedContentTitle(content), color = Color.White, maxLines = 2, overflow = TextOverflow.Ellipsis)
                                 }
                             }
                         }
                     }
                 }
-                item { Column { SectionTitle(stringResource(R.string.communities)); LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) { items(state.data.artists, key = { it.id }) { artist -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onArtistClick(artist.id) }.testTag("discover_artist_${artist.id}")) { Image(painterResource(artworkResource(artist.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape)); Spacer(Modifier.height(7.dp)); Text(artist.name, style = MaterialTheme.typography.labelSmall, maxLines = 2) } } } } }
+                item { Column { SectionTitle(stringResource(R.string.communities)); LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) { items(state.data.artists, key = { it.id }) { artist -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onArtistClick(artist.id) }.testTag("discover_artist_${artist.id}")) { Image(painterResource(artworkResource(artist.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape)); Spacer(Modifier.height(7.dp)); Text(artist.name, style = MaterialTheme.typography.labelSmall, maxLines = 2, overflow = TextOverflow.Ellipsis) } } } } }
                 item { SectionTitle(stringResource(R.string.live_now)) }
                 item {
                     LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -76,9 +77,9 @@ class DiscoverViewModel(private val repository: DiscoverRepository) : ViewModel(
                                 Column {
                                     Image(painterResource(artworkResource(content.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().aspectRatio(16f / 10f))
                                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        Text(stringResource(R.string.demo_live), color = Color(0xFFD64B78), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                                        Text(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium, maxLines = 2)
-                                        Text(content.artist, style = MaterialTheme.typography.bodySmall)
+                                        CardTwoLineText(stringResource(R.string.demo_live), style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFFD64B78), fontWeight = FontWeight.Bold))
+                                        CardTwoLineText(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium)
+                                        CardTwoLineText(content.artist, style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                             }
@@ -103,7 +104,7 @@ class DiscoverViewModel(private val repository: DiscoverRepository) : ViewModel(
                             Card(onClick = { onRoomClick(content.id) }, modifier = Modifier.width(180.dp)) {
                                 Column {
                                     Image(painterResource(artworkResource(content.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().height(110.dp))
-                                    Column(Modifier.padding(12.dp)) { Text(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium); Text(content.artist, style = MaterialTheme.typography.bodySmall) }
+                                    Column(Modifier.padding(12.dp)) { CardTwoLineText(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium); CardTwoLineText(content.artist, style = MaterialTheme.typography.bodySmall) }
                                 }
                             }
                         }

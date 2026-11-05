@@ -1,6 +1,10 @@
 package dev.fanstage.android.feature.messages
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +23,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.fanstage.android.core.designsystem.BackTitleBar
+import dev.fanstage.android.core.designsystem.CardTwoLineText
+import dev.fanstage.android.core.designsystem.SendIcon
 import dev.fanstage.android.core.model.*
 import dev.fanstage.android.core.artwork.artworkResource
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +48,7 @@ class MessagesViewModel(private val repository: MessageRepository) : ViewModel()
             if (artist != null) Card(onClick = { onOpen(artist.id) }, modifier = Modifier.fillMaxWidth().testTag("conversation_${artist.id}"), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                 Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     Image(painterResource(artworkResource(artist.cover)), null, Modifier.size(64.dp).clip(CircleShape), contentScale = ContentScale.Crop)
-                    Spacer(Modifier.width(14.dp)); Column { Text(artist.name, style = MaterialTheme.typography.titleMedium); Text(conversation.messages.lastOrNull()?.let { if (it.id == 0L && !it.fromMe) stringResource(R.string.demo_welcome) else it.text }.orEmpty(), maxLines = 1); if (conversation.unread) Text(stringResource(R.string.unread), modifier = Modifier.testTag("unread_${artist.id}"), style = MaterialTheme.typography.labelSmall) }
+                    Spacer(Modifier.width(14.dp)); Column(Modifier.weight(1f)) { CardTwoLineText(artist.name, style = MaterialTheme.typography.titleMedium); CardTwoLineText(conversation.messages.lastOrNull()?.let { if (it.id == 0L && !it.fromMe) stringResource(R.string.demo_welcome) else it.text }.orEmpty(), style = MaterialTheme.typography.bodyMedium); Box(Modifier.height(with(androidx.compose.ui.platform.LocalDensity.current) { MaterialTheme.typography.labelSmall.lineHeight.toDp() })) { if (conversation.unread) Text(stringResource(R.string.unread), modifier = Modifier.testTag("unread_${artist.id}"), style = MaterialTheme.typography.labelSmall) } }
                 }
             }
         }
@@ -71,12 +78,11 @@ class MessagesViewModel(private val repository: MessageRepository) : ViewModel()
     }
     // With edge-to-edge enabled, keep the composer above the software keyboard.
     Column(Modifier.fillMaxSize().imePadding().padding(16.dp).testTag("conversation_detail")) {
-        TextButton(onClick = onBack) { Text(stringResource(R.string.messages_back)) }
+        BackTitleBar(artist?.name.orEmpty(), onBack, backTag = "messages_back")
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             if (artist != null) Image(painterResource(artworkResource(artist.cover)), null, Modifier.size(52.dp).clip(CircleShape), contentScale = ContentScale.Crop)
             Column {
-                Text(artist?.name.orEmpty(), style = MaterialTheme.typography.titleLarge)
-                Text(stringResource(R.string.local_demo), style = MaterialTheme.typography.bodySmall)
+                Text(stringResource(R.string.local_demo), style = MaterialTheme.typography.bodySmall, maxLines = 2, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
             }
         }
         LazyColumn(Modifier.weight(1f).fillMaxWidth(), state = transcriptState, verticalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(vertical = 16.dp)) {
@@ -88,9 +94,17 @@ class MessagesViewModel(private val repository: MessageRepository) : ViewModel()
                 }
             }
         }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(value = draft, onValueChange = { draft = it }, modifier = Modifier.weight(1f).testTag("dm_input"), label = { Text(stringResource(R.string.message_input)) })
-            Button(onClick = { viewModel.send(artistId, draft); draft = "" }, modifier = Modifier.testTag("dm_send")) { Text(stringResource(R.string.send_comment)) }
-        }
+        val submit: () -> Unit = { viewModel.send(artistId, draft); draft = "" }
+        val sendDescription = stringResource(R.string.send_comment)
+        OutlinedTextField(
+            value = draft,
+            onValueChange = { draft = it },
+            modifier = Modifier.fillMaxWidth().testTag("dm_input"),
+            label = { Text(stringResource(R.string.message_input)) },
+            trailingIcon = { IconButton(onClick = submit, modifier = Modifier.testTag("dm_send")) { SendIcon(sendDescription) } },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+            keyboardActions = KeyboardActions(onSend = { submit() }),
+            maxLines = 4,
+        )
     }
 }

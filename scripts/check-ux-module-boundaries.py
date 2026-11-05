@@ -10,7 +10,7 @@ expected = {
     "core/data": {":core:model"},
     "core/artwork": {":core:model"},
     "core/designsystem": set(),
-    "feature/live": {":core:model"},
+    "feature/live": {":core:model", ":core:designsystem"},
     "feature/discover": {":core:model", ":core:artwork", ":core:designsystem"},
     "feature/community": {":core:model", ":core:artwork", ":core:designsystem"},
     "feature/media": {":core:model", ":core:artwork", ":core:designsystem"},
