@@ -146,7 +146,7 @@ class RoomNavigationSmokeTest {
         composeRule.onNodeWithTag("player_play").performScrollTo().assertIsDisplayed()
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
         composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
-        composeRule.onNodeWithTag("room_back").performScrollTo().performClick()
+        composeRule.onNodeWithTag("room_back").performClick()
         composeRule.onNodeWithTag("room_studio-session").assertIsDisplayed()
         repeat(5) {
             composeRule.onNodeWithTag("room_studio-session").performClick()

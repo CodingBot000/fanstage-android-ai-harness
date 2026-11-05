@@ -94,3 +94,7 @@
 - ARCH-003 로컬 통합 (2026-11-06): 11개 모듈·경계 검사 PASS, 별도 ADB 서버의 전용 API 36 AVD 및 격리 서버에서 전체 Android 계측 14/14·서버/장애 회귀 PASS. 이후 Activity 재생성 및 IME 접근 검사를 추가한 DiscoverTest 9/9 PASS. Debug/Release/Benchmark 빌드·lint·unit 및 core:data 테스트 PASS. [ARCH 기록](specs/ARCH-001-feature-modularization.md). 독립 리뷰·실기기 성능 A/B·전 화면 접근성·최종 CI는 NOT_RUN. 다음 통합 PR 및 CI 확인.
 - ARCH-003 CI: core:data 테스트와 경계 검사를 Android gate에 추가, 로컬 PASS. PR #38의 수정 head 원격 CI 및 독립 리뷰 확인 중.
 - ARCH-003 추가 감사: Discover 오류가 다른 탭 카탈로그를 비우지 않도록 공통 Fake 카탈로그를 독립 주입, 회귀 단위 테스트와 DiscoverTest 9/9 PASS. rcLocal 빌드·M4/M6 manifest 경계 PASS. 최종 head PR CI 별도 확인.
+
+## UX-012 (2026-11-06)
+- 그리드/카드 두 줄·말줄임 및 높이 통일, 상세 상단 뒤로가기 아이콘, LIVE/DM 입력창 안 전송 버튼·IME Send, 영상 TextureView 전환 및 앱 아이콘 적용. [SDD](specs/UX-012-layout-navigation-chat-player.md), [영상 surface ADR](adr/ADR-0008-compose-video-surface.md).
+- 에뮬레이터 전체 Android 계측 18/18·서버 통합/장애 회귀 PASS, 이후 UI 계측 5/5 및 일반 Debug/Release/rcLocal/Benchmark 빌드·lint·unit·manifest·모듈 경계 PASS. 키보드 전송 및 영상 전환 프레임 수동 확인. 실기기는 사용자 요청으로 에뮬레이터로 전환해 NOT_RUN. 기존 일반 앱은 사용자 승인에 따라 에뮬레이터에 `install -r`로 갱신했다. 기존 `.gitignore` 변경은 보존한다.

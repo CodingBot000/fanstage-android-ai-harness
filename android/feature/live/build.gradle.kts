@@ -20,6 +20,7 @@ kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
 dependencies {
     api(project(":core:model"))
+    implementation(project(":core:designsystem"))
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.hls)
     implementation(libs.media3.ui)

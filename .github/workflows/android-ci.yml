@@ -6,6 +6,7 @@ on:
     paths:
       - 'android/**'
       - 'scripts/m1-004-emulator-smoke.sh'
+      - 'scripts/ux012-emulator-gate.sh'
       - 'scripts/m4-check-manifests.py'
       - 'scripts/m6-check-manifests.py'
       - 'scripts/check-ux-module-boundaries.py'
@@ -15,6 +16,7 @@ on:
     paths:
       - 'android/**'
       - 'scripts/m1-004-emulator-smoke.sh'
+      - 'scripts/ux012-emulator-gate.sh'
       - 'scripts/m4-check-manifests.py'
       - 'scripts/m6-check-manifests.py'
       - 'scripts/check-ux-module-boundaries.py'
@@ -143,8 +145,8 @@ jobs:
           working-directory: android
           emulator-boot-timeout: 600
           # The emulator action runs each 'script' entry through sh -c.
-          # Use one Bash process for pipefail, EXIT logcat trap and Gradle result.
-          script: bash ../scripts/m1-004-emulator-smoke.sh
+          # Run the existing LIVE lifecycle gate first, then the UX-012 UI cases.
+          script: bash ../scripts/ux012-emulator-gate.sh
 
       - name: Upload original connected test result and error logs
         if: always()
@@ -152,6 +154,8 @@ jobs:
         with:
           name: android-emulator-compose-smoke-evidence
           path: |
+            ux012-emulator-test.log
+            ux012-baseline-evidence/**
             android-emulator-test.log
             android-emulator-logcat.txt
             android-player-lifecycle.log

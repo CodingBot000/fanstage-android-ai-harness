@@ -24,6 +24,9 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            if (providers.gradleProperty("fanstageDeviceTest").orNull == "true") applicationIdSuffix = ".devicecheck"
+        }
         // Local verification only. Never use this debug-signed variant for distribution.
         create("rcLocal") {
             initWith(getByName("release"))
@@ -82,6 +85,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.media3.ui)
     androidTestImplementation(libs.media3.exoplayer)
     androidTestImplementation(libs.media3.hls)
     androidTestImplementation(libs.okhttp)

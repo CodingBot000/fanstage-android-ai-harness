@@ -1,5 +1,6 @@
 package dev.fanstage.android.feature.live
 
+import android.view.LayoutInflater
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -58,7 +59,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
 
     Column(Modifier.fillMaxWidth().testTag("player_panel")) {
         AndroidView(
-            factory = { PlayerView(it).apply { useController = false; player = controller.player } },
+            factory = { context -> (LayoutInflater.from(context).inflate(R.layout.fanstage_player_view, null, false) as PlayerView).apply { player = controller.player } },
             update = { it.player = controller.player },
             onRelease = { it.player = null },
             modifier = Modifier.fillMaxWidth().height(200.dp).semantics { contentDescription = playerDescription }.testTag(if (rendered) "player_first_frame" else "player_surface"),

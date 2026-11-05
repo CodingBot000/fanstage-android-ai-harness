@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +30,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.fanstage.android.core.designsystem.BackTitleBar
+import dev.fanstage.android.core.designsystem.CardTwoLineText
 import dev.fanstage.android.feature.live.chat.ChatPanel
 import dev.fanstage.android.feature.live.chat.ChatViewModel
 
@@ -71,7 +74,7 @@ fun RoomListScreen(
                                     "tabletop-night" to "Tabletop night" -> stringResource(R.string.room_tabletop_title)
                                     else -> room.title
                                 }
-                                Text(title, style = MaterialTheme.typography.titleMedium)
+                                CardTwoLineText(title, style = MaterialTheme.typography.titleMedium)
                                 Text(stringResource(R.string.room_host, room.hostName))
                                 Text(pluralStringResource(R.plurals.room_viewers, room.viewerCount, room.viewerCount))
                             }
@@ -95,22 +98,18 @@ fun RoomListScreen(
 
 @Composable
 fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, onBack: () -> Unit) {
-    Scaffold { padding ->
+    val title = when (roomId) {
+        "studio-session" -> stringResource(R.string.room_studio_title)
+        "sketch-break" -> stringResource(R.string.room_sketch_title)
+        "tabletop-night" -> stringResource(R.string.room_tabletop_title)
+        else -> stringResource(R.string.room_detail)
+    }
+    Scaffold(topBar = { BackTitleBar(title, onBack, backTag = "room_back") }) { padding ->
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp).testTag("room_detail"),
+            modifier = Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(16.dp).testTag("room_detail"),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            TextButton(onClick = onBack, modifier = Modifier.testTag("room_back")) {
-                Text(stringResource(R.string.back_to_rooms))
-            }
             Text(stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
-            val title = when (roomId) {
-                "studio-session" -> stringResource(R.string.room_studio_title)
-                "sketch-break" -> stringResource(R.string.room_sketch_title)
-                "tabletop-night" -> stringResource(R.string.room_tabletop_title)
-                else -> stringResource(R.string.room_detail)
-            }
-            Text(title, style = MaterialTheme.typography.headlineMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(12.dp)) { PlayerPanel(roomId) }
             }
