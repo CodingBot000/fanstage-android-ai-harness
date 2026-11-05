@@ -1,13 +1,13 @@
 # FanStage 작업 현황
 
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
-- Current task: M8-002 Portfolio Packaging
-- State: M8-001 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30)이 `74e417ad604fab227a9fbca0f7e28f1728130859`로 Squash Merge됐다. 최초 서버 CI 20초 타임아웃은 원인 미확정이며 PR #30 한정 [사용자 승인 예외](reviews/M8-001-risk-exception-proposal.md)로 이력을 보존한다. M8-002 문서·시연 자료는 작성·로컬 검증됐으며 리뷰·병합 결과는 해당 PR을 따른다. M8 전체는 미완료다.
+- Current task: M8 Gate 잔여 항목
+- State: M8-001 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30)과 포트폴리오 산출물 [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31)이 병합됐다. 최초 서버 CI 20초 타임아웃은 원인 미확정이며 PR #30 한정 [사용자 승인 예외](reviews/M8-001-risk-exception-proposal.md)로 이력을 보존한다. M8-002 문서·시연 산출물은 완료됐으나 M8 전체 Gate는 미완료다.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
-- Next action: [M8-002 SDD](specs/M8-002-portfolio-packaging.md)의 포트폴리오 산출물을 리뷰한다. 제3자 고지, 외부 개발자 재현, 배포 서명과 루트 라이선스는 미결정·미완료로 추적한다.
+- Next action: 제3자 고지와 외부 개발자 재현 등 남은 M8 Gate를 검토한다. 배포 서명과 루트 라이선스는 미결정이다. 공개 APK는 v0.1 제공 경로에 포함되지 않는다.
 
 ## Milestone Checklist
 
