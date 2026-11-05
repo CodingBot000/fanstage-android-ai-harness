@@ -1,5 +1,13 @@
 # 작업 및 검증 기록
 
+## M8 — 제3자 라이선스·NOTICE 감사 (2026-11-05)
+
+- 기준 `b92521b218f2b96edea5ec4232f9005954c8242c`, 기존 작업 트리를 보존한 별도 worktree. 사용자는 프로젝트 직접 작성 코드·문서에 MIT와 `2026 FanStage contributors` 표기를 선택했다. `LICENSE`, [제3자 고지](../THIRD_PARTY_NOTICES.md), [감사](../docs/reviews/M8-license-audit.md)와 [의존성 목록](../docs/reviews/M8-dependency-inventory.tsv)을 작성했다. 제3자 라이선스는 MIT로 변경하지 않는다.
+- Android release/debug 및 앱 테스트, 서버 runtime/test의 선택 Gradle configuration에서 실제 해석된 artifact 482행/고유 190좌표와 POM·아카이브 직접 엔트리 고지 경로를 확인했다. Logback 이중 라이선스, Jakarta 조건, PostgreSQL JDBC BSD 및 MIT 구성요소를 별도 기록했다. Wrapper JAR 두 개는 공식 Gradle 9.5.0 SHA와 일치하며 Apache-2.0 전문을 별도 포함했다. 서버 wrapper batch의 LF 정규화가 파일 내 변경 고지 대상인지 미확인으로 기록했다. 최초 wrapper 비교는 잘못된 작업 디렉터리 실행으로 FAIL; 임시 Gradle 프로젝트에서 재실행해 스크립트와 줄바꿈을 비교했다.
+- 기존 포트폴리오 MP4의 Google 키보드 UI 구간을 현재 영상에서 제외했다. 기존 원본 SHA `e2704a13847921e780d9ae116d439174b286d8c0521962bedd23354f458b55bb`, 변경본 SHA `29afc87e11adf5767f63028c6b16ce059314faceefa1fb2bc73db0f70a290aef`. 원본은 공개 Git 이력에 남고 사용 권한은 미확정이다. 변경 영상의 샘플 프레임 및 전환 구간을 시각 확인했다. 앱 코드·테스트·WebSocket·성능 CI는 이 작업에서 반복하지 않았다.
+- 검증: SPDX MIT 원문과 공백 정규화 후 일치, 동봉 Apache 전문과 Wrapper JAR 내부 전문 바이트 일치, 목록 482행·고유 190좌표·SHA 형식 및 상대 링크 PASS. 목록의 고유 POM URL 184개 HEAD 200, 변경 MP4 H.264·22.633초·무음 확인. 최초 Android `resolvedConfiguration` artifact 조회는 project variant ambiguity로 FAIL했고, 외부 컴포넌트만 선택한 `artifactView`로 재조회했다. TSV 빈 마지막 열 때문에 첫 `git diff --check`가 FAIL했으며 빈 셀을 `-`로 표기한 뒤 PASS했다.
+- NOT_RUN/미완료: 원본 Git 이력과 기타 에뮬레이터 UI·폰트의 권리 확정, 외부 독립 개발자 재현, 전체 빌드 플러그인/컨테이너/향후 APK·서버 바이너리의 최종 NOTICE 전수. M8 Gate는 미완료다. WebSocket 위험 예외와 M6 실험 결과는 그대로 유지한다.
+
 ## M8 — main 새 clone 소스 재현 (2026-11-05)
 
 - 소스 `e09beb205dcf1ae12510225dff710e3e05682cb8`를 별도 임시 경로에 clone하고 README의 Debug assemble·lint·unit 명령 PASS(95 tasks executed, unit 51/51). 기존 JDK 17·SDK·Debug 키 및 Gradle 캐시를 사용했다. 임시 API 36 arm64 에뮬레이터의 새 설치에서 방 목록→상세, 합성 VOD 재생·일시정지·재개, Fake 채팅 `Sent` 및 목록 복귀 PASS. 상세와 로컬 증거는 [재현 기록](../docs/reviews/M8-clean-clone-reproduction.md).

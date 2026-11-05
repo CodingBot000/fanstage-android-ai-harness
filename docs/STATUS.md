@@ -4,11 +4,11 @@
 - Current task: M8 Gate 잔여 항목
 - State: M8-001 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30)과 포트폴리오 산출물 [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31)이 병합됐다. 최초 서버 CI 20초 타임아웃은 원인 미확정이며 PR #30 한정 [사용자 승인 예외](reviews/M8-001-risk-exception-proposal.md)로 이력을 보존한다. M8-002 문서·시연 산출물은 완료됐으나 M8 전체 Gate는 미완료다.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
-- 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지.
+- 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지. 프로젝트 직접 작성 코드·문서는 MIT, 저작권 표기는 `2026 FanStage contributors`; 제3자 조건은 별도 유지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
 - Latest source reproduction: 동일 개발 환경에서 새 `main` clone `e09beb205dcf1ae12510225dff710e3e05682cb8`의 README 빌드와 별도 에뮬레이터 기본 흐름 PASS. [재현 기록](reviews/M8-clean-clone-reproduction.md) 참조. 외부 독립 개발자와 빈 Gradle 캐시 검증은 NOT_RUN.
-- Next action: 제3자 고지와 외부 개발자 재현 등 남은 M8 Gate를 검토한다. 배포 서명과 루트 라이선스는 미결정이다. 공개 APK는 v0.1 제공 경로에 포함되지 않는다.
+- Next action: [제3자 감사](reviews/M8-license-audit.md)의 시연 영상 키보드 UI 권리와 외부 개발자 재현 등 남은 M8 Gate를 검토한다. 프로젝트 직접 작성분에 MIT를 선택했으며 배포 서명은 미결정이다. 공개 APK는 v0.1 제공 경로에 포함되지 않는다.
 
 ## Milestone Checklist
 
@@ -31,7 +31,7 @@
 - 2026-11-04: 사용자가 M0-001 보완 및 후속 작업 실행을 포괄 승인했다. [PR #1](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/1)을 Squash Merge하여 M0-001 문서 기반 산출물은 승인 처리했다.
 - 2026-11-04: Codex가 주 구현·검증 에이전트다. Claude Code 파일은 선택 호환성 지침이며 실제 import는 M0 필수 Gate에서 제외한다. [M0 SDD](specs/M0-harness-core.md) 및 [ADR-0001](adr/ADR-0001-development-workflow.md) 참고.
 - M0 Exit Gate: Codex plan-only attempt 2 PASS, JSON 스키마 검증 PASS, 후속 단계 파일 미생성 PASS. [Raw Codex 결과](../harness/reviews/M0-002-plan-only-result.json), [Actions Run](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41692832207), [build-log](../harness/build-log.md) 참조. M1 상세 SDD/호환성 조사가 다음 선행 작업.
-- Repository `CodingBot000/fanstage-android-ai-harness`는 Public으로 생성되어 `main`에 초기 커밋 `93304b079cb20ccb470afd7dcd1737a41eaa9a7a`가 업로드되었다. 최초 M0-001 범위의 commit/push 금지는 이후 사용자의 별도 업로드 지시로 변경되었다. 라이선스는 미결정이다.
+- Repository `CodingBot000/fanstage-android-ai-harness`는 Public으로 생성되어 `main`에 초기 커밋 `93304b079cb20ccb470afd7dcd1737a41eaa9a7a`가 업로드되었다. 최초 M0-001 범위의 commit/push 금지는 이후 사용자의 별도 업로드 지시로 변경되었다. 당시 라이선스는 미결정이었다; 이후 사용자는 직접 작성분에 MIT를 선택했다.
 - 공개용 `docs/MASTER_PLAN.md`는 초기 로컬 원본을 복사한 뒤 개인·기업 관련 맥락을 제거해 수정했다. 과거 원본 SHA-256은 현재 공개판의 해시가 아니다.
 
 - 2026-11-04: [M1 SDD](specs/M1-android-foundation.md) 및 [ADR-0002](adr/ADR-0002-android-foundation-stack.md)에서 공식 호환성 근거와 후보 버전을 기록했다. M1-001은 문서 작업이고 M1-002부터 실제 앱을 생성한다.
