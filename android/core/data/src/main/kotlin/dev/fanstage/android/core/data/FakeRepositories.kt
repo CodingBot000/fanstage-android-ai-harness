@@ -31,7 +31,7 @@ class FakeMessageRepository : MessageRepository {
 
 object DemoVideos {
     val all: List<DemoVideo> = (1..7).map { index ->
-        val id = "demo-%02d".format(index)
-        DemoVideo(id, "Video %02d".format(index), fictionalArtists[(index - 1) % fictionalArtists.size].id, "$id.mp4")
+        val id = "demo-%02d".format(java.util.Locale.ROOT, index)
+        DemoVideo(id, "Video %02d".format(java.util.Locale.ROOT, index), fictionalArtists[(index - 1) % fictionalArtists.size].id, "$id.mp4")
     }
 }

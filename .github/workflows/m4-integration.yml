@@ -28,6 +28,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.5.0'
+      - name: Test local media HTTP contracts
+        working-directory: backend/chat-server
+        run: ./gradlew test --no-daemon
       - name: Install compilation SDK
         shell: bash
         run: |

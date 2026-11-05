@@ -60,4 +60,5 @@
     <string name="chat_timestamp">전송 시간 %1$s</string>
 <string name="demo_live_room">라이브 룸 데모 · 합성 영상</string>
 <string name="replay_back_generic">뒤로</string><string name="replay_title">다시보기</string>
+<string name="player_seek">영상 탐색</string>
 </resources>

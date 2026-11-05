@@ -4,6 +4,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.IntStream;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -17,9 +18,11 @@ class DemoMediaApi {
     private static final Map<String, String> FILES = IntStream.rangeClosed(1, 7).boxed().collect(
         java.util.stream.Collectors.toUnmodifiableMap(i -> String.format("demo-%02d", i), i -> String.format("demo-%02d.mp4", i)));
 
+    private final String directory;
+    DemoMediaApi(@Value("${FANSTAGE_MEDIA_DIR:}") String directory) { this.directory = directory; }
+
     @GetMapping("/demo-media/{id}.mp4")
     ResponseEntity<Resource> media(@PathVariable String id) {
-        String directory = System.getenv("FANSTAGE_MEDIA_DIR");
         String filename = FILES.get(id);
         if (directory == null || directory.isBlank() || filename == null) return ResponseEntity.notFound().build();
         Path root = Path.of(directory);
