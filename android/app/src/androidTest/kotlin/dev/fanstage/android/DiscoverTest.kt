@@ -24,11 +24,20 @@ class DiscoverTest {
         rule.onNodeWithTag("tab_community").performClick()
         rule.onNodeWithTag("community_feed").assertIsDisplayed()
         rule.onNodeWithTag("tab_media").performClick()
-        rule.onNodeWithTag("screen_media").assertIsDisplayed()
+        rule.onNodeWithTag("media_screen").assertIsDisplayed()
         rule.onNodeWithTag("tab_messages").performClick()
         rule.onNodeWithTag("screen_messages").assertIsDisplayed()
         rule.onNodeWithTag("tab_rooms").performClick()
         rule.onNodeWithTag("replay_card").assertIsDisplayed()
+    }
+    @Test fun mediaFilterAndReplay() {
+        rule.onNodeWithTag("tab_media").performClick()
+        rule.onNodeWithTag("media_filter_2").performClick()
+        rule.onNodeWithTag("media_replay").assertIsDisplayed().performClick()
+        rule.onNodeWithTag("replay_detail").assertIsDisplayed()
+        rule.waitUntil(30_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("replay_back").performClick()
+        rule.onNodeWithTag("media_screen").assertIsDisplayed()
     }
     @Test fun communityPostLikeAndComment() {
         rule.onNodeWithTag("tab_community").performClick()
