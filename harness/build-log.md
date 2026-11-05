@@ -539,4 +539,4 @@
 
 ## LOCAL-MEDIA-001 (2026-11-06)
 - 로컬 7개 원본과 복사본 해시 일치, H.264/AAC 확인. 파일 및 개인 매핑은 저장소 밖에 보존했다.
-- 전용 에뮬레이터 `emulator-5560` 명시: 7개 영상 첫 프레임/오디오 트랙·대표 UI pause/seek/resume PASS. 실제 청취 NOT_RUN. 서버 7개 정상 206, 서버 합성 fixture 테스트, Android 빌드/lint/unit·manifest·모듈 경계 PASS. 최종 VOD·실제 서버 채팅 통합을 포함한 LocalMediaTest 2/2 PASS; 기존 실제 서버 계측 1/1 PASS. 상세 및 미실행 항목은 `docs/reviews/LOCAL-MEDIA-001-verification.md`.
+- 전용 에뮬레이터 `emulator-5560` 명시: 7개 영상 첫 프레임/오디오 트랙·대표 UI pause/seek/resume PASS. 실제 청취 NOT_RUN. 서버 7개 정상 206, 서버 합성 fixture 테스트, Android 빌드/lint/unit·manifest·모듈 경계 PASS. 최종 VOD·실제 서버 채팅 통합을 포함한 LocalMediaTest 2/2 PASS; 기존 실제 서버 계측 1/1 PASS. 최종 앱 기존 Discover·HLS 회귀 13/13 PASS. 상세 및 미실행 항목은 `docs/reviews/LOCAL-MEDIA-001-verification.md`.
