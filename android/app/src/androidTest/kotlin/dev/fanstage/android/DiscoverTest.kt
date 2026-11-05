@@ -1,4 +1,6 @@
 package dev.fanstage.android
+
+import dev.fanstage.android.feature.discover.*
 import dev.fanstage.android.core.model.DiscoverData
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.*

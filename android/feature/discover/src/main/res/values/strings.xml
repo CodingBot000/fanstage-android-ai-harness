@@ -1,0 +1,17 @@
+<resources>
+  <string name="discover_eyebrow">YOUR WORLD OF MUSIC</string>
+  <string name="discover_heading">Find your next favorite.</string>
+  <string name="featured">FEATURED ARTIST</string>
+  <string name="communities">Meet the communities</string>
+  <string name="live_now">Live &amp; on stage</string>
+  <string name="recommended">Made for your moment</string>
+  <string name="recommendation">Discover stories from artists you love.</string>
+  <string name="discover_error">Could not load Discover.</string>
+  <string name="discover_retry">Try again</string>
+  <string name="replay">Replay</string>
+  <string name="replay_play">Watch replay</string>
+  <string name="demo_live">DEMO LIVE ROOM</string>
+  <string name="room_studio_title">Studio session</string>
+  <string name="room_sketch_title">Afternoon sketch break</string>
+  <string name="room_tabletop_title">Tabletop night</string>
+</resources>

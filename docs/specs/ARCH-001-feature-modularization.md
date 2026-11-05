@@ -14,3 +14,6 @@
 공통 ID 별칭·ArtworkKey·모델/Repository 계약을 순수 `:core:model`, 세션 Fake 구현을 `:core:data`, 리소스 resolver와 아트워크를 `:core:artwork`로 분리했다. AppContainer가 세 저장소를 조립한다. 기능 UI는 모델/자산 계약을 사용하며 `:core:model`에는 Android/Compose import 및 `R.drawable` 참조가 없다. Fake 카탈로그 ID 결합, 좋아요·댓글 재조회, 빈 메시지·읽음 격리, 기존 취소 회귀 단위 테스트를 실행했다.
 
 `:core:model:build :core:data:test :core:artwork:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS, `:app:lintDebug` PASS. 전용 AVD에서 Home·Community 및 Messages 표시와 좋아요 왕복을 수동 확인했다. [Home](../evidence/arch-001/home.png). Android connected 자동 실행은 다중 AVD로 NOT_RUN_DEFERRED. ID는 현재 문자열 typealias이므로 타입 간 컴파일 수준 혼용 방지는 제공하지 않는다. 다음 ARCH-002에서 각 기능 UI/ViewModel을 단계적으로 이동한다.
+
+## ARCH-002 Discover 이동 (2026-11-06)
+`Discover` 화면·Route·상태·ViewModel과 해당 문자열을 `:feature:discover`로 이동했다. app composition root는 API와 콜백만 사용하며 `feature:discover`는 model/designsystem/artwork에 의존한다. `:feature:discover:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 API 36 AVD에서 Home→합성 LIVE Playing을 수동 확인했으며 자동 connected는 다중 AVD로 NOT_RUN_DEFERRED. 다음 Community 이동.

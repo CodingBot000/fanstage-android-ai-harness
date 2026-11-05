@@ -1,4 +1,4 @@
-package dev.fanstage.android
+package dev.fanstage.android.feature.discover
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -119,8 +119,8 @@ class DiscoverViewModel(private val repository: DiscoverRepository) : ViewModel(
 @Preview(showBackground = true) @Composable private fun DiscoverErrorPreview() { FanStageTheme { DiscoverScreen(DiscoverState.Error, {}, {}) } }
 
 @Composable fun localizedContentTitle(content: DiscoverContent): String = when (content.id) {
-    "studio-session" -> stringResource(dev.fanstage.android.feature.live.R.string.room_studio_title)
-    "sketch-break" -> stringResource(dev.fanstage.android.feature.live.R.string.room_sketch_title)
-    "tabletop-night" -> stringResource(dev.fanstage.android.feature.live.R.string.room_tabletop_title)
+    "studio-session" -> stringResource(R.string.room_studio_title)
+    "sketch-break" -> stringResource(R.string.room_sketch_title)
+    "tabletop-night" -> stringResource(R.string.room_tabletop_title)
     else -> content.title
 }

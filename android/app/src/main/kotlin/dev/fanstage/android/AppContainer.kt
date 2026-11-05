@@ -1,5 +1,7 @@
 package dev.fanstage.android
 
+import dev.fanstage.android.feature.discover.*
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import dev.fanstage.android.core.data.FakeCommunityRepository
