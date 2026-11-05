@@ -28,6 +28,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.fanstage.android.feature.live.R
 import java.util.TimeZone
 
+/** Only used for messages produced by the in-process fictional transport. */
+internal fun fictionalMessageResource(key: String): Int? = when {
+    key == "server:fixture-1" -> R.string.fake_welcome
+    key.startsWith("server:fixture-") -> R.string.fake_arrival
+    else -> null
+}
+
 @Composable
 fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -73,11 +80,8 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
             items(state.messages, key = { it.key }) { message ->
                 Column(Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag("chat_message")) {
                     Text(stringResource(if (message.isOwn) R.string.chat_you else R.string.chat_fixture))
-                    val displayText = if (state.fictionalFixtures && !message.isOwn) when (message.key) {
-                        "server:fixture-1" -> stringResource(R.string.fake_welcome)
-                        "server:fixture-2" -> stringResource(R.string.fake_arrival)
-                        else -> message.text
-                    } else message.text
+                    val fixtureResource = if (state.fictionalFixtures && !message.isOwn) fictionalMessageResource(message.key) else null
+                    val displayText = if (fixtureResource != null) stringResource(fixtureResource) else message.text
                     Text(displayText)
                     formatChatTimestamp(message.sentAt, locale, TimeZone.getDefault())?.let {
                         Text(stringResource(R.string.chat_timestamp, it), Modifier.testTag("chat_timestamp"))

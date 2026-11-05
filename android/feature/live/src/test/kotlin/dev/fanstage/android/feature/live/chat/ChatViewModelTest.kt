@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -56,6 +57,20 @@ class ChatViewModelTest {
         transport.stream.emit(ChatEvent.Message(ServerMessage("a", "server-timestamp", null, 1, "hello", false, timestamp)))
         runCurrent()
         assertEquals(timestamp, vm.uiState.value.messages.single().sentAt)
+    }
+
+    @Test fun `fictional arrival remains localizable after an earlier user send`() = runTest {
+        val fake = FakeChatTransport("a", seed = 73)
+        val vm = create(fake); runCurrent()
+        assertTrue(vm.send("user-authored"))
+        advanceTimeBy(400); runCurrent()
+        assertEquals(Delivery.SENT, vm.uiState.value.messages.last().delivery)
+        advanceUntilIdle()
+        val arrival = vm.uiState.value.messages.single { it.text == "Glad to be here!" }
+        assertEquals("server:fixture-3", arrival.key)
+        assertEquals(dev.fanstage.android.feature.live.R.string.fake_arrival, fictionalMessageResource(arrival.key))
+        assertNull(fictionalMessageResource("client:fixture-3"))
+        assertNull(fictionalMessageResource("server:external"))
     }
 
     @Test fun `fake seed sends pending then ack and duplicate echo converge`() = runTest {
