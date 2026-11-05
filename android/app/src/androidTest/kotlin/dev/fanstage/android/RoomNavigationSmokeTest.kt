@@ -58,6 +58,28 @@ class RoomNavigationSmokeTest {
         verifyReleasedListenerCanBeCollected()
     }
 
+    @Test fun sanitizedRcaRetainsLocationsAndCauseTypes() {
+        val secret = "synthetic-sensitive-marker"
+        val cause = IllegalStateException("header $secret")
+        cause.stackTrace = arrayOf(StackTraceElement("dev.fanstage.android.Caller", "nested", "$secret.kt", 23))
+        val original = AssertionError("body $secret").apply {
+            initCause(cause)
+            stackTrace = arrayOf(StackTraceElement("dev.fanstage.android.Caller", "verify", "$secret.kt", 17))
+        }
+        val failure = RcaDiagnostics.RcaFailure("phase=synthetic", original)
+        val safe = requireNotNull(failure.cause)
+        val output = java.io.StringWriter().also { failure.printStackTrace(java.io.PrintWriter(it)) }.toString()
+        assertTrue(output.contains("phase=synthetic"))
+        assertTrue(output.contains("type=java.lang.AssertionError"))
+        assertTrue(output.contains("type=java.lang.IllegalStateException"))
+        assertTrue(output.contains("source:17"))
+        assertTrue(output.contains("source:23"))
+        org.junit.Assert.assertEquals("verify", safe.stackTrace.single().methodName)
+        org.junit.Assert.assertEquals(17, safe.stackTrace.single().lineNumber)
+        org.junit.Assert.assertEquals(23, safe.cause!!.stackTrace.single().lineNumber)
+        org.junit.Assert.assertFalse(output.contains(secret))
+    }
+
     @Test fun rcUncertainMessageAndChatCleanup() {
         val cancelled = AtomicBoolean(false)
         val closed = AtomicBoolean(false)

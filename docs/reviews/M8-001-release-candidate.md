@@ -9,7 +9,10 @@ PR [#30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30) he
 - 기존 20초 대기마다 고유 단계 ID와 경과 시간·연결/Job 상태를 기록하고, ACK 프록시의 accept·업스트림 연결·요청/응답 핸드셰이크 전달 단계와 비동기 프록시/observer 예외 유형을 추적한다. 테스트 로그에는 토큰·인증 헤더·본문을 출력하지 않는다. CI는 `M8Rca` 태그만 수집해 기존 비밀값 치환 절차를 거쳐 artifact로 보존한다. 제한 시간은 늘리지 않았다.
 - 동일 Android WebSocket 계측을 격리된 로컬 서버와 읽기 전용 API 36 에뮬레이터에서 수정 후 3회 단독 실행해 **3/3 PASS**. `ack.both_connected`는 각각 657/911/761ms, 단계 실패 0건이다. 예비 실행도 PASS였으나 최종 코드와 분리해 집계한다. 로그 `/tmp/fanstage-m8-rca-final-{1,2,3}.log`, `/tmp/fanstage-m8-rca-phases.log`는 로컬에만 보관한다. 테스트용 임시 격리 서버·에뮬레이터만 종료·제거했다.
 - **의도된 실패 재현:** 서버를 꺼 둔 격리 에뮬레이터에서 동일 테스트는 예상대로 FAIL(exit 1), 419ms에 `ack.both_connected`, sender CONNECTING, observer RECONNECTING, proxy accepted 이후 `ConnectException`을 테스트 결과와 태그 로그에 기록했다. 테스트 자격값은 두 로그에서 검색되지 않았다. 이는 진단 경로를 확인한 인위적 연결 실패이며 최초 CI 타임아웃의 재현이나 원인 증명이 아니다. 로컬 로그 `/tmp/fanstage-m8-rca-offline.log`, `/tmp/fanstage-m8-rca-offline-phases.log`.
-- 최초 CI 실패는 단계 계측 추가 이전이라 해당 실패의 정확한 지점과 원인을 복원할 수 없다. 양측 CONNECTED 대기는 경과 시간상 후보이지만, 테스트 경합·CI 환경·제품 결함 중 확정 가능한 원인은 없다. 반복 PASS는 관측 범위의 비재현을 뜻한다. 원인 미해결에 따른 P1 위험은 해소되지 않았으며 병합하지 않는다. 최종 변경의 CI 및 독립 리뷰는 별도 확인한다.
+- 진단 변경 head `e0b9aeb4475e96017adc521555e0342948c7a400`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41996401282) 및 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41996401209)는 PASS. 서버 CI artifact의 `ack.both_connected`는 50ms, 단계 실패 0건이며 제한적 비밀 패턴 검사도 0건이다. 인위적인 값으로 sanitizer의 진단 로그 보존과 자격값 치환을 별도 검증했다. 당시 독립 리뷰는 미완료였다.
+- `e0b9aeb` 독립 Codex 리뷰 완료: 원래 예외의 스택·cause가 누락되는 P2 지적을 확인했다. 예외 메시지·파일명을 배제하고 허용된 코드 위치·줄 번호와 원인 유형 체인을 복사하도록 수정했다. 민감한 합성 문자열과 중첩 cause를 이용한 계측 회귀 PASS(1/1); 서버 미기동 인위적 실패에서 단계 ID, 원인 유형, 코드 줄 번호가 보이고 테스트 자격값은 로그에 없음을 확인했다. 이는 최초 타임아웃 재현이 아니다. 후속 수정 head의 CI는 별도 확인한다.
+- **Gate 판단:** 최초 실패는 채팅 연결·복구에 관련된 차단 검증의 실제 실패다. 로컬 3회와 이후 CI PASS는 현재 실행 조건에서의 성공 근거지만 최초 실패가 제품 결함·테스트 경합·CI 환경 중 무엇인지 배제하지 못한다. ADR-0005 및 테스트 매트릭스의 관련 P1 실패 해결 조건에 비추어 위험을 P2로 내리거나 원인 해결로 간주할 근거가 없다. 최초 실패의 단계·원인이 특정되거나 제품 영향이 없다는 재현 가능한 증거가 확보될 때 다시 판단한다. M8-001 병합과 M8-002 진입은 보류한다.
+- 최초 CI 실패는 단계 계측 추가 이전이라 해당 실패의 정확한 지점과 원인을 복원할 수 없다. 양측 CONNECTED 대기는 경과 시간상 후보이지만, 테스트 경합·CI 환경·제품 결함 중 확정 가능한 원인은 없다. 반복 PASS는 관측 범위의 비재현을 뜻한다. 원인 미해결에 따른 P1 위험은 해소되지 않았으며 병합하지 않는다. 최종 변경의 독립 리뷰는 별도 확인한다.
 
 ### 로컬 RC 추가 검증 (2026-11-05)
 

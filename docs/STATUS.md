@@ -2,7 +2,7 @@
 
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
 - Current task: M8-001 릴리스 후보 검증
-- State: M8-001 rcLocal 실기기 정상/장애 흐름 및 제한적 자원 정리 PASS. PR #30 서버 CI 최초 20초 타임아웃 후 재시도 PASS; 단계 계측 후 로컬 단독 3회 PASS이나 최초 실패 지점·원인 미확인으로 병합 차단. 최종 진단 변경 CI·리뷰 필요.
+- State: M8-001 rcLocal 실기기 정상/장애 흐름 및 제한적 자원 정리 PASS. PR #30 최초 서버 CI 20초 타임아웃 후 재시도·진단 head CI PASS, 최초 실패 지점·원인 미확인으로 관련 P1 Gate 차단. 진단 head 독립 리뷰의 스택 보존 P2 수정·로컬 회귀 PASS; 수정 head CI 대기.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.

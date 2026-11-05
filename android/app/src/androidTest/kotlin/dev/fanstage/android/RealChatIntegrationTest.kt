@@ -65,7 +65,6 @@ import org.junit.runner.RunWith
 class RealChatIntegrationTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()
     private val base = "http://10.0.2.2:18765"
-    private class RcaFailure(message: String) : AssertionError(message)
 
     // Only fixed phase names, enum states and exception class names may enter CI logs.
     private inline fun <T> phase(id: String, state: () -> String = { "none" }, block: () -> T): T {
@@ -78,8 +77,8 @@ class RealChatIntegrationTest {
         } catch (error: Throwable) {
             val details = "phase=$id event=failure elapsedMs=${SystemClock.elapsedRealtime() - started} state=${state()} type=${error.javaClass.simpleName}"
             Log.e("M8Rca", details)
-            if (error is RcaFailure) throw error
-            throw RcaFailure(details)
+            if (error is RcaDiagnostics.RcaFailure) throw error
+            throw RcaDiagnostics.RcaFailure(details, error)
         }
     }
 

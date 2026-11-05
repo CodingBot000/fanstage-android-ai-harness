@@ -47,11 +47,11 @@ suites = root.findall("testsuite")
 if root.tag != "testsuites" or len(suites) != 1:
     sys.exit("FAIL: unexpected connected test XML structure")
 for node in (root, suites[0]):
-    for key, expected in {"tests": "3", "failures": "0", "errors": "0", "skipped": "0"}.items():
+    for key, expected in {"tests": "4", "failures": "0", "errors": "0", "skipped": "0"}.items():
         if node.get(key) != expected:
             sys.exit(f"FAIL: {node.tag} {key}={node.get(key)!r}, wanted {expected}")
 cases = suites[0].findall("testcase")
-expected_cases = {"roomListOpensDetailAndReturns", "rcFaultUiAndReleasedListener", "rcUncertainMessageAndChatCleanup"}
+expected_cases = {"roomListOpensDetailAndReturns", "rcFaultUiAndReleasedListener", "rcUncertainMessageAndChatCleanup", "sanitizedRcaRetainsLocationsAndCauseTypes"}
 if len(cases) != len(expected_cases) or {c.get("name") for c in cases} != expected_cases or any(
     c.get("classname") != "dev.fanstage.android.RoomNavigationSmokeTest" for c in cases
 ):
