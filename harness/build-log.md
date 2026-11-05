@@ -461,3 +461,16 @@
 - M7 changes chat layout and timestamp rendering, so prior M6 performance samples describe the earlier UI and must not be treated as post-M7 measurements or directly reused for a future before/after comparison without rebaselining.
 - **PR review fix:** [PR #29](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/29) initially passed Android [CI #41891783383](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41891783383) and server [CI #41891783270](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41891783270) at head `1908ffe3467af69e0c90c9c89676876581580898`. Review found that a user message before the simulated fan arrival changes its sequence, preventing its Korean translation. Fake-only arrival mapping now handles any generated fixture sequence and still leaves user/real-server messages unchanged. A deterministic send-before-arrival unit regression passes. The first test compilation used an invalid qualified extension invocation (FAIL); importing `advanceTimeBy` and rerunning the targeted unit/build command passed. The amended PR head must pass its own CI.
 - **Review-fixed source CI PASS:** head `10a4310c2c7608dac847248bb0004cd63857508b`의 [Android CI #41983219229](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41983219229)는 build/lint/unit 및 API 35 emulator PASS(1/1, Player Init/Release 18쌍), [서버 CI #41983219256](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41983219256)은 PostgreSQL과 실제 WebSocket Android case PASS(1/1). 리뷰 지적은 수정·재검증·해결했다. 이 문서 기록 이후 최종 PR head CI도 병합 전에 확인한다.
+
+## 2026-11-05 UX-001 진행 중
+- `ANDROID_HOME=… ./gradlew :app:assembleDebug :app:lintDebug` PASS (최종 작업 트리); 최초 lint는 한국어 app_name 누락으로 FAIL, 번역 추가 후 PASS.
+- `:feature:live:testDebugUnitTest` PASS 51 tests (기존 feature 변경 없음).
+- API 36 Medium_Phone_AVD `DiscoverTest`: 최종 코드에서 2/2 PASS (로딩·오류/재시도 표시, LIVE 진입/복귀).
+- 같은 에뮬레이터 `RoomNavigationSmokeTest#roomListOpensDetailAndReturns`: 1/1 PASS. 이후 홈에 Replay/추천 표시와 로드 취소 검사를 추가했으므로 최종 코드 전체 회귀로 주장하지 않는다.
+- 실제 홈 캡처: `docs/evidence/ux-001/home.png`; 생성 배너: 내장 imagegen, 프롬프트 "original cinematic editorial illustration of a fictional indie band performing on a dreamy violet and coral stage ... no real artists, no text, no logos, no watermark".
+- 전체 계측 테스트·매크로벤치마크·실기기 및 Compose Preview 렌더 확인 NOT_RUN.
+
+## 2026-11-05 UX-001 v0.3 진행
+- 가상 아티스트 식별자와 콘텐츠 연결 및 이미지 카드를 추가하고 Blue Pencil·Dice Garden 이미지를 내장 imagegen으로 생성했다. 프롬프트는 각각 파란 스케치북과 헤드폰의 가상 음악 작업실, 주사위가 놓인 작은 정원이며 글자·로고·인물을 제외했다. 파일: `android/app/src/main/res/drawable-nodpi/blue_pencil.jpg`, `dice_garden.jpg`.
+- `:app:assembleDebug :app:lintDebug :feature:live:testDebugUnitTest` PASS. 신규 UI 실기기/에뮬레이터 캡처 및 통합 검증 NOT_RUN. UX-001 전체 미완료.
+- UX-001 v0.3: Hero/추천 캐러셀과 Replay 합성 VOD 연결 후 `:app:assembleDebug :app:lintDebug :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.DiscoverTest` PASS (API 36, 3/3; Replay 첫 프레임 포함). 홈 캡처 `docs/evidence/ux-001/home-v03.png` 확인. 전체 계측·서버 회귀·성능 NOT_RUN_DEFERRED.

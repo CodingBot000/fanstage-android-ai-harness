@@ -1,0 +1,10 @@
+<resources>
+<string name="discover">Discover</string><string name="community">Community</string><string name="more">More</string>
+<string name="discover_eyebrow">YOUR WORLD OF MUSIC</string><string name="discover_heading">Find your next favorite.</string>
+<string name="featured">FEATURED ARTIST</string><string name="hero_subtitle">A little closer to the music</string>
+<string name="communities">Meet the communities</string><string name="live_now">Live &amp; on stage</string>
+<string name="recommended">Made for your moment</string><string name="recommendation">Discover stories from artists you love.</string>
+<string name="discover_error">Could not load Discover.</string><string name="discover_retry">Try again</string>
+<string name="replay">Replay</string><string name="coming_soon">Coming soon</string>
+<string name="replay_play">Watch replay</string><string name="replay_back">Back to Discover</string>
+</resources>

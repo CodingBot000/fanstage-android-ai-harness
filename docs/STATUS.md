@@ -50,3 +50,14 @@
 - 2026-11-04 M2: 사용자가 최초 foreground 자동재생, background pause와 수동 재개, 화면 이탈 해제, PIP/백그라운드 오디오 제외 및 제한된 재시도 정책을 제시했다. [ADR-0006](adr/ADR-0006-m2-playback-lifecycle.md) 참조.
 
 - 2026-11-04 M2 실기기 Gate: API 36 실제 단말 합성 VOD·LIVE/lifecycle 및 반복 해제 증거를 검토해 위 범위에서 VERIFIED. 원격 LIVE·실제 LMK·전체 heap 누수 부재는 검증하지 않았다.
+
+## UX-001 v0.2 작업 중 (2026-11-05)
+
+- [SDD](specs/UX-001-visual-foundation.md), `core:designsystem`, Discover 홈 및 기존 LIVE 연결을 작업 트리에 추가했다. M8 Gate 상태는 위와 동일하다.
+- API 36 에뮬레이터 [실제 홈 캡처](evidence/ux-001/home.png). 최종 코드 기준 `:app:assembleDebug`, `:app:lintDebug`, `DiscoverTest` 2건 PASS; 기존 `:feature:live:testDebugUnitTest` 51건 PASS. 기존 `RoomNavigationSmokeTest#roomListOpensDetailAndReturns`는 최종 소규모 UI/취소 처리 수정 전 PASS.
+- NOT_RUN: 최종 코드에서 전체 계측 테스트·벤치마크, 실기기 검증, Preview 렌더링 확인. 시작 화면이 바뀌므로 기존 시작 벤치마크 결과는 새 화면의 수치가 아니다.
+- 미완료: 커뮤니티와 추천 콘텐츠는 화면에 고정된 예시이며 별도 가상 아티스트/추천 모델과 이미지 카드가 부족하다. Replay는 준비 중 표시이며 재생 미구현이다. 이 상태를 UX-001 완료로 표시하지 않는다.
+
+- 2026-11-05: 사용자 지시에 따라 `codex/ux-continuous-batch` 브랜치에서 v0.3 UX 확장 트랙을 시작했다. UX-001 SDD 범위를 갱신했으며 구현·단계 완료는 아직 아니다. M8 Gate 상태는 변경하지 않는다.
+- UX-001 v0.3: 가상 아티스트 ID 및 카드 이미지 보강 진행. 빌드·lint·기존 live 단위 테스트 PASS. 새로운 UI 캡처, Replay 연결 및 나머지 UX 단계는 미완료다.
+- UX-001 v0.3: Discover와 LIVE/Replay 연결의 관련 검증 PASS; 커뮤니티 연결은 UX-003에서 구현 예정. 다음 작업 UX-002 공통 탐색. 전체 통합 검증 NOT_RUN_DEFERRED.
