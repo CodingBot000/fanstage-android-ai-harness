@@ -1,14 +1,14 @@
 # FanStage 작업 현황
 
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
-- Current task: UX-006 통합 검토 및 CI (v0.1 포트폴리오 준비 완료와 별도)
+- Current task: UX-001~006 Compose 확장 병합 완료 — 제출용 README 현행화
 - State: **Portfolio Ready — v0.1 (source-only)**. M8-001 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30), M8-002 [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31), 클린 체크아웃 재현 [PR #33](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/33), MIT/제3자 고지 [PR #34](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/34)가 병합됐다. 사용자 확인 범위에서 포트폴리오 제출 준비를 마감했다. 이는 공개 APK·운영 서비스 검증 완료나 모든 위험 해소를 뜻하지 않는다. 최초 WebSocket 타임아웃은 PR #30 한정 예외 아래 원인 미확정으로 보존한다. [최종 범위와 잔여 한계](reviews/M8-final-readiness.md).
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지. 프로젝트 직접 작성 코드·문서는 MIT, 저작권 표기는 `2026 FanStage contributors`; 제3자 조건은 별도 유지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
 - Latest source reproduction: 동일 개발 환경의 별도 `main` clone `e09beb205dcf1ae12510225dff710e3e05682cb8`에서 JDK 17 및 기존 SDK·Debug 키·Gradle 캐시로 README 빌드·lint·단위 51/51, API 36 에뮬레이터 기본 흐름 PASS. [재현 기록](reviews/M8-clean-clone-reproduction.md).
-- Next action: UX 확장 PR의 CI와 독립 리뷰를 확인한다. v0.1은 소스 포트폴리오 제출 준비 상태이며 원격 LIVE, 공개 APK·서버 바이너리 배포, 운영 보안·성능 확장은 별도 승인과 재검증 대상이다.
+- Next action: 새 Compose 화면 캡처와 UX-006 통합 증거를 README 첫 화면에 반영한다. 제출용 소스 포트폴리오에 포함하되 실기기 성능 A/B·전 화면 접근성·원격 LIVE·운영 서비스 검증으로 확대 주장하지 않는다.
 
 ## Milestone Checklist
 
@@ -69,4 +69,4 @@
 - 2026-11-05 일시 중단: 사용자 요청으로 안전 지점에서 중단. `codex/ux-continuous-batch` HEAD `6f7eb6a`. LIVE 상세에 Player/Chat 카드 표현 보완은 미커밋이다. 재개 시 UX-004 상세 화면 검토·캡처, UX-003 상태/공지 및 UX-005 읽음 표시 등 잔여 범위를 보완한 뒤 UX-006 전체 통합 검증을 수행한다. PR/CI/병합은 아직 하지 않았다.
 - UX-006 로컬 통합: 공통 TopBar, 공지·로컬 읽음·필터 복원·취소 경합 방어 및 LIVE 상세 표현 보완. 최종 작업 트리 전체 Android 계측 14/14(실제 서버 case 포함), 서버 통합·장애 주입, Debug/Release/Benchmark 빌드·lint·unit PASS. [통합 SDD](specs/UX-006-integration.md). 실기기 성능 A/B·전 화면 접근성·독립 리뷰·최종 CI는 NOT_RUN. 기존 M6 미검증 항목은 유지하며 v0.1 포트폴리오 준비 완료와 구분한다.
 - PR #36 최초 head API 35 CI는 새 홈의 첫 LIVE 카드가 초기 화면 밖이어서 기존 테스트의 스크롤 없는 대기가 실패했다. 테스트를 실제 스크롤 흐름으로 수정했으며 작은 화면 API 36에서 기존 4/4·신규 9/9 PASS; 수정 head 원격 CI 확인 필요. 로컬 테스트 시작 중 뒤늦게 연결된 실기기에서도 테스트가 일부 시작되어 즉시 중단했고, 결과는 사용하지 않았다. 상세는 build-log 참조.
-- PR #36 head `c205189`: Android build/lint/unit 및 API 35 탐색 CI [PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42036690895); PostgreSQL/실제 WebSocket CI [PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42036690215). 최초 head 실패 및 수정은 build-log에 보존한다. 이후 문서 기록 commit의 CI는 별도 확인한다. 독립 리뷰·실기기 성능 A/B는 NOT_RUN.
+- PR #36 최종 head `38ec99d`: Android build/lint/unit·API 35 탐색 [CI PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42040756558), PostgreSQL·실제 WebSocket [CI PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42040756538). Codex 독립 리뷰의 Messages P2(IME 입력창 가림·신규 메시지 미스크롤) 2건을 수정해 최신 head 재리뷰에서 추가 지적 없음·스레드 Resolved. [PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36)을 `7b5fb4cd523c3bab70cbe2f9d6d530a087dde296`로 Squash Merge. 실기기 성능 A/B·전 화면 접근성은 NOT_RUN.
