@@ -56,6 +56,7 @@ dependencies {
     add("benchmarkImplementation", libs.androidx.profileinstaller)
     implementation(project(":feature:live"))
     implementation(project(":feature:discover"))
+    implementation(project(":feature:community"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))

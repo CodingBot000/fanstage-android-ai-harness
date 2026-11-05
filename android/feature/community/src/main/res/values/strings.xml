@@ -1,0 +1,14 @@
+<resources>
+  <string name="community">Community</string>
+  <string name="discover_retry">Try again</string>
+  <string name="community_empty">No posts yet.</string>
+  <string name="comment">Comment</string>
+  <string name="send_comment">Send</string>
+  <string name="posts">Posts</string>
+  <string name="notices">Notices</string>
+  <string name="notice_title">Welcome to the community</string>
+  <string name="notice_body">This is a fictional community for the local demo.</string>
+  <string name="community_error">Could not load the community.</string>
+  <string name="demo_post_body">A little moment from our world.</string>
+  <string name="community_back">Back</string>
+</resources>

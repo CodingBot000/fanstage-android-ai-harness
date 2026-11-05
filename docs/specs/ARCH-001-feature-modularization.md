@@ -17,3 +17,6 @@
 
 ## ARCH-002 Discover 이동 (2026-11-06)
 `Discover` 화면·Route·상태·ViewModel과 해당 문자열을 `:feature:discover`로 이동했다. app composition root는 API와 콜백만 사용하며 `feature:discover`는 model/designsystem/artwork에 의존한다. `:feature:discover:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 API 36 AVD에서 Home→합성 LIVE Playing을 수동 확인했으며 자동 connected는 다중 AVD로 NOT_RUN_DEFERRED. 다음 Community 이동.
+
+## ARCH-002 Community 이동 (2026-11-06)
+Community 화면·Route·상태·ViewModel 및 문자열을 `:feature:community`로 이동했다. 카탈로그와 Repository 계약을 상위 app에서 주입하며 feature→feature/data 의존은 추가하지 않았다. `:feature:community:assembleDebug :app:assembleDebug :app:testDebugUnitTest :app:assembleDebugAndroidTest` PASS. 전용 API 36 AVD에서 아티스트→Post 좋아요 및 왕복 유지 수동 확인. connected 자동 검증은 다중 AVD로 NOT_RUN_DEFERRED. 다음 Media 이동.

@@ -1,5 +1,7 @@
 package dev.fanstage.android
 
+import dev.fanstage.android.feature.community.*
+
 import dev.fanstage.android.feature.discover.*
 
 import dev.fanstage.android.core.model.*
