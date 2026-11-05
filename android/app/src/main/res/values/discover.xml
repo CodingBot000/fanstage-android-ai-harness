@@ -15,4 +15,6 @@
 <string name="notice_title">Welcome to the community</string><string name="notice_body">This is a fictional community for the local demo.</string><string name="unread">Unread</string>
 <string name="community_error">Could not load the community.</string>
 <string name="demo_welcome">Welcome to our space!</string><string name="demo_post_body">A little moment from our world.</string>
+<string name="demo_live">DEMO LIVE ROOM</string>
+<string name="community_back">Back</string>
 </resources>

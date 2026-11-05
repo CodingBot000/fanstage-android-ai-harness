@@ -103,8 +103,14 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
             TextButton(onClick = onBack, modifier = Modifier.testTag("room_back")) {
                 Text(stringResource(R.string.back_to_rooms))
             }
-            Text(stringResource(R.string.room_detail), style = MaterialTheme.typography.headlineMedium)
-            Text(stringResource(R.string.room_identifier, roomId))
+            Text(stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+            val title = when (roomId) {
+                "studio-session" -> stringResource(R.string.room_studio_title)
+                "sketch-break" -> stringResource(R.string.room_sketch_title)
+                "tabletop-night" -> stringResource(R.string.room_tabletop_title)
+                else -> stringResource(R.string.room_detail)
+            }
+            Text(title, style = MaterialTheme.typography.headlineMedium)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(12.dp)) { PlayerPanel(roomId) }
             }

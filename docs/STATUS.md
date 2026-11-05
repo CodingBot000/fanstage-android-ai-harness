@@ -70,3 +70,20 @@
 - UX-006 로컬 통합: 공통 TopBar, 공지·로컬 읽음·필터 복원·취소 경합 방어 및 LIVE 상세 표현 보완. 최종 작업 트리 전체 Android 계측 14/14(실제 서버 case 포함), 서버 통합·장애 주입, Debug/Release/Benchmark 빌드·lint·unit PASS. [통합 SDD](specs/UX-006-integration.md). 실기기 성능 A/B·전 화면 접근성·독립 리뷰·최종 CI는 NOT_RUN. 기존 M6 미검증 항목은 유지하며 v0.1 포트폴리오 준비 완료와 구분한다.
 - PR #36 최초 head API 35 CI는 새 홈의 첫 LIVE 카드가 초기 화면 밖이어서 기존 테스트의 스크롤 없는 대기가 실패했다. 테스트를 실제 스크롤 흐름으로 수정했으며 작은 화면 API 36에서 기존 4/4·신규 9/9 PASS; 수정 head 원격 CI 확인 필요. 로컬 테스트 시작 중 뒤늦게 연결된 실기기에서도 테스트가 일부 시작되어 즉시 중단했고, 결과는 사용하지 않았다. 상세는 build-log 참조.
 - PR #36 최종 head `38ec99d`: Android build/lint/unit·API 35 탐색 [CI PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42040756558), PostgreSQL·실제 WebSocket [CI PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42040756538). Codex 독립 리뷰의 Messages P2(IME 입력창 가림·신규 메시지 미스크롤) 2건을 수정해 최신 head 재리뷰에서 추가 지적 없음·스레드 Resolved. [PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36)을 `7b5fb4cd523c3bab70cbe2f9d6d530a087dde296`로 Squash Merge. 실기기 성능 A/B·전 화면 접근성은 NOT_RUN.
+
+## UX-007~011 / ARCH-001~003 별도 확장 (2026-11-05)
+- 기준 `5bd022b`에서 새 브랜치 `codex/ux-premium-modular-batch`를 생성했다. 로컬 `.gitignore`의 plans 제외 규칙은 사용자 미커밋 변경으로 보존한다.
+- UX-007: 그룹별 원본·파생 자산 9개와 토큰을 추가하고 빠른 빌드·app 단위 테스트 PASS, 별도 API 36 에뮬레이터의 Hero 렌더 확인. [SDD](specs/UX-007-premium-visual.md), [자산 근거](portfolio/visual-assets.md). 기존 에뮬레이터와 개인 기기 데이터는 변경하지 않았다. 다음 UX-008. 전체 계측·서버·성능 NOT_RUN_DEFERRED.
+- UX-008 (2026-11-06): 16:9 Hero·가로 미디어·벡터 탐색·데모 LIVE 표시 적용, 빠른 빌드/lint/unit PASS, 전용 에뮬레이터 수동 LIVE 왕복·Community 이동 및 [캡처](evidence/ux-008/discover.png) 확인. 전체 connected 테스트는 두 AVD가 보이는 환경이라 NOT_RUN_DEFERRED. 다음 UX-009.
+- UX-009 (2026-11-06): 커버·프로필·피드·상세 이미지 계층과 뒤로가기 문구 개선. 빌드/lint/unit PASS, 전용 에뮬레이터에서 가상 댓글·좋아요의 상세 왕복 보존을 수동 확인. [캡처](evidence/ux-009/artist.png). 자동 connected 테스트는 다중 AVD로 NOT_RUN_DEFERRED. 다음 UX-010.
+- UX-010 (2026-11-06): Media 이미지 크롭·데모 LIVE 라벨·Replay 상세 정리. 관련 빌드/lint/단위 PASS, 전용 API 36에서 합성 LIVE/Replay 재생·복귀 및 각 Player Init/Release 한 쌍 확인. [캡처](evidence/ux-010/media.png). 전체 계측·서버 회귀 NOT_RUN_DEFERRED. 다음 UX-011.
+- UX-011 (2026-11-06): 메시지 시각·아바타 개선, IME와 축소 viewport에서 마지막 메시지 및 과거 읽기 위치 수동 검증, 빈 입력·긴 메시지 단위 테스트 PASS. [대화 캡처](evidence/ux-011/conversation.png). connected 전체 검증은 ADB 다중 AVD로 NOT_RUN_DEFERRED. UX-007~011 실제 화면 증거 확보 후 다음 ARCH-001로 진행한다.
+- ARCH-001 (2026-11-06): `core:model` 순수 모델/계약, `core:data` 세션 Fake, `core:artwork` resolver/리소스 및 AppContainer 도입. 관련 모듈·앱·계측 APK 빌드, 데이터/앱 단위와 lint PASS; 전용 AVD 수동 화면·좋아요 왕복 확인. [SDD](specs/ARCH-001-feature-modularization.md). 자동 connected 전체는 NOT_RUN_DEFERRED. 다음 ARCH-002 Discover 이동.
+- ARCH-002 Discover (2026-11-06): `:feature:discover`로 화면·VM 이동, 관련 빌드·단위 및 계측 APK 컴파일 PASS; 전용 AVD의 Home→LIVE 수동 확인. connected 자동 실행 NOT_RUN_DEFERRED. 다음 Community.
+- ARCH-002 Community: `:feature:community` 이동 및 관련 빌드/단위/계측 APK 컴파일 PASS; 전용 AVD에서 아티스트·Post 좋아요 왕복 확인. connected 자동 검증 NOT_RUN_DEFERRED. 다음 Media.
+- ARCH-002 Media: `:feature:media`와 독립 ViewModel 분리, feature 간 직접 의존 제거. 관련 빌드/단위·계측 APK 컴파일 PASS, 전용 AVD에서 Replay 필터·재생 확인. 전체 connected NOT_RUN_DEFERRED. 다음 Messages.
+- ARCH-002 Messages: `:feature:messages`로 이동, 기존 IME/스크롤 코드 유지. 관련 빌드·단위·계측 APK 컴파일 PASS, 전용 AVD에서 IME 입력·로컬 전송 확인. connected 전체 NOT_RUN_DEFERRED. 다음 ARCH-003 통합.
+- ARCH-003 진행: Replay 화면을 기존 `feature:live`로 이동, app에는 MainActivity/AppContainer만 남김. 경계 스크립트 PASS. 별도 ADB 서버에 전용 AVD 한 대만 연결해 기존 LIVE·새 화면 계측 13/13 PASS. 실제 서버 포함 전체 최종 검증은 진행 전.
+- ARCH-003 로컬 통합 (2026-11-06): 11개 모듈·경계 검사 PASS, 별도 ADB 서버의 전용 API 36 AVD 및 격리 서버에서 전체 Android 계측 14/14·서버/장애 회귀 PASS. 이후 Activity 재생성 및 IME 접근 검사를 추가한 DiscoverTest 9/9 PASS. Debug/Release/Benchmark 빌드·lint·unit 및 core:data 테스트 PASS. [ARCH 기록](specs/ARCH-001-feature-modularization.md). 독립 리뷰·실기기 성능 A/B·전 화면 접근성·최종 CI는 NOT_RUN. 다음 통합 PR 및 CI 확인.
+- ARCH-003 CI: core:data 테스트와 경계 검사를 Android gate에 추가, 로컬 PASS. PR #38의 수정 head 원격 CI 및 독립 리뷰 확인 중.
+- ARCH-003 추가 감사: Discover 오류가 다른 탭 카탈로그를 비우지 않도록 공통 Fake 카탈로그를 독립 주입, 회귀 단위 테스트와 DiscoverTest 9/9 PASS. rcLocal 빌드·M4/M6 manifest 경계 PASS. 최종 head PR CI 별도 확인.

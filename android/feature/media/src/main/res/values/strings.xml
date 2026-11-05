@@ -1,0 +1,10 @@
+<resources>
+  <string name="discover_retry">Try again</string>
+  <string name="replay">Replay</string>
+  <string name="media">Media</string>
+  <string name="all_media">All</string>
+  <string name="demo_live">DEMO LIVE ROOM</string>
+  <string name="room_studio_title">Studio session</string>
+  <string name="room_sketch_title">Afternoon sketch break</string>
+  <string name="room_tabletop_title">Tabletop night</string>
+</resources>

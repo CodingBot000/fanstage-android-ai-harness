@@ -1,5 +1,13 @@
 package dev.fanstage.android
 
+import dev.fanstage.android.feature.messages.*
+
+import dev.fanstage.android.feature.media.*
+
+import dev.fanstage.android.feature.community.*
+
+import dev.fanstage.android.feature.discover.*
+
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,8 +18,8 @@ import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import dev.fanstage.android.feature.live.PlayerPanel
+import androidx.compose.ui.res.painterResource
+import dev.fanstage.android.feature.live.ReplayScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -40,9 +48,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun FanStageApp() {
     val navController = rememberNavController()
-    val communityViewModel: CommunityViewModel = viewModel()
-    val discoverViewModel: DiscoverViewModel = viewModel()
-    val messagesViewModel: MessagesViewModel = viewModel()
+    val container = remember { AppContainer() }
+    val communityViewModel: CommunityViewModel = viewModel(factory = container.viewModelFactory)
+    val discoverViewModel: DiscoverViewModel = viewModel(factory = container.viewModelFactory)
+    val messagesViewModel: MessagesViewModel = viewModel(factory = container.viewModelFactory)
+    val mediaViewModel: MediaViewModel = viewModel(factory = container.viewModelFactory)
+    val artists = container.artists
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
@@ -59,7 +70,7 @@ private fun FanStageApp() {
                         launchSingleTop = true
                         restoreState = true
                     }
-                }, icon = { Text(listOf("✦", "◉", "▶", "✉")[index]) }, label = { Text(label) }, modifier = Modifier.testTag("tab_$route"))
+                }, icon = { Icon(painterResource(listOf(R.drawable.nav_discover, R.drawable.nav_community, R.drawable.nav_media, R.drawable.nav_messages)[index]), contentDescription = null) }, label = { Text(label) }, modifier = Modifier.testTag("tab_$route"))
             }
         }
     }) { shellPadding ->
@@ -71,32 +82,24 @@ private fun FanStageApp() {
                 }
             }, onReplayClick = { navController.navigate("replay") { launchSingleTop = true } }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
         }
-        composable("messages") { MessagesList(messagesViewModel, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
+        composable("messages") { MessagesList(messagesViewModel, artists, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
         composable("messages/{artistId}") { messageEntry ->
-            ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), onBack = { navController.popBackStack() })
+            ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
         }
         composable("media") {
-            MediaRoute(discoverViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") })
+            MediaRoute(mediaViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") })
         }
         composable("community") {
-            CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") })
+            CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, artists = artists)
         }
         composable("community/artist/{artistId}") { artistEntry ->
             val artistId = requireNotNull(artistEntry.arguments?.getString("artistId"))
-            CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") })
+            CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, onBack = { navController.popBackStack() }, artists = artists)
         }
         composable("community/post/{postId}") { postEntry ->
             PostDetail(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
         }
-        composable("replay") {
-            Scaffold { padding ->
-                Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).testTag("replay_detail")) {
-                    TextButton(onClick = { navController.popBackStack() }, modifier = Modifier.testTag("replay_back")) { Text(stringResource(R.string.replay_back)) }
-                    Text("Paper Lantern · Studio diary", style = MaterialTheme.typography.headlineMedium)
-                    PlayerPanel("replay-studio-diary")
-                }
-            }
-        }
+        composable("replay") { ReplayScreen(onBack = { navController.popBackStack() }) }
         composable(
             route = "rooms/{roomId}",
             arguments = listOf(navArgument("roomId") { type = NavType.StringType }),

@@ -1,0 +1,10 @@
+<resources>
+  <string name="messages">Messages</string>
+  <string name="send_comment">Send</string>
+  <string name="local_demo">Local demo · messages stay on this device session</string>
+  <string name="messages_back">Back to messages</string>
+  <string name="local_sent">Saved locally</string>
+  <string name="message_input">Message</string>
+  <string name="unread">Unread</string>
+  <string name="demo_welcome">Welcome to our space!</string>
+</resources>

@@ -8,6 +8,7 @@ on:
       - 'scripts/m1-004-emulator-smoke.sh'
       - 'scripts/m4-check-manifests.py'
       - 'scripts/m6-check-manifests.py'
+      - 'scripts/check-ux-module-boundaries.py'
       - '.github/workflows/android-ci.yml'
   push:
     branches: [main]
@@ -16,6 +17,7 @@ on:
       - 'scripts/m1-004-emulator-smoke.sh'
       - 'scripts/m4-check-manifests.py'
       - 'scripts/m6-check-manifests.py'
+      - 'scripts/check-ux-module-boundaries.py'
       - '.github/workflows/android-ci.yml'
   workflow_dispatch:
 
@@ -67,9 +69,10 @@ jobs:
           # Debug/Benchmark tests. It is never used to sign a public release.
           chmod +x gradlew
           ./gradlew --version
-          ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
+          ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest :core:data:test --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
           python3 ../scripts/m4-check-manifests.py
           python3 ../scripts/m6-check-manifests.py
+          python3 ../scripts/check-ux-module-boundaries.py
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify app/build/outputs/apk/benchmark/app-benchmark.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify macrobenchmark/build/outputs/apk/benchmark/macrobenchmark-benchmark.apk
 
@@ -81,6 +84,7 @@ jobs:
           path: |
             android-ci.log
             android/**/build/test-results/testDebugUnitTest/*.xml
+            android/core/data/build/test-results/test/*.xml
             android/**/build/reports/lint-results-*.html
           if-no-files-found: warn
           retention-days: 14

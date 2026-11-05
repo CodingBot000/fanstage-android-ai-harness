@@ -1,4 +1,9 @@
 package dev.fanstage.android
+
+import dev.fanstage.android.feature.community.*
+
+import dev.fanstage.android.feature.discover.*
+import dev.fanstage.android.core.model.DiscoverData
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -44,7 +49,7 @@ class DiscoverTest {
                 ) {
                     FanStageTheme {
                         if (showCommunity.value) CommunityScreen(CommunityState.Ready(emptyList()), null, {}, {}, {})
-                        else DiscoverScreen(DiscoverState.Ready(DiscoverData(fictionalArtists, emptyList())), {}, {})
+                        else DiscoverScreen(DiscoverState.Ready(DiscoverData(emptyList(), emptyList())), {}, {})
                     }
                 }
             }
@@ -68,9 +73,11 @@ class DiscoverTest {
         rule.onNodeWithTag("unread_paper-lantern", useUnmergedTree = true).assertIsDisplayed()
         rule.onNodeWithTag("conversation_paper-lantern").performClick()
         rule.onNodeWithTag("dm_input").performTextInput("Hello artist")
-        rule.onNodeWithTag("dm_send").performClick()
+        rule.onNodeWithTag("dm_send").assertIsDisplayed().performClick()
         rule.onNodeWithText("Hello artist").assertIsDisplayed()
         rule.onNodeWithText(rule.activity.getString(R.string.local_sent)).assertIsDisplayed()
+        rule.activityRule.scenario.recreate()
+        rule.onNodeWithText("Hello artist").assertIsDisplayed()
         rule.onNodeWithText(rule.activity.getString(R.string.messages_back)).performClick()
         rule.onNodeWithTag("unread_paper-lantern", useUnmergedTree = true).assertDoesNotExist()
     }
@@ -99,6 +106,10 @@ class DiscoverTest {
         rule.onNodeWithText("♥").assertIsDisplayed()
         rule.onNodeWithTag("comment_input").performScrollTo().performTextInput("Hello community")
         rule.onNodeWithTag("comment_send").performScrollTo().performClick()
+        rule.onNodeWithText("Hello community").assertExists()
+        rule.activityRule.scenario.recreate()
+        rule.onNodeWithTag("post_like").performScrollTo()
+        rule.onNodeWithText("♥").assertIsDisplayed()
         rule.onNodeWithText("Hello community").assertExists()
     }
     @Test fun replayPlaysAndReturns() {

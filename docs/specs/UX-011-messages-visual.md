@@ -1,0 +1,6 @@
+# UX-011 — Messages 與 Conversation 시각 마감
+
+상태: 진행 중. 로컬 가상 대화의 목록·아바타·말풍선·입력창 표현을 UX-007 자산과 공통 토큰에 맞춘다. 기존 session Fake, 읽지 않음, 빈 입력 처리, `imePadding`, 최신 메시지 자동 스크롤, test tag 및 back 경로는 보존한다. 실제 사용자 간 전달이나 원격 읽음을 암시하지 않는다. 에뮬레이터에서 IME·마지막 메시지·입력창 및 실제 화면을 확인한다.
+
+## 결과 (2026-11-06)
+커버 기반 아바타·목록·헤더·말풍선 색상을 조정했다. 기존 `imePadding` 및 신규 메시지 자동 스크롤을 유지하고, viewport 축소 시 맨 아래에 가까운 경우만 마지막 항목을 유지하도록 보완했다. API 36 전용 AVD 수동 검증: IME 위 입력/전송, 8개 합성 긴 메시지 전송 후 마지막 메시지, 1080×1920 전환 후 마지막 메시지 유지, 과거 메시지를 읽을 때 축소해도 과거 위치 유지. 크기 원복. 빈 입력·대화별 읽음·긴 메시지 단위 테스트 및 `:app:assembleDebug :app:lintDebug :app:testDebugUnitTest` PASS. [목록](../evidence/ux-011/messages.png), [대화](../evidence/ux-011/conversation.png). 키보드 이미지 권리 상태를 단정하지 않도록 IME 스크린샷은 저장소에 포함하지 않았다. 다른 AVD가 동시에 보여 자동 connected 회귀는 NOT_RUN_DEFERRED.
