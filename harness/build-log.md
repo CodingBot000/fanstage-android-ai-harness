@@ -1,28 +1,35 @@
 # 작업 및 검증 기록
 
+## M8 v0.1 — Portfolio Ready 마감 (2026-11-05)
+
+- 사용자 요청에 따라 공개 APK 없이 소스·README 재현 절차·시연 영상·아키텍처·검증 보고서를 제공하는 v0.1 제출 범위를 종료했다. 완료 상태는 **PORTFOLIO_READY**, 전체 배포/운영 안전성에 대한 무제한 **VERIFIED**가 아니다. [최종 판정](../docs/reviews/M8-final-readiness.md).
+- 재사용한 검증: 새 clone JDK 17/기존 SDK·Debug 키·Gradle 캐시에서 빌드·lint·단위 51/51 및 API 36 기본 화면 PASS([기록](../docs/reviews/M8-clean-clone-reproduction.md)), 기존 [Android main CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42004905245)·[서버 main CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42004905195) PASS. 제3자 라이선스 감사·MIT 표기는 [PR #34](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/34)에서 병합.
+- 한계 보존: 최초 WebSocket 20초 타임아웃 원인은 미확정이고 [PR #30 한정 예외](../docs/reviews/M8-001-risk-exception-proposal.md)를 확대하지 않는다. M6 A/B 변경은 개선 미입증으로 되돌림. 과거 캡처 영상의 키보드 및 일부 에뮬레이터 UI·폰트의 권리 판단은 확정되지 않았고 Git 이력은 재작성하지 않았다. 향후 APK/서버 바이너리/컨테이너 배포에는 별도 라이선스·보안 검증이 필요하다.
+- 종료 문서 작업에서 신규 Android·서버·성능 테스트는 **NOT_RUN(기존 결과 재사용)**. 제품 코드/시연 자산은 변경하지 않았다.
+
 ## M8 — 제3자 라이선스·NOTICE 감사 (2026-11-05)
 
 - 기준 `b92521b218f2b96edea5ec4232f9005954c8242c`, 기존 작업 트리를 보존한 별도 worktree. 사용자는 프로젝트 직접 작성 코드·문서에 MIT와 `2026 FanStage contributors` 표기를 선택했다. `LICENSE`, [제3자 고지](../THIRD_PARTY_NOTICES.md), [감사](../docs/reviews/M8-license-audit.md)와 [의존성 목록](../docs/reviews/M8-dependency-inventory.tsv)을 작성했다. 제3자 라이선스는 MIT로 변경하지 않는다.
 - Android release/debug 및 앱 테스트, 서버 runtime/test의 선택 Gradle configuration에서 실제 해석된 artifact 482행/고유 190좌표와 POM·아카이브 직접 엔트리 고지 경로를 확인했다. Logback 이중 라이선스, Jakarta 조건, PostgreSQL JDBC BSD 및 MIT 구성요소를 별도 기록했다. Wrapper JAR 두 개는 공식 Gradle 9.5.0 SHA와 일치하며 Apache-2.0 전문을 별도 포함했다. 서버 wrapper batch의 LF 정규화가 파일 내 변경 고지 대상인지 미확인으로 기록했다. 최초 wrapper 비교는 잘못된 작업 디렉터리 실행으로 FAIL; 임시 Gradle 프로젝트에서 재실행해 스크립트와 줄바꿈을 비교했다.
 - 기존 포트폴리오 MP4의 Google 키보드 UI 구간을 현재 영상에서 제외했다. 기존 원본 SHA `e2704a13847921e780d9ae116d439174b286d8c0521962bedd23354f458b55bb`, 변경본 SHA `29afc87e11adf5767f63028c6b16ce059314faceefa1fb2bc73db0f70a290aef`. 원본은 공개 Git 이력에 남고 사용 권한은 미확정이다. 변경 영상의 샘플 프레임 및 전환 구간을 시각 확인했다. 앱 코드·테스트·WebSocket·성능 CI는 이 작업에서 반복하지 않았다.
 - 검증: SPDX MIT 원문과 공백 정규화 후 일치, 동봉 Apache 전문과 Wrapper JAR 내부 전문 바이트 일치, 목록 482행·고유 190좌표·SHA 형식 및 상대 링크 PASS. 목록의 고유 POM URL 184개 HEAD 200, 변경 MP4 H.264·22.633초·무음 확인. 최초 Android `resolvedConfiguration` artifact 조회는 project variant ambiguity로 FAIL했고, 외부 컴포넌트만 선택한 `artifactView`로 재조회했다. TSV 빈 마지막 열 때문에 첫 `git diff --check`가 FAIL했으며 빈 셀을 `-`로 표기한 뒤 PASS했다.
-- NOT_RUN/미완료: 원본 Git 이력과 기타 에뮬레이터 UI·폰트의 권리 확정, 외부 독립 개발자 재현, 전체 빌드 플러그인/컨테이너/향후 APK·서버 바이너리의 최종 NOTICE 전수. M8 Gate는 미완료다. WebSocket 위험 예외와 M6 실험 결과는 그대로 유지한다.
+- NOT_RUN/미완료: 원본 Git 이력과 기타 에뮬레이터 UI·폰트의 권리 확정, 전체 빌드 플러그인/컨테이너/향후 APK·서버 바이너리의 최종 NOTICE 전수. M8 Gate는 미완료다. WebSocket 위험 예외와 M6 실험 결과는 그대로 유지한다.
 
 ## M8 — main 새 clone 소스 재현 (2026-11-05)
 
 - 소스 `e09beb205dcf1ae12510225dff710e3e05682cb8`를 별도 임시 경로에 clone하고 README의 Debug assemble·lint·unit 명령 PASS(95 tasks executed, unit 51/51). 기존 JDK 17·SDK·Debug 키 및 Gradle 캐시를 사용했다. 임시 API 36 arm64 에뮬레이터의 새 설치에서 방 목록→상세, 합성 VOD 재생·일시정지·재개, Fake 채팅 `Sent` 및 목록 복귀 PASS. 상세와 로컬 증거는 [재현 기록](../docs/reviews/M8-clean-clone-reproduction.md).
-- README에 새 에뮬레이터 대상 터미널 설치·실행 명령과 Debug 개발 설정 아래의 Fake 채팅 위치를 추가했다. Android Studio UI 실행, 외부 독립 개발자 재현, 빈 Gradle 캐시는 NOT_RUN. 기존 작업 트리·기존 앱 데이터는 건드리지 않았다. 성능 및 WebSocket 장애 CI는 반복하지 않았다.
+- README에 새 에뮬레이터 대상 터미널 설치·실행 명령과 Debug 개발 설정 아래의 Fake 채팅 위치를 추가했다. Android Studio UI 실행과 빈 Gradle 캐시 검증은 NOT_RUN. 기존 작업 트리·기존 앱 데이터는 건드리지 않았다. 성능 및 WebSocket 장애 CI는 반복하지 않았다.
 
 ## M8-002 — 포트폴리오 산출물 병합 (2026-11-05)
 
 - [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31) head `a101856c673ccb52ae05a235c7bef100b57a9c15`의 독립 Codex 리뷰는 지적 없이 완료됐다. Markdown 링크·공백 및 영상 내용·형식은 아래 로컬 검증을 따른다. 문서·영상만 변경해 별도 Android CI는 실행되지 않았다. 기준 main `74e417ad604fab227a9fbca0f7e28f1728130859`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42004905245)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42004905195)는 PASS. PR #31은 `3a1f0d79d1d3a9939a715d3ddd7ad6e1c07838ce`로 Squash Merge됐다.
-- M8-002의 README·아키텍처·합성 화면 시연·소개 문안은 제공한다. 실제 네트워크 단절·복구 영상, 외부 개발자 재현, 제3자 고지 전수 검토는 미완료이며 루트 라이선스·공개 배포 서명은 미결정이다. M8 전체 VERIFIED를 선언하지 않는다.
+- M8-002의 README·아키텍처·합성 화면 시연·소개 문안은 제공한다. 실제 네트워크 단절·복구 영상 및 제3자 고지 전수 검토는 미완료이며 루트 라이선스·공개 배포 서명은 미결정이다. M8 전체 VERIFIED를 선언하지 않는다.
 
 ## M8-002 — 포트폴리오 초안 (2026-11-05)
 
 - Base: M8-001 merge `74e417ad604fab227a9fbca0f7e28f1728130859`. [SDD](../docs/specs/M8-002-portfolio-packaging.md). README, 아키텍처·장애 검증·측정 근거, 시연 안내 및 포트폴리오 소개 문안을 작성했다. M6 개선 미입증과 기존 NOT_RUN을 유지한다.
 - **시연 캡처:** 기존 rcLocal APK SHA-256 `7103dfef4df9d3268afb8be581d24fad1e22514f81c3e51c5f839886aaad79b1`를 새 임시 API 36 에뮬레이터에 설치해 합성 영상·Fake 채팅만 캡처했다. 상태 표시줄 제거·축소 후 무음 MP4는 [시연](../docs/portfolio/media/offline-demo.mp4), SHA-256 `e2704a13847921e780d9ae116d439174b286d8c0521962bedd23354f458b55bb`; 샘플 프레임으로 목록·일시정지/재개·메시지 전송 확인. 실제 네트워크 장애·복구는 영상에 포함하지 않으며 별도 테스트 근거로 제시한다. 기존 실기기 앱·데이터는 수정하지 않았다.
-- **문서·산출물 확인:** 관련 Markdown 9개 상대 파일 링크 및 줄 끝 공백 검사 PASS, `git diff --check` PASS. `ffprobe`로 H.264 540×1042, 26.6초, 오디오 스트림 없음 확인; 샘플 프레임과 전체 구간 contact sheet를 검토했다. 독립 리뷰 및 외부 개발자의 별도 재현은 NOT_RUN이다.
+- **문서·산출물 확인:** 관련 Markdown 9개 상대 파일 링크 및 줄 끝 공백 검사 PASS, `git diff --check` PASS. `ffprobe`로 H.264 540×1042, 26.6초, 오디오 스트림 없음 확인; 샘플 프레임과 전체 구간 contact sheet를 검토했다. 독립 리뷰는 해당 시점에 NOT_RUN이다.
 - 진단·공개 범위: 최초 WebSocket 타임아웃의 사용자 승인 일회성 예외, 루트 LICENSE·배포 서명 미결정, 제3자 고지 전수 검토 미완료, 원격 LIVE·실제 LMK·장시간 heap·실기기 네트워크 전환 NOT_RUN은 보존한다. 이번 문서·영상은 M8 전체 Gate 완료 주장이 아니다.
 
 ## M8-001 — 병합 (2026-11-05)
