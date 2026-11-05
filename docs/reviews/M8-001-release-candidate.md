@@ -1,10 +1,12 @@
 # M8-001 릴리스 후보 검증 기록
 
-## 상태: 미완료
+## 상태: M8-001 완료 — 사용자 승인 일회성 예외 적용
 
-2026-11-05 사용자가 최초 WebSocket 타임아웃의 미확정 위험에 대해 PR #30과 M8-002 진입에 한정한 [일회성 예외](M8-001-risk-exception-proposal.md)를 승인했다. 최초 원인과 제품 영향은 미확정이며 향후 P1 실패·공개 APK·운영 검증에는 예외가 적용되지 않는다. 최종 병합은 별도 확인한다.
+[PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30)은 head `44bd3ccaa7e412bbca6bac29e80bed46c7a3c256`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42003790103)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42003790152) PASS 후 `74e417ad604fab227a9fbca0f7e28f1728130859`로 Squash Merge됐다. 최초 타임아웃은 미해결 위험으로 남는다. M8 전체는 M8-002에서 별도 판단한다.
 
-PR [#30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30) head `d85568924b9b7929abe0ea92939a1f1d368fa382`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999002) PASS (빌드·단위 및 API 35 계측 3건). 자동 리뷰의 테스트 수 불일치 P1은 수정 후 CI PASS로 해결 처리했다. [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999118)는 attempt 1에서 `RealChatIntegrationTest` 20초 타임아웃으로 FAIL, attempt 2에서 PASS. 최초 실패 로그에는 어느 20초 대기 지점인지 드러나지 않아 원인은 미확정이다. 단순 재시도 성공만으로 최초 실패 원인이 해결됐다고 주장하지 않으며 병합은 보류한다.
+2026-11-05 사용자가 최초 WebSocket 타임아웃의 미확정 위험에 대해 PR #30과 M8-002 진입에 한정한 [일회성 예외](M8-001-risk-exception-proposal.md)를 승인했다. 최초 원인과 제품 영향은 미확정이며 향후 P1 실패·공개 APK·운영 검증에는 예외가 적용되지 않는다.
+
+PR [#30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30) head `d85568924b9b7929abe0ea92939a1f1d368fa382`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999002) PASS (빌드·단위 및 API 35 계측 3건). 자동 리뷰의 테스트 수 불일치 P1은 수정 후 CI PASS로 해결 처리했다. [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999118)는 attempt 1에서 `RealChatIntegrationTest` 20초 타임아웃으로 FAIL, attempt 2에서 PASS. 최초 실패 로그에는 어느 20초 대기 지점인지 드러나지 않아 원인은 미확정이다. 단순 재시도 성공만으로 최초 실패 원인이 해결됐다고 주장하지 않아 당시 병합을 보류했다.
 
 ### WebSocket 타임아웃 추가 진단
 
