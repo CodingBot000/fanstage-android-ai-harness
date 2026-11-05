@@ -1,5 +1,16 @@
 # 작업 및 검증 기록
 
+## M8-002 — 포트폴리오 초안 (2026-11-05)
+
+- Base: M8-001 merge `74e417ad604fab227a9fbca0f7e28f1728130859`. [SDD](../docs/specs/M8-002-portfolio-packaging.md). README, 아키텍처·장애 검증·측정 근거, 시연 안내 및 포트폴리오 소개 문안을 작성했다. M6 개선 미입증과 기존 NOT_RUN을 유지한다.
+- **시연 캡처:** 기존 rcLocal APK SHA-256 `7103dfef4df9d3268afb8be581d24fad1e22514f81c3e51c5f839886aaad79b1`를 새 임시 API 36 에뮬레이터에 설치해 합성 영상·Fake 채팅만 캡처했다. 상태 표시줄 제거·축소 후 무음 MP4는 [시연](../docs/portfolio/media/offline-demo.mp4), SHA-256 `e2704a13847921e780d9ae116d439174b286d8c0521962bedd23354f458b55bb`; 샘플 프레임으로 목록·일시정지/재개·메시지 전송 확인. 실제 네트워크 장애·복구는 영상에 포함하지 않으며 별도 테스트 근거로 제시한다. 기존 실기기 앱·데이터는 수정하지 않았다.
+- **문서·산출물 확인:** 관련 Markdown 9개 상대 파일 링크 및 줄 끝 공백 검사 PASS, `git diff --check` PASS. `ffprobe`로 H.264 540×1042, 26.6초, 오디오 스트림 없음 확인; 샘플 프레임과 전체 구간 contact sheet를 검토했다. 독립 리뷰 및 외부 개발자의 별도 재현은 NOT_RUN이다.
+- 진단·공개 범위: 최초 WebSocket 타임아웃의 사용자 승인 일회성 예외, 루트 LICENSE·배포 서명 미결정, 제3자 고지 전수 검토 미완료, 원격 LIVE·실제 LMK·장시간 heap·실기기 네트워크 전환 NOT_RUN은 보존한다. 이번 문서·영상은 M8 전체 Gate 완료 주장이 아니다.
+
+## M8-001 — 병합 (2026-11-05)
+
+- [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30) head `44bd3ccaa7e412bbca6bac29e80bed46c7a3c256`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42003790103)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42003790152) PASS 후 `74e417ad604fab227a9fbca0f7e28f1728130859`로 Squash Merge. 리뷰 지적은 해결 처리됐다. 최초 WebSocket 타임아웃 원인과 제품 영향은 미확정이며 사용자의 [일회성 위험 수용 예외](../docs/reviews/M8-001-risk-exception-proposal.md)는 PR #30에 한정한다. M8 전체는 미완료이며 M8-002를 시작한다.
+
 ## M8-001 — 일회성 위험 수용 승인 (2026-11-05)
 
 - 사용자가 [PR #30 한정 예외](../docs/reviews/M8-001-risk-exception-proposal.md)를 명시적으로 승인했다. 최초 실제 WebSocket CI 타임아웃은 원인·제품 영향이 미확정이며, 후속 PASS는 최초 원인 해결의 증거가 아니다. 예외는 다른 P1 실패·공개 APK 배포·운영 검증에 적용하지 않는다. 재발 시 보존된 진단 증거로 재조사한다.
