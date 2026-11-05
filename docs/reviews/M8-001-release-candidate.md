@@ -16,7 +16,7 @@
 ### 추가 감사 (2026-11-05)
 
 - Git 전체 도달 객체 1,375개 중 blob, 현재 추적·미추적 파일, rcLocal APK 모든 엔트리 및 기존 Android/서버 CI 두 실행의 로그에 개인키 헤더와 일부 GitHub·AWS·OpenAI 키 패턴을 검사해 일치 0건. CI 로그에서 macOS 사용자 홈 경로 패턴도 0건. 제한된 패턴이므로 모든 시크릿·개인정보 부재의 증명은 아니다. 기존 두 실행의 artifact 33개 제한 검사는 아래 이력 참조. 원본 trace와 실기기 개인정보는 Git 이력의 파일명 및 로그 패턴 검사 범위로만 확인했다.
-- `:app:dependencies --configuration rcLocalRuntimeClasspath` 출력에서 식별한 좌표 122개 중 로컬 POM에 라이선스 표기가 있는 71개는 Apache 2.0 계열이었다. 51개는 로컬 POM/라이선스 메타데이터가 없어 별도 확인이 필요하며, 제약·중복 좌표가 포함될 수 있다. 제3자 고지 의무 전체 검토는 미완료다. 합성 영상 생성 명령과 출처는 M2 SDD 참조. 루트 LICENSE 미결정이며 임의로 선택하지 않았다.
+- `:app:dependencies --configuration rcLocalRuntimeClasspath` 출력에서 식별한 좌표 122개의 POM 라이선스 표기를 로컬 캐시 및 Google/Maven Central 저장소에서 확인했다. 직접 표기가 없는 Guava 3개는 해당 parent POM의 Apache 2.0 표기를 확인했으며 나머지 119개도 Apache 2.0 계열로 표기됐다. 이는 제약·중복 좌표를 포함할 수 있는 메타데이터 조사이며 실제 포함 바이너리별 NOTICE, 서버 의존성 및 제3자 고지 의무 전체 검토는 미완료다. 합성 영상 생성 명령과 출처는 M2 SDD 참조. 루트 LICENSE 미결정이며 임의로 선택하지 않았다.
 - v0.1 제공 경로는 사용자 결정에 따라 공개 APK 없이 소스와 로컬 빌드 절차다. rcLocal APK 및 테스트 APK는 내부 검증 전용이다. 라이선스 확인 및 공개물 최종 검토 잔여분은 M8-002에서 추적한다.
 
 계측 명령: `cd android && ANDROID_HOME="$HOME/Library/Android/sdk" ./gradlew :app:assembleRcLocalAndroidTest -PfanstageRcInstrumentation=true --no-daemon`; `adb install -r app/build/outputs/apk/androidTest/rcLocal/app-rcLocal-androidTest.apk`; `adb shell am instrument -w -r -e class 'dev.fanstage.android.RoomNavigationSmokeTest#rcFaultUiAndReleasedListener,dev.fanstage.android.RoomNavigationSmokeTest#rcUncertainMessageAndChatCleanup' dev.fanstage.android.rclocal.test/androidx.test.runner.AndroidJUnitRunner`. 첫 설치는 `-r` 없이 수행했다. 로그는 로컬 `/tmp/fanstage-m8-rc-instrument-test2.log`.
