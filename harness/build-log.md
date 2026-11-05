@@ -535,3 +535,4 @@
 - `:app:assembleDebug :app:lintDebug testDebugUnitTest :core:data:test` 및 `:app:assembleRelease :app:assembleBenchmark :app:assembleRcLocal :macrobenchmark:assembleBenchmark` PASS. M4/M6 manifest 및 모듈 경계 검사 PASS. 초기 2× 폰트 테스트에서 두 줄 영역이 작게 측정되는 실패를 재현, 비선형 배율을 반영한 두 줄 실제 측정 후 회귀 PASS.
 - 에뮬레이터 Gboard에서 DM/LIVE `IME_ACTION_SEND` 표시와 각 합성 메시지 전송, TextureView 적용 화면의 뒤로가기 전환 프레임을 확인했다. 증거 `docs/evidence/ux-012/`(키보드 이미지 제외). 실기기는 사용자가 에뮬레이터로 변경해 테스트하지 않았다. 실기기에 새로 설치한 테스트 패키지 두 개는 삭제했고 기존 rclocal 패키지는 보존했다. 일반 Debug 앱은 승인된 에뮬레이터에 `install -r`로 갱신했다.
 - [ADR-0008](../docs/adr/ADR-0008-compose-video-surface.md)에 TextureView의 전력·HDR·DRM 출력 한계를 기록했다. 실기기·DRM/HDR·전력 성능 NOT_RUN. 아이콘 imagegen 프롬프트/원본·최종 해시는 `docs/portfolio/visual-assets.md`.
+- UX-012 PR 준비: `scripts/ux012-emulator-gate.sh`를 추가해 기존 API 35 LIVE 회귀 및 Player init/release 검사를 먼저 실행한 후 UX-012의 5개 UI 계측을 별도 실행한다. 두 테스트 결과를 별도 artifact 경로로 보존한다. `bash -n` PASS; API 35 실행은 PR CI에서 확인한다.

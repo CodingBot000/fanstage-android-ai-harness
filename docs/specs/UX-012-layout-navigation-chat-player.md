@@ -24,3 +24,4 @@
 - 전용 ADB 서버의 API 36 AVD에서 격리 로컬 PostgreSQL/WebSocket을 사용한 Android 전체 계측 18/18, 서버 통합·ACK 유실·단절 복구 PASS. 이후 UI 계측 5/5 재실행 PASS. Debug·Release·rcLocal·Benchmark 빌드, lint, 단위 테스트, manifest 및 모듈 경계 검사 PASS.
 - 사용자가 테스트 도중 에뮬레이터로 전환을 요청해 실기기 검증은 **NOT_RUN**. 실기기에 설치한 별도 `devicecheck` 테스트 패키지 2개만 제거했고 기존 rclocal 패키지는 유지했다. 일반 Debug 앱은 사용자가 허용한 기존 에뮬레이터에 `install -r`로 갱신·실행했다.
 - [Media 그리드](../evidence/ux-012/media-grid.png), [대화 화면](../evidence/ux-012/conversation.png), [아이콘 생성 기록](../portfolio/visual-assets.md). 현재 2배 글꼴 등 검증 범위는 자동·에뮬레이터 기반이며 TalkBack 사용자 검증은 NOT_RUN이다.
+- PR 준비: 기존 API 35 LIVE 수명 검증은 그대로 선행하고, 뒤이어 UX-012 UI 5개 사례를 실행하도록 CI wrapper를 추가했다. 스크립트 구문 검사 PASS; API 35의 실제 실행 결과는 PR CI에서 확인한다.
