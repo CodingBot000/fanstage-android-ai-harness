@@ -1,5 +1,12 @@
 # 작업 및 검증 기록
 
+## UX-007~011 · ARCH-001~003 — 프리미엄 비주얼·11개 모듈 병합 (2026-11-06)
+
+- [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38), 최종 head `561afce227a40d552a7bed7e05d9c2c3f5360fb8` → Squash Merge `3c77a6305b5bf639fdd1e8b669ec6ed4a9f60ef9`. 구현 단계별 상세 커밋·로컬 검증은 아래 UX/ARCH 개별 기록과 [ARCH SDD](../docs/specs/ARCH-001-feature-modularization.md) 참조.
+- 최종 head [Android CI #42066922626](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922626) build/lint/unit·API 35 계측 PASS, [실제 WebSocket CI #42066922691](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922691) PASS. Codex 독립 코드 리뷰 완료, 추가 지적·미해결 스레드 0건.
+- 기능별 분리 후 `:app`, 4개 `:core:`, 5개 `:feature:`, `:macrobenchmark` 총 11개 모듈. `:app`의 MainActivity·AppContainer만 제품 조립 계층으로 유지, `core:data` 테스트와 모듈 경계 검사를 CI에 추가. GPT Image 생성 WebP 9개와 16초 무음 UI 시연은 [자산 목록](../docs/portfolio/visual-assets.md) 및 README에 기록.
+- 추가 실기기 성능 A/B·모든 화면 TalkBack/큰 글꼴 검증은 NOT_RUN. v0.1 M6 성능 개선 미입증과 최초 WebSocket 타임아웃 PR #30 예외는 변함없다. 이 최종 문서 정리 작업에서는 Android·서버 테스트를 별도 재실행하지 않고 최종 PR head CI를 재사용했다. 로컬 미커밋 `.gitignore`는 변경하지 않았다.
+
 ## M8 v0.1 — Portfolio Ready 마감 (2026-11-05)
 
 - 사용자 요청에 따라 공개 APK 없이 소스·README 재현 절차·시연 영상·아키텍처·검증 보고서를 제공하는 v0.1 제출 범위를 종료했다. 완료 상태는 **PORTFOLIO_READY**, 전체 배포/운영 안전성에 대한 무제한 **VERIFIED**가 아니다. [최종 판정](../docs/reviews/M8-final-readiness.md).
