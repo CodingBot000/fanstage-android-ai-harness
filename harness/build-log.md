@@ -1,5 +1,26 @@
 # 작업 및 검증 기록
 
+## M8-001 — 일회성 위험 수용 승인 (2026-11-05)
+
+- 사용자가 [PR #30 한정 예외](../docs/reviews/M8-001-risk-exception-proposal.md)를 명시적으로 승인했다. 최초 실제 WebSocket CI 타임아웃은 원인·제품 영향이 미확정이며, 후속 PASS는 최초 원인 해결의 증거가 아니다. 예외는 다른 P1 실패·공개 APK 배포·운영 검증에 적용하지 않는다. 재발 시 보존된 진단 증거로 재조사한다.
+- 승인 시점 head `582ad33cec9c1d2c0cbdb56ae9f884873d3667cd`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41999435328) 및 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41999435309) PASS. 독립 리뷰는 `e0b9aeb` 기준으로 수행됐고 두 지적은 해결 처리; 이후 스택 보존 수정은 로컬 회귀·후속 CI로 검증했으나 별도 신규 독립 리뷰는 확인되지 않았다. 승인 기록을 추가한 PR head의 CI 및 병합 결과는 별도 확인한다.
+
+## M8-001 — 로컬 검증 전용 RC 진행 (2026-11-05)
+
+- 기존 미커밋 문서 보존. 기존 Debug 키를 재사용한 non-debuggable `rcLocal`을 추가했고 일반 Release 서명은 변경하지 않았다. CI 및 매니페스트 경계 검사에 변형을 포함했다.
+- PASS: `cd android && ANDROID_HOME="$HOME/Library/Android/sdk" ./gradlew :app:assembleRcLocal :app:assembleRelease :app:assembleBenchmark :app:lintDebug testDebugUnitTest --no-daemon`; 기존 빌드 출력 일부 재사용, 로그 `/tmp/fanstage-m8-rclocal-build.log`. m4/m6 manifest 검사 및 APK v2 서명 검증 PASS. APK SHA-256 `7103dfef4df9d3268afb8be581d24fad1e22514f81c3e51c5f839886aaad79b1`. API 36 실기기에 별도 패키지 설치 성공, 기존 앱 설치 유지.
+- PASS (API 36 실기기 RC): 목록→상세→뒤로가기, 합성 VOD 영상과 재생·일시정지·재개, Fake 채팅 전송·ACK, 한국어·영어 주요 문구, 앱 종료·재진입 후 기본 상태. 앱별 언어 원복. Player Init/Release 세 쌍을 관찰했다.
+- PASS: 기존 설치 RC APK를 교체하지 않고 테스트 전용 APK로 API 36에서 Player 오류·재시도, Fake 실패·재시도, 불확실한 Pending 유지, Player listener 회수 및 Chat 이벤트 취소·transport 종료 확인. `:app:assembleRcLocalAndroidTest -PfanstageRcInstrumentation=true` 및 보고서의 `adb shell am instrument` 결과 2/2 PASS; RC APK SHA 불변. 로컬 로그 `/tmp/fanstage-m8-rc-instrument-test2.log`.
+- 공개물 제한 감사 및 CI 전용 임시 Debug 키 생성에 대한 사용자 승인, 의존성 고지 검토의 미완료 범위는 [보고서](../docs/reviews/M8-001-release-candidate.md)에 기록. NOT_RUN: RC 실기기 WebSocket 종료, 장시간 heap·전체 누수 부재, 제3자 고지 전수 확인, 변경 후 CI 및 독립 리뷰. 공개 Release 키·루트 라이선스 미결정. M8 전체 미완료.
+- Android 런타임 의존성 보고서에서 추출한 122개 좌표의 POM 메타데이터는 직접 또는 Guava parent 상속으로 Apache 2.0 계열 표기를 확인했다. 실제 포함물과 서버 의존성의 NOTICE·고지 전수 검토는 별도 미완료다.
+- 리뷰 보완: Android 사용자 디렉터리 변경 시 기본 경로와 실제 Debug signingConfig가 다를 수 있어 실제 설정의 키 파일 존재 여부로 판정하도록 수정했다. `:app:assembleRcLocal` 재실행 PASS, APK SHA 불변 및 `apksigner verify --verbose` PASS. 첫 복합 명령은 SDK 환경변수의 명령별 범위 때문에 마지막 apksigner 경로에서 FAIL(exit 127); 올바른 절대 SDK 경로로 재실행해 PASS.
+- PR #30 자동 리뷰는 새 계측 테스트 두 개 추가 후 기존 에뮬레이터 XML 검증이 1개만 기대해 CI가 실패할 P1 문제를 발견했다. 기존 navigation 테스트와 두 새 테스트 세 개를 모두 검사하도록 수정했다. 수정본의 CI 결과는 별도 확인해야 한다.
+- PR head `d85568924b9b7929abe0ea92939a1f1d368fa382` [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999002) PASS (에뮬레이터 3개). [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999118) attempt 1 FAIL: 실제 WebSocket Android 계측의 20초 타임아웃; 서버 독립 테스트는 PASS. attempt 2 PASS. 첫 실패의 세부 대기 지점과 원인 미확인으로 자동 병합 차단. 상세 [보고서](../docs/reviews/M8-001-release-candidate.md).
+- 타임아웃 RCA: 테스트 전용 phase/연결 상태/프록시 단계 및 비동기 예외 유형 기록과 CI의 태그 전용 sanitized artifact 추가. 동일 테스트를 격리 서버와 읽기 전용 API 36 에뮬레이터에서 3회 단독 실행 PASS(각 1/1), 양측 연결 대기 657/911/761ms. 최초 실패는 재현되지 않아 근본 원인과 P1 위험은 미해결. 첫 로컬 서버 기동은 테스트 토큰 길이 미달로 FAIL; 길이를 수정한 합성 테스트 입력으로 서버 기동 후 실행. 별도 격리 서버와 에뮬레이터만 정리했다. 최종 CI·리뷰 NOT_RUN.
+- 진단 실패 경로 검증: 격리 에뮬레이터에서 서버를 의도적으로 끄고 실행해 예상 FAIL(exit 1); 테스트 결과와 M8Rca 로그에 `ack.both_connected`, 연결 상태, `ConnectException`이 나타남. 최초 CI 타임아웃 재현이 아니다. 원문 로그와 태그 로그에서 임시 테스트 자격값 일치 없음.
+- 최종 진단 head `e0b9aeb4475e96017adc521555e0342948c7a400`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41996401282)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41996401209) PASS. 서버 artifact의 양측 연결 대기 50ms·단계 실패 0건; sanitizer 합성 자격값 치환 확인 PASS. 원래 타임아웃의 원인 미확인 및 최종 진단 변경 독립 리뷰 NOT_RUN으로 병합 보류.
+- `e0b9aeb` 독립 리뷰는 원본 예외 스택·원인 체인 소실을 P2로 지적했다. 메시지·파일명을 제거한 원인 유형과 코드 위치를 보존하도록 수정; 합성 민감 문자열·중첩 원인 회귀 계측 1/1 PASS(`/tmp/fanstage-m8-stack-test2.log`), 서버 미기동 인위적 실패의 단계·원인·줄 번호와 자격값 비노출 확인(`/tmp/fanstage-m8-stack-offline.log`). 기존 20초 타임아웃의 근본 원인은 여전히 미확정이며 해당 P1 Gate 해결로 추정하지 않는다. 수정 head CI는 작성 시 NOT_RUN이며 최신 결과는 [PR 검사](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30/checks) 참조.
+
 
 ## M1-008 — Android README evidence reconciliation (2026-11-04)
 

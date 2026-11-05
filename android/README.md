@@ -46,7 +46,7 @@ particular combination do not extend that published support range.
   lint and seven unit tests; lint reported 13 warnings. Its local log and SHA-256
   are recorded in the [build log](../harness/build-log.md).
 - **Physical device:** see [build log](../harness/build-log.md) for API 36 VOD, rotation, background/resume, synthetic LIVE timeline and explicit `am kill` process-death evidence. `am kill` is not a low-memory-killer test.
-- **NOT_RUN:** remote-network LIVE, on-screen first frame for synthetic LIVE, actual low-memory process death, prolonged memory profiling and physical-device performance.
+- **NOT_RUN:** remote-network LIVE, on-screen first frame for synthetic LIVE, actual low-memory process death and prolonged memory profiling. Physical-device performance experiments were performed, but did not establish an improvement; see the [M6 report](../docs/reviews/M6-002-ab-experiments.md).
 
 CI and local results are evidence for their recorded source revisions and
 conditions, not a guarantee for every environment. M1 core gates have been

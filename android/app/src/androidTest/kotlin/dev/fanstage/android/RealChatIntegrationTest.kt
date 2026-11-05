@@ -27,6 +27,8 @@ import dev.fanstage.android.feature.live.chat.FakeChatTransport
 import dev.fanstage.android.feature.live.chat.RealChatTransport
 import dev.fanstage.android.feature.live.chat.SendRejected
 import android.util.Base64
+import android.util.Log
+import android.os.SystemClock
 import java.io.IOException
 import java.net.InetAddress
 import java.net.ServerSocket
@@ -34,6 +36,7 @@ import java.security.MessageDigest
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
 import java.util.UUID
 import kotlinx.coroutines.CoroutineScope
@@ -47,6 +50,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.CancellationException
 import okhttp3.WebSocket
 import org.junit.Assert.fail
 import org.junit.Assert.assertEquals
@@ -61,6 +65,25 @@ import org.junit.runner.RunWith
 class RealChatIntegrationTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()
     private val base = "http://10.0.2.2:18765"
+
+    // Only fixed phase names, enum states and exception class names may enter CI logs.
+    private inline fun <T> phase(id: String, state: () -> String = { "none" }, block: () -> T): T {
+        val started = SystemClock.elapsedRealtime()
+        Log.i("M8Rca", "phase=$id event=start state=${state()}")
+        try {
+            val result = block()
+            Log.i("M8Rca", "phase=$id event=success elapsedMs=${SystemClock.elapsedRealtime() - started} state=${state()}")
+            return result
+        } catch (error: Throwable) {
+            val details = "phase=$id event=failure elapsedMs=${SystemClock.elapsedRealtime() - started} state=${state()} type=${error.javaClass.simpleName}"
+            Log.e("M8Rca", details)
+            if (error is RcaDiagnostics.RcaFailure) throw error
+            throw RcaDiagnostics.RcaFailure(details, error)
+        }
+    }
+
+    private suspend fun <T> wait20(id: String, state: () -> String = { "none" }, block: suspend () -> T): T =
+        phase(id, state) { withTimeout(20_000) { block() } }
 
     private fun verifyServerInitiatedGracefulClose() {
         val server = ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"))
@@ -106,10 +129,28 @@ class RealChatIntegrationTest {
         val sockets = java.util.concurrent.CopyOnWriteArrayList<java.net.Socket>()
         val droppedAck = CountDownLatch(1)
         val droppedEcho = CountDownLatch(1)
+        val closing = AtomicBoolean(false)
+        val proxyStage = AtomicReference("accept_wait")
+        val proxyFailure = AtomicReference<String?>(null)
+        val observerFailure = AtomicReference<String?>(null)
+        val proxyStarted = SystemClock.elapsedRealtime()
+        fun proxyEvent(stage: String) {
+            proxyStage.set(stage)
+            Log.i("M8Rca", "proxy=ack stage=$stage elapsedMs=${SystemClock.elapsedRealtime() - proxyStarted}")
+        }
+        proxyEvent("accept_wait")
+        fun proxyError(error: Throwable) {
+            if (!closing.get()) {
+                proxyFailure.compareAndSet(null, error.javaClass.simpleName)
+                Log.e("M8Rca", "proxy=ack event=failure type=${error.javaClass.simpleName}")
+            }
+        }
         val proxy = thread(name = "m5-ack-loss-proxy", isDaemon = true) {
             try {
                 val downstream = listener.accept(); sockets.add(downstream)
+                proxyEvent("accepted")
                 val upstream = java.net.Socket("10.0.2.2", 18765); sockets.add(upstream)
+                proxyEvent("upstream_connected")
                 thread(name = "m5-proxy-uplink", isDaemon = true) {
                     try {
                         val source = downstream.getInputStream(); val destination = upstream.getOutputStream()
@@ -118,9 +159,11 @@ class RealChatIntegrationTest {
                             val byte = source.read(); if (byte < 0) return@thread; handshake.append(byte.toChar())
                         }
                         val plain = handshake.toString().split("\r\n").filterNot { it.startsWith("Sec-WebSocket-Extensions:", ignoreCase = true) }.joinToString("\r\n")
+                        proxyEvent("request_handshake_received")
                         destination.write(plain.toByteArray(Charsets.US_ASCII)); destination.flush()
+                        proxyEvent("request_handshake_forwarded")
                         source.copyTo(destination)
-                    } catch (_: IOException) { }
+                    } catch (error: Throwable) { proxyError(error) }
                 }
                 val input = java.io.DataInputStream(upstream.getInputStream())
                 val output = downstream.getOutputStream()
@@ -130,6 +173,7 @@ class RealChatIntegrationTest {
                     last = (last + byte.toChar()).takeLast(4)
                 }
                 output.flush()
+                proxyEvent("response_handshake_forwarded")
                 while (!listener.isClosed) {
                     val first = input.readUnsignedByte(); val second = input.readUnsignedByte()
                     val marker = second and 127
@@ -144,20 +188,38 @@ class RealChatIntegrationTest {
                     when (marker) { 126 -> data.writeShort(size.toInt()); 127 -> data.writeLong(size) }
                     data.write(payload); data.flush()
                 }
-            } catch (_: IOException) { /* closed in cleanup */ }
+            } catch (error: Throwable) { proxyError(error) }
         }
         val room = "m5-ack-" + UUID.randomUUID().toString().take(18)
         val transport = RealChatTransport("http://127.0.0.1:${listener.localPort}", alice, allowInsecure = true)
         val observer = RealChatTransport(base, bob, allowInsecure = true)
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         val received = Channel<ChatEvent>(Channel.UNLIMITED)
-        val observerJob = scope.launch { observer.events(room).collect { received.send(it) } }
+        val observerJob = scope.launch {
+            try { observer.events(room).collect { received.send(it) } }
+            catch (error: CancellationException) { throw error }
+            catch (error: Throwable) {
+                observerFailure.set(error.javaClass.simpleName)
+                Log.e("M8Rca", "observer=ack event=failure type=${error.javaClass.simpleName}")
+            }
+        }
+        val status = {
+            "sender=${transport.connectionState.value},observer=${observer.connectionState.value}," +
+                "observerJob=${observerJob.isActive},observerFailure=${observerFailure.get() ?: "none"}," +
+                "proxyStage=${proxyStage.get()},proxyFailure=${proxyFailure.get() ?: "none"}"
+        }
         val store = androidx.lifecycle.ViewModelStore()
         lateinit var chat: ChatViewModel
         composeRule.runOnUiThread { chat = ViewModelProvider(store, ChatViewModel.Factory(room, transport))[ChatViewModel::class.java] }
         try {
-            runBlocking {
-                withTimeout(20_000) { while (transport.connectionState.value != ChatConnectionStatus.CONNECTED || observer.connectionState.value != ChatConnectionStatus.CONNECTED) delay(50) }
+            phase("ack.scenario", status) { runBlocking {
+                wait20("ack.both_connected", status) {
+                    while (transport.connectionState.value != ChatConnectionStatus.CONNECTED || observer.connectionState.value != ChatConnectionStatus.CONNECTED) {
+                        check(proxyFailure.get() == null && observerFailure.get() == null) { "async failure; see phase state" }
+                        check(observerJob.isActive) { "observer collector ended; see phase state" }
+                        delay(50)
+                    }
+                }
                 composeRule.runOnUiThread { assertTrue(chat.send("synthetic ack loss")) }
                 assertTrue("proxy did not discard ACK", droppedAck.await(10, TimeUnit.SECONDS))
                 assertTrue("proxy did not discard sender echo", droppedEcho.await(10, TimeUnit.SECONDS))
@@ -173,8 +235,10 @@ class RealChatIntegrationTest {
                 assertEquals(1, observer.fetchAfter(room, 0, Long.MAX_VALUE, 1000).size)
                 assertEquals(initial.message.messageId, observer.fetchAfter(room, 0, Long.MAX_VALUE, 1000).single().messageId)
                 assertNull("duplicate retry must not rebroadcast", kotlinx.coroutines.withTimeoutOrNull(1_000) { received.receive() })
-            }
+                check(proxyFailure.get() == null && observerFailure.get() == null) { "async failure; see phase state" }
+            } }
         } finally {
+            closing.set(true)
             composeRule.runOnUiThread { store.clear() }
             observerJob.cancel(); observer.close(); scope.cancel(); received.close()
             listener.close(); sockets.forEach { it.close() }; proxy.join(2_000)
@@ -187,6 +251,15 @@ class RealChatIntegrationTest {
         val sockets = java.util.concurrent.CopyOnWriteArrayList<java.net.Socket>()
         val workers = java.util.concurrent.CopyOnWriteArrayList<Thread>()
         val held = CountDownLatch(1); val release = CountDownLatch(1)
+        val closing = AtomicBoolean(false)
+        val proxyFailure = AtomicReference<String?>(null)
+        val producerFailure = AtomicReference<String?>(null)
+        fun proxyError(error: Throwable) {
+            if (!closing.get()) {
+                proxyFailure.compareAndSet(null, error.javaClass.simpleName)
+                Log.e("M8Rca", "proxy=snapshot event=failure type=${error.javaClass.simpleName}")
+            }
+        }
         val proxy = thread(name = "m5-snapshot-proxy", isDaemon = true) {
             try {
                 while (!listener.isClosed) {
@@ -203,27 +276,40 @@ class RealChatIntegrationTest {
                             val headers = if (websocket) request.toString() else request.toString().replace(Regex("(?im)^Connection:.*\r\n"), "Connection: close\r\n")
                             upstream.getOutputStream().write(headers.toByteArray(Charsets.US_ASCII)); upstream.getOutputStream().flush()
                             if (websocket) {
-                                workers.add(thread(isDaemon = true) { try { source.copyTo(upstream.getOutputStream()) } catch (_: IOException) { } })
+                                workers.add(thread(isDaemon = true) { try { source.copyTo(upstream.getOutputStream()) } catch (error: Throwable) { proxyError(error) } })
                                 upstream.getInputStream().copyTo(downstream.getOutputStream())
                             } else {
                                 val response = upstream.getInputStream().readBytes()
                                 held.countDown()
-                                if (release.await(20, TimeUnit.SECONDS)) { downstream.getOutputStream().write(response); downstream.getOutputStream().flush() }
+                                phase("snapshot.release_wait") {
+                                    check(release.await(20, TimeUnit.SECONDS)) { "snapshot release timed out" }
+                                    downstream.getOutputStream().write(response); downstream.getOutputStream().flush()
+                                }
                             }
-                        } catch (_: IOException) { /* cancellation closes local sockets */ }
+                        } catch (error: Throwable) { proxyError(error) }
                     })
                 }
-            } catch (_: IOException) { /* listener closed */ }
+            } catch (error: Throwable) { proxyError(error) }
         }
         val room = "m5-snapshot-" + UUID.randomUUID().toString().take(18)
         val producer = RealChatTransport(base, bob, allowInsecure = true)
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-        val producerJob = scope.launch { producer.events(room).collect() }
+        val producerJob = scope.launch {
+            try { producer.events(room).collect() }
+            catch (error: CancellationException) { throw error }
+            catch (error: Throwable) { producerFailure.set(error.javaClass.simpleName) }
+        }
+        val status = { "producer=${producer.connectionState.value},jobActive=${producerJob.isActive},producerFailure=${producerFailure.get() ?: "none"},proxyFailure=${proxyFailure.get() ?: "none"}" }
         val store = androidx.lifecycle.ViewModelStore()
         lateinit var chat: ChatViewModel
         try {
-            runBlocking {
-                withTimeout(20_000) { while (producer.connectionState.value != ChatConnectionStatus.CONNECTED) delay(50) }
+            phase("snapshot.scenario", status) { runBlocking {
+                wait20("snapshot.producer_connected", status) {
+                    while (producer.connectionState.value != ChatConnectionStatus.CONNECTED) {
+                        check(producerJob.isActive && producerFailure.get() == null && proxyFailure.get() == null)
+                        delay(50)
+                    }
+                }
                 producer.send(room, UUID.randomUUID().toString(), "snapshot old")
                 val real = RealChatTransport("http://127.0.0.1:${listener.localPort}", alice, allowInsecure = true)
                 composeRule.runOnUiThread { chat = ViewModelProvider(store, ChatViewModel.Factory(room, real))[ChatViewModel::class.java] }
@@ -234,8 +320,10 @@ class RealChatIntegrationTest {
                 release.countDown()
                 withTimeout(10_000) { while (chat.uiState.value.messages.map { it.sequence } != listOf(1L, 2L)) delay(50) }
                 assertFalse(chat.uiState.value.gapUnresolved)
-            }
+                check(producerFailure.get() == null && proxyFailure.get() == null) { "snapshot async failure" }
+            } }
         } finally {
+            closing.set(true)
             release.countDown(); composeRule.runOnUiThread { store.clear() }
             producerJob.cancel(); producer.close(); scope.cancel()
             listener.close(); sockets.forEach { it.close() }; proxy.join(2_000); workers.forEach { it.join(2_000) }
@@ -248,7 +336,9 @@ class RealChatIntegrationTest {
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
             val job = scope.launch { transport.events("m5-cycle-$index").collect() }
             try {
-                withTimeout(20_000) { while (transport.connectionState.value != ChatConnectionStatus.CONNECTED) delay(50) }
+                wait20("subscriptions.connected.$index", { "transport=${transport.connectionState.value},jobActive=${job.isActive}" }) {
+                    while (transport.connectionState.value != ChatConnectionStatus.CONNECTED) delay(50)
+                }
             } finally {
                 job.cancelAndJoin(); transport.close(); scope.cancel()
             }
@@ -332,7 +422,7 @@ class RealChatIntegrationTest {
                 }
                 val first = UUID.randomUUID().toString()
                 sendWhenReady(b, first, "first synthetic message")
-                withTimeout(20_000) {
+                wait20("main.first_message", { "alice=${a.connectionState.value},bob=${b.connectionState.value},aliceJob=${aJob.isActive},bobJob=${bJob.isActive}" }) {
                     while (true) {
                         val event = incoming.receive()
                         if (event is ChatEvent.Message && event.message.text == "first synthetic message") {
@@ -390,7 +480,7 @@ class RealChatIntegrationTest {
                             catch (_: IOException) { delay(100) }
                         }
                     }
-                    withTimeout(20_000) {
+                    wait20("main.new_room_message", { "alice=${a.connectionState.value},bob=${nextBob.connectionState.value},aliceJob=${nextJob.isActive},bobJob=${nextBobJob.isActive}" }) {
                         while (true) {
                             val event = incoming.receive()
                             assertTrue("old room event reached new subscription", event.roomId == nextRoom)
@@ -437,7 +527,9 @@ class RealChatIntegrationTest {
             composeRule.activityRule.scenario.moveToState(androidx.lifecycle.Lifecycle.State.RESUMED)
             composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithTag("player_play").performScrollTo().performClick()
-            composeRule.waitUntil(20_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+            phase("ui.player_resumed", { "alice=${a.connectionState.value},bob=${b.connectionState.value}" }) {
+                composeRule.waitUntil(20_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+            }
             val beforeRecreate = chatHolder[0]!!
             composeRule.activityRule.scenario.recreate()
             composeRule.activityRule.scenario.onActivity { activity ->

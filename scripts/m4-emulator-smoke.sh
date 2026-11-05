@@ -6,6 +6,7 @@ source "$RUNNER_TEMP/fanstage-m4.env"
 cd "$GITHUB_WORKSPACE/android"
 test "$(adb shell getprop ro.build.version.sdk | tr -d '\r')" = 35
 adb logcat -c
+trap 'adb logcat -d -s M8Rca:I "*:S" > "$RUNNER_TEMP/fanstage-m8-rca.log" || true' EXIT
 ./gradlew :app:connectedDebugAndroidTest \
   -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RealChatIntegrationTest \
   -Pandroid.testInstrumentationRunnerArguments.fanTokenA="$FANSTAGE_TOKEN_ALICE" \

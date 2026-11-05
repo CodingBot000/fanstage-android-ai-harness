@@ -9,7 +9,7 @@ temp = Path(os.environ["RUNNER_TEMP"])
 out = temp / "fanstage-m4-sanitized"
 out.mkdir(exist_ok=True)
 secrets = [os.environ.get(k, "") for k in ("FANSTAGE_TOKEN_ALICE", "FANSTAGE_TOKEN_BOB", "FANSTAGE_DB_PASSWORD")]
-files = [temp / "fanstage-m4-e2e.log", temp / "fanstage-m4-server.log"]
+files = [temp / "fanstage-m4-e2e.log", temp / "fanstage-m4-server.log", temp / "fanstage-m8-rca.log"]
 files += list((root / "android/app/build/outputs/androidTest-results/connected").rglob("*.xml"))
 files += list((root / "android/app/build/outputs/androidTest-results/connected").rglob("test-result-exit-code.txt"))
 for index, source in enumerate(p for p in files if p.is_file()):

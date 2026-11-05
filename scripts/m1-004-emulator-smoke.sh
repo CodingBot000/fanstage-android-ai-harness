@@ -47,15 +47,16 @@ suites = root.findall("testsuite")
 if root.tag != "testsuites" or len(suites) != 1:
     sys.exit("FAIL: unexpected connected test XML structure")
 for node in (root, suites[0]):
-    for key, expected in {"tests": "1", "failures": "0", "errors": "0", "skipped": "0"}.items():
+    for key, expected in {"tests": "4", "failures": "0", "errors": "0", "skipped": "0"}.items():
         if node.get(key) != expected:
             sys.exit(f"FAIL: {node.tag} {key}={node.get(key)!r}, wanted {expected}")
 cases = suites[0].findall("testcase")
-if len(cases) != 1 or (cases[0].get("classname"), cases[0].get("name")) != (
-    "dev.fanstage.android.RoomNavigationSmokeTest", "roomListOpensDetailAndReturns"
+expected_cases = {"roomListOpensDetailAndReturns", "rcFaultUiAndReleasedListener", "rcUncertainMessageAndChatCleanup", "sanitizedRcaRetainsLocationsAndCauseTypes"}
+if len(cases) != len(expected_cases) or {c.get("name") for c in cases} != expected_cases or any(
+    c.get("classname") != "dev.fanstage.android.RoomNavigationSmokeTest" for c in cases
 ):
-    sys.exit("FAIL: exact Compose navigation test not found")
-if any(cases[0].find(tag) is not None for tag in ("failure", "error", "skipped")):
+    sys.exit("FAIL: expected Compose navigation and RC fixture cases not found")
+if any(c.find(tag) is not None for c in cases for tag in ("failure", "error", "skipped")):
     sys.exit("FAIL: connected test case failed or skipped")
 codes = list(base.rglob("test-result-exit-code.txt"))
 if len(codes) != 1 or codes[0].read_text().strip() != "0":

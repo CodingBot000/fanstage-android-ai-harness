@@ -52,6 +52,60 @@ import org.junit.runner.RunWith
 class RoomNavigationSmokeTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()
 
+    @Test fun rcFaultUiAndReleasedListener() {
+        verifyErrorRetryUi()
+        verifyChatFailureDoesNotInterruptPlayer()
+        verifyReleasedListenerCanBeCollected()
+    }
+
+    @Test fun sanitizedRcaRetainsLocationsAndCauseTypes() {
+        val secret = "synthetic-sensitive-marker"
+        val cause = IllegalStateException("header $secret")
+        cause.stackTrace = arrayOf(StackTraceElement("dev.fanstage.android.Caller", "nested", "$secret.kt", 23))
+        val original = AssertionError("body $secret").apply {
+            initCause(cause)
+            stackTrace = arrayOf(StackTraceElement("dev.fanstage.android.Caller", "verify", "$secret.kt", 17))
+        }
+        val failure = RcaDiagnostics.RcaFailure("phase=synthetic", original)
+        val safe = requireNotNull(failure.cause)
+        val output = java.io.StringWriter().also { failure.printStackTrace(java.io.PrintWriter(it)) }.toString()
+        assertTrue(output.contains("phase=synthetic"))
+        assertTrue(output.contains("type=java.lang.AssertionError"))
+        assertTrue(output.contains("type=java.lang.IllegalStateException"))
+        assertTrue(output.contains("source:17"))
+        assertTrue(output.contains("source:23"))
+        org.junit.Assert.assertEquals("verify", safe.stackTrace.single().methodName)
+        org.junit.Assert.assertEquals(17, safe.stackTrace.single().lineNumber)
+        org.junit.Assert.assertEquals(23, safe.cause!!.stackTrace.single().lineNumber)
+        org.junit.Assert.assertFalse(output.contains(secret))
+    }
+
+    @Test fun rcUncertainMessageAndChatCleanup() {
+        val cancelled = AtomicBoolean(false)
+        val closed = AtomicBoolean(false)
+        val transport = object : dev.fanstage.android.feature.live.chat.ChatTransport {
+            override fun events(roomId: String) = kotlinx.coroutines.flow.flow<dev.fanstage.android.feature.live.chat.ChatEvent> {
+                try { kotlinx.coroutines.awaitCancellation() } finally { cancelled.set(true) }
+            }
+            override suspend fun send(roomId: String, clientMessageId: String, text: String) { throw java.io.IOException("unknown outcome") }
+            override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = emptyList<dev.fanstage.android.feature.live.chat.ServerMessage>()
+            override fun close() { closed.set(true) }
+        }
+        val store = androidx.lifecycle.ViewModelStore()
+        lateinit var chat: ChatViewModel
+        composeRule.runOnUiThread {
+            chat = ViewModelProvider(store, ChatViewModel.Factory("uncertain", transport))[ChatViewModel::class.java]
+            assertTrue(chat.send("uncertain"))
+        }
+        try {
+            composeRule.waitUntil(10_000) { chat.uiState.value.messages.singleOrNull()?.isUncertain == true }
+            val message = chat.uiState.value.messages.single()
+            assertTrue(message.delivery == dev.fanstage.android.feature.live.chat.Delivery.PENDING)
+            assertTrue(chat.uiState.value.transportUncertain)
+        } finally { composeRule.runOnUiThread { store.clear() } }
+        composeRule.waitUntil(10_000) { cancelled.get() && closed.get() }
+    }
+
     @Test fun roomListOpensDetailAndReturns() {
         composeRule.waitUntil(20_000L) {
             composeRule.onAllNodesWithTag("room_studio-session")
