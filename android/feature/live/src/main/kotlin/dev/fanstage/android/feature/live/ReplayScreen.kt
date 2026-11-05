@@ -10,12 +10,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ReplayScreen(onBack: () -> Unit) {
-    Scaffold(topBar = { BackTitleBar("Paper Lantern · Studio diary", onBack, backTag = "replay_back") }) { padding ->
+fun ReplayScreen(onBack: () -> Unit, sourceUri: String = "asset:///hls/vod.m3u8", title: String = "Paper Lantern · Studio diary") {
+    Scaffold(topBar = { BackTitleBar(title, onBack, backTag = "replay_back") }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).testTag("replay_detail")) {
             Text(stringResource(R.string.replay_title), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
             Spacer(Modifier.height(16.dp))
-            Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(12.dp)) { PlayerPanel("replay-studio-diary") } }
+            Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(12.dp)) { PlayerPanel("replay-studio-diary", sourceUri) } }
         }
     }
 }
