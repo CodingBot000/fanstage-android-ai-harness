@@ -63,9 +63,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          # A clean hosted runner may create an ephemeral Android debug key for
+          # Debug/Benchmark tests. It is never used to sign a public release.
           chmod +x gradlew
           ./gradlew --version
-          ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
+          ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
           python3 ../scripts/m4-check-manifests.py
           python3 ../scripts/m6-check-manifests.py
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify app/build/outputs/apk/benchmark/app-benchmark.apk

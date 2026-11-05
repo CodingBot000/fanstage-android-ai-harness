@@ -1,5 +1,13 @@
 # 작업 및 검증 기록
 
+## M8-001 — 로컬 검증 전용 RC 진행 (2026-11-05)
+
+- 기존 미커밋 문서 보존. 기존 Debug 키를 재사용한 non-debuggable `rcLocal`을 추가했고 일반 Release 서명은 변경하지 않았다. CI 및 매니페스트 경계 검사에 변형을 포함했다.
+- PASS: `cd android && ANDROID_HOME="$HOME/Library/Android/sdk" ./gradlew :app:assembleRcLocal :app:assembleRelease :app:assembleBenchmark :app:lintDebug testDebugUnitTest --no-daemon`; 기존 빌드 출력 일부 재사용, 로그 `/tmp/fanstage-m8-rclocal-build.log`. m4/m6 manifest 검사 및 APK v2 서명 검증 PASS. APK SHA-256 `7103dfef4df9d3268afb8be581d24fad1e22514f81c3e51c5f839886aaad79b1`. API 36 실기기에 별도 패키지 설치 성공, 기존 앱 설치 유지.
+- PASS (API 36 실기기 RC): 목록→상세→뒤로가기, 합성 VOD 영상과 재생·일시정지·재개, Fake 채팅 전송·ACK, 한국어·영어 주요 문구, 앱 종료·재진입 후 기본 상태. 앱별 언어 원복. Player Init/Release 세 쌍을 관찰했다.
+- PASS: 기존 설치 RC APK를 교체하지 않고 테스트 전용 APK로 API 36에서 Player 오류·재시도, Fake 실패·재시도, 불확실한 Pending 유지, Player listener 회수 및 Chat 이벤트 취소·transport 종료 확인. `:app:assembleRcLocalAndroidTest -PfanstageRcInstrumentation=true` 및 보고서의 `adb shell am instrument` 결과 2/2 PASS; RC APK SHA 불변. 로컬 로그 `/tmp/fanstage-m8-rc-instrument-test2.log`.
+- 공개물 제한 감사 및 CI 전용 임시 Debug 키 생성에 대한 사용자 승인, 의존성 고지 검토의 미완료 범위는 [보고서](../docs/reviews/M8-001-release-candidate.md)에 기록. NOT_RUN: RC 실기기 WebSocket 종료, 장시간 heap·전체 누수 부재, 제3자 고지 전수 확인, 변경 후 CI 및 독립 리뷰. 공개 Release 키·루트 라이선스 미결정. M8 전체 미완료.
+
 
 ## M1-008 — Android README evidence reconciliation (2026-11-04)
 

@@ -1,0 +1,54 @@
+# M8-001 릴리스 후보 검증 기록
+
+## 상태: 미완료
+
+### 로컬 RC 추가 검증 (2026-11-05)
+
+- **PASS — 빌드·서명·설치:** 기존 Debug 키로 서명한 `app-rcLocal.apk` SHA-256 `7103dfef4df9d3268afb8be581d24fad1e22514f81c3e51c5f839886aaad79b1`. `apksigner verify --verbose` v2 서명 확인. Android API 36 실기기에 `dev.fanstage.android.rclocal` 신규 설치 성공. 기존 `dev.fanstage.android` 패키지는 설치 상태를 유지했다. RC는 로컬 검증 전용이며 배포용 서명이 아니다.
+- **PASS — 빌드 및 경계:** `:app:assembleRcLocal :app:assembleRelease :app:assembleBenchmark :app:lintDebug testDebugUnitTest` 성공 (253 tasks 중 174 up-to-date); m4/m6 매니페스트 스크립트 성공. 실제 APK 매니페스트에서도 cleartext와 backup false, debuggable/profileable 및 benchmark Activity 부재를 확인했다.
+- **PASS — RC 정상 흐름 (API 36 실기기):** 방 목록→상세→뒤로가기, 합성 VOD 영상 표시·재생→일시정지→재생, Fake 메시지 전송과 `전송됨` ACK를 확인했다. 한국어 및 앱별 영어 설정에서 목록·상세·Player·채팅 주요 문구를 확인하고 앱별 언어 설정을 원복했다. RC 앱 종료·재실행 후 목록과 재입장 시 기본 Fake 채팅·재생 상태를 확인했다. 세 차례 Player Init/Release 로그 쌍을 관찰했으나 전체 리소스 누수 부재의 증명은 아니다.
+- **PASS — RC 장애 흐름 (API 36):** 기존 키로 서명한 별도 androidTest APK를 설치해 기존 RC APK (위 SHA-256 변경 없음)에 계측했다. 미존재 HLS 오류 표시·Retry·재오류, Fake 전송 거절·Failed·Retry·재실패 및 Player 지속 재생, 알 수 없는 전송 결과가 확정되지 않고 Pending/uncertain으로 유지됨을 확인했다. 2개 계측 테스트 PASS. 장애 fixture는 테스트 APK에만 있고 일반 Release에 주입 화면은 추가하지 않았다.
+- **리소스 정리:** 위 세 번의 실제 화면 Player Init/Release 쌍과 별도 RC 계측의 해제된 Player controller·listener 약한 참조 회수, Chat ViewModel 종료 시 이벤트 Flow 취소와 transport.close 호출을 확인했다. 코드상 Player는 listener 제거·surface clear·release, AndroidView는 player 연결 해제, 화면 ViewModel은 Job 취소와 transport 종료를 수행한다. 기본 RC Fake 경로에는 소켓이 없다. 실제 WebSocket 종료 코드는 취소·socket cancel·pool eviction을 포함하지만 이번 RC에서 실기기 소켓 종료를 관측하지 않았다. 장시간 heap, 전체 누수 부재, Surface 회수 자체는 NOT_RUN이다.
+- **공개물 감사 진행 중:** 기존 제한적 Git 객체·CI 산출물 패턴 점검은 아래 기록 참조. 현재 추적 파일명과 과거 커밋 파일명에서 원본 trace·keystore·개인키 확장자는 발견되지 않았으며 trace 분석 스크립트는 존재한다. 로컬 RC APK 175개 항목 중 HLS fixture와 AndroidX 라이선스 파일이 확인됐고 이름 기준 trace·키 파일은 발견되지 않았다. 이는 모든 개인정보·비밀 부재의 증명이 아니다. 의존성별 라이선스, 콘텐츠 권리, CI 로그·artifact 추가 감사와 최종 공개물 검증은 미완료다. 루트 LICENSE도 없고 라이선스는 미결정이다. 공개 APK는 준비되지 않았다.
+- README의 실기기 성능 미실행 문구는 실제 M6 실험 이력과 충돌해 바로잡았다. 실험 변경은 되돌렸으며 개선 효과는 입증되지 않았다. 전체 TalkBack, 장시간 재측정, 실제 LMK, 원격 LIVE는 NOT_RUN이다.
+- 새 변형 소스에 대한 PR CI·독립 리뷰는 NOT_RUN이다. 사용자는 CI 전용 일회성 Debug 키 생성을 허용했다. 공개 Release 키 생성·등록은 승인되지 않았으며 일반 Release에는 서명을 적용하지 않는다.
+
+### 추가 감사 (2026-11-05)
+
+- Git 전체 도달 객체 1,375개 중 blob, 현재 추적·미추적 파일, rcLocal APK 모든 엔트리 및 기존 Android/서버 CI 두 실행의 로그에 개인키 헤더와 일부 GitHub·AWS·OpenAI 키 패턴을 검사해 일치 0건. CI 로그에서 macOS 사용자 홈 경로 패턴도 0건. 제한된 패턴이므로 모든 시크릿·개인정보 부재의 증명은 아니다. 기존 두 실행의 artifact 33개 제한 검사는 아래 이력 참조. 원본 trace와 실기기 개인정보는 Git 이력의 파일명 및 로그 패턴 검사 범위로만 확인했다.
+- `:app:dependencies --configuration rcLocalRuntimeClasspath` 출력에서 식별한 좌표 122개 중 로컬 POM에 라이선스 표기가 있는 71개는 Apache 2.0 계열이었다. 51개는 로컬 POM/라이선스 메타데이터가 없어 별도 확인이 필요하며, 제약·중복 좌표가 포함될 수 있다. 제3자 고지 의무 전체 검토는 미완료다. 합성 영상 생성 명령과 출처는 M2 SDD 참조. 루트 LICENSE 미결정이며 임의로 선택하지 않았다.
+- v0.1 제공 경로는 사용자 결정에 따라 공개 APK 없이 소스와 로컬 빌드 절차다. rcLocal APK 및 테스트 APK는 내부 검증 전용이다. 라이선스 확인 및 공개물 최종 검토 잔여분은 M8-002에서 추적한다.
+
+계측 명령: `cd android && ANDROID_HOME="$HOME/Library/Android/sdk" ./gradlew :app:assembleRcLocalAndroidTest -PfanstageRcInstrumentation=true --no-daemon`; `adb install -r app/build/outputs/apk/androidTest/rcLocal/app-rcLocal-androidTest.apk`; `adb shell am instrument -w -r -e class 'dev.fanstage.android.RoomNavigationSmokeTest#rcFaultUiAndReleasedListener,dev.fanstage.android.RoomNavigationSmokeTest#rcUncertainMessageAndChatCleanup' dev.fanstage.android.rclocal.test/androidx.test.runner.AndroidJUnitRunner`. 첫 설치는 `-r` 없이 수행했다. 로그는 로컬 `/tmp/fanstage-m8-rc-instrument-test2.log`.
+
+아래는 기존 검사 당시 소스 `abdaf6ba94131357ca34da7803b5d5de64afe076` (PR #29 squash merge)의 이력이다. 이후 위의 로컬 RC 빌드 설정과 검증을 추가했다. 일반 사용자 데모는 로컬 합성 VOD와 Fake 채팅이다. 실제 서버는 Docker Compose와 Debug 앱, 임시 토큰을 사용하는 개발 전용이며 공개 서버나 운영 인증이 아니다.
+
+- **PASS — 로컬 빌드:** JDK 17, SDK 37, `:app:assembleRelease :app:assembleDebug :app:assembleBenchmark :app:lintDebug testDebugUnitTest`. 첫 시도는 SDK 경로 미설정으로 실패했고 `ANDROID_HOME` 설정 후 성공했다. 일부 작업은 기존 Gradle 출력 재사용.
+- **PASS — 변형 경계:** `scripts/m4-check-manifests.py`, `scripts/m6-check-manifests.py`. Release는 cleartext false, non-debuggable, profileable 및 benchmark Activity 없음. Debug만 로컬 cleartext 허용. Benchmark는 별도 applicationId와 debug 서명, shell profileable이다. APK 매니페스트에서도 cleartext false와 backup false를 확인했다.
+- **PASS — 해당 SHA 기존 CI:** [Android build/unit 및 API 35 emulator](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41984975533), [격리된 PostgreSQL 및 실제 WebSocket](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41984975625). 후자는 ACK 유실·연결 단절과 서버 연동을 포함한다. 구체 범위는 각 실행 로그와 기존 SDD를 따른다. 이는 Debug 검증이지 Release APK 설치 검증이 아니다.
+- **기존 기기 증거:** [M7 build log](../../harness/build-log.md)의 API 31 물리 기기 및 API 36 에뮬레이터 결과는 당시 소스와 조건에 한정한다. 한국어·영어, 큰 글자와 Player/채팅 회귀를 포함한다. 최종 PR 수정 후의 새 Release 실기기 테스트는 아니다.
+- **서명 및 설치 NOT_RUN:** `app-release-unsigned.apk` SHA-256 `3fa398fb9a745db4b570bf0dca0bcd724e41512e57d7a4155c584f002a0837d2`의 `apksigner verify`는 서명이 없어 실패했다. 배포 가능한 APK가 아니다. 기존 실기기에는 같은 패키지가 설치되어 있어 데이터를 덮어쓰지 않았다. 공개 서명 키를 생성하지 않았다.
+- **제한적 보안 점검:** 전체 Git 객체, 위 두 CI의 다운로드된 artifact 33개와 APK 175개 엔트리에 대해 개인키 헤더, 일부 GitHub/OpenAI/AWS 키 형식의 패턴을 검색하여 일치 0건. 제한된 패턴 검사이며 모든 비밀·개인정보·과거 artifact에 대한 부재 증명은 아니다. 앱 메인 코드의 명시적 로깅 호출 검색에서 민감 로그 호출을 발견하지 못했다. APK에 개발 토큰이 없다는 포괄적 증명과 모든 공개 artifact 감사는 미완료다.
+- 합성 영상은 [M2 SDD](../specs/M2-hls-player.md)에 생성 출처가 기록되어 있다. 저장소 라이선스는 미결정이며 의존성 및 전체 콘텐츠의 배포 권리 검토는 미완료다.
+
+## 재현
+
+JDK 17과 Android SDK platform 37/build-tools 36 및 기존 Debug 키가 준비된 환경에서만 실행한다. 아래 Debug·Benchmark 빌드는 키가 없으면 Android 도구가 새 키를 만들 수 있으므로 실행하지 않는다.
+
+```sh
+export ANDROID_HOME="$HOME/Library/Android/sdk" # 환경에 맞게 변경
+test -f "$HOME/.android/debug.keystore" || { echo 'Existing debug key required'; exit 1; }
+cd android
+./gradlew :app:assembleRelease :app:assembleDebug :app:assembleRcLocal :app:assembleBenchmark :app:lintDebug testDebugUnitTest --no-daemon
+python3 ../scripts/m4-check-manifests.py
+python3 ../scripts/m6-check-manifests.py
+"$ANDROID_HOME/build-tools/36.0.0/apksigner" verify app/build/outputs/apk/release/app-release-unsigned.apk
+```
+
+마지막 명령은 현재 서명되지 않은 APK에 대해 실패한다. 별도 승인된 배포 서명 방식이 정해지기 전에는 설치 명령이나 공개 다운로드를 제시할 수 없다. 로컬 서버 절차는 [서버 README](../../backend/chat-server/README.md)를 참조한다.
+
+## 미완료 및 초안 릴리스 노트
+
+- NOT_RUN: 실제 배포용 Release APK 설치, 실기기 WebSocket 종료 및 장시간 heap, 포괄적인 공개물/라이선스 감사. 로컬 RC의 통과 범위는 위에 별도 기록한다.
+- 기존 M6 실기기 baseline과 두 A/B 실험은 [보고서](M6-002-ab-experiments.md)에 있다. 결과가 불확실하거나 악화되어 두 변경을 되돌렸으며 성능 개선을 주장하지 않는다. M7 이후 UI에 이전 baseline을 적용하지 않는다. 추가 장시간 측정, 실제 LMK, 원격 LIVE는 NOT_RUN.
+- 릴리스 노트 초안: “합성 VOD 재생과 가상 채팅을 제공하는 한국어·영어 오프라인 Android 데모. 실제 WebSocket은 별도의 로컬 개발 환경에서 검증. 서명·설치 및 공개 검토 완료 전 배포 불가.”

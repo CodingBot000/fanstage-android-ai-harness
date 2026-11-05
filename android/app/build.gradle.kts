@@ -18,7 +18,22 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    // Opt in only for local instrumentation against the installed release-like RC.
+    if (providers.gradleProperty("fanstageRcInstrumentation").orNull == "true") {
+        testBuildType = "rcLocal"
+    }
+
     buildTypes {
+        // Local verification only. Never use this debug-signed variant for distribution.
+        create("rcLocal") {
+            initWith(getByName("release"))
+            applicationIdSuffix = ".rclocal"
+            isDebuggable = false
+            if (file(System.getProperty("user.home") + "/.android/debug.keystore").isFile) {
+                signingConfig = signingConfigs.getByName("debug")
+            }
+            matchingFallbacks += listOf("release")
+        }
         create("benchmark") {
             initWith(getByName("release"))
             applicationIdSuffix = ".benchmark"

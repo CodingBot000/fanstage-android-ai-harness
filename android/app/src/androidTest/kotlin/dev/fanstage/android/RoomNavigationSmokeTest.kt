@@ -52,6 +52,38 @@ import org.junit.runner.RunWith
 class RoomNavigationSmokeTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()
 
+    @Test fun rcFaultUiAndReleasedListener() {
+        verifyErrorRetryUi()
+        verifyChatFailureDoesNotInterruptPlayer()
+        verifyReleasedListenerCanBeCollected()
+    }
+
+    @Test fun rcUncertainMessageAndChatCleanup() {
+        val cancelled = AtomicBoolean(false)
+        val closed = AtomicBoolean(false)
+        val transport = object : dev.fanstage.android.feature.live.chat.ChatTransport {
+            override fun events(roomId: String) = kotlinx.coroutines.flow.flow<dev.fanstage.android.feature.live.chat.ChatEvent> {
+                try { kotlinx.coroutines.awaitCancellation() } finally { cancelled.set(true) }
+            }
+            override suspend fun send(roomId: String, clientMessageId: String, text: String) { throw java.io.IOException("unknown outcome") }
+            override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = emptyList<dev.fanstage.android.feature.live.chat.ServerMessage>()
+            override fun close() { closed.set(true) }
+        }
+        val store = androidx.lifecycle.ViewModelStore()
+        lateinit var chat: ChatViewModel
+        composeRule.runOnUiThread {
+            chat = ViewModelProvider(store, ChatViewModel.Factory("uncertain", transport))[ChatViewModel::class.java]
+            assertTrue(chat.send("uncertain"))
+        }
+        try {
+            composeRule.waitUntil(10_000) { chat.uiState.value.messages.singleOrNull()?.isUncertain == true }
+            val message = chat.uiState.value.messages.single()
+            assertTrue(message.delivery == dev.fanstage.android.feature.live.chat.Delivery.PENDING)
+            assertTrue(chat.uiState.value.transportUncertain)
+        } finally { composeRule.runOnUiThread { store.clear() } }
+        composeRule.waitUntil(10_000) { cancelled.get() && closed.get() }
+    }
+
     @Test fun roomListOpensDetailAndReturns() {
         composeRule.waitUntil(20_000L) {
             composeRule.onAllNodesWithTag("room_studio-session")
