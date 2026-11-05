@@ -1,5 +1,10 @@
 # 작업 및 검증 기록
 
+## M8-001 — 일회성 위험 수용 승인 (2026-11-05)
+
+- 사용자가 [PR #30 한정 예외](../docs/reviews/M8-001-risk-exception-proposal.md)를 명시적으로 승인했다. 최초 실제 WebSocket CI 타임아웃은 원인·제품 영향이 미확정이며, 후속 PASS는 최초 원인 해결의 증거가 아니다. 예외는 다른 P1 실패·공개 APK 배포·운영 검증에 적용하지 않는다. 재발 시 보존된 진단 증거로 재조사한다.
+- 승인 시점 head `582ad33cec9c1d2c0cbdb56ae9f884873d3667cd`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41999435328) 및 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41999435309) PASS. 독립 리뷰는 `e0b9aeb` 기준으로 수행됐고 두 지적은 해결 처리; 이후 스택 보존 수정은 로컬 회귀·후속 CI로 검증했으나 별도 신규 독립 리뷰는 확인되지 않았다. 승인 기록을 추가한 PR head의 CI 및 병합 결과는 별도 확인한다.
+
 ## M8-001 — 로컬 검증 전용 RC 진행 (2026-11-05)
 
 - 기존 미커밋 문서 보존. 기존 Debug 키를 재사용한 non-debuggable `rcLocal`을 추가했고 일반 Release 서명은 변경하지 않았다. CI 및 매니페스트 경계 검사에 변형을 포함했다.

@@ -13,3 +13,5 @@
 `rcLocal`은 Release를 상속하고 기존 Debug 키가 있을 때만 재사용한다. 별도 ID `dev.fanstage.android.rclocal`, non-debuggable, cleartext 금지이며 benchmark 전용 Activity와 profileable을 포함하지 않는다. 일반 Release에 서명을 추가하지 않는다. 공개 배포용 APK가 아니며 GitHub Release에 올리지 않는다. 키가 없으면 생성하지 않고 서명·설치는 NOT_RUN이다. 실제 검증 결과와 남은 차단 사항은 보고서에 기록한다.
 
 2026-11-05 사용자 결정: GitHub CI 빌드·테스트용 일회성 Debug 키 자동 생성은 허용한다. 공개 배포용 Release 키의 생성·등록은 별도 승인 전 금지한다. `fanstageRcInstrumentation`은 별도 테스트 APK의 대상만 rcLocal로 바꾸며 제품 APK에 오류 주입 화면을 추가하지 않는다.
+
+2026-11-05: 사용자가 최초 WebSocket CI 20초 타임아웃의 미확정 위험에 대해 PR #30 한정 일회성 예외를 승인했다. 범위와 재조사 조건은 [승인 기록](../reviews/M8-001-risk-exception-proposal.md)에 있다. 원인 해결이나 제품 결함 부재는 입증되지 않았다. 향후 P1 실패·공개 APK·운영 검증에는 적용하지 않는다.

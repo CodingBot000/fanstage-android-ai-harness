@@ -2,6 +2,8 @@
 
 ## 상태: 미완료
 
+2026-11-05 사용자가 최초 WebSocket 타임아웃의 미확정 위험에 대해 PR #30과 M8-002 진입에 한정한 [일회성 예외](M8-001-risk-exception-proposal.md)를 승인했다. 최초 원인과 제품 영향은 미확정이며 향후 P1 실패·공개 APK·운영 검증에는 예외가 적용되지 않는다. 최종 병합은 별도 확인한다.
+
 PR [#30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30) head `d85568924b9b7929abe0ea92939a1f1d368fa382`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999002) PASS (빌드·단위 및 API 35 계측 3건). 자동 리뷰의 테스트 수 불일치 P1은 수정 후 CI PASS로 해결 처리했다. [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999118)는 attempt 1에서 `RealChatIntegrationTest` 20초 타임아웃으로 FAIL, attempt 2에서 PASS. 최초 실패 로그에는 어느 20초 대기 지점인지 드러나지 않아 원인은 미확정이다. 단순 재시도 성공만으로 최초 실패 원인이 해결됐다고 주장하지 않으며 병합은 보류한다.
 
 ### WebSocket 타임아웃 추가 진단
@@ -11,8 +13,8 @@ PR [#30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30) he
 - **의도된 실패 재현:** 서버를 꺼 둔 격리 에뮬레이터에서 동일 테스트는 예상대로 FAIL(exit 1), 419ms에 `ack.both_connected`, sender CONNECTING, observer RECONNECTING, proxy accepted 이후 `ConnectException`을 테스트 결과와 태그 로그에 기록했다. 테스트 자격값은 두 로그에서 검색되지 않았다. 이는 진단 경로를 확인한 인위적 연결 실패이며 최초 CI 타임아웃의 재현이나 원인 증명이 아니다. 로컬 로그 `/tmp/fanstage-m8-rca-offline.log`, `/tmp/fanstage-m8-rca-offline-phases.log`.
 - 진단 변경 head `e0b9aeb4475e96017adc521555e0342948c7a400`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41996401282) 및 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41996401209)는 PASS. 서버 CI artifact의 `ack.both_connected`는 50ms, 단계 실패 0건이며 제한적 비밀 패턴 검사도 0건이다. 인위적인 값으로 sanitizer의 진단 로그 보존과 자격값 치환을 별도 검증했다. 당시 독립 리뷰는 미완료였다.
 - `e0b9aeb` 독립 Codex 리뷰 완료: 원래 예외의 스택·cause가 누락되는 P2 지적을 확인했다. 예외 메시지·파일명을 배제하고 허용된 코드 위치·줄 번호와 원인 유형 체인을 복사하도록 수정했다. 민감한 합성 문자열과 중첩 cause를 이용한 계측 회귀 PASS(1/1); 서버 미기동 인위적 실패에서 단계 ID, 원인 유형, 코드 줄 번호가 보이고 테스트 자격값은 로그에 없음을 확인했다. 이는 최초 타임아웃 재현이 아니다. 후속 수정 head의 CI는 [PR 검사](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30/checks)에서 확인한다.
-- **Gate 판단:** 최초 실패는 채팅 연결·복구에 관련된 차단 검증의 실제 실패다. 로컬 3회와 이후 CI PASS는 현재 실행 조건에서의 성공 근거지만 최초 실패가 제품 결함·테스트 경합·CI 환경 중 무엇인지 배제하지 못한다. ADR-0005 및 테스트 매트릭스의 관련 P1 실패 해결 조건에 비추어 위험을 P2로 내리거나 원인 해결로 간주할 근거가 없다. 최초 실패의 단계·원인이 특정되거나 제품 영향이 없다는 재현 가능한 증거가 확보될 때 다시 판단한다. M8-001 병합과 M8-002 진입은 보류한다.
-- 최초 CI 실패는 단계 계측 추가 이전이라 해당 실패의 정확한 지점과 원인을 복원할 수 없다. 양측 CONNECTED 대기는 경과 시간상 후보이지만, 테스트 경합·CI 환경·제품 결함 중 확정 가능한 원인은 없다. 반복 PASS는 관측 범위의 비재현을 뜻한다. 원인 미해결에 따른 P1 위험은 해소되지 않았으며 병합하지 않는다. 최종 변경의 독립 리뷰는 별도 확인한다.
+- **Gate 판단 및 예외:** 최초 실패는 채팅 연결·복구에 관련된 차단 검증의 실제 실패다. 로컬 3회와 이후 CI PASS는 현재 실행 조건에서의 성공 근거지만 최초 실패가 제품 결함·테스트 경합·CI 환경 중 무엇인지 배제하지 못한다. 위험은 P1로 남으며 사용자가 이번 PR에 한해 일회성 예외를 승인했다. 이후 동일 문제가 재발하면 진단 증거를 보존해 다시 조사한다.
+- 최초 CI 실패는 단계 계측 추가 이전이라 해당 실패의 정확한 지점과 원인을 복원할 수 없다. 양측 CONNECTED 대기는 경과 시간상 후보이지만, 테스트 경합·CI 환경·제품 결함 중 확정 가능한 원인은 없다. 반복 PASS는 관측 범위의 비재현을 뜻한다. 스택 보존 수정 후 별도의 신규 독립 리뷰는 확인되지 않았으며 기존 독립 리뷰의 지적 수정과 로컬·CI 검증 범위를 구분해 기록한다.
 
 ### 로컬 RC 추가 검증 (2026-11-05)
 
