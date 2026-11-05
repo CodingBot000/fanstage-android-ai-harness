@@ -3,6 +3,7 @@ package dev.fanstage.server;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Locale;
 import java.util.stream.IntStream;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 class DemoMediaApi {
     private static final Map<String, String> FILES = IntStream.rangeClosed(1, 7).boxed().collect(
-        java.util.stream.Collectors.toUnmodifiableMap(i -> String.format("demo-%02d", i), i -> String.format("demo-%02d.mp4", i)));
+        java.util.stream.Collectors.toUnmodifiableMap(i -> String.format(Locale.ROOT, "demo-%02d", i), i -> String.format(Locale.ROOT, "demo-%02d.mp4", i)));
 
     private final String directory;
     DemoMediaApi(@Value("${FANSTAGE_MEDIA_DIR:}") String directory) { this.directory = directory; }

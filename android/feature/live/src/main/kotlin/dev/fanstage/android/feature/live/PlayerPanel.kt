@@ -42,8 +42,9 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
     val rendered by controller.hasRenderedFrame.collectAsStateWithLifecycle()
     var position by remember(controller) { mutableStateOf(0L) }
     var duration by remember(controller) { mutableStateOf(0L) }
-    LaunchedEffect(controller) {
-        while (true) {
+    val isMp4 = remember(sourceUri) { Uri.parse(sourceUri).path?.endsWith(".mp4", ignoreCase = true) == true }
+    LaunchedEffect(controller, isMp4) {
+        while (isMp4) {
             position = controller.player.currentPosition.coerceAtLeast(0)
             duration = controller.player.duration.coerceAtLeast(0)
             delay(500)
@@ -78,7 +79,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
             onRelease = { it.player = null },
             modifier = Modifier.fillMaxWidth().height(200.dp).semantics { contentDescription = playerDescription }.testTag(if (rendered) "player_first_frame" else "player_surface"),
         )
-        if (Uri.parse(sourceUri).path?.endsWith(".mp4", ignoreCase = true) == true && duration > 0) {
+        if (isMp4 && duration > 0) {
             Slider(value = (position.toFloat() / duration).coerceIn(0f, 1f), onValueChange = { controller.player.seekTo((it * duration).toLong()); position = (it * duration).toLong() }, modifier = Modifier.semantics { contentDescription = seekDescription }.testTag("player_seek"))
         }
         Text(
