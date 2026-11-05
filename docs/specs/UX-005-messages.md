@@ -4,3 +4,4 @@
 
 ## 실행 기록
 메모리 Fake 대화 목록과 상세·로컬 입력 및 저장 상태를 구현했다. API 36 DiscoverTest 7/7, assembleDebug·lintDebug PASS. [캡처](../evidence/ux-005/messages.png). 실제 전송이나 읽음 확인은 제공하지 않으며 세션 종료 시 메모리 데이터는 사라진다. 전체 suite·서버 회귀 NOT_RUN_DEFERRED.
+- UX-006에서 수신 메시지의 로컬 읽음 표시를 보완했다. 상대방 읽음 확인은 제공하지 않는다. [통합 SDD](UX-006-integration.md) 참조.

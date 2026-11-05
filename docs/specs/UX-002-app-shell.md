@@ -13,3 +13,4 @@ Discover, Community, Media, Messages 네 탭을 앱 상위 Navigation에서 연�
 
 ## 실행 기록
 네 탭과 Navigation save/restore를 연결했다. API 36에서 탭 4개 전환과 Discover 스크롤 복원, LIVE/Replay 왕복 및 Replay 첫 프레임을 포함한 DiscoverTest 4/4 PASS; assembleDebug·lintDebug PASS. [캡처](../evidence/ux-002/shell.png). 탭 내부는 UX-003~005에서 교체할 준비 중 화면이며, 공통 TopBar 완성과 상세 백스택·전체 통합 검증은 후속 단계에서 확인한다.
+- UX-006에서 공통 TopBar 및 Media 필터 복원을 추가했다. 관련 계측과 최종 전체 계측 결과는 [통합 SDD](UX-006-integration.md) 참조.

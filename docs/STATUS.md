@@ -65,3 +65,5 @@
 - UX-003: Community Fake 피드·상세·좋아요·댓글 및 Discover 연결 구현. API 36 관련 5건과 빌드·lint PASS. 공지 빈 상태이며 오류·빈 상태 주입과 전체 통합은 후속 검증. 다음 UX-004 Media.
 - UX-004: Media 그리드·필터 및 기존 LIVE/Replay 이동 구현, API 36 관련 6건·빌드·lint PASS. LIVE 상세 재디자인과 전체 서버 회귀는 미완료. 다음 UX-005 Messages.
 - UX-005: 메모리 로컬 대화 목록·상세·입력과 로컬 저장 표시 구현, API 36 관련 7건·빌드·lint PASS. 실제 DM 전송 및 읽음 상태는 미구현. 다음 UX-006 통합 및 UX-004 상세 보완.
+- 2026-11-05 일시 중단: 사용자 요청으로 안전 지점에서 중단. `codex/ux-continuous-batch` HEAD `6f7eb6a`. LIVE 상세에 Player/Chat 카드 표현 보완은 미커밋이다. 재개 시 UX-004 상세 화면 검토·캡처, UX-003 상태/공지 및 UX-005 읽음 표시 등 잔여 범위를 보완한 뒤 UX-006 전체 통합 검증을 수행한다. PR/CI/병합은 아직 하지 않았다.
+- UX-006 로컬 통합: 공통 TopBar, 공지·로컬 읽음·필터 복원·취소 경합 방어 및 LIVE 상세 표현 보완. 최종 작업 트리 전체 Android 계측 14/14(실제 서버 case 포함), 서버 통합·장애 주입, Debug/Release/Benchmark 빌드·lint·unit PASS. [통합 SDD](specs/UX-006-integration.md). 실기기 성능 A/B·전 화면 접근성·독립 리뷰·최종 CI는 NOT_RUN. 기존 M6/M8 미완료 상태는 유지한다.

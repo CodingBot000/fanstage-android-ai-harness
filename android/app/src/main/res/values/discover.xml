@@ -12,4 +12,7 @@
 <string name="posts">Posts</string><string name="notices">Notices</string>
 <string name="all_media">All</string>
 <string name="local_demo">Local demo · messages stay on this device session</string><string name="messages_back">Back to messages</string><string name="local_sent">Saved locally</string><string name="message_input">Message</string>
+<string name="notice_title">Welcome to the community</string><string name="notice_body">This is a fictional community for the local demo.</string><string name="unread">Unread</string>
+<string name="community_error">Could not load the community.</string>
+<string name="demo_welcome">Welcome to our space!</string><string name="demo_post_body">A little moment from our world.</string>
 </resources>

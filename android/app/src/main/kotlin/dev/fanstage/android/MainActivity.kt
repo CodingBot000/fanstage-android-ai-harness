@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FanStageApp() {
     val navController = rememberNavController()
@@ -46,7 +47,9 @@ private fun FanStageApp() {
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
     val tabs = listOf("rooms", "community", "media", "messages")
-    Scaffold(bottomBar = {
+    Scaffold(topBar = {
+        if (currentRoute in tabs) TopAppBar(title = { Text("fanstage", color = dev.fanstage.android.core.designsystem.Plum, style = MaterialTheme.typography.titleLarge) })
+    }, bottomBar = {
         if (currentRoute in tabs) NavigationBar {
             tabs.forEachIndexed { index, route ->
                 val label = stringResource(listOf(R.string.discover, R.string.community, R.string.media, R.string.messages)[index])

@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 data class LocalMessage(val id: Long, val text: String, val fromMe: Boolean)
-data class LocalConversation(val artistId: String, val messages: List<LocalMessage>)
+data class LocalConversation(val artistId: String, val messages: List<LocalMessage>, val unread: Boolean = true)
 interface MessageRepository { fun initial(): List<LocalConversation> }
 class FakeMessageRepository : MessageRepository {
     override fun initial() = fictionalArtists.map { LocalConversation(it.id, listOf(LocalMessage(0, "Welcome to our space!", false))) }
@@ -30,6 +30,7 @@ class FakeMessageRepository : MessageRepository {
 class MessagesViewModel(repository: MessageRepository = FakeMessageRepository()) : ViewModel() {
     private val mutableState = MutableStateFlow(repository.initial())
     val state = mutableState.asStateFlow()
+    fun markRead(artistId: String) { mutableState.value = mutableState.value.map { if (it.artistId == artistId) it.copy(unread = false) else it } }
     fun send(artistId: String, text: String) {
         val value = text.trim(); if (value.isEmpty()) return
         mutableState.value = mutableState.value.map { conversation ->
@@ -46,7 +47,7 @@ class MessagesViewModel(repository: MessageRepository = FakeMessageRepository())
             if (artist != null) Card(onClick = { onOpen(artist.id) }, modifier = Modifier.fillMaxWidth().testTag("conversation_${artist.id}")) {
                 Row(Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
                     Image(painterResource(artist.artwork), null, Modifier.size(64.dp).clip(CircleShape), contentScale = ContentScale.Crop)
-                    Spacer(Modifier.width(14.dp)); Column { Text(artist.name, style = MaterialTheme.typography.titleMedium); Text(conversation.messages.lastOrNull()?.text.orEmpty(), maxLines = 1) }
+                    Spacer(Modifier.width(14.dp)); Column { Text(artist.name, style = MaterialTheme.typography.titleMedium); Text(conversation.messages.lastOrNull()?.let { if (it.id == 0L && !it.fromMe) stringResource(R.string.demo_welcome) else it.text }.orEmpty(), maxLines = 1); if (conversation.unread) Text(stringResource(R.string.unread), modifier = Modifier.testTag("unread_${artist.id}"), style = MaterialTheme.typography.labelSmall) }
                 }
             }
         }
@@ -57,6 +58,7 @@ class MessagesViewModel(repository: MessageRepository = FakeMessageRepository())
     val conversation = conversations.firstOrNull { it.artistId == artistId }
     val artist = fictionalArtists.firstOrNull { it.id == artistId }
     var draft by remember(artistId) { mutableStateOf("") }
+    LaunchedEffect(artistId) { viewModel.markRead(artistId) }
     Column(Modifier.fillMaxSize().padding(16.dp).testTag("conversation_detail")) {
         TextButton(onClick = onBack) { Text(stringResource(R.string.messages_back)) }
         Text(artist?.name.orEmpty(), style = MaterialTheme.typography.headlineMedium)
@@ -65,7 +67,7 @@ class MessagesViewModel(repository: MessageRepository = FakeMessageRepository())
             items(conversation?.messages.orEmpty(), key = { it.id }) { message ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = if (message.fromMe) Arrangement.End else Arrangement.Start) {
                     Surface(shape = RoundedCornerShape(18.dp), color = if (message.fromMe) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant) {
-                        Column(Modifier.padding(12.dp)) { Text(message.text); if (message.fromMe) Text(stringResource(R.string.local_sent), style = MaterialTheme.typography.labelSmall) }
+                        Column(Modifier.padding(12.dp)) { Text(if (message.id == 0L && !message.fromMe) stringResource(R.string.demo_welcome) else message.text); if (message.fromMe) Text(stringResource(R.string.local_sent), style = MaterialTheme.typography.labelSmall) }
                     }
                 }
             }

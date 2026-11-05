@@ -105,9 +105,13 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
             }
             Text(stringResource(R.string.room_detail), style = MaterialTheme.typography.headlineMedium)
             Text(stringResource(R.string.room_identifier, roomId))
-            PlayerPanel(roomId)
-            ChatPanel(chatViewModel, developmentControls)
-            Text(stringResource(R.string.placeholder_description))
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(12.dp)) { PlayerPanel(roomId) }
+            }
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(12.dp)) { ChatPanel(chatViewModel, developmentControls) }
+            }
+            Text(stringResource(R.string.placeholder_description), style = MaterialTheme.typography.bodySmall)
         }
     }
 }

@@ -13,4 +13,7 @@
 <string name="posts">게시물</string><string name="notices">공지</string>
 <string name="all_media">전체</string>
 <string name="local_demo">로컬 데모 · 메시지는 현재 세션에만 보관됩니다</string><string name="messages_back">메시지로 돌아가기</string><string name="local_sent">로컬에 저장됨</string><string name="message_input">메시지</string>
+<string name="notice_title">커뮤니티에 오신 것을 환영합니다</string><string name="notice_body">이곳은 로컬 데모를 위한 가상 커뮤니티입니다.</string><string name="unread">읽지 않음</string>
+<string name="community_error">커뮤니티를 불러오지 못했습니다.</string>
+<string name="demo_welcome">우리의 공간에 오신 것을 환영해요!</string><string name="demo_post_body">우리의 작은 일상을 전해요.</string>
 </resources>
