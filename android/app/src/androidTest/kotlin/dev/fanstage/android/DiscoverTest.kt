@@ -17,6 +17,19 @@ class DiscoverTest {
         rule.onNodeWithTag("room_back").performClick()
         rule.onNodeWithTag("rooms_content").assertIsDisplayed()
     }
+    @Test fun tabsRestoreDiscoverScroll() {
+        rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("replay_card"))
+        rule.onNodeWithTag("replay_card").assertIsDisplayed()
+        rule.onNodeWithTag("tab_community").performClick()
+        rule.onNodeWithTag("screen_community").assertIsDisplayed()
+        rule.onNodeWithTag("tab_media").performClick()
+        rule.onNodeWithTag("screen_media").assertIsDisplayed()
+        rule.onNodeWithTag("tab_messages").performClick()
+        rule.onNodeWithTag("screen_messages").assertIsDisplayed()
+        rule.onNodeWithTag("tab_rooms").performClick()
+        rule.onNodeWithTag("replay_card").assertIsDisplayed()
+    }
     @Test fun replayPlaysAndReturns() {
         rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("replay_card"))

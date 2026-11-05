@@ -61,3 +61,4 @@
 - 2026-11-05: 사용자 지시에 따라 `codex/ux-continuous-batch` 브랜치에서 v0.3 UX 확장 트랙을 시작했다. UX-001 SDD 범위를 갱신했으며 구현·단계 완료는 아직 아니다. M8 Gate 상태는 변경하지 않는다.
 - UX-001 v0.3: 가상 아티스트 ID 및 카드 이미지 보강 진행. 빌드·lint·기존 live 단위 테스트 PASS. 새로운 UI 캡처, Replay 연결 및 나머지 UX 단계는 미완료다.
 - UX-001 v0.3: Discover와 LIVE/Replay 연결의 관련 검증 PASS; 커뮤니티 연결은 UX-003에서 구현 예정. 다음 작업 UX-002 공통 탐색. 전체 통합 검증 NOT_RUN_DEFERRED.
+- UX-002: 네 탭 탐색과 Discover 스크롤 복원 계측 PASS. 탭 내용·공통 TopBar 및 전체 상세 백스택은 UX-003~006에서 완성·검증한다. 다음 UX-003 Community.

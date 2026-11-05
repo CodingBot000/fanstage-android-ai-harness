@@ -8,4 +8,5 @@
 <string name="discover_error">탐색 화면을 불러오지 못했습니다.</string><string name="discover_retry">다시 시도</string>
 <string name="replay">다시보기</string><string name="coming_soon">준비 중</string>
 <string name="replay_play">다시보기 재생</string><string name="replay_back">탐색으로 돌아가기</string>
+<string name="media">미디어</string><string name="messages">메시지</string>
 </resources>

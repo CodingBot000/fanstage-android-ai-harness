@@ -7,4 +7,5 @@
 <string name="discover_error">Could not load Discover.</string><string name="discover_retry">Try again</string>
 <string name="replay">Replay</string><string name="coming_soon">Coming soon</string>
 <string name="replay_play">Watch replay</string><string name="replay_back">Back to Discover</string>
+<string name="media">Media</string><string name="messages">Messages</string>
 </resources>

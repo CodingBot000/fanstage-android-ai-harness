@@ -474,3 +474,4 @@
 - 가상 아티스트 식별자와 콘텐츠 연결 및 이미지 카드를 추가하고 Blue Pencil·Dice Garden 이미지를 내장 imagegen으로 생성했다. 프롬프트는 각각 파란 스케치북과 헤드폰의 가상 음악 작업실, 주사위가 놓인 작은 정원이며 글자·로고·인물을 제외했다. 파일: `android/app/src/main/res/drawable-nodpi/blue_pencil.jpg`, `dice_garden.jpg`.
 - `:app:assembleDebug :app:lintDebug :feature:live:testDebugUnitTest` PASS. 신규 UI 실기기/에뮬레이터 캡처 및 통합 검증 NOT_RUN. UX-001 전체 미완료.
 - UX-001 v0.3: Hero/추천 캐러셀과 Replay 합성 VOD 연결 후 `:app:assembleDebug :app:lintDebug :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.DiscoverTest` PASS (API 36, 3/3; Replay 첫 프레임 포함). 홈 캡처 `docs/evidence/ux-001/home-v03.png` 확인. 전체 계측·서버 회귀·성능 NOT_RUN_DEFERRED.
+- UX-002: `:app:assembleDebug :app:lintDebug` PASS; API 36 `DiscoverTest` 4/4 PASS (탭 전환·Discover 스크롤 복원 포함). 캡처 `docs/evidence/ux-002/shell.png`. 전체 suite 및 서버 회귀 NOT_RUN_DEFERRED.

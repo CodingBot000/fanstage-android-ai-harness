@@ -56,13 +56,7 @@ class DiscoverViewModel(private val repository: DiscoverRepository = FakeDiscove
     DiscoverScreen(state, viewModel::retry, onRoomClick, onReplayClick)
 }
 @Composable fun DiscoverScreen(state: DiscoverState, onRetry: () -> Unit, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit = {}) {
-    Scaffold(containerColor = Color(0xFFFAF8FC), bottomBar = {
-        NavigationBar(containerColor = Color.White) {
-            NavigationBarItem(selected = true, onClick = {}, icon = { Text("✦") }, label = { Text(stringResource(R.string.discover)) })
-            NavigationBarItem(selected = false, enabled = false, onClick = {}, icon = { Text("◉") }, label = { Text(stringResource(R.string.community)) })
-            NavigationBarItem(selected = false, enabled = false, onClick = {}, icon = { Text("♡") }, label = { Text(stringResource(R.string.more)) })
-        }
-    }) { padding ->
+    Scaffold(containerColor = Color(0xFFFAF8FC)) { padding ->
         when (state) {
             DiscoverState.Loading -> Box(Modifier.fillMaxSize().padding(padding).testTag("discover_loading"), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             DiscoverState.Error -> Column(Modifier.fillMaxSize().padding(padding).testTag("discover_error"), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) { Text(stringResource(R.string.discover_error)); Button(onClick = onRetry) { Text(stringResource(R.string.discover_retry)) } }
