@@ -1,0 +1,11 @@
+services:
+  chat:
+    environment:
+      FANSTAGE_MEDIA_DIR: /opt/fanstage-media
+    volumes:
+      - type: bind
+        source: ${FANSTAGE_MEDIA_HOST_DIR:?Set FANSTAGE_MEDIA_HOST_DIR}
+        target: /opt/fanstage-media
+        read_only: true
+        bind:
+          create_host_path: false
