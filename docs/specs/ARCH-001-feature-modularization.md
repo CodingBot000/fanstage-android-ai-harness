@@ -36,3 +36,4 @@ Replay 화면을 기존 `:feature:live`로 옮겨 app에는 MainActivity/Navigat
 별도 ADB 서버에서 전용 API 36 에뮬레이터만 보이는지 계측 직전 확인하고, 격리된 로컬 PostgreSQL/WebSocket 서버를 사용한 전체 Android 계측 14/14(스킵 0), 서버 통합·ACK 유실·연결 중단 회귀 PASS. 이후 Activity 재생성 후 게시물·대화 상태 및 IME 위 전송 버튼 검사를 강화해 `DiscoverTest` 9/9 추가 PASS. 임시 합성 서버 자격·DB는 종료 시 삭제했다. 관련 UI 8개 캡처와 [16초 무음 4탭 시연](../portfolio/media/ux-premium-demo.mp4)을 기록했다. 시연은 실제 방송·서버 전달을 보여주지 않는다.
 
 NOT_RUN: 실기기 성능 A/B, 전 화면 큰 글꼴·TalkBack, 실제 DM/원격 LIVE, 독립 코드 리뷰 및 최종 PR CI. 이미지 생성 결과의 인물 동일성이나 모든 제3자 UI 권리 검토를 보증하지 않는다. M6 성능 미입증과 M8 예외·라이선스 한계를 보존한다. `ArtistId` 등은 현재 문자열 typealias여서 컴파일 시 다른 ID 유형 혼용을 강제 차단하지 못한다. 전체 connected 실행은 특별 ADB 서버에서 테스트용 에뮬레이터 하나만 보이는 것을 확인하고 실행했다.
+- CI 보완: 순수 Kotlin `:core:data:test`와 `scripts/check-ux-module-boundaries.py`를 Android PR gate 및 해당 경로 trigger에 추가했다. 데이터 XML을 CI artifact에 포함한다. 동일 명령의 로컬 data test·lint와 경계 스크립트 PASS. 최종 CI는 해당 head에서 별도 확인한다.
