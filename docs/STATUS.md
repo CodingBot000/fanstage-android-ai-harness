@@ -7,6 +7,7 @@
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
+- Latest source reproduction: 동일 개발 환경에서 새 `main` clone `e09beb205dcf1ae12510225dff710e3e05682cb8`의 README 빌드와 별도 에뮬레이터 기본 흐름 PASS. [재현 기록](reviews/M8-clean-clone-reproduction.md) 참조. 외부 독립 개발자와 빈 Gradle 캐시 검증은 NOT_RUN.
 - Next action: 제3자 고지와 외부 개발자 재현 등 남은 M8 Gate를 검토한다. 배포 서명과 루트 라이선스는 미결정이다. 공개 APK는 v0.1 제공 경로에 포함되지 않는다.
 
 ## Milestone Checklist

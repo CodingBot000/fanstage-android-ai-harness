@@ -1,5 +1,10 @@
 # 작업 및 검증 기록
 
+## M8 — main 새 clone 소스 재현 (2026-11-05)
+
+- 소스 `e09beb205dcf1ae12510225dff710e3e05682cb8`를 별도 임시 경로에 clone하고 README의 Debug assemble·lint·unit 명령 PASS(95 tasks executed, unit 51/51). 기존 JDK 17·SDK·Debug 키 및 Gradle 캐시를 사용했다. 임시 API 36 arm64 에뮬레이터의 새 설치에서 방 목록→상세, 합성 VOD 재생·일시정지·재개, Fake 채팅 `Sent` 및 목록 복귀 PASS. 상세와 로컬 증거는 [재현 기록](../docs/reviews/M8-clean-clone-reproduction.md).
+- README에 새 에뮬레이터 대상 터미널 설치·실행 명령과 Debug 개발 설정 아래의 Fake 채팅 위치를 추가했다. Android Studio UI 실행, 외부 독립 개발자 재현, 빈 Gradle 캐시는 NOT_RUN. 기존 작업 트리·기존 앱 데이터는 건드리지 않았다. 성능 및 WebSocket 장애 CI는 반복하지 않았다.
+
 ## M8-002 — 포트폴리오 산출물 병합 (2026-11-05)
 
 - [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31) head `a101856c673ccb52ae05a235c7bef100b57a9c15`의 독립 Codex 리뷰는 지적 없이 완료됐다. Markdown 링크·공백 및 영상 내용·형식은 아래 로컬 검증을 따른다. 문서·영상만 변경해 별도 Android CI는 실행되지 않았다. 기준 main `74e417ad604fab227a9fbca0f7e28f1728130859`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42004905245)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42004905195)는 PASS. PR #31은 `3a1f0d79d1d3a9939a715d3ddd7ad6e1c07838ce`로 Squash Merge됐다.
