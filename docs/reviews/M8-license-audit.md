@@ -4,7 +4,7 @@
 
 - 조사 기준: 공개 GitHub `main` `b92521b218f2b96edea5ec4232f9005954c8242c` (2026-11-05). 소스 저장소는 이미 공개되어 있으며 v0.1에서 공개 APK 또는 서버 바이너리를 제공하지 않는다. 기존 로컬 작업 트리는 보존하고 별도 worktree에서 조사했다.
 - 사용자는 이번 대화에서 **직접 작성한 프로젝트 코드·문서에 MIT**를 선택했고 저작권 표기는 **2026 FanStage contributors**로 결정했다. `LICENSE`와 [제3자 고지](../../THIRD_PARTY_NOTICES.md)를 추가했다. 각 제3자 저작물의 원래 조건은 유지한다.
-- **M8 Gate 미완료:** 기존에 공개된 시연 MP4의 Google 키보드 구간은 현재 파일에서 제외했지만 기존 Git 이력에 남으며, 포트폴리오에서 해당 UI를 캡처·공개하는 구체적 권한은 확인하지 못했다. 외부 독립 개발자의 소스 재현도 NOT_RUN이다. 이 감사는 위 사항과 전체 코드의 저작권 출처를 모두 해결했다고 주장하지 않는다.
+- **감사 당시 미확정 권리:** 공개된 과거 시연 MP4의 Google 키보드 구간은 현재 파일에서 제외했지만 Git 이력에 남으며, 해당 UI의 포트폴리오 용도 권한을 확정하지 못했다. 기타 에뮬레이터 UI·폰트 및 전체 코드의 원저작자 출처를 완전히 보증하는 감사도 아니다. v0.1의 최종 제출 상태는 [마감 기록](M8-final-readiness.md)을 따른다.
 
 ## 현재 공개 소스에 포함된 자산
 
@@ -41,5 +41,5 @@ Gradle 플러그인/배포판, 별도 실행 Python 도구(Perfetto 포함), Git
 
 - 실행: Android `releaseRuntimeClasspath`, `debugRuntimeClasspath`, `debugAndroidTestRuntimeClasspath`, `debugUnitTestRuntimeClasspath`, 서버 `runtimeClasspath`, `testRuntimeClasspath`에 대해 Gradle `artifactView`로 외부 artifact를 해석하고 각 아카이브 직접 엔트리의 법적 고지 경로를 검색했다. 별도 dependency report도 조사했다. 목록의 라이선스 메타데이터 POM URL 184개는 HEAD 요청으로 응답 200을 확인했다. 테스트·장애·성능 시나리오는 재실행하지 않았다. 임시 원본 `/tmp/fanstage-m8-*-artifacts.tsv`, `/tmp/fanstage-m8-license-inventory.json`은 로컬 파일이며 공개 산출물은 경로·사용자명을 제외한 TSV다.
 - 직접 다운로드되는 의존성의 POM 표기와 실제 최종 APK/JAR·이미지에 포함된 모든 텍스트의 법적 적합성은 동일하지 않다. 저작권 귀속·dual license 선택 및 상업적 배포 판단은 관련 원문과 구체적 배포물을 기준으로 추가 검토가 필요하다.
-- M8 종료 전 남은 항목: 기존 Git 이력의 Google 키보드 및 기타 에뮬레이터 UI·폰트의 영상 사용 권한 확인, 외부 독립 개발자 재현, 소스의 제3자 출처를 최종 검토한다. 향후 배포용 APK·서버 바이너리·이미지의 NOTICE 전수는 해당 배포를 실제로 추진할 때 별도 선행 조건이다.
+- 포트폴리오 범위에서 남은 권리 판단: 과거 시연 영상의 Google 키보드 및 일부 에뮬레이터 UI·폰트, 소스의 제3자 출처에 관한 포괄적인 법적 확정은 제공하지 않는다. 향후 APK·서버 바이너리·이미지 배포 시 해당 최종 산출물의 NOTICE 전수 검토가 필요하다. 소스 전용 v0.1 마감 결정은 [최종 기록](M8-final-readiness.md)에 남긴다.
 - PR #30 한정 WebSocket 타임아웃 예외와 M6 성능 개선 미입증은 그대로 유지한다. M8 전체 VERIFIED를 선언하지 않는다.
