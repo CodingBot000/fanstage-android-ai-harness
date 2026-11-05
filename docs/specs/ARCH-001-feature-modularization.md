@@ -1,6 +1,6 @@
 # ARCH-001~003 — 공유 모델과 기능 모듈
 
-상태: 진행 중. 기준 UX-011 `8126094`. UX-007~011의 실제 화면과 기존 LIVE/Chat/서버 계약을 보존한다.
+상태: **ARCH-001~003 구현 및 PR #38 병합 완료**. 기능 범위는 UX-007~011이며 기존 LIVE/Chat·서버 계약 및 과거 검증 근거를 보존한다. 최종 증거는 아래 병합 기록 참조.
 
 ## 경계 및 데이터 계약
 `:core:model`은 Android/Compose 리소스에 의존하지 않는 공통 Artist/Content/Post/Conversation ID, ArtworkKey, 모델 및 Repository 계약을 제공한다. `:core:data`는 공통 가상 카탈로그와 세션 내 Fake Community·Message 저장소를 제공한다. UI 리소스 ID는 작은 Android `:core:artwork` 모듈의 resolver에서만 결정한다. 별도 자산 모듈은 여러 feature가 동일 자산에 접근하면서 feature→app 역방향 의존을 피하기 위해 필요하다.
@@ -38,3 +38,10 @@ Replay 화면을 기존 `:feature:live`로 옮겨 app에는 MainActivity/Navigat
 NOT_RUN: 실기기 성능 A/B, 전 화면 큰 글꼴·TalkBack, 실제 DM/원격 LIVE, 독립 코드 리뷰 및 최종 PR CI. 이미지 생성 결과의 인물 동일성이나 모든 제3자 UI 권리 검토를 보증하지 않는다. M6 성능 미입증과 M8 예외·라이선스 한계를 보존한다. `ArtistId` 등은 현재 문자열 typealias여서 컴파일 시 다른 ID 유형 혼용을 강제 차단하지 못한다. 전체 connected 실행은 특별 ADB 서버에서 테스트용 에뮬레이터 하나만 보이는 것을 확인하고 실행했다.
 - CI 보완: 순수 Kotlin `:core:data:test`와 `scripts/check-ux-module-boundaries.py`를 Android PR gate 및 해당 경로 trigger에 추가했다. 데이터 XML을 CI artifact에 포함한다. 동일 명령의 로컬 data test·lint와 경계 스크립트 PASS. 최종 CI는 해당 head에서 별도 확인한다.
 - 추가 감사: 다른 탭의 아티스트 목록이 Discover 로딩/오류 상태에 종속되지 않도록 동일 core:data 카탈로그를 AppContainer에서 독립적으로 제공한다. Discover 실패 시 Community·Messages 데이터가 유지되는 주입 단위 테스트와 `DiscoverTest` 9/9 PASS. `:app:assembleRcLocal` 및 M4/M6 manifest 경계 검사 PASS. 두 스크립트는 최초 저장소 루트에서 잘못 실행해 경로 오류가 났고 `android/`에서 재실행했다. 실기기 성능 A/B 및 독립 리뷰는 계속 NOT_RUN.
+
+## PR #38 — 독립 리뷰·CI 및 병합 결과 (2026-11-06)
+
+- PR: [#38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38). 최종 head `561afce227a40d552a7bed7e05d9c2c3f5360fb8` → Squash Merge `3c77a6305b5bf639fdd1e8b669ec6ed4a9f60ef9`.
+- 최종 head의 [Android build/lint/unit·API 35 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922626), [실제 WebSocket 서버·Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922691) 모두 PASS. Codex 독립 코드 리뷰는 지적·미해결 스레드 0건으로 완료됐다.
+- 아키텍처: `:app`은 MainActivity/Navigation 및 AppContainer, `:core:model`은 순수 모델·Repository 계약, `:core:data`는 Fake 세션 데이터, `:core:artwork`는 이미지 키 리소스 해석, 5개 feature 모듈이 화면과 ViewModel을 소유한다. 경계 스크립트를 CI에 포함했다.
+- 한계: `ArtistId` 등은 `String` typealias; 실기기 성능 A/B 및 전 화면 TalkBack/큰 글꼴 NOT_RUN. 이전 M6·M8 위험은 해결 선언하지 않는다. 추가 전체 계측·성능 재실행 없이 기존 PR head 증거를 재사용했다.
