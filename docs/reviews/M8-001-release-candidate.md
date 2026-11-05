@@ -2,6 +2,8 @@
 
 ## 상태: M8-001 완료 — 사용자 승인 일회성 예외 적용
 
+아래 M8-001 당시 라이선스 미결정 기록은 당시 이력이다. 이후 사용자가 직접 작성 코드·문서에 MIT를 선택했으며 제3자 고지와 미확인 사항은 [후속 감사](M8-license-audit.md)를 따른다.
+
 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30)은 head `44bd3ccaa7e412bbca6bac29e80bed46c7a3c256`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42003790103)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42003790152) PASS 후 `74e417ad604fab227a9fbca0f7e28f1728130859`로 Squash Merge됐다. 최초 타임아웃은 미해결 위험으로 남는다. M8 전체는 M8-002에서 별도 판단한다.
 
 2026-11-05 사용자가 최초 WebSocket 타임아웃의 미확정 위험에 대해 PR #30과 M8-002 진입에 한정한 [일회성 예외](M8-001-risk-exception-proposal.md)를 승인했다. 최초 원인과 제품 영향은 미확정이며 향후 P1 실패·공개 APK·운영 검증에는 예외가 적용되지 않는다.
