@@ -10,6 +10,9 @@
 - Android 런타임 의존성 보고서에서 추출한 122개 좌표의 POM 메타데이터는 직접 또는 Guava parent 상속으로 Apache 2.0 계열 표기를 확인했다. 실제 포함물과 서버 의존성의 NOTICE·고지 전수 검토는 별도 미완료다.
 - 리뷰 보완: Android 사용자 디렉터리 변경 시 기본 경로와 실제 Debug signingConfig가 다를 수 있어 실제 설정의 키 파일 존재 여부로 판정하도록 수정했다. `:app:assembleRcLocal` 재실행 PASS, APK SHA 불변 및 `apksigner verify --verbose` PASS. 첫 복합 명령은 SDK 환경변수의 명령별 범위 때문에 마지막 apksigner 경로에서 FAIL(exit 127); 올바른 절대 SDK 경로로 재실행해 PASS.
 - PR #30 자동 리뷰는 새 계측 테스트 두 개 추가 후 기존 에뮬레이터 XML 검증이 1개만 기대해 CI가 실패할 P1 문제를 발견했다. 기존 navigation 테스트와 두 새 테스트 세 개를 모두 검사하도록 수정했다. 수정본의 CI 결과는 별도 확인해야 한다.
+- PR head `d85568924b9b7929abe0ea92939a1f1d368fa382` [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999002) PASS (에뮬레이터 3개). [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999118) attempt 1 FAIL: 실제 WebSocket Android 계측의 20초 타임아웃; 서버 독립 테스트는 PASS. attempt 2 PASS. 첫 실패의 세부 대기 지점과 원인 미확인으로 자동 병합 차단. 상세 [보고서](../docs/reviews/M8-001-release-candidate.md).
+- 타임아웃 RCA: 테스트 전용 phase/연결 상태/프록시 단계 및 비동기 예외 유형 기록과 CI의 태그 전용 sanitized artifact 추가. 동일 테스트를 격리 서버와 읽기 전용 API 36 에뮬레이터에서 3회 단독 실행 PASS(각 1/1), 양측 연결 대기 657/911/761ms. 최초 실패는 재현되지 않아 근본 원인과 P1 위험은 미해결. 첫 로컬 서버 기동은 테스트 토큰 길이 미달로 FAIL; 길이를 수정한 합성 테스트 입력으로 서버 기동 후 실행. 별도 격리 서버와 에뮬레이터만 정리했다. 최종 CI·리뷰 NOT_RUN.
+- 진단 실패 경로 검증: 격리 에뮬레이터에서 서버를 의도적으로 끄고 실행해 예상 FAIL(exit 1); 테스트 결과와 M8Rca 로그에 `ack.both_connected`, 연결 상태, `ConnectException`이 나타남. 최초 CI 타임아웃 재현이 아니다. 원문 로그와 태그 로그에서 임시 테스트 자격값 일치 없음.
 
 
 ## M1-008 — Android README evidence reconciliation (2026-11-04)

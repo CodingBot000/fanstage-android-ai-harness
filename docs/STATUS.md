@@ -2,12 +2,12 @@
 
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
 - Current task: M8-001 릴리스 후보 검증
-- State: M8-001 rcLocal 빌드·서명·실기기 정상/장애 흐름 및 제한적 자원 정리 확인 PASS. 공개물 제한 감사와 Android 런타임 POM 라이선스 확인, 고지 전수 검토 잔여분 추적 중. PR #30 CI·리뷰 대기.
+- State: M8-001 rcLocal 실기기 정상/장애 흐름 및 제한적 자원 정리 PASS. PR #30 서버 CI 최초 20초 타임아웃 후 재시도 PASS; 단계 계측 후 로컬 단독 3회 PASS이나 최초 실패 지점·원인 미확인으로 병합 차단. 최종 진단 변경 CI·리뷰 필요.
 - Human approval: M0~M8 개발과 commit/push/PR/merge 사전 승인; M9 제외. 상시 과금·신규 보안 자격 증명·비가역 외부 작업은 별도 승인.
 - 사용자 결정: 모든 활성 룸의 화면·Fake 서버 합계 1,000개, 표시 500개, 메시지당 1,000 Unicode 코드포인트. v0.1은 공개 APK 없이 소스와 로컬 빌드 절차 제공. CI 전용 임시 Debug 키 생성 허용, 공개 Release 키는 별도 승인 전 생성 금지.
 - Latest verification: SM-G975N/API 31 실기기에서 A/B 각 10회 이상 측정. A는 수신 처리 시간이 감소했지만 대조군 프레임 회귀 가능성이 있어 되돌렸고, B는 시작·콘텐츠 탐지 중앙값 악화로 되돌렸다. [실험 보고서](reviews/M6-002-ab-experiments.md) 참조.
 - NOT_RUN: M4 실기기 LAN 연결·운영 인증/TLS, M5 실기기 네트워크 전환·실제 네트워크 부하·장시간 메모리 검증; M6 TTFD·실제 룸 첫 프레임·수신→UI 지연·반복 입장 메모리/GC 및 실제 WebSocket 측정. M2 원격 LIVE, 실기기 LIVE 첫 프레임, 실제 LMK, 장시간 heap/성능도 계속 NOT_RUN.
-- Next action: M8-001 변경의 PR 리뷰와 CI를 확인한다. M8-002에서 README·아키텍처·시연 자료와 미완료 의존성 라이선스·고지 검토를 완료한다. 배포 서명·루트 라이선스는 미결정이다.
+- Next action: 서버 CI의 최초 타임아웃 원인과 재발 위험을 진단하고 차단 여부를 해결한다. 이후 M8-002에서 README·아키텍처·시연 자료와 미완료 의존성 라이선스·고지 검토를 완료한다. 배포 서명·루트 라이선스는 미결정이다.
 
 ## Milestone Checklist
 

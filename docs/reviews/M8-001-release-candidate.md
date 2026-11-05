@@ -2,6 +2,15 @@
 
 ## 상태: 미완료
 
+PR [#30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30) head `d85568924b9b7929abe0ea92939a1f1d368fa382`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999002) PASS (빌드·단위 및 API 35 계측 3건). 자동 리뷰의 테스트 수 불일치 P1은 수정 후 CI PASS로 해결 처리했다. [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/41991999118)는 attempt 1에서 `RealChatIntegrationTest` 20초 타임아웃으로 FAIL, attempt 2에서 PASS. 최초 실패 로그에는 어느 20초 대기 지점인지 드러나지 않아 원인은 미확정이다. 단순 재시도 성공만으로 최초 실패 원인이 해결됐다고 주장하지 않으며 병합은 보류한다.
+
+### WebSocket 타임아웃 추가 진단
+
+- 기존 20초 대기마다 고유 단계 ID와 경과 시간·연결/Job 상태를 기록하고, ACK 프록시의 accept·업스트림 연결·요청/응답 핸드셰이크 전달 단계와 비동기 프록시/observer 예외 유형을 추적한다. 테스트 로그에는 토큰·인증 헤더·본문을 출력하지 않는다. CI는 `M8Rca` 태그만 수집해 기존 비밀값 치환 절차를 거쳐 artifact로 보존한다. 제한 시간은 늘리지 않았다.
+- 동일 Android WebSocket 계측을 격리된 로컬 서버와 읽기 전용 API 36 에뮬레이터에서 수정 후 3회 단독 실행해 **3/3 PASS**. `ack.both_connected`는 각각 657/911/761ms, 단계 실패 0건이다. 예비 실행도 PASS였으나 최종 코드와 분리해 집계한다. 로그 `/tmp/fanstage-m8-rca-final-{1,2,3}.log`, `/tmp/fanstage-m8-rca-phases.log`는 로컬에만 보관한다. 테스트용 임시 격리 서버·에뮬레이터만 종료·제거했다.
+- **의도된 실패 재현:** 서버를 꺼 둔 격리 에뮬레이터에서 동일 테스트는 예상대로 FAIL(exit 1), 419ms에 `ack.both_connected`, sender CONNECTING, observer RECONNECTING, proxy accepted 이후 `ConnectException`을 테스트 결과와 태그 로그에 기록했다. 테스트 자격값은 두 로그에서 검색되지 않았다. 이는 진단 경로를 확인한 인위적 연결 실패이며 최초 CI 타임아웃의 재현이나 원인 증명이 아니다. 로컬 로그 `/tmp/fanstage-m8-rca-offline.log`, `/tmp/fanstage-m8-rca-offline-phases.log`.
+- 최초 CI 실패는 단계 계측 추가 이전이라 해당 실패의 정확한 지점과 원인을 복원할 수 없다. 양측 CONNECTED 대기는 경과 시간상 후보이지만, 테스트 경합·CI 환경·제품 결함 중 확정 가능한 원인은 없다. 반복 PASS는 관측 범위의 비재현을 뜻한다. 원인 미해결에 따른 P1 위험은 해소되지 않았으며 병합하지 않는다. 최종 변경의 CI 및 독립 리뷰는 별도 확인한다.
+
 ### 로컬 RC 추가 검증 (2026-11-05)
 
 - **PASS — 빌드·서명·설치:** 기존 Debug 키로 서명한 `app-rcLocal.apk` SHA-256 `7103dfef4df9d3268afb8be581d24fad1e22514f81c3e51c5f839886aaad79b1`. `apksigner verify --verbose` v2 서명 확인. Android API 36 실기기에 `dev.fanstage.android.rclocal` 신규 설치 성공. 기존 `dev.fanstage.android` 패키지는 설치 상태를 유지했다. RC는 로컬 검증 전용이며 배포용 서명이 아니다.
@@ -11,7 +20,7 @@
 - **리소스 정리:** 위 세 번의 실제 화면 Player Init/Release 쌍과 별도 RC 계측의 해제된 Player controller·listener 약한 참조 회수, Chat ViewModel 종료 시 이벤트 Flow 취소와 transport.close 호출을 확인했다. 코드상 Player는 listener 제거·surface clear·release, AndroidView는 player 연결 해제, 화면 ViewModel은 Job 취소와 transport 종료를 수행한다. 기본 RC Fake 경로에는 소켓이 없다. 실제 WebSocket 종료 코드는 취소·socket cancel·pool eviction을 포함하지만 이번 RC에서 실기기 소켓 종료를 관측하지 않았다. 장시간 heap, 전체 누수 부재, Surface 회수 자체는 NOT_RUN이다.
 - **공개물 감사 진행 중:** 기존 제한적 Git 객체·CI 산출물 패턴 점검은 아래 기록 참조. 현재 추적 파일명과 과거 커밋 파일명에서 원본 trace·keystore·개인키 확장자는 발견되지 않았으며 trace 분석 스크립트는 존재한다. 로컬 RC APK 175개 항목 중 HLS fixture와 AndroidX 라이선스 파일이 확인됐고 이름 기준 trace·키 파일은 발견되지 않았다. 이는 모든 개인정보·비밀 부재의 증명이 아니다. 의존성별 라이선스, 콘텐츠 권리, CI 로그·artifact 추가 감사와 최종 공개물 검증은 미완료다. 루트 LICENSE도 없고 라이선스는 미결정이다. 공개 APK는 준비되지 않았다.
 - README의 실기기 성능 미실행 문구는 실제 M6 실험 이력과 충돌해 바로잡았다. 실험 변경은 되돌렸으며 개선 효과는 입증되지 않았다. 전체 TalkBack, 장시간 재측정, 실제 LMK, 원격 LIVE는 NOT_RUN이다.
-- 새 변형 소스에 대한 PR CI·독립 리뷰는 NOT_RUN이다. 사용자는 CI 전용 일회성 Debug 키 생성을 허용했다. 공개 Release 키 생성·등록은 승인되지 않았으며 일반 Release에는 서명을 적용하지 않는다.
+- 사용자는 CI 전용 일회성 Debug 키 생성을 허용했다. 공개 Release 키 생성·등록은 승인되지 않았으며 일반 Release에는 서명을 적용하지 않는다. PR 리뷰·CI 결과는 위 상태 항목 참조.
 
 ### 추가 감사 (2026-11-05)
 
