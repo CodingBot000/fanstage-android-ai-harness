@@ -1,12 +1,24 @@
-# FanStage — Android 영상·실시간 채팅 데모
+# FanStage — Native Android Fan Experience
 
-FanStage는 **합성 HLS 영상과 채팅을 한 화면에서 다루는 Android 포트폴리오 프로젝트**입니다. 기본 실행은 로컬 합성 VOD와 가상 채팅을 사용합니다. 별도의 로컬 서버를 연결하면 PostgreSQL과 WebSocket/HTTP를 통한 실제 채팅 계약을 살펴볼 수 있습니다. 공개 방송이나 운영 서비스는 아닙니다.
+FanStage는 **Kotlin·Jetpack Compose로 구현한 가상의 아티스트 팬 커뮤니티 Android 포트폴리오**입니다. Discover·Community·Media·Messages를 탐색하고, 기존 Media3 HLS 재생과 채팅 화면으로 이어집니다. 기본 데이터와 DM·좋아요·댓글은 로컬 Fake이며, 실제 WebSocket/HTTP·Spring Boot·PostgreSQL 연동은 별도의 로컬 개발 서버에서 검증했습니다. 실제 방송·운영 팬 서비스는 아닙니다.
 
-**현재 상태: Portfolio Ready — v0.1 (소스·로컬 빌드 절차 제공, 공개 APK 없음)**. 기본 데모의 빌드·실행과 관련 CI·검증 근거를 확인했습니다. [최종 제출 범위와 남은 한계](docs/reviews/M8-final-readiness.md).
+**현재 상태: v0.1 기술 코어 + UX-001~006 Compose 확장([PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36) 병합)**. 소스·로컬 빌드 절차 제공, 공개 APK 없음. 기존 [v0.1 검증·한계](docs/reviews/M8-final-readiness.md)와 [UX 통합 근거](docs/specs/UX-006-integration.md)를 구분해 기록합니다.
+
+## Compose 화면 미리보기
+
+| Discover Home | Community Feed |
+|:--:|:--:|
+| ![Discover Home — Hero 및 추천 콘텐츠](docs/evidence/ux-006/home.png) | ![Community — 아티스트와 피드](docs/evidence/ux-003/community.png) |
+| Media | Messages |
+| ![Media — 영상 그리드와 필터](docs/evidence/ux-004/media.png) | ![Messages — 로컬 대화 목록](docs/evidence/ux-005/messages.png) |
+
+[합성 영상 재생·채팅 상세 화면](docs/evidence/ux-006/live.png) · Discover·LIVE는 UX-006 통합 시점 캡처, Community·Media·Messages는 공통 TopBar 정리 이전 단계의 기록입니다. 모든 아티스트와 콘텐츠는 가상입니다.
 
 | 무엇을 만들었나 | 어떤 문제를 다뤘나 | 어떻게 확인했나 |
 |---|---|---|
-| Kotlin·Compose 룸 목록/상세, Media3 플레이어, Fake 채팅과 로컬 WebSocket 서버 | ACK 유실·중복·순서 역전, 누락 복구, 화면 이탈 시 자원 해제, 재생과 채팅의 독립성 | 단위 테스트, 로컬 서버 장애 주입, Android 에뮬레이터·실기기, CI 및 제한된 성능 실험 |
+| Compose 4개 메인 탭과 커뮤니티·게시물·대화·LIVE/Replay 상세, Media3 플레이어, Fake 및 실제 로컬 WebSocket 채팅 | 여러 화면의 상태·탭 복원, ACK 유실·중복·순서 역전·누락 복구, 화면 이탈 시 자원 해제 | UX 계측 14건 및 서버 장애 주입, CI·에뮬레이터·실기기에서 수행한 범위별 검증 |
+
+### 기존 LIVE/Chat 코어 시연 (UX 확장 이전 영상)
 
 [![합성 VOD와 Fake 채팅 시연 미리보기](docs/portfolio/media/offline-demo-preview.png)](docs/portfolio/media/offline-demo.mp4)
 
@@ -22,7 +34,7 @@ cd android
 ./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest --no-daemon
 ```
 
-Android Studio의 `app` Debug 구성을 에뮬레이터에 실행하면 방 목록 → 상세 화면으로 진입할 수 있습니다. 영상은 프로젝트에 포함된 무음 합성 VOD이고, 채팅은 장치 내부의 Fake 서버입니다. Debug 빌드는 Android 개발용 서명을 사용하며 처음 빌드하는 환경에서는 Android 도구가 Debug 키를 생성할 수 있습니다. **공개 APK는 제공하지 않습니다.** 다른 OS 설정과 자세한 빌드 안내는 [Android README](android/README.md)를 참조하세요.
+Android Studio의 `app` Debug 구성을 에뮬레이터에 실행하면 Discover 홈에서 Community·Media·Messages를 탐색하고 LIVE/Replay 상세로 진입할 수 있습니다. 영상은 프로젝트에 포함된 무음 합성 VOD이고, 채팅은 장치 내부의 Fake 서버입니다. Debug 빌드는 Android 개발용 서명을 사용하며 처음 빌드하는 환경에서는 Android 도구가 Debug 키를 생성할 수 있습니다. **공개 APK는 제공하지 않습니다.** 다른 OS 설정과 자세한 빌드 안내는 [Android README](android/README.md)를 참조하세요.
 
 터미널에서 실행하려면 부팅된 **새 에뮬레이터**를 사용하고 `android/`에서 다음 명령을 실행합니다. `adb devices -l`에서 확인한 에뮬레이터 ID를 지정하세요. `install`은 같은 패키지가 이미 있으면 실패하며, 기존 앱을 교체하지 않습니다.
 
@@ -39,7 +51,9 @@ Debug 상세 화면에는 로컬 서버 개발 설정이 먼저 나타납니다.
 
 ## 설계와 검증
 
-- [아키텍처와 검증 상세](docs/portfolio/architecture-and-evidence.md) — 화면·ViewModel·Player·Chat·서버의 책임과 복구 경계.
+- [UX-001~006 통합 기록](docs/specs/UX-006-integration.md) — 확장 화면·로컬 계측 14건·서버 연동·남은 한계.
+- [UX 통합 최종 PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36) — Android·서버 CI PASS와 독립 리뷰 P2 두 건 수정 및 해결 기록.
+- [아키텍처와 검증 상세](docs/portfolio/architecture-and-evidence.md) — v0.1 Player·Chat·서버의 책임과 복구 경계.
 - [실행 시연과 장애 주입 안내](docs/portfolio/demo-and-faults.md) — 화면에서 직접 확인 가능한 흐름과 별도 테스트의 장애·복구 증거.
 - [포트폴리오 소개 문안](docs/portfolio/summary.md) — 구현과 검증 범위를 명시한 한 줄·상세 소개.
 - [M5 장애 검증](docs/specs/M5-fault-recovery.md) — ACK 유실, 소켓 단절, 지연 snapshot과 테스트별 범위.
