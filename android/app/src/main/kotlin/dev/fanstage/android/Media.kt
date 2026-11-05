@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
@@ -28,10 +29,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
             DiscoverState.Error -> Button(onClick = viewModel::retry) { Text(stringResource(R.string.discover_retry)) }
             is DiscoverState.Ready -> LazyVerticalGrid(columns = GridCells.Fixed(2), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (filter != 2) items(current.data.content, key = { it.id }) { content ->
-                    Card(onClick = { onLive(content.id) }, modifier = Modifier.testTag("media_${content.id}")) { Column { Image(painterResource(content.artwork), null, Modifier.fillMaxWidth().height(130.dp), contentScale = ContentScale.Crop); Column(Modifier.padding(12.dp)) { Text(stringResource(R.string.demo_live), color = MaterialTheme.colorScheme.primary); Text(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium); Text(content.artist) } } }
+                    Card(onClick = { onLive(content.id) }, modifier = Modifier.testTag("media_${content.id}")) { Column { Image(painterResource(fictionalArtists.firstOrNull { it.id == content.artistId }?.feed ?: content.artwork), null, Modifier.fillMaxWidth().aspectRatio(16f / 10f), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter); Column(Modifier.padding(12.dp)) { Text(stringResource(R.string.demo_live), color = MaterialTheme.colorScheme.primary); Text(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium); Text(content.artist) } } }
                 }
                 if (filter != 1) item {
-                    Card(onClick = onReplay, modifier = Modifier.testTag("media_replay")) { Column { Image(painterResource(R.drawable.discover_hero), null, Modifier.fillMaxWidth().height(130.dp), contentScale = ContentScale.Crop); Column(Modifier.padding(12.dp)) { Text("REPLAY", color = MaterialTheme.colorScheme.primary); Text("Studio diary", style = MaterialTheme.typography.titleMedium); Text("Paper Lantern") } } }
+                    Card(onClick = onReplay, modifier = Modifier.testTag("media_replay")) { Column { Image(painterResource(R.drawable.paper_lantern_feed_01), null, Modifier.fillMaxWidth().aspectRatio(16f / 10f), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter); Column(Modifier.padding(12.dp)) { Text("REPLAY", color = MaterialTheme.colorScheme.primary); Text("Studio diary", style = MaterialTheme.typography.titleMedium); Text("Paper Lantern") } } }
                 }
             }
         }

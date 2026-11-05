@@ -58,4 +58,5 @@
     <string name="chat_retry_message">메시지 다시 전송</string>
     <string name="chat_retry_gap">누락된 메시지 다시 불러오기</string>
     <string name="chat_timestamp">전송 시간 %1$s</string>
+<string name="demo_live_room">라이브 룸 데모 · 합성 영상</string>
 </resources>

@@ -92,9 +92,11 @@ private fun FanStageApp() {
         composable("replay") {
             Scaffold { padding ->
                 Column(Modifier.fillMaxSize().padding(padding).padding(16.dp).testTag("replay_detail")) {
-                    TextButton(onClick = { navController.popBackStack() }, modifier = Modifier.testTag("replay_back")) { Text(stringResource(R.string.replay_back)) }
+                    TextButton(onClick = { navController.popBackStack() }, modifier = Modifier.testTag("replay_back")) { Text(stringResource(R.string.community_back)) }
+                    Text(stringResource(R.string.replay), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
                     Text("Paper Lantern · Studio diary", style = MaterialTheme.typography.headlineMedium)
-                    PlayerPanel("replay-studio-diary")
+                    Spacer(Modifier.height(16.dp))
+                    Card(Modifier.fillMaxWidth()) { Column(Modifier.padding(12.dp)) { PlayerPanel("replay-studio-diary") } }
                 }
             }
         }
