@@ -666,3 +666,8 @@
 ## PLAYER-001 병합 전 문서 정리 (2026-11-07)
 - [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) `78c91cdacc47e80626401d2fdaf02535f0b5bbf9`: 활성 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454714) 및 [PostgreSQL·서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454845) PASS. 원격 에뮬레이터 Job과 M4 Android 에뮬레이터 단계 SKIPPED. GitHub 공식 승인 리뷰는 없으며 별도 컨텍스트의 정적 독립 리뷰 결과와 구분한다.
 - SDD 테스트 매트릭스·ADR-0010 상태·STATUS 상단을 확인된 결과로 정리했다. 이전 FAIL·수정 이력 및 전환 프레임 전수, 실제 미선언 CEA 방송, 장시간 성능·메모리, 기기 접근성·오디오 청취 NOT_RUN은 보존한다. 본 후속 변경은 문서만 포함한다. 최종 head CI와 병합 결과는 후속 기록한다.
+
+## PLAYER-001 병합 결과 (2026-11-07)
+- [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) 최종 head `edc70e5ab527502c96ef5058400ed56ef7f69092`, base `92e4ae8cbd8354aed55198c5a76911f5019e28ee`. Ready 전환 후 Squash Merge `760ae1ec8e6106f09945ad7228dc062937701c1e`. GitHub 공식 승인 리뷰는 없고, 별도 컨텍스트 정적 독립 리뷰에서 추가 P0/P1/P2 0건이었다.
+- 최종 PR head [Android 빌드·lint·단위 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984158) PASS, [PostgreSQL·서버 장애 주입 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) PASS. 원격 에뮬레이터 Job 및 M4 Android 에뮬레이터 단계는 사용자 설정에 따라 SKIPPED. 로컬 기준 `f99c224` 단위 56/56·전용 AVD 전체 계측 41/41 PASS.
+- 병합 커밋 `760ae1ec8e6106f09945ad7228dc062937701c1e` 기준 main [Android 빌드·lint·단위 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42241675582) PASS 및 [PostgreSQL·서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42241675589) PASS. 원격 에뮬레이터 Job과 M4 Android 단계는 SKIPPED. 실제 미선언 CEA 방송·전환 프레임 전수·장시간 성능과 heap·전 기기 접근성 및 오디오 청취는 NOT_RUN으로 유지. PIP는 PLAYER-002로 남긴다.
