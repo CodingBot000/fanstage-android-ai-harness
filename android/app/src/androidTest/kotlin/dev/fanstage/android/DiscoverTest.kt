@@ -117,13 +117,16 @@ class DiscoverTest {
         val detail = rule.onNodeWithTag("post_detail").getUnclippedBoundsInRoot()
         check((input.right - input.left) > (detail.right - detail.left) * 0.8f && send.left >= input.left && send.right <= input.right)
         rule.onNodeWithTag("comment_send").performClick()
+        rule.onNodeWithTag("post_comments").performScrollToNode(hasText("Hello community"))
         rule.onNodeWithText("Hello community").assertExists()
         rule.onNodeWithTag("comment_input").performTextInput("Sent with keyboard")
         rule.onNodeWithTag("comment_input").performImeAction()
+        rule.onNodeWithTag("post_comments").performScrollToNode(hasText("Sent with keyboard"))
         rule.onNodeWithText("Sent with keyboard").assertExists()
         rule.activityRule.scenario.recreate()
         rule.onNodeWithTag("post_like").performScrollTo()
         rule.onNodeWithTag("post_like").assertIsOn()
+        rule.onNodeWithTag("post_comments").performScrollToNode(hasText("Hello community"))
         rule.onNodeWithText("Hello community").assertExists()
     }
     @Test fun replayPlaysAndReturns() {

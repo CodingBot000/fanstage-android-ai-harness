@@ -109,3 +109,7 @@
 - UDF-003: Discover/Media 재시도 행동과 Media 필터 경계 정리. 관련 컴파일·취소 회귀 PASS, 전체 통합 NOT_RUN.
 - UDF-004 로컬 통합: Android 빌드/lint/unit, 모듈·manifest 검사, 전용 API 36 기존 계측 18/18 및 상태 기반 UI 2/2, 격리 서버 통합·장애 테스트 PASS. 외부 MP4 7개·실기기·성능·전체 접근성 NOT_RUN. 최종 PR CI·독립 리뷰 대기.
 - UDF-004 원격: 구현 head `c4fda55` Android 및 서버 CI PASS, 독립 Codex 리뷰 지적 0건. 기록 추가 후 최종 head 검사 확인 중: [PR #43](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/43). 원격 에뮬레이터는 기존 사용자 설정으로 SKIPPED.
+
+## READABILITY-001~006 (2026-11-06)
+- Community/Discover/Media/Messages 구조 분리와 로컬 빌드/lint/unit·모듈/manifest 검사 PASS. 전용 신규 API 36 AVD 계측 20건 중 2건 FAIL; 같은 두 실패가 변경 전 main에서도 재현됐다. 기존 테스트 변경과 live 코드 변경이 계획에서 금지되어 있어 원인 해결 전 통합 PR/병합은 차단. [SDD](specs/READABILITY-001-006-compose-structure.md).
+- READABILITY 再検証: ユーザー承認の下、画面外コメントへのテストスクロールとIME移動後の座標安定待ちを追加。専用 API 36 で最終 UI 20/20、ビルド/lint/unit PASS。初回失敗と中間再発は SDD に保持。PR・CI・レビュー待ち。
