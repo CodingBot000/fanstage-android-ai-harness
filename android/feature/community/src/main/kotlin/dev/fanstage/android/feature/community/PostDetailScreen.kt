@@ -57,7 +57,7 @@ fun PostDetailScreen(
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().testTag("post_detail")) {
             LazyColumn(
-                Modifier.weight(1f).fillMaxWidth(),
+                Modifier.weight(1f).fillMaxWidth().testTag("post_comments"),
                 contentPadding = PaddingValues(20.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {

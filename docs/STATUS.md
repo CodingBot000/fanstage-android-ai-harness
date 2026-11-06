@@ -112,3 +112,4 @@
 
 ## READABILITY-001~006 (2026-11-06)
 - Community/Discover/Media/Messages 구조 분리와 로컬 빌드/lint/unit·모듈/manifest 검사 PASS. 전용 신규 API 36 AVD 계측 20건 중 2건 FAIL; 같은 두 실패가 변경 전 main에서도 재현됐다. 기존 테스트 변경과 live 코드 변경이 계획에서 금지되어 있어 원인 해결 전 통합 PR/병합은 차단. [SDD](specs/READABILITY-001-006-compose-structure.md).
+- READABILITY 再検証: ユーザー承認の下、画面外コメントへのテストスクロールとIME移動後の座標安定待ちを追加。専用 API 36 で最終 UI 20/20、ビルド/lint/unit PASS。初回失敗と中間再発は SDD に保持。PR・CI・レビュー待ち。

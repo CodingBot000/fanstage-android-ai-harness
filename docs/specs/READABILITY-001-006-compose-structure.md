@@ -38,3 +38,9 @@ Contract/VM/Route/Screen 분리, 필터 행 및 LIVE·로컬 영상·합성 Repl
 - 새 전용 Pixel 2 API 36 AVD (1080×1920, 격리 ADB 5039, 단일 기기)에서 UiContractTest/DiscoverTest/DeviceUiRegressionTest/RoomNavigationSmokeTest 20건 중 18 PASS, 2 FAIL: DiscoverTest.communityPostLikeAndComment의 댓글 노드 미발견(line 120); DeviceUiRegressionTest.liveChatKeyboardSendAndBack의 send bounds assertion(line 125). 같은 AVD에서 변경 전 `09728c4`의 같은 두 테스트도 동일 지점 FAIL. 임시 가상 화면 override 1080×2400에서는 변경 전 LIVE 검사는 PASS, 댓글 검사는 동일하게 FAIL. 테스트 assertion을 변경·비활성화하지 않았다.
 - 동일 Pixel 2, 언어/크기에서 기준·변경 APK의 Home/Community/Artist/Post/Media/Messages/Conversation 캡처 비교: 화면 본문(상태 표시줄 제외) 6개는 동일했고 Community는 탭 선택 애니메이션 프레임 차이. LIVE 진입·복귀는 계측에서 검사했으나 해당 bounds FAIL. 전 화면·모든 상태 동등성은 미검증.
 - 기존 기기 데이터 변경을 피하려고 새 Pixel 6 AVD도 생성했으나 격리 ADB가 장치를 감지하지 못해 계측 NOT_RUN. 차단된 테스트의 원인 및 해결 전 PR/CI/리뷰/병합 NOT_RUN. 서버 회귀 NOT_RUN (변경 전 PR #43 서버 CI 참조), 외부 MP4·실기기·전체 TalkBack·성능 NOT_RUN.
+
+## READABILITY-006 再検証 (ユーザー選択 1)
+- ユーザーが既存失敗の追加調査と必要なテスト・LIVE UI修正の範囲拡大を承認。Communityの失敗は画面外の LazyColumn 項目を直接探していたため、`post_comments` タグを追加し、当該コメントへスクロールしてから送信・再生成後の内容を検証する。アサーションは削除せず、ユーザーの閲覧操作を再現する。
+- LIVE位置検査の再失敗では入力欄 top 627.43dp、ボタン top 335.62dp と、同じ親子を別々の IME 移動フレームで測ったことを示す座標差が観測された。同様のDM検査も一度失敗。両者について2つの矩形が300ms安定してから元の全辺包含を検証する。LIVE製品コードは変更していない。初回失敗の根本原因の完全な証明はなく、タイミング依存のリスクは残す。
+- 新規 Pixel 2 API 36 (1080×1920、ADB 5039単一対象): 修正前全20件は18 PASS/2 FAIL、変更前にも同一2件 FAIL。コメント修正後の焦点2件は初回および追加3回 PASS、ただし別の全体実行でLIVE座標失敗と次の実行でDM座標失敗を観測。安定待ち追加後、UiContractTest/DiscoverTest/DeviceUiRegressionTest/RoomNavigationSmokeTest **20/20 PASS**。元の失敗は上の記録に保持。
+- 本体・タグ変更後の全ビルド/lint/unit/core:data PASS、モジュル境界・manifest・diff check PASS。テスト最終版も上記全20件でコンパイル・実行済。サーバ独立回帰は NOT_RUN (前回 main CI 参照)。実機・性能・全TalkBack・外部MP4は NOT_RUN。最終 PR CI・独立レビュー待ち。

@@ -91,9 +91,7 @@ class DeviceUiRegressionTest {
         val titleBounds = rule.onNodeWithText("Paper Lantern").getUnclippedBoundsInRoot()
         assertTrue("back icon must be left of title", backBounds.right <= titleBounds.left)
         rule.onNodeWithTag("dm_input").performTextInput("Device IME message")
-        val input = rule.onNodeWithTag("dm_input", useUnmergedTree = true).getUnclippedBoundsInRoot()
-        val send = rule.onNodeWithTag("dm_send", useUnmergedTree = true).getUnclippedBoundsInRoot()
-        assertTrue("send button must be inside input", send.left >= input.left && send.right <= input.right && send.top >= input.top && send.bottom <= input.bottom)
+        assertComposerBounds("dm_input", "dm_send")
         rule.onNodeWithTag("dm_input").performImeAction()
         rule.onNodeWithText("Device IME message").assertIsDisplayed()
         rule.onNodeWithTag("messages_back").performClick()
@@ -120,9 +118,7 @@ class DeviceUiRegressionTest {
         val backDescription = rule.activity.getString(dev.fanstage.android.core.designsystem.R.string.navigation_back)
         rule.onNodeWithTag("room_back").assertIsDisplayed().assert(hasContentDescription(backDescription))
         rule.onNodeWithTag("chat_input").performTextInput("Device LIVE IME")
-        val input = rule.onNodeWithTag("chat_input", useUnmergedTree = true).getUnclippedBoundsInRoot()
-        val send = rule.onNodeWithTag("chat_send", useUnmergedTree = true).getUnclippedBoundsInRoot()
-        assertTrue("LIVE send must be inside input", send.left >= input.left && send.right <= input.right && send.top >= input.top && send.bottom <= input.bottom)
+        assertComposerBounds("chat_input", "chat_send")
         rule.onNodeWithTag("chat_input").performImeAction()
         rule.waitUntil(10_000) { rule.onAllNodesWithText("Device LIVE IME").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("room_back").performClick()
@@ -143,6 +139,30 @@ class DeviceUiRegressionTest {
         rule.onNodeWithTag("replay_back").performClick()
         rule.onNodeWithTag("media_screen").assertIsDisplayed()
         rule.waitUntil(10_000) { findPlayer(rule.activity.findViewById(android.R.id.content)) == null }
+    }
+
+    private fun assertComposerBounds(inputTag: String, sendTag: String) {
+        // Bounds must be sampled after the IME animation settles; otherwise the
+        // two reads can observe different positions of the same moving composer.
+        var previous: Pair<androidx.compose.ui.unit.DpRect, androidx.compose.ui.unit.DpRect>? = null
+        var stableSince = 0L
+        rule.waitUntil(10_000) {
+            val input = rule.onNodeWithTag(inputTag, useUnmergedTree = true).getUnclippedBoundsInRoot()
+            val send = rule.onNodeWithTag(sendTag, useUnmergedTree = true).getUnclippedBoundsInRoot()
+            val bounds = input to send
+            val now = android.os.SystemClock.uptimeMillis()
+            if (bounds != previous) {
+                previous = bounds
+                stableSince = now
+            }
+            now - stableSince >= 300
+        }
+        val (input, send) = checkNotNull(previous)
+        assertTrue(
+            "$sendTag must be inside $inputTag: input=$input send=$send",
+            send.left >= input.left && send.right <= input.right &&
+                send.top >= input.top && send.bottom <= input.bottom,
+        )
     }
 
     private fun findPlayer(view: View): PlayerView? {
