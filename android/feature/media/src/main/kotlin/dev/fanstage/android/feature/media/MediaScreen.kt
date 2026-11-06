@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,7 +56,8 @@ fun MediaScreen(
                 Button(onClick = onRetry) { Text(stringResource(R.string.discover_retry)) }
             is MediaState.Ready ->
                 LazyVerticalGrid(
-                    modifier = Modifier.testTag("media_grid"),
+                    modifier = Modifier.weight(1f).testTag("media_grid"),
+                    contentPadding = PaddingValues(bottom = 100.dp),
                     columns = GridCells.Fixed(2),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),

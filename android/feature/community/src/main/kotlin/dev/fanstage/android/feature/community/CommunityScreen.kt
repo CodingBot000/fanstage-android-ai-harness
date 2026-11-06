@@ -75,7 +75,7 @@ fun CommunityScreen(
                     start = 20.dp,
                     top = if (artistId == null) 5.dp else 20.dp,
                     end = 20.dp,
-                    bottom = 20.dp,
+                    bottom = if (artistId == null) 100.dp else 20.dp,
                 ),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
