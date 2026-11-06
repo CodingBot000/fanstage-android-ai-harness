@@ -34,7 +34,7 @@ class LoadCancellationTest {
                     return latest
                 }
             })
-            runCurrent(); vm.retry(); runCurrent()
+            runCurrent(); vm.onAction(DiscoverUiAction.RetryClicked); runCurrent()
             assertEquals(DiscoverState.Ready(latest), vm.state.value)
             release.complete(Unit); runCurrent()
             assertEquals(DiscoverState.Ready(latest), vm.state.value)
@@ -54,7 +54,7 @@ class LoadCancellationTest {
                     return emptyList()
                 }
             })
-            runCurrent(); vm.retry(); runCurrent()
+            runCurrent(); vm.onAction(CommunityUiAction.RetryClicked); runCurrent()
             assertEquals(CommunityState.Ready(emptyList()), vm.state.value)
             release.complete(Unit); runCurrent()
             assertEquals(CommunityState.Ready(emptyList()), vm.state.value)
@@ -73,7 +73,7 @@ class LoadCancellationTest {
                     return latest
                 }
             })
-            runCurrent(); vm.retry(); runCurrent()
+            runCurrent(); vm.onAction(MediaUiAction.RetryClicked); runCurrent()
             assertEquals(MediaState.Ready(latest), vm.state.value)
             release.complete(Unit); runCurrent()
             assertEquals(MediaState.Ready(latest), vm.state.value)

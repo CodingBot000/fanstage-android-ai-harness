@@ -11,3 +11,8 @@ CommunityState의 Loading/Error/Ready 의미를 유지하고 CommunityUiAction�
 MessagesUiState와 ConversationOpened/SendClicked 행동을 추가하고 목록·대화를 Route와 Screen으로 분리했다. 진입 읽음 처리는 artistId 기준 LaunchedEffect에 있고 초안은 기존처럼 remember만 사용한다. 스크롤 및 IME 로직은 Screen에 남는 UI 전용 상태다. 기존 Repository 및 Navigation 계약은 유지한다.
 
 검증: `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*MessagesViewModelTest*' --tests '*LoadCancellationTest*' :core:data:test` PASS. 최초 계측 컴파일은 기존 테스트의 직접 메서드 호출 때문에 FAIL, 액션으로 갱신 후 PASS. 실제 계측·통합·CI NOT_RUN. 다음: UDF-003.
+
+## UDF-003
+Discover/Media 재시도에 필요한 액션만 연결했다. Media 필터는 Route의 rememberSaveable 단일 소유이며 Screen은 선택값과 콜백을 받는다. 내비게이션 콜백 및 미디어 데이터는 유지한다.
+
+검증: SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*LoadCancellationTest*'` PASS (세 취소 경합 및 카탈로그 격리). 전체 통합·계측·CI NOT_RUN. 다음 UDF-004.

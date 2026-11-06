@@ -52,7 +52,7 @@ class DeviceUiRegressionTest {
                 CompositionLocalProvider(LocalDensity provides Density(current.density, scale)) {
                     FanStageTheme { Column {
                         CardTwoLineText("A deliberately long line of words that cannot fit into the two available rows of this narrow card", TextStyle(fontSize = 20.sp, lineHeight = 24.sp), Modifier.width(120.dp), onTextLayout = { layout.set(it) })
-                        MediaScreen(MediaState.Ready(DiscoverData(emptyList(), listOf(first, second))), {}, {}, {})
+                        MediaScreen(MediaState.Ready(DiscoverData(emptyList(), listOf(first, second))), 0, {}, {}, {}, {})
                     } }
                 }
             } }

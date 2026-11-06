@@ -557,3 +557,6 @@
 ## UDF-002 (2026-11-06)
 - Messages와 app navigation, 단위/계측 테스트 호출 변경. 초안 복원 정책과 IME/스크롤 유지.
 - 최초 계측 컴파일 FAIL: 테스트의 삭제된 직접 메서드 호출. 테스트를 액션으로 전환 후 SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*MessagesViewModelTest*' --tests '*LoadCancellationTest*' :core:data:test` PASS. 실제 계측·통합 NOT_RUN. 다음 UDF-003.
+
+## UDF-003 (2026-11-06)
+- Discover/Media 재시도 액션, Media Route의 saveable 필터 및 관련 테스트 변경. SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*LoadCancellationTest*'` PASS. 전체 통합·계측·CI NOT_RUN. 다음 UDF-004.
