@@ -44,3 +44,9 @@ Contract/VM/Route/Screen 분리, 필터 행 및 LIVE·로컬 영상·합성 Repl
 - LIVE位置検査の再失敗では入力欄 top 627.43dp、ボタン top 335.62dp と、同じ親子を別々の IME 移動フレームで測ったことを示す座標差が観測された。同様のDM検査も一度失敗。両者について2つの矩形が300ms安定してから元の全辺包含を検証する。LIVE製品コードは変更していない。初回失敗の根本原因の完全な証明はなく、タイミング依存のリスクは残す。
 - 新規 Pixel 2 API 36 (1080×1920、ADB 5039単一対象): 修正前全20件は18 PASS/2 FAIL、変更前にも同一2件 FAIL。コメント修正後の焦点2件は初回および追加3回 PASS、ただし別の全体実行でLIVE座標失敗と次の実行でDM座標失敗を観測。安定待ち追加後、UiContractTest/DiscoverTest/DeviceUiRegressionTest/RoomNavigationSmokeTest **20/20 PASS**。元の失敗は上の記録に保持。
 - 本体・タグ変更後の全ビルド/lint/unit/core:data PASS、モジュル境界・manifest・diff check PASS。テスト最終版も上記全20件でコンパイル・実行済。サーバ独立回帰は NOT_RUN (前回 main CI 参照)。実機・性能・全TalkBack・外部MP4は NOT_RUN。最終 PR CI・独立レビュー待ち。
+
+## 실기기 검증 (2026-11-06)
+- 사용자가 연결 실기기 테스트와 기존 앱 덮어쓰기·재설치를 명시적으로 승인했다. SM-S908N / Android API 36에서 `1239c2a`의 일반 Debug 앱을 `install -r`로 갱신하고, 계측은 별도 `dev.fanstage.android.devicecheck` 패키지에 설치해 ADB 일련번호를 명시한 `am instrument`로 실행했다. 일반 앱의 한국어 홈 실행을 실기기에서 확인했다.
+- 최초 20건 중 19 PASS/1 FAIL: Activity 재생성 후 LazyColumn의 화면 밖 `post_like`를 `performScrollTo()`로 찾지 못했다. 실제 데이터 손실로 단정하지 않고 기존 `post_comments` 목록의 `performScrollToNode(hasTestTag("post_like"))`로 대상까지 스크롤한 다음 기존 좋아요 상태 및 댓글 검증을 유지했다. 제품 코드 변경 없음.
+- 수정된 계측 APK의 UiContractTest, DiscoverTest, DeviceUiRegressionTest, RoomNavigationSmokeTest 전체 **20/20 PASS** (`am instrument`, runner OK). 합성 HLS 첫 프레임·TextureView·뒤로가기, LIVE IME 전송, Community 좋아요·댓글 및 Activity 재생성, DM, Media 필터·탐색 포함. 최초 FAIL 기록은 유지한다.
+- 별도 서버 연결/실제 WebSocket, 외부 MP4 7개·오디오 청취, 장시간 성능·전체 TalkBack·프로세스 강제 종료 복구는 NOT_RUN. Activity 재생성 PASS는 프로세스 종료 복구를 증명하지 않는다. 스크린샷·장치 일련번호·개인정보를 Git에 포함하지 않는다.
