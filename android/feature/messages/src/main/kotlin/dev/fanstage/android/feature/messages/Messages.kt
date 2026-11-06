@@ -33,14 +33,27 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.distinctUntilChanged
 
-class MessagesViewModel(private val repository: MessageRepository) : ViewModel() {
-    private val mutableState = MutableStateFlow(repository.snapshot())
-    val state = mutableState.asStateFlow()
-    fun markRead(artistId: String) { mutableState.value = repository.markRead(artistId) }
-    fun send(artistId: String, text: String) { mutableState.value = repository.send(artistId, text) }
+data class MessagesUiState(val conversations: List<LocalConversation>)
+sealed interface MessagesUiAction {
+    data class ConversationOpened(val artistId: String) : MessagesUiAction
+    data class SendClicked(val artistId: String, val text: String) : MessagesUiAction
 }
-@Composable fun MessagesList(viewModel: MessagesViewModel, artists: List<FictionalArtist>, onOpen: (String) -> Unit) {
-    val conversations by viewModel.state.collectAsStateWithLifecycle()
+class MessagesViewModel(private val repository: MessageRepository) : ViewModel() {
+    private val mutableState = MutableStateFlow(MessagesUiState(repository.snapshot()))
+    val state = mutableState.asStateFlow()
+    fun onAction(action: MessagesUiAction) {
+        mutableState.value = MessagesUiState(when (action) {
+            is MessagesUiAction.ConversationOpened -> repository.markRead(action.artistId)
+            is MessagesUiAction.SendClicked -> repository.send(action.artistId, action.text)
+        })
+    }
+}
+@Composable fun MessagesListRoute(viewModel: MessagesViewModel, artists: List<FictionalArtist>, onOpen: (String) -> Unit) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    MessagesListScreen(state, artists, onOpen)
+}
+@Composable fun MessagesListScreen(state: MessagesUiState, artists: List<FictionalArtist>, onOpen: (String) -> Unit) {
+    val conversations = state.conversations
     LazyColumn(Modifier.fillMaxSize().testTag("messages_list"), contentPadding = PaddingValues(start = 20.dp, top = 5.dp, end = 20.dp, bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { Text(stringResource(R.string.messages), style = MaterialTheme.typography.headlineMedium); Text(stringResource(R.string.local_demo)) }
         items(conversations, key = { it.artistId }) { conversation ->
@@ -54,14 +67,16 @@ class MessagesViewModel(private val repository: MessageRepository) : ViewModel()
         }
     }
 }
-@Composable fun ConversationScreen(viewModel: MessagesViewModel, artistId: String, artists: List<FictionalArtist>, onBack: () -> Unit) {
-    val conversations by viewModel.state.collectAsStateWithLifecycle()
-    val conversation = conversations.firstOrNull { it.artistId == artistId }
-    val artist = artists.firstOrNull { it.id == artistId }
+@Composable fun ConversationRoute(viewModel: MessagesViewModel, artistId: String, artists: List<FictionalArtist>, onBack: () -> Unit) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     var draft by remember(artistId) { mutableStateOf("") }
+    LaunchedEffect(artistId) { viewModel.onAction(MessagesUiAction.ConversationOpened(artistId)) }
+    ConversationScreen(state.conversations.firstOrNull { it.artistId == artistId }, artistId, artists, draft, { draft = it }, viewModel::onAction, onBack)
+}
+@Composable fun ConversationScreen(conversation: LocalConversation?, artistId: String, artists: List<FictionalArtist>, draft: String, onDraftChange: (String) -> Unit, onAction: (MessagesUiAction) -> Unit, onBack: () -> Unit) {
+    val artist = artists.firstOrNull { it.id == artistId }
     val transcript = conversation?.messages.orEmpty()
     val transcriptState = rememberLazyListState()
-    LaunchedEffect(artistId) { viewModel.markRead(artistId) }
     LaunchedEffect(artistId, transcript.size) {
         if (transcript.isNotEmpty()) transcriptState.scrollToItem(transcript.lastIndex)
     }
@@ -94,11 +109,11 @@ class MessagesViewModel(private val repository: MessageRepository) : ViewModel()
                 }
             }
         }
-        val submit: () -> Unit = { viewModel.send(artistId, draft); draft = "" }
+        val submit: () -> Unit = { onAction(MessagesUiAction.SendClicked(artistId, draft)); onDraftChange("") }
         val sendDescription = stringResource(R.string.send_comment)
         OutlinedTextField(
             value = draft,
-            onValueChange = { draft = it },
+            onValueChange = onDraftChange,
             modifier = Modifier.fillMaxWidth().testTag("dm_input"),
             label = { Text(stringResource(R.string.message_input)) },
             trailingIcon = { IconButton(onClick = submit, modifier = Modifier.testTag("dm_send")) { SendIcon(sendDescription) } },

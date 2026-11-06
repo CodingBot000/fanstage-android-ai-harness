@@ -83,9 +83,9 @@ private fun FanStageApp() {
                 else navController.navigate("rooms/${Uri.encode(roomId)}") { launchSingleTop = true }
             }, onReplayClick = { navController.navigate(if (BuildConfig.DEBUG) "local-video/${DemoVideos.all[3 % DemoVideos.all.size].id}" else "replay") { launchSingleTop = true } }, onBenchmarkClick = { navController.navigate("replay") }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
         }
-        composable("messages") { MessagesList(messagesViewModel, artists, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
+        composable("messages") { MessagesListRoute(messagesViewModel, artists, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
         composable("messages/{artistId}") { messageEntry ->
-            ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
+            ConversationRoute(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
         }
         composable("media") {
             MediaRoute(mediaViewModel, onLive = { roomId -> val index = listOf("studio-session", "sketch-break", "tabletop-night").indexOf(roomId); if (BuildConfig.DEBUG && index >= 0) navController.navigate("local-video/${DemoVideos.all[index % DemoVideos.all.size].id}") else navController.navigate("rooms/${Uri.encode(roomId)}") }, onReplay = { navController.navigate("replay") }, videos = if (BuildConfig.DEBUG) DemoVideos.all else emptyList(), onVideo = { navController.navigate("local-video/$it") })
@@ -98,7 +98,7 @@ private fun FanStageApp() {
             CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, onBack = { navController.popBackStack() }, artists = artists)
         }
         composable("community/post/{postId}") { postEntry ->
-            PostDetail(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
+            PostDetailRoute(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
         }
         composable("local-video/{videoId}") { videoEntry ->
             val video = DemoVideos.all.firstOrNull { it.id == videoEntry.arguments?.getString("videoId") }

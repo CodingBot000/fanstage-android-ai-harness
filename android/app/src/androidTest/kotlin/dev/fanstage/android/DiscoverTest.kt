@@ -48,7 +48,7 @@ class DiscoverTest {
                     androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(context.resources.displayMetrics.density, config.fontScale),
                 ) {
                     FanStageTheme {
-                        if (showCommunity.value) CommunityScreen(CommunityState.Ready(emptyList()), null, {}, {}, {})
+                        if (showCommunity.value) CommunityScreen(CommunityState.Ready(emptyList()), null, 0, {}, {}, {}, {})
                         else DiscoverScreen(DiscoverState.Ready(DiscoverData(emptyList(), emptyList())), {}, {})
                     }
                 }
@@ -60,11 +60,11 @@ class DiscoverTest {
     }
     @Test fun communityEmptyAndErrorStates() {
         var retry = false
-        rule.activityRule.scenario.onActivity { activity -> activity.setContent { FanStageTheme { CommunityScreen(CommunityState.Error, null, { retry = true }, {}, {}) } } }
+        rule.activityRule.scenario.onActivity { activity -> activity.setContent { FanStageTheme { CommunityScreen(CommunityState.Error, null, 0, {}, { retry = true }, {}, {}) } } }
         rule.onNodeWithTag("community_error").assertExists()
         rule.onNodeWithText(rule.activity.getString(R.string.discover_retry)).performClick()
         rule.runOnIdle { check(retry) }
-        rule.activityRule.scenario.onActivity { activity -> activity.setContent { FanStageTheme { CommunityScreen(CommunityState.Ready(emptyList()), null, {}, {}, {}) } } }
+        rule.activityRule.scenario.onActivity { activity -> activity.setContent { FanStageTheme { CommunityScreen(CommunityState.Ready(emptyList()), null, 0, {}, {}, {}, {}) } } }
         rule.onNodeWithTag("community_feed").performScrollToNode(hasTestTag("community_empty"))
         rule.onNodeWithTag("community_empty").assertIsDisplayed()
     }

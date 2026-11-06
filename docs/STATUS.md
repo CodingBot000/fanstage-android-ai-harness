@@ -102,3 +102,10 @@
 ## UX-012 (2026-11-06)
 - 그리드/카드 두 줄·말줄임 및 높이 통일, 상세 상단 뒤로가기 아이콘, LIVE/DM 입력창 안 전송 버튼·IME Send, 영상 TextureView 전환 및 앱 아이콘 적용. [SDD](specs/UX-012-layout-navigation-chat-player.md), [영상 surface ADR](adr/ADR-0008-compose-video-surface.md).
 - 에뮬레이터 전체 Android 계측 18/18·서버 통합/장애 회귀 PASS, 이후 UI 계측 5/5 및 일반 Debug/Release/rcLocal/Benchmark 빌드·lint·unit·manifest·모듈 경계 PASS. 키보드 전송 및 영상 전환 프레임 수동 확인. 실기기는 사용자 요청으로 에뮬레이터로 전환해 NOT_RUN. 기존 일반 앱은 사용자 승인에 따라 에뮬레이터에 `install -r`로 갱신했다. 기존 `.gitignore` 변경은 보존한다.
+
+## UDF-001~004 (2026-11-06)
+- UDF-001 진행: Community 액션 및 Post Detail Route/Screen 분리, 관련 컴파일·단위 테스트 PASS. 전체 통합·계측·CI NOT_RUN. [SDD](specs/UDF-001-004-ui-contracts.md).
+- UDF-002: Messages 상태·행동 및 목록/대화 Route·Screen 분리. 관련 컴파일·단위 PASS, 계측·전체 통합 NOT_RUN.
+- UDF-003: Discover/Media 재시도 행동과 Media 필터 경계 정리. 관련 컴파일·취소 회귀 PASS, 전체 통합 NOT_RUN.
+- UDF-004 로컬 통합: Android 빌드/lint/unit, 모듈·manifest 검사, 전용 API 36 기존 계측 18/18 및 상태 기반 UI 2/2, 격리 서버 통합·장애 테스트 PASS. 외부 MP4 7개·실기기·성능·전체 접근성 NOT_RUN. 최종 PR CI·독립 리뷰 대기.
+- UDF-004 원격: 구현 head `c4fda55` Android 및 서버 CI PASS, 독립 Codex 리뷰 지적 0건. 기록 추가 후 최종 head 검사 확인 중: [PR #43](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/43). 원격 에뮬레이터는 기존 사용자 설정으로 SKIPPED.

@@ -23,7 +23,8 @@ import dev.fanstage.android.core.designsystem.CardTwoLineText
 import dev.fanstage.android.core.designsystem.FanStageTheme
 import dev.fanstage.android.core.data.FakeCatalog
 import dev.fanstage.android.core.data.FakeMessageRepository
-import dev.fanstage.android.feature.messages.MessagesList
+import dev.fanstage.android.feature.messages.MessagesListRoute
+import dev.fanstage.android.feature.messages.MessagesUiAction
 import dev.fanstage.android.feature.messages.MessagesViewModel
 import dev.fanstage.android.core.model.ArtworkKey
 import dev.fanstage.android.core.model.DiscoverContent
@@ -51,7 +52,7 @@ class DeviceUiRegressionTest {
                 CompositionLocalProvider(LocalDensity provides Density(current.density, scale)) {
                     FanStageTheme { Column {
                         CardTwoLineText("A deliberately long line of words that cannot fit into the two available rows of this narrow card", TextStyle(fontSize = 20.sp, lineHeight = 24.sp), Modifier.width(120.dp), onTextLayout = { layout.set(it) })
-                        MediaScreen(MediaState.Ready(DiscoverData(emptyList(), listOf(first, second))), {}, {}, {})
+                        MediaScreen(MediaState.Ready(DiscoverData(emptyList(), listOf(first, second))), 0, {}, {}, {}, {})
                     } }
                 }
             } }
@@ -67,12 +68,12 @@ class DeviceUiRegressionTest {
 
     @Test fun messageCardsRemainAlignedWithUnreadAndLongPreview() {
         val model = MessagesViewModel(FakeMessageRepository())
-        model.markRead("paper-lantern")
-        model.send("paper-lantern", "A long preview ".repeat(30))
+        model.onAction(MessagesUiAction.ConversationOpened("paper-lantern"))
+        model.onAction(MessagesUiAction.SendClicked("paper-lantern", "A long preview ".repeat(30)))
         rule.activityRule.scenario.onActivity { activity -> activity.setContent {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
-                FanStageTheme { MessagesList(model, FakeCatalog.artists(), {}) }
+                FanStageTheme { MessagesListRoute(model, FakeCatalog.artists(), {}) }
             }
         } }
         rule.waitForIdle()

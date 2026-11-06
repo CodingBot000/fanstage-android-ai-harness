@@ -46,21 +46,33 @@ sealed interface CommunityState {
     data object Error : CommunityState
     data class Ready(val posts: List<CommunityPost>) : CommunityState
 }
+sealed interface CommunityUiAction {
+    data object RetryClicked : CommunityUiAction
+    data class LikeClicked(val postId: String) : CommunityUiAction
+    data class CommentSubmitted(val postId: String, val text: String) : CommunityUiAction
+}
 class CommunityViewModel(private val repository: CommunityRepository) : ViewModel() {
     private val mutableState = MutableStateFlow<CommunityState>(CommunityState.Loading)
     val state = mutableState.asStateFlow()
     private var loadJob: Job? = null
     init { retry() }
+    fun onAction(action: CommunityUiAction) {
+        when (action) {
+            CommunityUiAction.RetryClicked -> retry()
+            is CommunityUiAction.LikeClicked -> like(action.postId)
+            is CommunityUiAction.CommentSubmitted -> comment(action.postId, action.text)
+        }
+    }
     fun retry() { loadJob?.cancel(); loadJob = viewModelScope.launch { mutableState.value = CommunityState.Loading; try { val posts = repository.posts(); currentCoroutineContext().ensureActive(); mutableState.value = CommunityState.Ready(posts) } catch (e: CancellationException) { throw e } catch (_: Exception) { currentCoroutineContext().ensureActive(); mutableState.value = CommunityState.Error } } }
     fun like(id: String) { if (mutableState.value is CommunityState.Ready) mutableState.value = CommunityState.Ready(repository.toggleLike(id)) }
     fun comment(id: String, text: String) { if (mutableState.value is CommunityState.Ready) mutableState.value = CommunityState.Ready(repository.addComment(id, text)) }
 }
 @Composable fun CommunityRoute(viewModel: CommunityViewModel, artistId: String?, onArtist: (String) -> Unit, onPost: (String) -> Unit, onBack: () -> Unit = {}, artists: List<FictionalArtist> = emptyList()) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    CommunityScreen(state, artistId, viewModel::retry, onArtist, onPost, onBack, artists)
-}
-@Composable fun CommunityScreen(state: CommunityState, artistId: String?, onRetry: () -> Unit, onArtist: (String) -> Unit, onPost: (String) -> Unit, onBack: () -> Unit = {}, artists: List<FictionalArtist> = emptyList()) {
     var selectedTab by rememberSaveable(artistId) { mutableIntStateOf(0) }
+    CommunityScreen(state, artistId, selectedTab, { selectedTab = it }, viewModel::onAction, onArtist, onPost, onBack, artists)
+}
+@Composable fun CommunityScreen(state: CommunityState, artistId: String?, selectedTab: Int, onTabSelected: (Int) -> Unit, onAction: (CommunityUiAction) -> Unit, onArtist: (String) -> Unit, onPost: (String) -> Unit, onBack: () -> Unit = {}, artists: List<FictionalArtist> = emptyList()) {
     val artist = artists.firstOrNull { it.id == artistId }
     Scaffold(topBar = { if (artistId != null) BackTitleBar(artist?.name ?: stringResource(R.string.community), onBack, backTag = "community_back") }) { padding ->
     LazyColumn(Modifier.fillMaxSize().padding(padding).testTag("community_feed"), contentPadding = PaddingValues(start = 20.dp, top = if (artistId == null) 5.dp else 20.dp, end = 20.dp, bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -78,8 +90,8 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
                         }
                     }
                     TabRow(selectedTabIndex = selectedTab) {
-                        Tab(selected = selectedTab == 0, onClick = { selectedTab = 0 }, text = { Text(stringResource(R.string.posts)) })
-                        Tab(selected = selectedTab == 1, onClick = { selectedTab = 1 }, text = { Text(stringResource(R.string.notices)) })
+                        Tab(selected = selectedTab == 0, onClick = { onTabSelected(0) }, text = { Text(stringResource(R.string.posts)) })
+                        Tab(selected = selectedTab == 1, onClick = { onTabSelected(1) }, text = { Text(stringResource(R.string.notices)) })
                     }
                 }
             }
@@ -91,7 +103,7 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
         }
         when (state) {
             CommunityState.Loading -> item { CircularProgressIndicator(Modifier.testTag("community_loading")) }
-            CommunityState.Error -> item { Text(stringResource(R.string.community_error), Modifier.testTag("community_error")); Button(onClick = onRetry) { Text(stringResource(R.string.discover_retry)) } }
+            CommunityState.Error -> item { Text(stringResource(R.string.community_error), Modifier.testTag("community_error")); Button(onClick = { onAction(CommunityUiAction.RetryClicked) }) { Text(stringResource(R.string.discover_retry)) } }
             is CommunityState.Ready -> {
                 val posts = state.posts.filter { (artistId == null || it.artistId == artistId) && selectedTab == 0 }
                 if (artistId != null && selectedTab == 1) item {
@@ -109,26 +121,29 @@ class CommunityViewModel(private val repository: CommunityRepository) : ViewMode
     }
     }
 }
-@Composable fun PostDetail(viewModel: CommunityViewModel, postId: String, onBack: () -> Unit) {
+@Composable fun PostDetailRoute(viewModel: CommunityViewModel, postId: String, onBack: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var comment by remember { mutableStateOf("") }
     val post = (state as? CommunityState.Ready)?.posts?.firstOrNull { it.id == postId }
+    PostDetailScreen(post, comment, { comment = it }, viewModel::onAction, onBack)
+}
+@Composable fun PostDetailScreen(post: CommunityPost?, comment: String, onCommentChange: (String) -> Unit, onAction: (CommunityUiAction) -> Unit, onBack: () -> Unit) {
     Scaffold(topBar = { BackTitleBar(post?.title ?: stringResource(R.string.community), onBack, backTag = "post_back") }) { padding ->
     Column(Modifier.fillMaxSize().padding(padding).imePadding().testTag("post_detail")) {
     LazyColumn(Modifier.weight(1f).fillMaxWidth(), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (post != null) {
             item { Image(painterResource(artworkResource(post.image)), null, Modifier.fillMaxWidth().aspectRatio(1f).clip(RoundedCornerShape(20.dp)), contentScale = ContentScale.Crop); Spacer(Modifier.height(12.dp)); Text(post.title, style = MaterialTheme.typography.headlineMedium); Text(stringResource(R.string.community), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge); Text(if (post.body == "A little moment from our world.") stringResource(R.string.demo_post_body) else post.body) }
-            item { IconToggleButton(checked = post.liked, onCheckedChange = { viewModel.like(post.id) }, modifier = Modifier.testTag("post_like")) { Icon(painterResource(if (post.liked) R.drawable.heart_filled else R.drawable.heart_outline), contentDescription = stringResource(R.string.like), tint = Color.Black) } }
+            item { IconToggleButton(checked = post.liked, onCheckedChange = { onAction(CommunityUiAction.LikeClicked(post.id)) }, modifier = Modifier.testTag("post_like")) { Icon(painterResource(if (post.liked) R.drawable.heart_filled else R.drawable.heart_outline), contentDescription = stringResource(R.string.like), tint = Color.Black) } }
             items(post.comments) { Text(it) }
 
         } else item { Text(stringResource(R.string.community_empty)) }
     }
         if (post != null) {
-                val submit: () -> Unit = { viewModel.comment(post.id, comment); comment = "" }
+                val submit: () -> Unit = { onAction(CommunityUiAction.CommentSubmitted(post.id, comment)); onCommentChange("") }
                 val sendDescription = stringResource(R.string.send_comment)
                 OutlinedTextField(
                     value = comment,
-                    onValueChange = { comment = it },
+                    onValueChange = onCommentChange,
                     label = { Text(stringResource(R.string.comment)) },
                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).padding(bottom = 16.dp).testTag("comment_input"),
                     trailingIcon = { IconButton(onClick = submit, modifier = Modifier.testTag("comment_send")) { SendIcon(sendDescription) } },

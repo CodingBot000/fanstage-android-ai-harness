@@ -33,24 +33,26 @@ sealed interface MediaState {
     data object Error : MediaState
     data class Ready(val data: DiscoverData) : MediaState
 }
+sealed interface MediaUiAction { data object RetryClicked : MediaUiAction }
 class MediaViewModel(private val repository: DiscoverRepository) : ViewModel() {
     private val mutableState = MutableStateFlow<MediaState>(MediaState.Loading)
     val state = mutableState.asStateFlow()
     private var loadJob: Job? = null
     init { retry() }
+    fun onAction(action: MediaUiAction) { when (action) { MediaUiAction.RetryClicked -> retry() } }
     fun retry() { loadJob?.cancel(); loadJob = viewModelScope.launch { mutableState.value = MediaState.Loading; try { val data = repository.load(); currentCoroutineContext().ensureActive(); mutableState.value = MediaState.Ready(data) } catch (e: CancellationException) { throw e } catch (_: Exception) { currentCoroutineContext().ensureActive(); mutableState.value = MediaState.Error } } }
 }
 @Composable fun MediaRoute(viewModel: MediaViewModel, onLive: (String) -> Unit, onReplay: () -> Unit, videos: List<DemoVideo> = emptyList(), onVideo: (String) -> Unit = {}) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    MediaScreen(state = state, onRetry = viewModel::retry, onLive = onLive, onReplay = onReplay, videos = videos, onVideo = onVideo)
-}
-@Composable fun MediaScreen(state: MediaState, onRetry: () -> Unit, onLive: (String) -> Unit, onReplay: () -> Unit, videos: List<DemoVideo> = emptyList(), onVideo: (String) -> Unit = {}) {
     var filter by rememberSaveable { mutableIntStateOf(0) }
+    MediaScreen(state = state, filter = filter, onFilterSelected = { filter = it }, onRetry = { viewModel.onAction(MediaUiAction.RetryClicked) }, onLive = onLive, onReplay = onReplay, videos = videos, onVideo = onVideo)
+}
+@Composable fun MediaScreen(state: MediaState, filter: Int, onFilterSelected: (Int) -> Unit, onRetry: () -> Unit, onLive: (String) -> Unit, onReplay: () -> Unit, videos: List<DemoVideo> = emptyList(), onVideo: (String) -> Unit = {}) {
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp).testTag("media_screen")) {
         Spacer(Modifier.height(5.dp))
         Text(stringResource(R.string.media), style = MaterialTheme.typography.headlineMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            listOf(stringResource(R.string.all_media), "LIVE", stringResource(R.string.replay)).forEachIndexed { index, label -> FilterChip(selected = filter == index, onClick = { filter = index }, label = { Text(label) }, modifier = Modifier.testTag("media_filter_$index")) }
+            listOf(stringResource(R.string.all_media), "LIVE", stringResource(R.string.replay)).forEachIndexed { index, label -> FilterChip(selected = filter == index, onClick = { onFilterSelected(index) }, label = { Text(label) }, modifier = Modifier.testTag("media_filter_$index")) }
         }
         when (val current = state) {
             MediaState.Loading -> CircularProgressIndicator()

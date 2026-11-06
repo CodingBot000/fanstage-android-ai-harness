@@ -548,3 +548,22 @@
 - 댓글·LIVE 입력 하단 고정 및 Messages 기존 동작 유지: Debug 빌드·lint·단위 PASS; 전용 API 36 DiscoverTest·DeviceUiRegressionTest·RoomNavigationSmokeTest 총 18/18 PASS. 실제 서버 회귀와 실기기 검증 NOT_RUN.
 - 일반 영상/벤치마크 카드 분리: Debug 빌드·lint PASS. 전용 API 36의 첫 홈·Media 로컬 영상 프레임과 Discover·UI·기존 HLS/채팅 회귀 19/19 PASS. 실기기 및 전체 실제 서버 회귀 NOT_RUN.
 - UI/CI 통합 PR 검증: 초기 다중 패키징 빌드에서 rcLocal·Benchmark 패키징 FAIL(원인 미확정); rcLocal 단독 및 `--max-workers=2` 전체 Debug/Release/rcLocal/Benchmark/계측 APK·lint·단위 재실행 PASS. 경계·M4/M6 manifest PASS. 전용 API 36에서 실제 로컬 영상 포함 UI·HLS·채팅 21/21 및 실제 서버 Android 통합 1/1 PASS. 사용자 요청으로 원격 에뮬레이터 실행 임시 OFF, 원격 서버·빌드 검증은 유지한다. 실기기 최종 통합 NOT_RUN.
+
+## UDF-001 (2026-11-06)
+- 기준 `da28ee1`, 별도 `codex/udf-contract-refactor`. Community action/route/screen, app navigation 및 관련 테스트 변경.
+- FAIL: 최초 잘못된 `:core:data:testDebugUnitTest` 태스크 및 SDK 환경변수 누락. 환경 수정 후 Android SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*LoadCancellationTest*' :core:data:test` PASS; `:app:testDebugUnitTest --tests '*CommunityActionTest*' --tests '*LoadCancellationTest*' :core:data:test` PASS.
+- NOT_RUN: 계측·전체 통합·CI. 다음 UDF-002.
+
+## UDF-002 (2026-11-06)
+- Messages와 app navigation, 단위/계측 테스트 호출 변경. 초안 복원 정책과 IME/스크롤 유지.
+- 최초 계측 컴파일 FAIL: 테스트의 삭제된 직접 메서드 호출. 테스트를 액션으로 전환 후 SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*MessagesViewModelTest*' --tests '*LoadCancellationTest*' :core:data:test` PASS. 실제 계측·통합 NOT_RUN. 다음 UDF-003.
+
+## UDF-003 (2026-11-06)
+- Discover/Media 재시도 액션, Media Route의 saveable 필터 및 관련 테스트 변경. SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*LoadCancellationTest*'` PASS. 전체 통합·계측·CI NOT_RUN. 다음 UDF-004.
+
+## UDF-004 로컬 통합 (2026-11-06)
+- SDK 지정 Android `:app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest :core:data:test --no-daemon --max-workers=2` PASS. `scripts/check-ux-module-boundaries.py`, `m4-check-manifests.py`, `m6-check-manifests.py` PASS. 서버 Gradle test PASS.
+- 격리 ADB 서버 5039, 단일 전용 API 36 AVD에서 DiscoverTest, DeviceUiRegressionTest, RoomNavigationSmokeTest 18/18 PASS. UiContractTest 2/2 PASS. 최초 AVD 중복 실행은 기존 전용 AVD 사용 중으로 거부됐고 기존 격리 서버를 확인해 사용했다.
+- 별도 18766 포트의 임시 Compose stack 및 포트만 수정한 임시 테스트 복사본으로 서버 integration.py와 m5_faults.py PASS; 테스트 스택 정리. 원래 미디어 서버는 유지했다.
+- 홈 화면을 README UX-008 이미지와 육안 비교: 구조 유사, 기존 UX-012/로컬 VOD의 간격·라벨 차이 존재. 전체 화면 동일성 미검증. 외부 MP4 opt-in·실기기·전체 접근성·성능 NOT_RUN. 원격 CI/리뷰 대기.
+- 구현 head `c4fda55` 원격 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42185550650), [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42185550673) PASS; 원격 에뮬레이터 SKIPPED (기존 사용자 설정). 같은 head `codex review --base origin/main` 수정 가능한 결함 0건. 기록 추가 후 최종 head 재확인 예정.
