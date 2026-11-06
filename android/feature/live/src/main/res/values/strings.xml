@@ -64,4 +64,18 @@
 <string name="demo_live_room">Demo LIVE room · synthetic video</string>
 <string name="replay_back_generic">Back</string><string name="replay_title">Replay</string>
 <string name="player_seek">Seek video</string>
+    <string name="player_speed">Settings · %1$.2fx</string>
+    <string name="player_speed_title">Playback speed</string>
+    <string name="player_speed_option">%1$.2fx %2$s</string>
+    <string name="player_quality">Quality</string>
+    <string name="player_quality_single">Original quality (fixed)</string>
+    <string name="player_auto">Auto</string>
+    <string name="player_subtitles">Subtitles</string>
+    <string name="player_unsupported">Not available</string>
+    <string name="player_off">Off</string>
+    <string name="player_enter_fullscreen">Full screen</string>
+    <string name="player_exit_fullscreen">Exit full screen</string>
+    <string name="player_video_track">Video %1$d</string>
+    <string name="player_subtitle_track">Subtitle %1$d</string>
+    <string name="player_subtitle_cea_unknown">CEA-608 captions (availability unknown)</string>
 </resources>

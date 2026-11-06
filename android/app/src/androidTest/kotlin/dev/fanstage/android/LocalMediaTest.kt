@@ -57,6 +57,10 @@ class LocalMediaTest {
         rule.onNodeWithTag("media_grid").performScrollToNode(hasTestTag("media_demo-01"))
         rule.onNodeWithTag("media_demo-01").performClick()
         rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        InstrumentationRegistry.getArguments().getString("fanServerPort")?.let { port ->
+            rule.onNodeWithTag("chat_endpoint").performScrollTo().performTextClearance()
+            rule.onNodeWithTag("chat_endpoint").performTextInput("http://10.0.2.2:$port")
+        }
         rule.onNodeWithTag("chat_token").performScrollTo().performTextInput(token)
         rule.onNodeWithTag("chat_use_real").performScrollTo().performClick()
         rule.waitUntil(30_000) { rule.onAllNodesWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_connected)).fetchSemanticsNodes().isNotEmpty() }

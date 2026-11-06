@@ -54,3 +54,9 @@ reviewed; the unrun scenarios above remain unverified. See [STATUS](../docs/STAT
 and [build log](../harness/build-log.md) for the current project state.
 
 M2 player behavior and fixture provenance are documented in the [M2 SDD](../docs/specs/M2-hls-player.md). M2 physical-device validation is recorded with the stated limitations.
+
+### PLAYER-001 test fixture (work in progress)
+
+`scripts/generate-player001-fixture.sh` (run from the repository root) uses FFmpeg's synthetic `testsrc2` source to generate a six-second 360p/720p HLS playlist, a 9:16 MP4, and a synthetic English WebVTT caption under `android/app/src/androidTest/assets/player001`. It contains no third-party footage or audio; the audio is a synthetic 440 Hz tone. The generated fixture is approximately 5.0 MiB with FFmpeg 8.0.1; encoder versions can change its bytes. PLAYER-001 is not yet fully verified; consult its SDD and build log for actual results and remaining limitations.
+
+The bundled captionless HLS advertises `CLOSED-CAPTIONS=NONE`. For HLS with no caption declaration, an inferred CEA-608 choice is labeled as availability unknown; it may contain no captions.

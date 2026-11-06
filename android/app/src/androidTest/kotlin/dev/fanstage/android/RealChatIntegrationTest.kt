@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextClearance
 import androidx.lifecycle.ViewModelProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -64,7 +65,8 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class RealChatIntegrationTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()
-    private val base = "http://10.0.2.2:18765"
+    private val serverPort = InstrumentationRegistry.getArguments().getString("fanServerPort")?.toIntOrNull() ?: 18765
+    private val base = "http://10.0.2.2:$serverPort"
 
     // Only fixed phase names, enum states and exception class names may enter CI logs.
     private inline fun <T> phase(id: String, state: () -> String = { "none" }, block: () -> T): T {
@@ -149,7 +151,7 @@ class RealChatIntegrationTest {
             try {
                 val downstream = listener.accept(); sockets.add(downstream)
                 proxyEvent("accepted")
-                val upstream = java.net.Socket("10.0.2.2", 18765); sockets.add(upstream)
+                val upstream = java.net.Socket("10.0.2.2", serverPort); sockets.add(upstream)
                 proxyEvent("upstream_connected")
                 thread(name = "m5-proxy-uplink", isDaemon = true) {
                     try {
@@ -266,7 +268,7 @@ class RealChatIntegrationTest {
                     val downstream = listener.accept(); sockets.add(downstream)
                     workers.add(thread(isDaemon = true) {
                         try {
-                            val upstream = java.net.Socket("10.0.2.2", 18765); sockets.add(upstream)
+                            val upstream = java.net.Socket("10.0.2.2", serverPort); sockets.add(upstream)
                             val source = downstream.getInputStream()
                             val request = StringBuilder()
                             while (!request.endsWith("\r\n\r\n") && request.length < 16_384) {
@@ -505,6 +507,8 @@ class RealChatIntegrationTest {
                 }
             }
             composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithTag("chat_endpoint").performScrollTo().performTextClearance()
+            composeRule.onNodeWithTag("chat_endpoint").performTextInput(base)
             // An actual server authentication error must not stop the independent player.
             composeRule.onNodeWithTag("chat_token").performScrollTo().performTextInput("invalid-temporary-token")
             composeRule.onNodeWithTag("chat_use_real").performScrollTo().performClick()

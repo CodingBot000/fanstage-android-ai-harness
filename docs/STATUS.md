@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- PLAYER-001 Draft PR 준비: 최신 main 기반 분리 작업 트리의 live 단위 56/56·전체 계측 41/41 PASS, 실채팅·로컬 MP4 포함. 독립 사전 리뷰 P1/P2 수정 후 추가 확정 P0/P1 없음. 원격 CI·PR 기준 독립 리뷰 확인 전 병합 불가. [SDD](specs/PLAYER-001-player-settings-fullscreen.md).
+
 - 상단바 스와이프 접힘 및 플레이어 아이콘·얇은 탐색 트랙 구현. 전체 변형 빌드·lint·단위, 전용 API 36 통합 25/25·상단바 검사 4/4·실제 서버 Android 통합 1/1 PASS. 원격 에뮬레이터 OFF, 실기기·장시간 성능 NOT_RUN. PR 검증 진행.
 
 - 플로팅 탐색바 구현: Haze 배경 블러와 4개 탭 하단 스크롤 여백, 전용 API 36 제스처 15/15·3버튼 1/1 PASS. 실기기·구버전 블러 및 성능 측정 NOT_RUN. [SDD](specs/UX-002-app-shell.md).
