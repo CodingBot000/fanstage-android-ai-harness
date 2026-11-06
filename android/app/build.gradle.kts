@@ -56,6 +56,7 @@ android {
 kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
 dependencies {
+    implementation(libs.haze.blur)
     add("benchmarkImplementation", libs.androidx.profileinstaller)
     implementation(project(":feature:live"))
     implementation(project(":feature:discover"))

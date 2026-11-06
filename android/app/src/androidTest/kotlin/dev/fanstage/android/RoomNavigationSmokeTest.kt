@@ -144,7 +144,8 @@ class RoomNavigationSmokeTest {
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
         composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_play").fetchSemanticsNodes().isNotEmpty() }
-        composeRule.onNodeWithTag("player_play").performScrollTo().assertIsDisplayed()
+        composeRule.onNodeWithTag("player_play").performScrollTo()
+        composeRule.waitUntil(10_000L) { runCatching { composeRule.onNodeWithTag("player_play").assertIsDisplayed() }.isSuccess }
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
         composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
         composeRule.onNodeWithTag("room_back").performClick()

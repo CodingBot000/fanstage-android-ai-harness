@@ -42,7 +42,7 @@ fun MessagesListScreen(
     val conversations = state.conversations
     LazyColumn(
         Modifier.fillMaxSize().testTag("messages_list"),
-        contentPadding = PaddingValues(start = 20.dp, top = 5.dp, end = 20.dp, bottom = 20.dp),
+        contentPadding = PaddingValues(start = 20.dp, top = 5.dp, end = 20.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {

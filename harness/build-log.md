@@ -582,3 +582,8 @@
 - 사용자 승인 후 SM-S908N/API 36에 `1239c2a` 일반 Debug 앱 `install -r` PASS, 별도 devicecheck 및 test 패키지 설치 PASS. 실기기 serial을 명시해 `am instrument`로 UiContractTest, DiscoverTest, DeviceUiRegressionTest, RoomNavigationSmokeTest 실행.
 - 최초 20건 중 19 PASS/1 FAIL: `communityPostLikeAndComment`에서 재생성 후 화면 밖 좋아요 노드를 직접 스크롤 시도. `post_comments`에서 해당 태그까지 실제 스크롤 후 기존 좋아요·댓글 assertion 유지. test APK 재빌드/설치 후 전체 **20/20 PASS**, runner `OK (20 tests)`. 일반 앱 한국어 홈 실행 확인. 실기기 상태/개인 정보 캡처는 커밋하지 않음.
 - NOT_RUN: 실제 서버·외부 MP4 7개·오디오 청취·장시간 성능·전체 TalkBack·프로세스 강제 종료. 테스트 변경 PR CI/독립 리뷰 별도 확인.
+- 플로팅 탐색바: Debug 빌드·lint·단위 PASS, 전용 API 36 AVD 제스처 내비게이션에서 화면 회귀 15/15 및 3버튼 내비게이션에서 플로팅/스크롤 검사 1/1 PASS. Haze 2.0.1 배경 블러·Apache-2.0 고지 추가. 실기기·API 30 이하·성능 측정 NOT_RUN. 초기 실행에서 기존 테스트 AVD의 Debug 앱을 `install -r`로 갱신한 뒤 별도 전용 AVD로 나머지 검증을 수행했다.
+- 최초 빌드는 `PaddingValues` import 누락으로 실패했으며 수정 후 위 빌드·검증을 통과했다.
+- 상단바 스와이프: Debug 빌드·lint·단위 PASS, API 36 상단바·기존 UI 회귀 18/18 PASS. 최초 실행에서 대화 목록 레이아웃 중 강제 스크롤 예외 FAIL, 스크롤 예약으로 수정 후 재실행 PASS. 실기기 NOT_RUN.
+- 상단바 스와이프 및 플레이어 컨트롤: Debug 빌드·lint·단위 PASS; 전용 API 36 AVD 실제 로컬 MP4·채팅·HLS·플레이어 수명·기존 UI 통합 25/25 PASS, 추가 상단바 스와이프 4/4 PASS. 회전 직후 오버레이 표시 검사 두 차례 FAIL을 재현했고 전환 애니메이션이 완료되기 전에 검사하는 원인을 확인하여 표시될 때까지 기다린 후에도 실제 표시를 검증하는 방식으로 수정, 전체 회귀 PASS. 실기기·장시간 성능 NOT_RUN. 영상 포함 캡처는 로컬에만 보관했다.
+- 상단바·플레이어 PR 최종 게이트: Debug/Release/rcLocal/Benchmark/계측 APK·lint·단위 및 모듈/manifest 검사 PASS. 전용 API 36 실제 서버 Android 채팅 통합 1/1 PASS. 원격 에뮬레이터는 사용자 요청에 따라 OFF, 실기기 및 장시간 성능 NOT_RUN.

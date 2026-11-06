@@ -80,6 +80,7 @@ fun DiscoverScreen(
             is DiscoverState.Ready ->
                 LazyColumn(
                     Modifier.fillMaxSize().padding(padding).testTag("rooms_content"),
+                    contentPadding = PaddingValues(bottom = 100.dp),
                     verticalArrangement = Arrangement.spacedBy(22.dp),
                 ) {
                     item { DiscoverHeading() }
@@ -373,6 +374,7 @@ private fun ReplaySection(
 private fun RecommendedContentRow(data: DiscoverData, onRoomClick: (String) -> Unit) {
 
     LazyRow(
+        modifier = Modifier.testTag("recommended_carousel"),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp, bottom = 24.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
