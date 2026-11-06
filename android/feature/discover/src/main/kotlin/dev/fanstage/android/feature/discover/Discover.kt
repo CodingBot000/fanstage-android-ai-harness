@@ -42,17 +42,17 @@ class DiscoverViewModel(private val repository: DiscoverRepository) : ViewModel(
     init { retry() }
     fun retry() { loadJob?.cancel(); loadJob = viewModelScope.launch { mutableState.value = DiscoverState.Loading; try { val content = repository.load(); currentCoroutineContext().ensureActive(); mutableState.value = DiscoverState.Ready(content) } catch (e: CancellationException) { throw e } catch (_: Exception) { currentCoroutineContext().ensureActive(); mutableState.value = DiscoverState.Error } } }
 }
-@Composable fun DiscoverRoute(viewModel: DiscoverViewModel, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit, onArtistClick: (String) -> Unit) {
+@Composable fun DiscoverRoute(viewModel: DiscoverViewModel, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit, onArtistClick: (String) -> Unit, localVideos: Boolean = false, onBenchmarkClick: () -> Unit = onReplayClick) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    DiscoverScreen(state, viewModel::retry, onRoomClick, onReplayClick, onArtistClick)
+    DiscoverScreen(state, viewModel::retry, onRoomClick, onReplayClick, onArtistClick, localVideos, onBenchmarkClick)
 }
-@Composable fun DiscoverScreen(state: DiscoverState, onRetry: () -> Unit, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit = {}, onArtistClick: (String) -> Unit = {}) {
+@Composable fun DiscoverScreen(state: DiscoverState, onRetry: () -> Unit, onRoomClick: (String) -> Unit, onReplayClick: () -> Unit = {}, onArtistClick: (String) -> Unit = {}, localVideos: Boolean = false, onBenchmarkClick: () -> Unit = onReplayClick) {
     Scaffold(containerColor = Color(0xFFFAF8FC)) { padding ->
         when (state) {
             DiscoverState.Loading -> Box(Modifier.fillMaxSize().padding(padding).testTag("discover_loading"), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             DiscoverState.Error -> Column(Modifier.fillMaxSize().padding(padding).testTag("discover_error"), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) { Text(stringResource(R.string.discover_error)); Button(onClick = onRetry) { Text(stringResource(R.string.discover_retry)) } }
             is DiscoverState.Ready -> LazyColumn(Modifier.fillMaxSize().padding(padding).testTag("rooms_content"), verticalArrangement = Arrangement.spacedBy(22.dp)) {
-                item { Column(Modifier.padding(horizontal = 20.dp).padding(top = 18.dp)) { Text(stringResource(R.string.discover_eyebrow), color = Plum, style = MaterialTheme.typography.labelLarge); Spacer(Modifier.height(5.dp)); Text(stringResource(R.string.discover_heading), style = MaterialTheme.typography.headlineMedium) } }
+                item { Column(Modifier.padding(horizontal = 20.dp).padding(top = 5.dp)) { Text(stringResource(R.string.discover_eyebrow), color = Plum, style = MaterialTheme.typography.labelLarge); Spacer(Modifier.height(5.dp)); Text(stringResource(R.string.discover_heading), style = MaterialTheme.typography.headlineMedium) } }
                 item {
                     LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(state.data.content, key = { it.id }) { content ->
@@ -71,27 +71,29 @@ class DiscoverViewModel(private val repository: DiscoverRepository) : ViewModel(
                 item { Column { SectionTitle(stringResource(R.string.communities)); LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(16.dp)) { items(state.data.artists, key = { it.id }) { artist -> Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(80.dp).clickable { onArtistClick(artist.id) }.testTag("discover_artist_${artist.id}")) { Image(painterResource(artworkResource(artist.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.size(64.dp).clip(CircleShape)); Spacer(Modifier.height(7.dp)); Text(artist.name, style = MaterialTheme.typography.labelSmall, maxLines = 2, overflow = TextOverflow.Ellipsis) } } } } }
                 item { SectionTitle(stringResource(R.string.live_now)) }
                 item {
-                    LazyRow(contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    LazyRow(modifier = Modifier.testTag("live_carousel"), contentPadding = PaddingValues(horizontal = 20.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(state.data.content, key = { it.id }) { content ->
                             Card(onClick = { onRoomClick(content.id) }, modifier = Modifier.width(190.dp).testTag("room_${content.id}"), colors = CardDefaults.cardColors(containerColor = Color.White)) {
                                 Column {
                                     Image(painterResource(artworkResource(content.artwork)), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxWidth().aspectRatio(16f / 10f))
                                     Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        CardTwoLineText(stringResource(R.string.demo_live), style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFFD64B78), fontWeight = FontWeight.Bold))
+                                        CardTwoLineText(if (localVideos) stringResource(R.string.local_vod) else stringResource(R.string.demo_live), style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFFD64B78), fontWeight = FontWeight.Bold))
                                         CardTwoLineText(localizedContentTitle(content), style = MaterialTheme.typography.titleMedium)
                                         CardTwoLineText(content.artist, style = MaterialTheme.typography.bodySmall)
                                     }
                                 }
                             }
                         }
+                        item { Card(onClick = { onRoomClick("benchmark") }, modifier = Modifier.width(190.dp).testTag("room_benchmark")) { Column { Image(painterResource(artworkResource(ArtworkKey.PAPER_HERO)), null, Modifier.fillMaxWidth().aspectRatio(16f / 10f), contentScale = ContentScale.Crop); Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) { CardTwoLineText(stringResource(R.string.benchmark_card), style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFFD64B78), fontWeight = FontWeight.Bold)); CardTwoLineText("Synthetic HLS", style = MaterialTheme.typography.titleMedium); CardTwoLineText("FanStage", style = MaterialTheme.typography.bodySmall) } } } }
                     }
                 }
                 item { Column(Modifier.padding(horizontal = 20.dp)) {
                     Text(stringResource(R.string.replay), style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.height(12.dp))
                     Card(onClick = onReplayClick, modifier = Modifier.testTag("replay_card"), colors = CardDefaults.cardColors(containerColor = Color(0xFFECE5F6))) {
-                        Column(Modifier.fillMaxWidth().padding(18.dp)) { Text("REPLAY", color = Plum, style = MaterialTheme.typography.labelMedium); Text("Paper Lantern · Studio diary", style = MaterialTheme.typography.titleMedium); Text(stringResource(R.string.replay_play), style = MaterialTheme.typography.bodySmall) }
+                        Column(Modifier.fillMaxWidth().padding(18.dp)) { Text(if (localVideos) stringResource(R.string.local_vod) else "REPLAY", color = Plum, style = MaterialTheme.typography.labelMedium); Text("Paper Lantern · Studio diary", style = MaterialTheme.typography.titleMedium); Text(stringResource(R.string.replay_play), style = MaterialTheme.typography.bodySmall) }
                     }
+                    if (localVideos) { Spacer(Modifier.height(12.dp)); Card(onClick = onBenchmarkClick, modifier = Modifier.fillMaxWidth().testTag("benchmark_replay")) { Text(stringResource(R.string.benchmark_card), Modifier.padding(18.dp)) } }
                     Spacer(Modifier.height(24.dp))
                     Text(stringResource(R.string.recommended), style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.height(12.dp))

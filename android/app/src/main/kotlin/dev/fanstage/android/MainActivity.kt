@@ -75,20 +75,20 @@ private fun FanStageApp() {
             }
         }
     }) { shellPadding ->
-    NavHost(navController = navController, startDestination = "rooms", modifier = Modifier.padding(shellPadding)) {
+    NavHost(navController = navController, startDestination = "rooms", modifier = Modifier.padding(shellPadding).consumeWindowInsets(shellPadding)) {
         composable("rooms") {
-            DiscoverRoute(viewModel = discoverViewModel, onRoomClick = { roomId ->
-                navController.navigate("rooms/${Uri.encode(roomId)}") {
-                    launchSingleTop = true
-                }
-            }, onReplayClick = { navController.navigate("replay") { launchSingleTop = true } }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
+            DiscoverRoute(viewModel = discoverViewModel, localVideos = BuildConfig.DEBUG, onRoomClick = { roomId ->
+                val index = listOf("studio-session", "sketch-break", "tabletop-night").indexOf(roomId)
+                if (BuildConfig.DEBUG && index >= 0) navController.navigate("local-video/${DemoVideos.all[index % DemoVideos.all.size].id}")
+                else navController.navigate("rooms/${Uri.encode(roomId)}") { launchSingleTop = true }
+            }, onReplayClick = { navController.navigate(if (BuildConfig.DEBUG) "local-video/${DemoVideos.all[3 % DemoVideos.all.size].id}" else "replay") { launchSingleTop = true } }, onBenchmarkClick = { navController.navigate("replay") }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
         }
         composable("messages") { MessagesList(messagesViewModel, artists, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
         composable("messages/{artistId}") { messageEntry ->
             ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
         }
         composable("media") {
-            MediaRoute(mediaViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") }, videos = if (BuildConfig.DEBUG) DemoVideos.all else emptyList(), onVideo = { navController.navigate("local-video/$it") })
+            MediaRoute(mediaViewModel, onLive = { roomId -> val index = listOf("studio-session", "sketch-break", "tabletop-night").indexOf(roomId); if (BuildConfig.DEBUG && index >= 0) navController.navigate("local-video/${DemoVideos.all[index % DemoVideos.all.size].id}") else navController.navigate("rooms/${Uri.encode(roomId)}") }, onReplay = { navController.navigate("replay") }, videos = if (BuildConfig.DEBUG) DemoVideos.all else emptyList(), onVideo = { navController.navigate("local-video/$it") })
         }
         composable("community") {
             CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, artists = artists)
@@ -103,7 +103,9 @@ private fun FanStageApp() {
         composable("local-video/{videoId}") { videoEntry ->
             val video = DemoVideos.all.firstOrNull { it.id == videoEntry.arguments?.getString("videoId") }
             if (BuildConfig.DEBUG && video != null) {
-                val source = "http://10.0.2.2:18765/demo-media/${video.fileName}"
+                val emulator = android.os.Build.HARDWARE.contains("ranchu", ignoreCase = true) || android.os.Build.HARDWARE.contains("goldfish", ignoreCase = true)
+                val host = if (emulator) "10.0.2.2" else "127.0.0.1"
+                val source = "http://$host:18765/demo-media/${video.fileName}"
                 val index = DemoVideos.all.indexOf(video)
                 val roomId = listOf("studio-session", "sketch-break", "tabletop-night").getOrNull(index)
                 if (roomId != null) {

@@ -112,14 +112,15 @@ class RoomNavigationSmokeTest {
         composeRule.waitUntil(20_000L) {
             composeRule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty()
         }
-        composeRule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
-        composeRule.onNodeWithTag("room_studio-session").performClick()
+        composeRule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("live_carousel"))
+        composeRule.onNodeWithTag("live_carousel").performScrollToNode(hasTestTag("room_benchmark"))
+        composeRule.onNodeWithTag("room_benchmark").performClick()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
         composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         // Chat is independent of playback: send via Fake, then verify the player is still playing.
-        composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("Hello from test")
-        composeRule.onNodeWithTag("chat_send").performScrollTo().performClick()
+        composeRule.onNodeWithTag("chat_input").performTextInput("Hello from test")
+        composeRule.onNodeWithTag("chat_send").performClick()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_sent)).fetchSemanticsNodes().isNotEmpty() }
         composeRule.onNodeWithTag("chat_messages").performScrollTo()
         composeRule.onNodeWithText("Hello from test").assertExists()
@@ -130,14 +131,14 @@ class RoomNavigationSmokeTest {
         composeRule.onNodeWithTag("player_play").performScrollTo().performClick()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
         // Draft stays in the retained ViewModel, not saved-state storage.
-        composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("draft survives")
+        composeRule.onNodeWithTag("chat_input").performTextInput("draft survives")
         // ActivityScenario.recreate() verifies Activity/nav state restoration, not rotation or process death.
         val originalActivity = composeRule.activity
         composeRule.activityRule.scenario.recreate()
         assertNotSame(originalActivity, composeRule.activity)
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
-        composeRule.onNodeWithTag("chat_input").performScrollTo().assertTextContains("draft survives").performTextClearance()
+        composeRule.onNodeWithTag("chat_input").assertTextContains("draft survives").performTextClearance()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
         // The controls must remain reachable after a real device orientation change.
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
@@ -147,12 +148,12 @@ class RoomNavigationSmokeTest {
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
         composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
         composeRule.onNodeWithTag("room_back").performClick()
-        composeRule.onNodeWithTag("room_studio-session").assertIsDisplayed()
+        composeRule.onNodeWithTag("room_benchmark").assertIsDisplayed()
         repeat(5) {
-            composeRule.onNodeWithTag("room_studio-session").performClick()
+            composeRule.onNodeWithTag("room_benchmark").performClick()
             composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithTag("room_back").performClick()
-            composeRule.onNodeWithTag("room_studio-session").assertIsDisplayed()
+            composeRule.onNodeWithTag("room_benchmark").assertIsDisplayed()
         }
         verifyLivePlaylistRefresh()
         verifyPlaybackErrorAndRetry()

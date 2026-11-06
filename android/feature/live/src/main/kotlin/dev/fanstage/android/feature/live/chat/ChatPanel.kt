@@ -41,7 +41,7 @@ internal fun fictionalMessageResource(key: String): Int? = when {
 }
 
 @Composable
-fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
+fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, showComposer: Boolean = true, sendSignal: Int = 0) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val locale = LocalConfiguration.current.locales[0]
@@ -57,6 +57,7 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
             layout.totalItemsCount == 0 || lastVisible >= layout.totalItemsCount - 2
         }.collect { followLatest = it }
     }
+    LaunchedEffect(sendSignal) { if (sendSignal > 0) forceLatest = true }
     LaunchedEffect(state.roomId, state.messages.size, state.messages.lastOrNull()?.key) {
         if ((followLatest || forceLatest) && state.messages.isNotEmpty()) {
             listState.scrollToItem(state.messages.lastIndex)
@@ -131,9 +132,16 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
         if (state.sendBlocked) Text(stringResource(R.string.chat_capacity))
         if (state.inputTooLong) Text(stringResource(R.string.chat_too_long))
         if (state.transportUncertain) Text(stringResource(R.string.chat_uncertain))
-        val submit: () -> Unit = { if (viewModel.send(state.draft)) { viewModel.updateDraft(""); forceLatest = true } }
-        val sendDescription = stringResource(R.string.chat_send)
-        OutlinedTextField(
+        if (showComposer) ChatComposer(viewModel) { forceLatest = true }
+    }
+}
+
+@Composable
+fun ChatComposer(viewModel: ChatViewModel, onSent: () -> Unit = {}) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val submit: () -> Unit = { if (viewModel.send(state.draft)) { viewModel.updateDraft(""); onSent() } }
+    val sendDescription = stringResource(R.string.chat_send)
+    OutlinedTextField(
             value = state.draft,
             onValueChange = viewModel::updateDraft,
             modifier = Modifier.fillMaxWidth().testTag("chat_input"),
@@ -143,5 +151,4 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false) {
             keyboardActions = KeyboardActions(onSend = { submit() }),
             maxLines = 4,
         )
-    }
 }

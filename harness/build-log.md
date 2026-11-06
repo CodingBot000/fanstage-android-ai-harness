@@ -540,3 +540,11 @@
 ## LOCAL-MEDIA-001 (2026-11-06)
 - 로컬 7개 원본과 복사본 해시 일치, H.264/AAC 확인. 파일 및 개인 매핑은 저장소 밖에 보존했다.
 - 전용 에뮬레이터 `emulator-5560` 명시: 7개 영상 첫 프레임/오디오 트랙·대표 UI pause/seek/resume PASS. 실제 청취 NOT_RUN. 서버 7개 정상 206, 서버 합성 fixture 테스트, Android 빌드/lint/unit·manifest·모듈 경계 PASS. 최종 VOD·실제 서버 채팅 통합을 포함한 LocalMediaTest 2/2 PASS; 기존 실제 서버 계측 1/1 PASS. 최종 앱 기존 Discover·HLS 회귀 13/13 PASS. 상세 및 미실행 항목은 `docs/reviews/LOCAL-MEDIA-001-verification.md`.
+- USB 실기기 실행 (2026-11-06): 사용자 요청으로 기존 Debug 앱에 `install -r` 설치·실행 PASS. 에뮬레이터/실기기 재생 호스트 분기, Debug build/lint PASS. `adb reverse` 후 실기기 loopback에서 MP4 HEAD 200 PASS. 재생·오디오 청취 NOT_RUN.
+- UI 댓글 입력·Replay 카드 정렬: `:app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug` PASS. 전용 API 36 에뮬레이터 `DiscoverTest#communityPostLikeAndComment` 및 `#mediaFilterAndReplay` 2/2 PASS. 기존 USB 실기기 연결 관련 미커밋 변경 보존. 전체 계측 및 실기기 검증 NOT_RUN.
+- 기본 탭 상단 여백 5dp 및 중복 인셋 조정: Debug 빌드·lint·계측 APK 빌드 PASS, 전용 API 36 에뮬레이터 DiscoverTest 9/9 PASS. 실기기 검증 NOT_RUN. 기존 미커밋 변경 보존.
+- 커뮤니티 좋아요 하트: Debug 빌드·lint 및 전용 API 36 `DiscoverTest#communityPostLikeAndComment` PASS. 실기기 검증 NOT_RUN.
+
+- 댓글·LIVE 입력 하단 고정 및 Messages 기존 동작 유지: Debug 빌드·lint·단위 PASS; 전용 API 36 DiscoverTest·DeviceUiRegressionTest·RoomNavigationSmokeTest 총 18/18 PASS. 실제 서버 회귀와 실기기 검증 NOT_RUN.
+- 일반 영상/벤치마크 카드 분리: Debug 빌드·lint PASS. 전용 API 36의 첫 홈·Media 로컬 영상 프레임과 Discover·UI·기존 HLS/채팅 회귀 19/19 PASS. 실기기 및 전체 실제 서버 회귀 NOT_RUN.
+- UI/CI 통합 PR 검증: 초기 다중 패키징 빌드에서 rcLocal·Benchmark 패키징 FAIL(원인 미확정); rcLocal 단독 및 `--max-workers=2` 전체 Debug/Release/rcLocal/Benchmark/계측 APK·lint·단위 재실행 PASS. 경계·M4/M6 manifest PASS. 전용 API 36에서 실제 로컬 영상 포함 UI·HLS·채팅 21/21 및 실제 서버 Android 통합 1/1 PASS. 사용자 요청으로 원격 에뮬레이터 실행 임시 OFF, 원격 서버·빌드 검증은 유지한다. 실기기 최종 통합 NOT_RUN.

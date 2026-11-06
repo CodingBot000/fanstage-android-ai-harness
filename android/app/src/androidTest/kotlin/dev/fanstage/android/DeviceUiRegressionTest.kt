@@ -105,18 +105,20 @@ class DeviceUiRegressionTest {
         rule.onNodeWithTag("post_back").performClick()
         rule.onNodeWithTag("community_back").performClick()
         rule.onNodeWithTag("tab_media").performClick()
-        rule.onNodeWithTag("media_replay").performScrollTo().performClick()
+        rule.onNodeWithTag("media_grid").performScrollToNode(hasTestTag("media_replay"))
+        rule.onNodeWithTag("media_replay").performClick()
         rule.onNodeWithTag("replay_back").assertIsDisplayed().assert(hasContentDescription(backDescription))
     }
 
     @Test fun liveChatKeyboardSendAndBack() {
         rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
-        rule.onNodeWithTag("room_studio-session").performClick()
+        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("live_carousel"))
+        rule.onNodeWithTag("live_carousel").performScrollToNode(hasTestTag("room_benchmark"))
+        rule.onNodeWithTag("room_benchmark").performClick()
         rule.waitUntil(30_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         val backDescription = rule.activity.getString(dev.fanstage.android.core.designsystem.R.string.navigation_back)
         rule.onNodeWithTag("room_back").assertIsDisplayed().assert(hasContentDescription(backDescription))
-        rule.onNodeWithTag("chat_input").performScrollTo().performTextInput("Device LIVE IME")
+        rule.onNodeWithTag("chat_input").performTextInput("Device LIVE IME")
         val input = rule.onNodeWithTag("chat_input", useUnmergedTree = true).getUnclippedBoundsInRoot()
         val send = rule.onNodeWithTag("chat_send", useUnmergedTree = true).getUnclippedBoundsInRoot()
         assertTrue("LIVE send must be inside input", send.left >= input.left && send.right <= input.right && send.top >= input.top && send.bottom <= input.bottom)
@@ -129,7 +131,8 @@ class DeviceUiRegressionTest {
 
     @Test fun videoUsesTextureAndLeavesWithDetail() {
         rule.onNodeWithTag("tab_media").performClick()
-        rule.onNodeWithTag("media_replay").performScrollTo().performClick()
+        rule.onNodeWithTag("media_grid").performScrollToNode(hasTestTag("media_replay"))
+        rule.onNodeWithTag("media_replay").performClick()
         rule.waitUntil(30_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         rule.runOnIdle {
             val playerView = findPlayer(rule.activity.findViewById(android.R.id.content))

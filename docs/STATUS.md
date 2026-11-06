@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- UI·UX 통합 PR 준비: 댓글·채팅 입력 하단 고정, 하트·카드·간격 개선, 로컬 VOD 우선 및 벤치마크 후순위. 전용 API 36 로컬 21/21 및 실제 서버 Android 통합 1/1 PASS. 사용자 요청으로 GitHub Actions 에뮬레이터 실행은 임시 OFF, 테스트 정의 보존. 원격 빌드·서버 CI와 PR 리뷰 확인 필요.
+
 - LOCAL-MEDIA-001 진행 중: PR #40 병합 및 main CI PASS 기준. 사용자의 지시에 따라 실기기 대신 전용 에뮬레이터만 사용한다. 상세는 [SDD](specs/LOCAL-MEDIA-001-mp4-streaming.md).
 
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
