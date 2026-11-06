@@ -658,3 +658,7 @@
 ### PR 코드 head 원격 결과
 - 구현 head `604fa44c6d20a54d9aca120dfc69ddb636b6c0f1`의 [Android 빌드·lint·unit CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42231894078) PASS, [PostgreSQL·서버 장애 주입 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42231894057) PASS. Android 에뮬레이터 Job 및 M4 Android 에뮬레이터 단계는 사용자 설정에 따라 SKIPPED. 최초 head Android 실행은 새 head가 푸시되어 취소됐으며 최종 결과로 사용하지 않았다.
 - 해당 head의 별도 독립 정적 리뷰에서 추가 P0/P1/P2 지적 0건. 테스트별 임시 cache의 API 24 호환 수정과 실제 output identity 검사, 이전 View 분리 확인. 전체 프레임·모든 기기와 Media3 내부 필드 반사 한계는 유지. 문서 후속 head CI와 리뷰는 PR에서 별도 확인한다.
+
+### PR SHA별 로컬 근거 정정
+- 독립 리뷰가 `604fa44` 이후 전체 41/41로 읽힐 수 있는 문서의 P2 모호성을 지적했다. 기존 전체 회귀는 `85c9657` 구현 트리, `604fa44`의 테스트 경로 수정 후에는 전용 플레이어 12/12·빌드·단위를 재실행한 결과였다. 이후 정확한 `f99c224a37e0be621c9fa1271aef7be805a9fd73` head에서 Debug/Release/rcLocal/Benchmark/macrobenchmark 빌드, lint, 단위 56/56, 전체 계측 41/41 및 실제 채팅·7개 로컬 MP4를 재실행해 PASS했다. `ANDROID_SERIAL=127.0.0.1:5563`, API 36 headless AVD, 기존 토큰 재사용·별도 빈 DB. ExoPlayer Init/Release `fec69b` 각 1회.
+- 토큰 산출물 검출 0, 이번 재실행의 격리 컨테이너·DB만 정리, 기존 서버 health 200. 해당 결과 기록 이후 문서 전용 후속 head는 원격 CI 및 독립 리뷰에서 별도 확인한다.

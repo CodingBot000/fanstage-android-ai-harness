@@ -87,3 +87,7 @@ Draft [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/
 ### PR 코드 head 원격 검증
 
 구현 head `604fa44c6d20a54d9aca120dfc69ddb636b6c0f1` 기준 [Android 빌드·lint·단위 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42231894078)와 [PostgreSQL·서버 장애 주입 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42231894057)가 PASS했다. 원격 API 35 에뮬레이터 Job과 M4 Android 에뮬레이터 단계는 기존 사용자 설정에 따라 SKIPPED다. 로컬 API 36 계측 41/41과 구분한다. 해당 코드 head의 별도 독립 리뷰는 추가 P0/P1/P2 지적 0건이다. 문서 후속 커밋의 CI는 PR에서 별도 확인한다.
+
+### SHA별 최종 재검증
+
+독립 리뷰에서 `604fa44`의 로컬 전체 계측 기준이 모호하다는 P2를 확인했다. 실제 기존 전체 41/41은 `85c9657` 구현 트리에서 실행했고, `604fa44`의 API 호환 테스트 수정 뒤에는 전용 플레이어 12/12 및 빌드·단위를 재실행했다. 이후 문서 head `f99c224a37e0be621c9fa1271aef7be805a9fd73`에서 Debug/Release/rcLocal/Benchmark/macrobenchmark 빌드, lint, 단위 56/56과 실제 채팅·일곱 로컬 MP4를 포함한 전체 계측 41/41을 새로 PASS했다. 재사용한 기존 자격 증명은 산출물에서 검출되지 않았고 격리 DB만 정리했다. 문서 전용 후속 head의 원격 CI·독립 리뷰는 PR에서 확인한다.

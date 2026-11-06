@@ -1,6 +1,6 @@
 # FanStage 작업 현황
 
-- PLAYER-001 [Draft PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47): 구현 head `604fa44` 로컬 단위 56/56·전체 계측 41/41 및 활성 원격 Android/서버 CI PASS, 독립 리뷰 추가 P0/P1/P2 없음. 원격 에뮬레이터 OFF, 문서 후속 head의 CI 확인 전 Draft 유지.
+- PLAYER-001 [Draft PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47): `f99c224`에서 로컬 단위 56/56·전체 계측 41/41 PASS. 구현 head `604fa44`의 활성 원격 Android/서버 CI PASS, 원격 에뮬레이터 OFF. 문서 후속 head의 CI·독립 리뷰 확인 전 Draft 유지.
 
 - 상단바 스와이프 접힘 및 플레이어 아이콘·얇은 탐색 트랙 구현. 전체 변형 빌드·lint·단위, 전용 API 36 통합 25/25·상단바 검사 4/4·실제 서버 Android 통합 1/1 PASS. 원격 에뮬레이터 OFF, 실기기·장시간 성능 NOT_RUN. PR 검증 진행.
 
