@@ -41,7 +41,7 @@ class MessagesViewModel(private val repository: MessageRepository) : ViewModel()
 }
 @Composable fun MessagesList(viewModel: MessagesViewModel, artists: List<FictionalArtist>, onOpen: (String) -> Unit) {
     val conversations by viewModel.state.collectAsStateWithLifecycle()
-    LazyColumn(Modifier.fillMaxSize().testTag("messages_list"), contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+    LazyColumn(Modifier.fillMaxSize().testTag("messages_list"), contentPadding = PaddingValues(start = 20.dp, top = 5.dp, end = 20.dp, bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         item { Text(stringResource(R.string.messages), style = MaterialTheme.typography.headlineMedium); Text(stringResource(R.string.local_demo)) }
         items(conversations, key = { it.artistId }) { conversation ->
             val artist = artists.firstOrNull { it.id == conversation.artistId }

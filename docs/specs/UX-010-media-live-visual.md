@@ -4,3 +4,6 @@
 
 ## 결과 (2026-11-06)
 Media에 그룹별 피드 썸네일을 사용하고 상단 크롭을 조정했다. 합성 룸 라벨·제목을 표시하고 Replay의 뒤로가기 문구를 경로에 무관하게 수정했다. [Media](../evidence/ux-010/media.png), [LIVE](../evidence/ux-010/live.png), [Replay](../evidence/ux-010/replay.png). 전용 API 36 에뮬레이터에서 LIVE/Replay `Playing` 및 복귀를 수동 확인하고 logcat에서 각 Player Init/Release 한 쌍을 확인했다. `:app:assembleDebug :app:lintDebug :feature:live:testDebugUnitTest :app:testDebugUnitTest` PASS. 전체 계측·실제 서버 회귀 NOT_RUN_DEFERRED; 단일 수동 사례는 장시간 누수 부재를 입증하지 않는다.
+
+- Replay 카드 높이 정렬 진행: 영상 및 기존 Replay 카드는 동일한 이미지 비율과 3개의 두 줄 고정 텍스트 영역을 사용한다. 글꼴 크기에 맞춰 높이는 변하지만 같은 그리드의 카드들은 동일한 높이를 유지한다.
+- Debug 빌드·lint PASS. 전용 API 36 에뮬레이터 Replay 필터에서 기존 Replay와 로컬 VOD 카드의 높이가 같은 것을 확인하고 기존 합성 Replay 진입·첫 프레임·복귀 PASS.

@@ -57,10 +57,24 @@ class LocalMediaTest {
         rule.onNodeWithTag("chat_token").performScrollTo().performTextInput(token)
         rule.onNodeWithTag("chat_use_real").performScrollTo().performClick()
         rule.waitUntil(30_000) { rule.onAllNodesWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_connected)).fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithTag("chat_input").performScrollTo().performTextInput("Local VOD test")
-        rule.onNodeWithTag("chat_send").performScrollTo().performClick()
+        rule.onNodeWithTag("chat_input").performTextInput("Local VOD test")
+        rule.onNodeWithTag("chat_send").performClick()
         rule.waitUntil(30_000) { rule.onAllNodesWithText("Local VOD test").fetchSemanticsNodes().isNotEmpty() }
         rule.waitUntil(30_000) { rule.onAllNodesWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_sent)).fetchSemanticsNodes().isNotEmpty() }
+    }
+
+    @Test fun firstHomeAndMediaCardsPlayLocalVideo() {
+        assumeTrue(InstrumentationRegistry.getArguments().getString("fanstageLocalMedia") == "true")
+        rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
+        rule.onNodeWithTag("room_studio-session").performClick()
+        rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Local VOD · prerecorded").assertExists()
+        rule.onNodeWithTag("room_back").performClick()
+        rule.onNodeWithTag("tab_media").performClick()
+        rule.onNodeWithTag("media_studio-session").performClick()
+        rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("Local VOD · prerecorded").assertExists()
     }
 
 }

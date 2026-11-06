@@ -33,6 +33,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.fanstage.android.core.designsystem.BackTitleBar
 import dev.fanstage.android.core.designsystem.CardTwoLineText
 import dev.fanstage.android.feature.live.chat.ChatPanel
+import dev.fanstage.android.feature.live.chat.ChatComposer
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.setValue
 import dev.fanstage.android.feature.live.chat.ChatViewModel
 
 @Composable
@@ -104,19 +108,23 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
         "tabletop-night" -> stringResource(R.string.room_tabletop_title)
         else -> stringResource(R.string.room_detail)
     }
+    var sendSignal by remember(roomId) { mutableIntStateOf(0) }
     Scaffold(topBar = { BackTitleBar(title, onBack, backTag = "room_back") }) { padding ->
+        Column(Modifier.fillMaxSize().padding(padding).imePadding().testTag("room_detail")) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(16.dp).testTag("room_detail"),
+            modifier = Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(if (sourceUri.endsWith(".mp4")) "Local VOD · prerecorded" else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+            Text(if (roomId == "benchmark") "Benchmark · test video" else if (sourceUri.endsWith(".mp4")) "Local VOD · prerecorded" else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(12.dp)) { PlayerPanel(roomId, sourceUri) }
             }
             Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(12.dp)) { ChatPanel(chatViewModel, developmentControls) }
+                Column(Modifier.padding(12.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal) }
             }
             Text(stringResource(R.string.placeholder_description), style = MaterialTheme.typography.bodySmall)
+        }
+        Box(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) { ChatComposer(chatViewModel) { sendSignal++ } }
         }
     }
 }

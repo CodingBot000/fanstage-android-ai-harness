@@ -14,4 +14,4 @@
   <string name="room_studio_title">스튜디오 라이브</string>
   <string name="room_sketch_title">오후의 그림 휴식</string>
   <string name="room_tabletop_title">보드게임의 밤</string>
-</resources>
+<string name="local_vod">로컬 VOD</string><string name="benchmark_card">벤치마크용 · 테스트 영상</string></resources>

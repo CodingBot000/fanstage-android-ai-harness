@@ -71,7 +71,7 @@ jobs:
           # Debug/Benchmark tests. It is never used to sign a public release.
           chmod +x gradlew
           ./gradlew --version
-          ./gradlew :app:assembleDebug :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest :core:data:test --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
+          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest :core:data:test --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/android-ci.log"
           python3 ../scripts/m4-check-manifests.py
           python3 ../scripts/m6-check-manifests.py
           python3 ../scripts/check-ux-module-boundaries.py
@@ -92,6 +92,8 @@ jobs:
           retention-days: 14
 
   emulator-compose-smoke:
+    # Temporarily disabled by user request; remove this condition to restore remote emulator tests.
+    if: ${{ false }}
     name: Emulator API 35 / Compose navigation smoke
     needs: build-lint-unit
     runs-on: ubuntu-24.04
