@@ -32,3 +32,9 @@ Contract/VM/Route/Screen 분리, 필터 행 및 LIVE·로컬 영상·합성 Repl
 
 ## READABILITY-005 정적 감사
 4 feature의 import를 명시적으로 정리하고 Kotlin 스타일로 포맷했다. ViewModel은 Compose import 없이 Repository/StateFlow만 소유한다. `git diff --check`, 모듈 경계 검사 및 app/계측 컴파일 PASS. 공개 함수 package/signature 유지, MainActivity/의존성/Live/서버/영상 미변경. 다음 최종 검증.
+
+## READABILITY-006 통합 검증 — 차단
+- SDK 지정 `:app:assembleDebug :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest :core:data:test --no-daemon --max-workers=2` PASS. 모듈 경계, m4/m6 manifest, `git diff --check` PASS.
+- 새 전용 Pixel 2 API 36 AVD (1080×1920, 격리 ADB 5039, 단일 기기)에서 UiContractTest/DiscoverTest/DeviceUiRegressionTest/RoomNavigationSmokeTest 20건 중 18 PASS, 2 FAIL: DiscoverTest.communityPostLikeAndComment의 댓글 노드 미발견(line 120); DeviceUiRegressionTest.liveChatKeyboardSendAndBack의 send bounds assertion(line 125). 같은 AVD에서 변경 전 `09728c4`의 같은 두 테스트도 동일 지점 FAIL. 임시 가상 화면 override 1080×2400에서는 변경 전 LIVE 검사는 PASS, 댓글 검사는 동일하게 FAIL. 테스트 assertion을 변경·비활성화하지 않았다.
+- 동일 Pixel 2, 언어/크기에서 기준·변경 APK의 Home/Community/Artist/Post/Media/Messages/Conversation 캡처 비교: 화면 본문(상태 표시줄 제외) 6개는 동일했고 Community는 탭 선택 애니메이션 프레임 차이. LIVE 진입·복귀는 계측에서 검사했으나 해당 bounds FAIL. 전 화면·모든 상태 동등성은 미검증.
+- 기존 기기 데이터 변경을 피하려고 새 Pixel 6 AVD도 생성했으나 격리 ADB가 장치를 감지하지 못해 계측 NOT_RUN. 차단된 테스트의 원인 및 해결 전 PR/CI/리뷰/병합 NOT_RUN. 서버 회귀 NOT_RUN (변경 전 PR #43 서버 CI 참조), 외부 MP4·실기기·전체 TalkBack·성능 NOT_RUN.
