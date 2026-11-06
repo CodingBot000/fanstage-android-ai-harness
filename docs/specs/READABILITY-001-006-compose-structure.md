@@ -17,3 +17,6 @@ CommunityActionTest, LoadCancellationTest, MessagesViewModelTest, UiContractTest
 
 ## 기준선
 [PR #43](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/43) 최종 HEAD `c73d7ce`: Android/서버 CI 및 독립 리뷰 PASS, 원격 에뮬레이터 SKIPPED. 이는 변경 전 증거다. 이번 기준선 `ANDROID_HOME=… ./gradlew :app:compileDebugKotlin :app:compileDebugAndroidTestKotlin --no-daemon --max-workers=2` PASS. 본 작업의 계측·통합·CI NOT_RUN.
+
+## READABILITY-001 Community
+Contract, ViewModel, Community/Post 각 Route·Screen으로 기존 공개 선언을 이동하고 아티스트 헤더·게시물 카드를 의미 단위로 추출했다. 저장 가능한 탭, 댓글 초안과 VM 취소 처리는 기존 수명·연산 유지. SDK 지정 계획상의 CommunityActionTest·LoadCancellationTest·core:data와 app/계측 컴파일 PASS. 전체 계측 NOT_RUN (최종 단계). 다음 Discover.

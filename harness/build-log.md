@@ -570,3 +570,4 @@
 
 ## READABILITY-000 (2026-11-06)
 - 시작 main `09728c4`, clean 작업 트리에서 `codex/compose-readability` 생성. 기준선 SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin --no-daemon --max-workers=2` PASS. 기존 PR #43 증거는 변경 전 기준만 의미한다. 상세 SDD 참조. 다음 Community.
+- READABILITY-001: Community 계약/VM/Route/Screen 분리, 헤더·게시물 카드 추출. SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*CommunityActionTest*' --tests '*LoadCancellationTest*' :core:data:test --no-daemon --max-workers=2` PASS. 전체 계측 NOT_RUN. 다음 Discover.
