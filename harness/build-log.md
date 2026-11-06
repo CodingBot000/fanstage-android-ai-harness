@@ -574,3 +574,4 @@
 - READABILITY-002: Discover 계약/VM/Route와 의미별 섹션 분리. SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*LoadCancellationTest*' --no-daemon --max-workers=2` PASS. 계측 NOT_RUN. 다음 Media.
 - READABILITY-003: Media 계약/VM/Route/Screen 및 필터·카드 분리. SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*LoadCancellationTest*' --no-daemon --max-workers=2` PASS. 계측 NOT_RUN. 다음 Messages.
 - READABILITY-004: Messages 계약/VM/Route/Screen 및 버블·composer 분리, effect/IME 소유 위치 보존. SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*MessagesViewModelTest*' :core:data:test --no-daemon --max-workers=2` PASS. 실제 계측 NOT_RUN. 다음 정적 감사·통합.
+- READABILITY-005: 변경 feature import 및 Kotlin 형식 정리. `git diff --check`, 모듈 경계 검사 및 app/계측 컴파일 PASS. VM에 Compose import 없음. 최종 통합·UI·CI NOT_RUN.

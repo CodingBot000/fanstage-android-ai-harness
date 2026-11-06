@@ -29,3 +29,6 @@ Contract/VM/Route/Screen 분리, 필터 행 및 LIVE·로컬 영상·합성 Repl
 
 ## READABILITY-004 Messages
 계약·VM·목록/대화 Route 및 Screen 분리, 메시지 버블과 composer 추출. 진입 읽음 effect, remember 초안, 대화 Screen 내 LazyListState와 두 effect의 키·수명·viewport 관찰 및 IME Modifier 순서를 유지한다. SDK 지정 app/계측 컴파일, MessagesViewModelTest 및 core:data:test PASS. 실제 IME/스크롤 계측 NOT_RUN (최종 단계).
+
+## READABILITY-005 정적 감사
+4 feature의 import를 명시적으로 정리하고 Kotlin 스타일로 포맷했다. ViewModel은 Compose import 없이 Repository/StateFlow만 소유한다. `git diff --check`, 모듈 경계 검사 및 app/계측 컴파일 PASS. 공개 함수 package/signature 유지, MainActivity/의존성/Live/서버/영상 미변경. 다음 최종 검증.

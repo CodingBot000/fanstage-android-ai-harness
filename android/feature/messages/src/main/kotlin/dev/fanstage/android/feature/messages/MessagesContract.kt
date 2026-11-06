@@ -1,9 +1,6 @@
 package dev.fanstage.android.feature.messages
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import dev.fanstage.android.core.model.*
+import dev.fanstage.android.core.model.LocalConversation
 
 data class MessagesUiState(val conversations: List<LocalConversation>)
 

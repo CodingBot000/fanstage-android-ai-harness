@@ -1,12 +1,12 @@
 package dev.fanstage.android.feature.media
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.fanstage.android.core.model.*
+import dev.fanstage.android.core.model.DemoVideo
 
 @Composable
 fun MediaRoute(

@@ -1,9 +1,6 @@
 package dev.fanstage.android.feature.community
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import dev.fanstage.android.core.model.*
+import dev.fanstage.android.core.model.CommunityPost
 
 sealed interface CommunityState {
     data object Loading : CommunityState

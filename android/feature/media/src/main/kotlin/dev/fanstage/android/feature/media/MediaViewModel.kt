@@ -1,12 +1,8 @@
 package dev.fanstage.android.feature.media
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.fanstage.android.core.model.*
+import dev.fanstage.android.core.model.DiscoverRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
