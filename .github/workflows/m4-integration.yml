@@ -2,10 +2,10 @@ name: M4 PostgreSQL and real Android chat
 on:
   pull_request:
     branches: [main]
-    paths: ['backend/**', 'compose.yaml', 'android/**', 'scripts/m4-*', '.github/workflows/m4-integration.yml']
+    paths: ['backend/**', 'compose.yaml', 'compose.media.yaml', 'android/**', 'scripts/m4-*', '.github/workflows/m4-integration.yml']
   push:
     branches: [main]
-    paths: ['backend/**', 'compose.yaml', 'android/**', 'scripts/m4-*', '.github/workflows/m4-integration.yml']
+    paths: ['backend/**', 'compose.yaml', 'compose.media.yaml', 'android/**', 'scripts/m4-*', '.github/workflows/m4-integration.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -28,6 +28,9 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '9.5.0'
+      - name: Test local media HTTP contracts
+        working-directory: backend/chat-server
+        run: ./gradlew test --no-daemon
       - name: Install compilation SDK
         shell: bash
         run: |

@@ -28,3 +28,10 @@ class FakeMessageRepository : MessageRepository {
     override fun markRead(artistId: ConversationId): List<LocalConversation> { state = state.map { if (it.artistId == artistId) it.copy(unread = false) else it }; return snapshot() }
     override fun send(artistId: ConversationId, text: String): List<LocalConversation> { val value = text.trim(); if (value.isNotEmpty()) state = state.map { if (it.artistId == artistId) it.copy(messages = it.messages + LocalMessage((it.messages.maxOfOrNull { m -> m.id } ?: 0) + 1, value, true)) else it }; return snapshot() }
 }
+
+object DemoVideos {
+    val all: List<DemoVideo> = (1..7).map { index ->
+        val id = "demo-%02d".format(java.util.Locale.ROOT, index)
+        DemoVideo(id, "Video %02d".format(java.util.Locale.ROOT, index), fictionalArtists[(index - 1) % fictionalArtists.size].id, "$id.mp4")
+    }
+}

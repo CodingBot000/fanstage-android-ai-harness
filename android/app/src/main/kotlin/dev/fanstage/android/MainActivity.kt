@@ -1,6 +1,7 @@
 package dev.fanstage.android
 
 import dev.fanstage.android.feature.messages.*
+import dev.fanstage.android.core.data.DemoVideos
 
 import dev.fanstage.android.feature.media.*
 
@@ -87,7 +88,7 @@ private fun FanStageApp() {
             ConversationScreen(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
         }
         composable("media") {
-            MediaRoute(mediaViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") })
+            MediaRoute(mediaViewModel, onLive = { navController.navigate("rooms/${Uri.encode(it)}") }, onReplay = { navController.navigate("replay") }, videos = if (BuildConfig.DEBUG) DemoVideos.all else emptyList(), onVideo = { navController.navigate("local-video/$it") })
         }
         composable("community") {
             CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, artists = artists)
@@ -98,6 +99,19 @@ private fun FanStageApp() {
         }
         composable("community/post/{postId}") { postEntry ->
             PostDetail(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
+        }
+        composable("local-video/{videoId}") { videoEntry ->
+            val video = DemoVideos.all.firstOrNull { it.id == videoEntry.arguments?.getString("videoId") }
+            if (BuildConfig.DEBUG && video != null) {
+                val source = "http://10.0.2.2:18765/demo-media/${video.fileName}"
+                val index = DemoVideos.all.indexOf(video)
+                val roomId = listOf("studio-session", "sketch-break", "tabletop-night").getOrNull(index)
+                if (roomId != null) {
+                    val chatFactory = remember(roomId) { ChatViewModel.Factory(roomId) }
+                    val chatViewModel: ChatViewModel = viewModel(viewModelStoreOwner = videoEntry, factory = chatFactory)
+                    RoomDetailScreen(roomId, chatViewModel, developmentControls = true, sourceUri = source, onBack = { navController.popBackStack() })
+                } else ReplayScreen(onBack = { navController.popBackStack() }, sourceUri = source, title = video.title)
+            }
         }
         composable("replay") { ReplayScreen(onBack = { navController.popBackStack() }) }
         composable(

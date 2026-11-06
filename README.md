@@ -80,3 +80,7 @@ Debug 상세 화면에는 로컬 서버 개발 설정이 먼저 나타납니다.
 ## 라이선스
 
 프로젝트에서 직접 작성한 코드와 문서는 [MIT License](LICENSE)를 따릅니다. Gradle Wrapper와 그 밖의 제3자 구성요소는 각자의 조건이 적용되며, 포함 범위와 미확인 시연 화면 권리는 [제3자 고지](THIRD_PARTY_NOTICES.md)와 [라이선스 감사](docs/reviews/M8-license-audit.md)를 확인하세요.
+
+### Local MP4 VOD demonstration
+
+The Debug emulator can play seven privately supplied local MP4 files over HTTP Progressive VOD while retaining the synthetic HLS demo. This is prerecorded VOD, not live HLS or adaptive streaming. See [local server setup](backend/chat-server/README.md#optional-local-mp4-vod); video files are not included in the repository.

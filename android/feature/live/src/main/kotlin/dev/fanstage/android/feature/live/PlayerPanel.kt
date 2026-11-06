@@ -6,8 +6,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,7 +40,18 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
     val session = remember(controller) { PlaybackSession(controller, autoPlay) }
     val state by controller.state.collectAsStateWithLifecycle()
     val rendered by controller.hasRenderedFrame.collectAsStateWithLifecycle()
+    var position by remember(controller) { mutableStateOf(0L) }
+    var duration by remember(controller) { mutableStateOf(0L) }
+    val isMp4 = remember(sourceUri) { Uri.parse(sourceUri).path?.endsWith(".mp4", ignoreCase = true) == true }
+    LaunchedEffect(controller, isMp4) {
+        while (isMp4) {
+            position = controller.player.currentPosition.coerceAtLeast(0)
+            duration = controller.player.duration.coerceAtLeast(0)
+            delay(500)
+        }
+    }
     val playerDescription = stringResource(R.string.player_description)
+    val seekDescription = stringResource(R.string.player_seek)
 
     DisposableEffect(owner, session) {
         val observer = LifecycleEventObserver { _, event ->
@@ -64,6 +79,9 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
             onRelease = { it.player = null },
             modifier = Modifier.fillMaxWidth().height(200.dp).semantics { contentDescription = playerDescription }.testTag(if (rendered) "player_first_frame" else "player_surface"),
         )
+        if (isMp4 && duration > 0) {
+            Slider(value = (position.toFloat() / duration).coerceIn(0f, 1f), onValueChange = { controller.player.seekTo((it * duration).toLong()); position = (it * duration).toLong() }, modifier = Modifier.semantics { contentDescription = seekDescription }.testTag("player_seek"))
+        }
         Text(
             stringResource(when (state) {
                 PlaybackState.Loading -> R.string.player_loading

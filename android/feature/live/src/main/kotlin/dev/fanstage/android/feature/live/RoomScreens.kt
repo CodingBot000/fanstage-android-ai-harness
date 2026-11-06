@@ -97,7 +97,7 @@ fun RoomListScreen(
 }
 
 @Composable
-fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, onBack: () -> Unit) {
+fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, sourceUri: String = "asset:///hls/vod.m3u8", onBack: () -> Unit) {
     val title = when (roomId) {
         "studio-session" -> stringResource(R.string.room_studio_title)
         "sketch-break" -> stringResource(R.string.room_sketch_title)
@@ -109,9 +109,9 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
             modifier = Modifier.fillMaxSize().padding(padding).imePadding().verticalScroll(rememberScrollState()).padding(16.dp).testTag("room_detail"),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+            Text(if (sourceUri.endsWith(".mp4")) "Local VOD · prerecorded" else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
             Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(12.dp)) { PlayerPanel(roomId) }
+                Column(Modifier.padding(12.dp)) { PlayerPanel(roomId, sourceUri) }
             }
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(12.dp)) { ChatPanel(chatViewModel, developmentControls) }

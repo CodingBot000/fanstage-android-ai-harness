@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- LOCAL-MEDIA-001 진행 중: PR #40 병합 및 main CI PASS 기준. 사용자의 지시에 따라 실기기 대신 전용 에뮬레이터만 사용한다. 상세는 [SDD](specs/LOCAL-MEDIA-001-mp4-streaming.md).
+
 - Current milestone: M8 — Release Candidate & Portfolio Packaging
 - Current task: UX-007~011 비주얼 개편 및 ARCH-001~003 모듈화 병합 완료 — 제출용 문서 현행화
 - State: **Portfolio Ready — v0.1 (source-only)**. M8-001 [PR #30](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/30), M8-002 [PR #31](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/31), 클린 체크아웃 재현 [PR #33](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/33), MIT/제3자 고지 [PR #34](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/34)가 병합됐다. 사용자 확인 범위에서 포트폴리오 제출 준비를 마감했다. 이는 공개 APK·운영 서비스 검증 완료나 모든 위험 해소를 뜻하지 않는다. 최초 WebSocket 타임아웃은 PR #30 한정 예외 아래 원인 미확정으로 보존한다. [최종 범위와 잔여 한계](reviews/M8-final-readiness.md).

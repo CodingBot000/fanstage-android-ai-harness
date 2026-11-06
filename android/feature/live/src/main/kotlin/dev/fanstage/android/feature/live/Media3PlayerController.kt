@@ -7,6 +7,8 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
+import android.net.Uri
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.upstream.DefaultLoadErrorHandlingPolicy
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +35,10 @@ class Media3PlayerController(context: Context, uri: String) : PlayerController {
     }
 
     init {
-        val source = HlsMediaSource.Factory(DefaultDataSource.Factory(context.applicationContext))
+        val source = if (Uri.parse(uri).path?.endsWith(".mp4", ignoreCase = true) == true) {
+            ProgressiveMediaSource.Factory(DefaultDataSource.Factory(context.applicationContext))
+                .createMediaSource(MediaItem.fromUri(uri))
+        } else HlsMediaSource.Factory(DefaultDataSource.Factory(context.applicationContext))
             .setLoadErrorHandlingPolicy(object : DefaultLoadErrorHandlingPolicy(2) {
                 override fun getRetryDelayMsFor(loadErrorInfo: androidx.media3.exoplayer.upstream.LoadErrorHandlingPolicy.LoadErrorInfo): Long =
                     if (loadErrorInfo.errorCount > 2) C.TIME_UNSET else super.getRetryDelayMsFor(loadErrorInfo)

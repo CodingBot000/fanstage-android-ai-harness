@@ -40,11 +40,11 @@ class MediaViewModel(private val repository: DiscoverRepository) : ViewModel() {
     init { retry() }
     fun retry() { loadJob?.cancel(); loadJob = viewModelScope.launch { mutableState.value = MediaState.Loading; try { val data = repository.load(); currentCoroutineContext().ensureActive(); mutableState.value = MediaState.Ready(data) } catch (e: CancellationException) { throw e } catch (_: Exception) { currentCoroutineContext().ensureActive(); mutableState.value = MediaState.Error } } }
 }
-@Composable fun MediaRoute(viewModel: MediaViewModel, onLive: (String) -> Unit, onReplay: () -> Unit) {
+@Composable fun MediaRoute(viewModel: MediaViewModel, onLive: (String) -> Unit, onReplay: () -> Unit, videos: List<DemoVideo> = emptyList(), onVideo: (String) -> Unit = {}) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    MediaScreen(state = state, onRetry = viewModel::retry, onLive = onLive, onReplay = onReplay)
+    MediaScreen(state = state, onRetry = viewModel::retry, onLive = onLive, onReplay = onReplay, videos = videos, onVideo = onVideo)
 }
-@Composable fun MediaScreen(state: MediaState, onRetry: () -> Unit, onLive: (String) -> Unit, onReplay: () -> Unit) {
+@Composable fun MediaScreen(state: MediaState, onRetry: () -> Unit, onLive: (String) -> Unit, onReplay: () -> Unit, videos: List<DemoVideo> = emptyList(), onVideo: (String) -> Unit = {}) {
     var filter by rememberSaveable { mutableIntStateOf(0) }
     Column(Modifier.fillMaxSize().padding(horizontal = 20.dp).testTag("media_screen")) {
         Spacer(Modifier.height(20.dp))
@@ -55,12 +55,15 @@ class MediaViewModel(private val repository: DiscoverRepository) : ViewModel() {
         when (val current = state) {
             MediaState.Loading -> CircularProgressIndicator()
             MediaState.Error -> Button(onClick = onRetry) { Text(stringResource(R.string.discover_retry)) }
-            is MediaState.Ready -> LazyVerticalGrid(columns = GridCells.Fixed(2), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            is MediaState.Ready -> LazyVerticalGrid(modifier = Modifier.testTag("media_grid"), columns = GridCells.Fixed(2), horizontalArrangement = Arrangement.spacedBy(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 if (filter != 2) items(current.data.content, key = { it.id }) { content ->
                     Card(onClick = { onLive(content.id) }, modifier = Modifier.testTag("media_${content.id}")) { Column { Image(painterResource(artworkResource(current.data.artists.firstOrNull { it.id == content.artistId }?.feed ?: content.artwork)), null, Modifier.fillMaxWidth().aspectRatio(16f / 10f), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter); Column(Modifier.padding(12.dp)) { CardTwoLineText(stringResource(R.string.demo_live), style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary)); CardTwoLineText(mediaContentTitle(content), style = MaterialTheme.typography.titleMedium); CardTwoLineText(content.artist, style = MaterialTheme.typography.bodyMedium) } } }
                 }
                 if (filter != 1) item {
                     Card(onClick = onReplay, modifier = Modifier.testTag("media_replay")) { Column { Image(painterResource(artworkResource(ArtworkKey.PAPER_FEED)), null, Modifier.fillMaxWidth().aspectRatio(16f / 10f), contentScale = ContentScale.Crop, alignment = Alignment.TopCenter); Column(Modifier.padding(12.dp)) { CardTwoLineText(stringResource(R.string.replay), style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.primary)); CardTwoLineText("Studio diary", style = MaterialTheme.typography.titleMedium); CardTwoLineText("Paper Lantern", style = MaterialTheme.typography.bodyMedium) } } }
+                }
+                if (filter != 1) items(videos, key = { it.id }) { video ->
+                    Card(onClick = { onVideo(video.id) }, modifier = Modifier.testTag("media_${video.id}")) { Column { Image(painterResource(artworkResource(current.data.artists.first { it.id == video.artistId }.feed)), null, Modifier.fillMaxWidth().aspectRatio(16f / 10f), contentScale = ContentScale.Crop); Column(Modifier.padding(12.dp)) { CardTwoLineText("Local VOD", style = MaterialTheme.typography.labelLarge); CardTwoLineText(video.title, style = MaterialTheme.typography.titleMedium) } } }
                 }
             }
         }
