@@ -23,3 +23,6 @@ Contract, ViewModel, Community/Post 각 Route·Screen으로 기존 공개 선언
 
 ## READABILITY-002 Discover
 Contract/VM/Route/Screen 분리 및 Heading·Hero·Community·LIVE·Replay·추천 섹션 추출. Lazy item 순서와 key, Local VOD/benchmark 콜백, 기존 Preview 3개 유지. SDK 지정 app/계측 컴파일 및 LoadCancellationTest PASS; 전체 계측 NOT_RUN. 다음 Media.
+
+## READABILITY-003 Media
+Contract/VM/Route/Screen 분리, 필터 행 및 LIVE·로컬 영상·합성 Replay 카드 추출. Route의 saveable 필터와 그리드 조건·순서, artwork 조회 예외 정책 유지. SDK 지정 app/계측 컴파일 및 LoadCancellationTest PASS. 전체 계측 NOT_RUN. 다음 Messages.
