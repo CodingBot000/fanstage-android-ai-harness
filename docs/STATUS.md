@@ -102,3 +102,6 @@
 ## UX-012 (2026-11-06)
 - 그리드/카드 두 줄·말줄임 및 높이 통일, 상세 상단 뒤로가기 아이콘, LIVE/DM 입력창 안 전송 버튼·IME Send, 영상 TextureView 전환 및 앱 아이콘 적용. [SDD](specs/UX-012-layout-navigation-chat-player.md), [영상 surface ADR](adr/ADR-0008-compose-video-surface.md).
 - 에뮬레이터 전체 Android 계측 18/18·서버 통합/장애 회귀 PASS, 이후 UI 계측 5/5 및 일반 Debug/Release/rcLocal/Benchmark 빌드·lint·unit·manifest·모듈 경계 PASS. 키보드 전송 및 영상 전환 프레임 수동 확인. 실기기는 사용자 요청으로 에뮬레이터로 전환해 NOT_RUN. 기존 일반 앱은 사용자 승인에 따라 에뮬레이터에 `install -r`로 갱신했다. 기존 `.gitignore` 변경은 보존한다.
+
+## UDF-001~004 (2026-11-06)
+- UDF-001 진행: Community 액션 및 Post Detail Route/Screen 분리, 관련 컴파일·단위 테스트 PASS. 전체 통합·계측·CI NOT_RUN. [SDD](specs/UDF-001-004-ui-contracts.md).

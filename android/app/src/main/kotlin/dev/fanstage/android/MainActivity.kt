@@ -98,7 +98,7 @@ private fun FanStageApp() {
             CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, onBack = { navController.popBackStack() }, artists = artists)
         }
         composable("community/post/{postId}") { postEntry ->
-            PostDetail(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
+            PostDetailRoute(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
         }
         composable("local-video/{videoId}") { videoEntry ->
             val video = DemoVideos.all.firstOrNull { it.id == videoEntry.arguments?.getString("videoId") }
