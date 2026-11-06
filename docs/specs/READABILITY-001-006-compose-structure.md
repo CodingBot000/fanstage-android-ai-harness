@@ -20,3 +20,6 @@ CommunityActionTest, LoadCancellationTest, MessagesViewModelTest, UiContractTest
 
 ## READABILITY-001 Community
 Contract, ViewModel, Community/Post 각 Route·Screen으로 기존 공개 선언을 이동하고 아티스트 헤더·게시물 카드를 의미 단위로 추출했다. 저장 가능한 탭, 댓글 초안과 VM 취소 처리는 기존 수명·연산 유지. SDK 지정 계획상의 CommunityActionTest·LoadCancellationTest·core:data와 app/계측 컴파일 PASS. 전체 계측 NOT_RUN (최종 단계). 다음 Discover.
+
+## READABILITY-002 Discover
+Contract/VM/Route/Screen 분리 및 Heading·Hero·Community·LIVE·Replay·추천 섹션 추출. Lazy item 순서와 key, Local VOD/benchmark 콜백, 기존 Preview 3개 유지. SDK 지정 app/계측 컴파일 및 LoadCancellationTest PASS; 전체 계측 NOT_RUN. 다음 Media.
