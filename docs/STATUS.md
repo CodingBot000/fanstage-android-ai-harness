@@ -108,3 +108,4 @@
 - UDF-002: Messages 상태·행동 및 목록/대화 Route·Screen 분리. 관련 컴파일·단위 PASS, 계측·전체 통합 NOT_RUN.
 - UDF-003: Discover/Media 재시도 행동과 Media 필터 경계 정리. 관련 컴파일·취소 회귀 PASS, 전체 통합 NOT_RUN.
 - UDF-004 로컬 통합: Android 빌드/lint/unit, 모듈·manifest 검사, 전용 API 36 기존 계측 18/18 및 상태 기반 UI 2/2, 격리 서버 통합·장애 테스트 PASS. 외부 MP4 7개·실기기·성능·전체 접근성 NOT_RUN. 최종 PR CI·독립 리뷰 대기.
+- UDF-004 원격: 구현 head `c4fda55` Android 및 서버 CI PASS, 독립 Codex 리뷰 지적 0건. 기록 추가 후 최종 head 검사 확인 중: [PR #43](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/43). 원격 에뮬레이터는 기존 사용자 설정으로 SKIPPED.

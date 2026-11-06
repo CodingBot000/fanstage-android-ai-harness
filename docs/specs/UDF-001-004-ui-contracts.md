@@ -22,3 +22,7 @@ Discover/Media 재시도에 필요한 액션만 연결했다. Media 필터는 Ro
 - SDK 지정 `:app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest :core:data:test` PASS. 모듈 경계 및 m4/m6 manifest 검사 PASS. 서버 unit PASS; 기존 서버와 분리한 18766 포트의 임시 Compose 스택에서 동일 서버 통합·장애 스크립트(포트만 변경한 임시 복사본) PASS. 기존 서버·영상은 건드리지 않았다.
 - 전용 AVD 홈 캡처와 README의 UX-008 홈을 육안 비교: 구조는 유사하나 기존 UX-012/로컬 VOD 변경으로 간격·라벨이 다르므로 전체 화면 픽셀 동일성은 미검증. 이미지 증거는 임시 파일로만 사용했다.
 - NOT_RUN: 7개 외부 MP4 opt-in, 실제 기기·성능 A/B·전체 TalkBack·강제 프로세스 종료 복구. 원격 CI 및 최종 독립 리뷰 대기. 기존 사용자 요청으로 원격 에뮬레이터 작업은 비활성 상태이며 이번에 변경하지 않았다.
+
+## 원격 검증 및 리뷰
+- 구현·통합 head `c4fda55`: [Android build/lint/unit CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42185550650) PASS, [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42185550673) PASS. 원격 에뮬레이터는 기존 사용자 설정으로 SKIPPED.
+- 같은 head에서 별도 `codex review --base origin/main`: 수정 가능한 결함 0건. 이후 이 문서 기록만 추가했으며 최종 head CI·리뷰를 다시 확인한다. PR #43에서 최종 결과 확인.

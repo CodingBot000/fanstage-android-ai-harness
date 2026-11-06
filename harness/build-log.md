@@ -566,3 +566,4 @@
 - 격리 ADB 서버 5039, 단일 전용 API 36 AVD에서 DiscoverTest, DeviceUiRegressionTest, RoomNavigationSmokeTest 18/18 PASS. UiContractTest 2/2 PASS. 최초 AVD 중복 실행은 기존 전용 AVD 사용 중으로 거부됐고 기존 격리 서버를 확인해 사용했다.
 - 별도 18766 포트의 임시 Compose stack 및 포트만 수정한 임시 테스트 복사본으로 서버 integration.py와 m5_faults.py PASS; 테스트 스택 정리. 원래 미디어 서버는 유지했다.
 - 홈 화면을 README UX-008 이미지와 육안 비교: 구조 유사, 기존 UX-012/로컬 VOD의 간격·라벨 차이 존재. 전체 화면 동일성 미검증. 외부 MP4 opt-in·실기기·전체 접근성·성능 NOT_RUN. 원격 CI/리뷰 대기.
+- 구현 head `c4fda55` 원격 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42185550650), [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42185550673) PASS; 원격 에뮬레이터 SKIPPED (기존 사용자 설정). 같은 head `codex review --base origin/main` 수정 가능한 결함 0건. 기록 추가 후 최종 head 재확인 예정.
