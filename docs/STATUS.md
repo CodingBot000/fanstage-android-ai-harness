@@ -1,12 +1,12 @@
 # FanStage 작업 현황
 
-- PLAYER-001 [Draft PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47): `f99c224`에서 로컬 단위 56/56·전체 계측 41/41 PASS. 구현 head `604fa44`의 활성 원격 Android/서버 CI PASS, 원격 에뮬레이터 OFF. 문서 후속 head의 CI·독립 리뷰 확인 전 Draft 유지.
+- PLAYER-001 [Draft PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47): `f99c224` 로컬 단위 56/56·전용 AVD 전체 계측 41/41 PASS; `78c91cd` 활성 원격 Android/서버 CI PASS, 원격 에뮬레이터 SKIPPED. 별도 독립 정적 리뷰 추가 P0/P1/P2 0건, 공식 GitHub 승인 리뷰 없음. 문서 정리 후 최종 head CI 확인 예정. [SDD](specs/PLAYER-001-player-settings-fullscreen.md).
 
-- 상단바 스와이프 접힘 및 플레이어 아이콘·얇은 탐색 트랙 구현. 전체 변형 빌드·lint·단위, 전용 API 36 통합 25/25·상단바 검사 4/4·실제 서버 Android 통합 1/1 PASS. 원격 에뮬레이터 OFF, 실기기·장시간 성능 NOT_RUN. PR 검증 진행.
+- 상단바 스와이프 접힘 및 플레이어 아이콘·얇은 탐색 트랙 구현. 전체 변형 빌드·lint·단위, 전용 API 36 통합 25/25·상단바 검사 4/4·실제 서버 Android 통합 1/1 PASS. 원격 에뮬레이터 OFF, 실기기·장시간 성능 NOT_RUN. [PR #46](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/46) 병합 완료.
 
 - 플로팅 탐색바 구현: Haze 배경 블러와 4개 탭 하단 스크롤 여백, 전용 API 36 제스처 15/15·3버튼 1/1 PASS. 실기기·구버전 블러 및 성능 측정 NOT_RUN. [SDD](specs/UX-002-app-shell.md).
 
-- UI·UX 통합 PR 준비: 댓글·채팅 입력 하단 고정, 하트·카드·간격 개선, 로컬 VOD 우선 및 벤치마크 후순위. 전용 API 36 로컬 21/21 및 실제 서버 Android 통합 1/1 PASS. 사용자 요청으로 GitHub Actions 에뮬레이터 실행은 임시 OFF, 테스트 정의 보존. 원격 빌드·서버 CI와 PR 리뷰 확인 필요.
+- UI·UX 통합 [PR #42](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/42) 병합: 댓글·채팅 입력 하단 고정, 하트·카드·간격 개선, 로컬 VOD 우선 및 벤치마크 후순위. 전용 API 36 로컬 21/21 및 실제 서버 Android 통합 1/1 PASS. 사용자 요청으로 GitHub Actions 에뮬레이터 실행은 임시 OFF, 테스트 정의 보존. 원격 빌드·서버 CI PASS; 공식 GitHub 승인 리뷰 없음.
 
 - LOCAL-MEDIA-001 진행 중: PR #40 병합 및 main CI PASS 기준. 사용자의 지시에 따라 실기기 대신 전용 에뮬레이터만 사용한다. 상세는 [SDD](specs/LOCAL-MEDIA-001-mp4-streaming.md).
 

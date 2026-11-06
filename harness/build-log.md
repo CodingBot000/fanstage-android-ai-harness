@@ -662,3 +662,7 @@
 ### PR SHA별 로컬 근거 정정
 - 독립 리뷰가 `604fa44` 이후 전체 41/41로 읽힐 수 있는 문서의 P2 모호성을 지적했다. 기존 전체 회귀는 `85c9657` 구현 트리, `604fa44`의 테스트 경로 수정 후에는 전용 플레이어 12/12·빌드·단위를 재실행한 결과였다. 이후 정확한 `f99c224a37e0be621c9fa1271aef7be805a9fd73` head에서 Debug/Release/rcLocal/Benchmark/macrobenchmark 빌드, lint, 단위 56/56, 전체 계측 41/41 및 실제 채팅·7개 로컬 MP4를 재실행해 PASS했다. `ANDROID_SERIAL=127.0.0.1:5563`, API 36 headless AVD, 기존 토큰 재사용·별도 빈 DB. ExoPlayer Init/Release `fec69b` 각 1회.
 - 토큰 산출물 검출 0, 이번 재실행의 격리 컨테이너·DB만 정리, 기존 서버 health 200. 해당 결과 기록 이후 문서 전용 후속 head는 원격 CI 및 독립 리뷰에서 별도 확인한다.
+
+## PLAYER-001 병합 전 문서 정리 (2026-11-07)
+- [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) `78c91cdacc47e80626401d2fdaf02535f0b5bbf9`: 활성 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454714) 및 [PostgreSQL·서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454845) PASS. 원격 에뮬레이터 Job과 M4 Android 에뮬레이터 단계 SKIPPED. GitHub 공식 승인 리뷰는 없으며 별도 컨텍스트의 정적 독립 리뷰 결과와 구분한다.
+- SDD 테스트 매트릭스·ADR-0010 상태·STATUS 상단을 확인된 결과로 정리했다. 이전 FAIL·수정 이력 및 전환 프레임 전수, 실제 미선언 CEA 방송, 장시간 성능·메모리, 기기 접근성·오디오 청취 NOT_RUN은 보존한다. 본 후속 변경은 문서만 포함한다. 최종 head CI와 병합 결과는 후속 기록한다.

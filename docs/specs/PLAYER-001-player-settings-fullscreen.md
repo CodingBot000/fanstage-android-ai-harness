@@ -1,6 +1,6 @@
 # PLAYER-001 — 플레이어 설정과 전체 화면
 
-상태: 로컬 Gate PASS, Draft PR·원격 CI 및 PR 기준 독립 리뷰 대기. 병합 전 원격 검증 필요.
+상태: [Draft PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) 검증 완료·병합 전 문서 정리. 로컬 단위 56/56·전용 AVD 전체 계측 41/41, 활성 원격 CI PASS; 최종 문서 head CI는 별도 확인한다. 독립 정적 리뷰 추가 P0/P1/P2 0건, 공식 GitHub 승인 리뷰 없음.
 
 ## 목표와 범위
 LIVE와 Replay의 기존 화면 소유 재생 세션에서 실제 트랙 기반 화질·자막 선택, 배속, 전체 화면을 제공한다. PIP, 백그라운드 연속 재생, 자막 다운로드·크기 변경, DRM은 제외한다.
@@ -15,21 +15,21 @@ UI는 읽기 전용 재생 상태와 지원되는 트랙, 선택 정책, 실제 
 지원하지 않는 트랙과 명령은 선택하지 못하게 한다. 소스 변경과 TrackGroup 교체 시 무효 선택을 표시하지 않는다. 한글·영어 문자열, 접근성 설명과 터치 영역을 제공한다. 실제 영상 및 자막 렌더링과 첫 프레임을 확인한다. 기존 HLS·채팅·오류 복구와 로컬 미디어 비공개 정책을 유지한다.
 
 ## 테스트 매트릭스
-| 범위 | 검증 | 상태 |
-|---|---|---|
-| 단위/Fake | 후보·선택·override 무효화·단일 트랙·자막 미지원·배속 기본 및 동기화 | PARTIAL: 그룹 ID 1건 PASS, 나머지 NOT_RUN |
-| Media3 통합 | 자체 생성 다중 화질 HLS·WebVTT, 트랙 선택 및 Auto, 첫 프레임·탐색·배속 | PARTIAL: 주요 트랙·cue·속도·첫 프레임 PASS |
-| UI | LIVE/Replay 전체 화면 반복, 동일 player, Back, 비율, 회전·시스템 UI | PARTIAL: 전용 AVD 주요 흐름 PASS; 전환 프레임 전수 NOT_RUN |
-| Lifecycle | HOME pause·수동 재개, 이탈 release, 재진입·리스너와 surface 정리 | PARTIAL: HOME·release 로그 PASS; 장시간 누수 NOT_RUN |
-| 회귀·접근성 | HLS·로컬 MP4·채팅·오류·잔상, ko/en·큰 글꼴·키보드 | NOT_RUN |
+| 범위 | 실행 결과와 한계 |
+|---|---|
+| 단위/Fake | **PASS:** live 단위 56/56. 트랙 그룹 교체·무효 override·지원 여부, 자막 선택 상태, 속도 명령과 lifecycle 유지 검사. 가능한 모든 Media3 조합의 단위 전수는 NOT_RUN. |
+| Media3 통합 | **PASS:** 합성 다중 화질 HLS·WebVTT에서 트랙 선택과 Auto, 소스 교체, 자막 cue·끄기, 속도·첫 프레임 검사. 실제 미선언 CEA 방송은 NOT_RUN. |
+| 전체 화면·Lifecycle | **PASS:** 전용 API 36에서 동일 player output 교체·첫 프레임, 일시정지 위치·설정, Back·HOME·회전·이탈 후 잔상 검사. 전체 전환 프레임·모든 기기의 Surface 중복 부재와 장시간 누수는 NOT_RUN. |
+| 회귀·접근성 | **PASS:** 전체 계측 41/41 중 플레이어 12/12, 실제 채팅 1/1, 로컬 미디어 3/3(일곱 영상). Compose 2배 fontScale 레이블·Back 검사. 시스템 글꼴 설정·TalkBack 전수·오디오 청취는 NOT_RUN. |
+| 원격·리뷰 | **PASS:** `78c91cd`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454714) 및 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454845). 원격 에뮬레이터 Job 및 M4 Android 단계는 **SKIPPED**. 별도 정적 리뷰 추가 P0/P1/P2 0건; 공식 GitHub 승인 리뷰 없음. |
 
-## Open Questions / 미완료
-Dialog 호스트, 회전 처리와 사용자가 결정한 미선언 CEA 후보 정책은 ADR-0010에 기록했다. 필수 검증 미완료는 P1 차단이다. PIP는 PLAYER-002에서 별도 결정한다.
+## 미검증 항목과 결정
+미선언 CEA-608은 사용자의 결정에 따라 선택 가능하게 유지하며 지원 여부 미확인으로 표시한다. 실제 미선언 CEA 방송, 장시간 heap/GC·성능, 전 제조사 기기와 TalkBack 전수는 별도 NOT_RUN이다. 관측하지 않은 전환 프레임의 절대적인 Surface 중복 부재를 주장하지 않는다. PIP는 PLAYER-002 범위로 남긴다.
 
 ## 이전 부분 구현 기록 (2026-11-06, 이후 갱신됨)
 배속 메뉴는 Media3 playbackParameters 이벤트에 동기화하고 명령을 사용할 수 없으면 진입을 비활성화한다. 새 controller 기본값은 1.0x다. 아직 UI 상태 계약이 adapter에서 완전히 분리되지 않았으며 배속 전용 테스트와 실제 재생 검증은 NOT_RUN이다. 화질·자막·전체 화면, fixture, 구조 ADR은 미구현이다. 위 수용 기준은 충족되지 않았고 병합을 차단한다.
 
-## 2026-11-06 후속 구현과 검증
+## 이력: 2026-11-06 후속 구현과 검증 (당시 상태)
 
 - `PlayerUiState`에 지원 트랙, 현재 선택 정책 및 실제 배속을 노출하고 controller에서 Media3 override를 적용한다. 그룹마다 세션 내 식별자를 부여하고 그룹 이탈 또는 지원 중단 시 override를 정리한다. PlayerView 연결과 탐색은 화면 소유 adapter가 처리한다. 배속 메뉴는 설정 시트로 확장되었다. 위치 polling은 STARTED에서만 수행된다. 재생 상태와 fullscreen을 UI 상태에 포함한다. 탐색 polling과 Surface 연결은 현재 adapter 경계에 남아 있어 완전한 UI/adapter 분리는 미완료다.
 - Dialog 화면 전환 시 controller는 유지하고 TextureView 기반 PlayerView를 교체한다. 명시적 FIT과 안전 영역을 사용하며 시스템 막대 상태나 방향을 바꾸지 않는다. 회전으로 Activity가 실제 재생성되면 ADR-0006에 따라 이전 플레이어는 해제된다. [ADR-0010](../adr/ADR-0010-player-settings-fullscreen.md).
@@ -38,7 +38,7 @@ Dialog 호스트, 회전 처리와 사용자가 결정한 미선언 CEA 후보 �
 - Media3가 HLS에서 암묵적으로 노출하는 CEA-608 후보는 실제 데이터 존재 여부를 사전에 확정할 수 없다. 합성 fixture는 `CLOSED-CAPTIONS=NONE`을 명시한다. 해당 후보 노출 정책은 추가 검토가 필요하다.
 - 트랙 그룹 식별자 교체 단위 테스트 PASS. 나머지 전용 단위/Fake 매트릭스, 실제 소스 교체 시 무효 override, 큰 글꼴·전체 전환 프레임의 잔상, 오디오 청취, 로컬 7개 MP4, 실제 서버 통합, 최종 CI는 NOT_RUN. 기존 unit 및 UI 회귀 범위와 실패는 build-log에 별도로 기록한다. 이 미검증 항목 때문에 수용 기준은 충족되지 않았다.
 
-## Release Gate 재검증 (2026-11-06)
+## 이력: Release Gate 재검증 (2026-11-06, 당시 상태)
 
 - **기능 결함 / P1 FAIL (사용자 결정 전; 아래 수정 참조):** 자막이 없는 기본 합성 HLS 미디어 playlist에서 `captionlessDefaultHlsHasNoSubtitleChoices`가 FAIL. Media3 기본 extractor가 선언이 빠진 MPEG-TS에 CEA-608 트랙을 추론해 선택지에 노출한다. 선언 누락 상태의 실제 CEA-608을 지원할지, 추론을 끄고 빈 선택지를 방지할지는 상충하여 당시 사용자 결정이 필요했다. [Media3 공식 API](https://developer.android.com/reference/androidx/media3/exoplayer/hls/DefaultHlsExtractorFactory), [Media3 이슈 #432](https://github.com/androidx/media/issues/432). 실패 테스트는 유지한다. 화질·자막 선택의 시각적 체크 표시 누락은 수정 후 전용 계측 PASS.
 - **테스트 환경:** 기존 18765 서버는 사용자 미디어 및 DB를 보존하기 위해 읽기 전용 미디어에만 사용했다. 기존 실행 컨테이너에서 기존 토큰을 재사용하여 별도 18766 포트·빈 DB 스택을 기동했고 신규 자격 증명은 만들지 않았다. 채팅 계측의 명시 포트 옵션을 추가했다. 첫 격리 실행에서 테스트 UI 엔드포인트가 18765를 사용해 FAIL했으며 테스트가 같은 격리 주소를 사용하도록 수정했다. 초기 수정의 테스트 컴파일 오류는 수정 후 재실행했다.
