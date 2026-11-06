@@ -101,7 +101,7 @@ fun RoomListScreen(
 }
 
 @Composable
-fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, sourceUri: String = "asset:///hls/vod.m3u8", onBack: () -> Unit) {
+fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, sourceUri: String = "asset:///hls/captionless.m3u8", onBack: () -> Unit) {
     val title = when (roomId) {
         "studio-session" -> stringResource(R.string.room_studio_title)
         "sketch-break" -> stringResource(R.string.room_sketch_title)

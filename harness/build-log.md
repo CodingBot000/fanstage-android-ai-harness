@@ -587,3 +587,82 @@
 - 상단바 스와이프: Debug 빌드·lint·단위 PASS, API 36 상단바·기존 UI 회귀 18/18 PASS. 최초 실행에서 대화 목록 레이아웃 중 강제 스크롤 예외 FAIL, 스크롤 예약으로 수정 후 재실행 PASS. 실기기 NOT_RUN.
 - 상단바 스와이프 및 플레이어 컨트롤: Debug 빌드·lint·단위 PASS; 전용 API 36 AVD 실제 로컬 MP4·채팅·HLS·플레이어 수명·기존 UI 통합 25/25 PASS, 추가 상단바 스와이프 4/4 PASS. 회전 직후 오버레이 표시 검사 두 차례 FAIL을 재현했고 전환 애니메이션이 완료되기 전에 검사하는 원인을 확인하여 표시될 때까지 기다린 후에도 실제 표시를 검증하는 방식으로 수정, 전체 회귀 PASS. 실기기·장시간 성능 NOT_RUN. 영상 포함 캡처는 로컬에만 보관했다.
 - 상단바·플레이어 PR 최종 게이트: Debug/Release/rcLocal/Benchmark/계측 APK·lint·단위 및 모듈/manifest 검사 PASS. 전용 API 36 실제 서버 Android 채팅 통합 1/1 PASS. 원격 에뮬레이터는 사용자 요청에 따라 OFF, 실기기 및 장시간 성능 NOT_RUN.
+
+## PLAYER-001 — 탐색 가능 상태 기반 표시 (2026-11-06)
+- 기준: `52b2de20deeec96908de738ae0b696622b371c46`, 변경 미커밋. 기존 미추적 SDD 보존.
+- 최초 Gradle 실행은 ANDROID_HOME 미설정으로 FAIL; SDK/JDK 경로 지정 후 재실행.
+- PASS: `ANDROID_HOME="$HOME/Library/Android/sdk" JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home" ./gradlew :feature:live:compileDebugKotlin :feature:live:testDebugUnitTest` (android 디렉터리, 최종 변경 기준). 기존 단위 테스트이며 새 탐색 동작의 기기 검증은 아님.
+- NOT_RUN: 기기 계측, 전체 빌드·lint·CI 및 PLAYER-001 기능·수용 검증. 화질·배속·자막·전체 화면 미구현. 병합 불가.
+
+## PLAYER-001 부분 작업 (2026-11-06)
+- 기준 HEAD `52b2de20deeec96908de738ae0b696622b371c46`, 기존 미커밋 변경 포함 작업 트리.
+- 최초 Gradle 실행 FAIL: `ANDROID_HOME` 미설정으로 SDK 위치를 찾지 못함. `ANDROID_HOME=$HOME/Library/Android/sdk` 지정 후 `:feature:live:testDebugUnitTest :app:assembleDebug :app:lintDebug` PASS. 선택 semantics 추가 후 동일 세 작업 재실행도 PASS. 기존 단위 테스트이며 신규 기능의 검증이 아니다.
+- ADB 연결 기기 없음. PLAYER-001 전용 단위·Media3 통합·UI·lifecycle·회귀 검증, CI는 NOT_RUN. 화질·자막·전체 화면 및 fixture 미구현으로 P1 차단, 병합 불가.
+
+## PLAYER-001 후속 작업 (2026-11-06)
+- 기준 HEAD `52b2de20deeec96908de738ae0b696622b371c46`, 기존 미커밋 파일을 포함한 작업 트리. 처음 선택한 기존 AVD는 사용 중이어서 실행하지 않았고, 새 API 36 `FanStage_PLAYER001_Test`를 생성했다. 명시적 `ANDROID_SERIAL=127.0.0.1:5563`; 연결된 물리 기기는 사용하지 않았다.
+- SDK 경로 지정 후 `:feature:live:testDebugUnitTest :app:assembleDebug :app:lintDebug` PASS. 기존 단위 테스트의 통과이며 PLAYER-001 전용 단위 매트릭스는 NOT_RUN.
+- `:app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.PlayerSettingsTest` PASS 3/3. 실제 합성 360p/720p HLS 선택과 Auto, 영어 WebVTT cue·SubtitleView 수신 및 끄기, 속도, TextureView 새 첫 프레임, 설정/전체 화면 Back, LIVE/Replay 화면 진입·복귀를 검사. 반복 전환 로그 `Init 3aec5da` 1회, `Release 3aec5da` 1회 (테스트 이탈 시). 시각적 화면 품질·실제 회전 및 HOME 등은 별도 NOT_RUN.
+- 중간 실패: 첫 Back 검사는 Activity dispatcher를 직접 호출해 Dialog 경로를 건너뛰어 FAIL; 시스템 Back 키 이벤트로 수정 후 PASS. 자막 cue 검사는 Media3가 추론한 CEA 후보를 선택하여 FAIL; 명시된 영어 WebVTT를 선택하도록 수정 후 PASS. 생성 fixture는 CEA가 없음을 master에 명시한다.
+- 전체 계측 중간 실행: 27 PASS, 1 FAIL, 3 SKIPPED. 실제 채팅은 임시 테스트 토큰 A 미제공으로 FAIL, 로컬 미디어 세 테스트는 파일 서버 조건 미충족으로 SKIPPED. 이는 코드 최종 변경 전 결과이며 최종 전체 실행은 별도 기록한다. 토큰이나 개인 영상은 로그·저장소에 추가하지 않았다.
+- 전용 단위/Fake, 소스 교체 무효 override, 실제 HOME·회전·세로 영상·자막 시각 확인·오디오 청취, 7개 로컬 영상, 실제 서버·CI는 NOT_RUN. P1 gate 미충족, PR/병합하지 않음.
+
+### PLAYER-001 추가 최종 로컬 결과
+- `:feature:live:testDebugUnitTest` 52/52 PASS (그룹 교체 후 이전 식별자 무효화 단위 테스트 1건 포함), `:app:assembleDebug`, `:app:lintDebug` PASS. 중간 컴파일은 문자열 리소스에 접근하는 context 참조 오류로 FAIL했고 수정 후 PASS.
+- 최종 전용 `PlayerSettingsTest` 6/6 PASS: 앞선 3개 흐름에 실제 HOME→복귀 시 수동 재개, 전체 화면 중 실제 가로 회전·복원, 9:16 합성 영상 및 새 세션 1.0x 확인 추가. 로그 `Init fe3cc4b` 1회와 종료 시 `Release fe3cc4b` 1회. [실제 합성 자막](../docs/evidence/player-001/caption.png), [세로 영상](../docs/evidence/player-001/portrait.png) 육안 확인. 초기 화면 캡처는 screencap 종료를 기다리지 않아 미표시였고 명령 완료를 동기화한 후 확인했다. 밝은 배경에서 전체 화면 버튼 대비를 보강했다.
+- 전체 회귀 재실행: 28 PASS, 1 FAIL (실제 채팅 임시 토큰 A 미제공), 3 SKIPPED (로컬 미디어 서버 조건 부재). 이 실행 후 트랙 ID 내부 리팩터링·UI 대비 변경이 있었으므로 최종 트리 전체 회귀는 미실행; 최종 트리에서는 위 빌드·단위·전용 계측만 재실행했다.
+- 잔여 NOT_RUN: 전체 PLAYER-001 단위/Fake 매트릭스와 실제 소스 교체 override, 전환 프레임 전체의 잔상/중복 Surface 및 장시간 누수, 큰 글꼴·접근성 전수, 오디오 청취, 개인 로컬 MP4 7개, 임시 자격 증명을 갖춘 실제 서버, 원격 CI. 필수 gate 미충족으로 완료·병합 불가.
+
+## PLAYER-001 Release Gate 재검증 (2026-11-06)
+- 기준 HEAD `52b2de20deeec96908de738ae0b696622b371c46`, 기존 미커밋 작업 트리 보존. 신규 기능과 의존성 추가 없음. 에뮬레이터 `ANDROID_SERIAL=127.0.0.1:5563`만 사용.
+- 기존 M4 실패는 `fanTokenA`/`fanTokenB` 인자 미제공. 실행 중인 로컬 서버의 기존 자격 증명을 출력·기록하지 않고 재사용, 포트 18766과 별도 빈 DB로 격리했다. 기존 18765 미디어는 읽기만 했다. UI 엔드포인트가 기존 포트를 가리켜 첫 격리 회귀 FAIL; 실제 채팅 테스트와 로컬 미디어 테스트에 선택적 격리 포트 인자를 연결. 중간 테스트 컴파일 오류(`performTextClearance` 반환값 체이닝), 체크 표시 assertion의 전체 문자열 비교 FAIL을 각각 수정했다.
+- PASS (마지막 무자막 테스트 추가 전): `:feature:live:testDebugUnitTest` 52/52, `:app:assembleDebug`, `:app:lintDebug`, 전체 `:app:connectedDebugAndroidTest` 39/39, 0 skipped. 임시 토큰과 서버 포트, 로컬 미디어 opt-in은 실행 시 전달; 값은 기록하지 않음. 7개 MP4 및 격리 실제 채팅 포함. 그룹 전환, invalid ID, 자막·화질 선택 유지, 2배 글꼴과 Surface 제거 픽셀 검사 포함. 시각적 선택 체크 부재는 최소 수정 후 별도 전용 검사 10/10 PASS 및 전체 39/39 재실행 PASS.
+- FAIL (최신): `PlayerSettingsTest#captionlessDefaultHlsHasNoSubtitleChoices`에서 자막이 없는 합성 HLS에 추론된 CEA-608 트랙이 노출됨. Media3 기본 extractor가 선언되지 않은 CEA-608을 호환성상 추론하는 동작과 요구사항이 충돌한다. 테스트 유지; 사용자 정책 결정 대기, P1 차단.
+- 모듈 경계 PASS. manifest 스크립트는 최초 저장소 루트에서 실행해 경로 오류로 FAIL, `android/`에서 재실행 PASS (기존 생성 manifest 기준). 이후 최종 코드 `:app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark --max-workers=2` PASS 및 해당 manifest 검사 재실행 PASS.
+- NOT_RUN: 전체 단위/Fake 매트릭스, 모든 전환 프레임의 Surface 중복·잔상 부재, 전 기기 접근성·장시간 메모리, 오디오 청취, 원격 CI·독립 리뷰. 동작 검증과 선택적 장기 검증을 구분하며 P1 해결 전 병합하지 않는다.
+
+### 사용자 승인 CEA 정책 적용 (2026-11-06)
+- 사용자가 미선언 CEA-608 호환 유지, 추론 후보의 불확실성 표시 및 기본 합성 영상의 자막 없음 명시를 선택했다. [ADR-0010](../docs/adr/ADR-0010-player-settings-fullscreen.md)에 결정·트레이드오프 기록.
+- 기본 합성 HLS에 `CLOSED-CAPTIONS=NONE` master를 추가하고 기본 source를 연결했다. 미선언 HLS에서 추론된 CEA-608 후보는 선택 가능하되 ko/en에서 지원 여부 미확인을 표시한다. 원래의 실패 테스트는 사용자 정책에 맞춰 명시적 무자막에 대한 검사와 미선언 후보의 표시·선택 검사로 분리했다. 원래 실패는 위에 보존한다.
+- 전용 API 36 `PlayerSettingsTest` 12/12 PASS, `:feature:live:testDebugUnitTest :app:assembleDebug :app:lintDebug` PASS. 최종 전체 회귀 및 Release 변형 빌드 진행 중.
+
+### CEA 정책 수정 후 최종 재검증 진행
+- 사용자 결정 전 최종 전체 계측은 40건 중 39 PASS / 1 FAIL / 0 SKIPPED로, 실패는 미선언 무자막 HLS의 CEA 추론 후보였다. 기존 임시 토큰 재사용 및 격리 DB의 실제 채팅 1/1, 읽기 전용 로컬 MP4 3/3 포함. 사용자 선택 후 기본 자막 없음 master와 추론 후보 미확인 표기를 적용했고 전용 계측 12/12 및 전체 계측 41/41 PASS (0 skipped). Debug/Release/rcLocal/Benchmark 및 macrobenchmark 빌드·lint·단위 PASS.
+- 실제 회전 후 상세 이탈까지 assertion을 보강한 뒤 해당 계측 PASS, 합성 HLS가 사라진 [복귀 화면](../docs/evidence/player-001/post-rotation.png) 확인. 캡처 복사 최초 시도는 작업 디렉터리 오류로 FAIL했고 저장소 루트에서 재시도해 보존했다. 보강된 최종 전체 계측은 진행 중.
+- 이 결과는 모든 전환 프레임의 Surface 중복 부재나 장시간 누수 부재를 증명하지 않는다. 원격 CI/독립 리뷰 및 나머지 단위/Fake 검증은 NOT_RUN; 검증 완결성 확인 전 PR/병합하지 않는다.
+
+### PLAYER-001 최종 로컬 실행 (2026-11-06)
+- 사용자 승인 CEA 정책과 회전 후 잔상 검사를 포함한 최종 앱·계측 코드에서 `:app:connectedDebugAndroidTest` 41/41 PASS, 0 FAIL / 0 SKIPPED. `PlayerSettingsTest` 12/12, `LocalMediaTest` 3/3, `RealChatIntegrationTest` 1/1 포함. `ANDROID_SERIAL=127.0.0.1:5563`, 실제 서버는 별도 18766 빈 DB, 18765 일곱 영상은 읽기 전용. 회전·상세 이탈의 복귀 화면 캡처에 영상 잔상 없음.
+- 같은 실행에서 Debug/Release/rcLocal/Benchmark/macrobenchmark 빌드 및 Debug lint PASS. 실행 중 보강한 Fake 단위 테스트까지 포함해 `:feature:live:testDebugUnitTest`를 별도 재실행해 53/53 PASS. M4/M6 manifest·모듈 방향·`git diff --check` PASS. 전체 회귀 실행 도중 변경한 파일은 이 별도 단위 테스트 파일뿐이다.
+- 반복 전체 화면 테스트 로그: ExoPlayer `Init ad8577d` 1회, 화면 종료 후 `Release ad8577d` 1회. 각 전환의 첫 프레임과 종료 후 배경 픽셀 확인. 모든 전환 프레임의 Surface 중복 부재를 증명하지 않는다.
+- 테스트 보고서/로그에서 재사용된 두 기존 토큰 값 검사 0건. 이번 작업의 18766 격리 컨테이너·새 테스트 DB만 정리; 기존 18765 서버는 health 200 및 기존 컨테이너 동작 확인. 신규 자격 증명 생성 없음.
+- NOT_RUN: 트랙 후보·선택·명령 불가 전체 전용 단위/Fake 조합, 모든 전환 프레임의 Surface 중복, 원격 CI·독립 리뷰, 실제 미선언 CEA 방송, 장시간 heap/성능 및 오디오 청취. 필수 검증이 남아 PR 생성·병합 보류. PIP는 PLAYER-002.
+
+- 2배 글꼴 검사는 Compose `LocalDensity`의 fontScale=2 환경에서 레이블·시트 Back을 확인한 것이다. 기기 시스템 글꼴 설정 변경과 TalkBack 전체 탐색은 NOT_RUN이다.
+
+## PLAYER-001 Draft PR 준비 (2026-11-06)
+- 원본 작업 트리와 미커밋 변경을 보존하고 `origin/main` 92e4ae8 기반 `/tmp/fanstage-player001-final` 작업 트리에서 PLAYER-001 변경만 분리했다.
+- 독립 사전 리뷰 P1: 고정 공용 Download 경로 덮어쓰기 및 구 Surface의 첫 프레임 상태 재사용 가능성. 고유 cache와 생성 파일만 정리, View 세대 상태 및 Analytics output identity 검사로 수정했다. P2: 전체 화면 어두운 텍스트 대비 수정. 수정 후 독립 재검토는 추가 확정 P0/P1 없음. 모든 전환 프레임/기기 전수 및 Media3 내부 필드 반사 사용의 버전 의존성은 한계다.
+- 에뮬레이터 최초 시작은 ADB 장치 미발견으로 계측 FAIL. 기존 전용 AVD를 데이터 초기화 없이 headless로 재시작해 명시적 serial에서 전용 검사 12/12 PASS. 초기 코드의 Material3 버튼 색상 import 오류는 수정 후 빌드/lint PASS. 선택 규칙과 단위 검사를 추가했다. 최종 전체 검증 결과는 별도 기록한다.
+
+### Draft PR 최종 로컬 Gate (2026-11-06)
+- `origin/main` 92e4ae8 기반 분리 작업 트리. `:feature:live:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug :app:connectedDebugAndroidTest --max-workers=2` PASS. 단위 56/56, 계측 41/41, skip 0. 전용 PlayerSettings 12/12, 실제 채팅 1/1, 로컬 미디어 3/3. API 36 전용 AVD `127.0.0.1:5563`; 기존 M4 토큰 재사용과 격리 DB; 기존 7개 영상은 읽기만 했다.
+- 전체 화면 반복 output 검사에서 AnalyticsListener의 새 output이 현재 ExoPlayer videoOutput과 동일하고 직전 output과 다름을 확인. pause·탐색 위치·배속 유지, Back, 회전·이탈 및 화면 제거 후 픽셀 검사 PASS. ExoPlayer `Init 5f8ad37` 및 `Release 5f8ad37` 각 1회. 내부 필드 반사·관측된 프레임/기기 범위의 한계를 유지한다.
+- 모듈 경계, M4/M6 manifest 및 `git diff --check` PASS. 테스트 산출물에서 기존 토큰 검출 0건. 이번 작업의 격리 서버·DB를 삭제했고 기존 서버 health 200 확인.
+- 독립 사전 리뷰의 P1 2건(공용 파일 덮어쓰기, 이전 프레임 상태 재사용 근거) 및 P2(전체 화면 대비) 수정 후 재검토에서 추가 확정 P0/P1 없음. PR head 기준 독립 리뷰와 원격 CI는 아직 NOT_RUN; 원격 에뮬레이터 Job은 사용자 결정에 따라 OFF 유지.
+
+### Draft PR 리뷰 후 보완
+- Draft [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) 최초 head `85c9657`을 별도 컨텍스트에서 검토. 추가 확정 P0/P1 없음. API 24~25에서 fixture 테스트가 실행되지 않을 수 있는 P2는 고유 앱 cache 경로를 File API로 생성하도록 수정했다. 별도 리뷰에서 LIVE/Replay 경로의 프레임 태그가 output identity 자체를 증명하지 않는 한계도 기록했다.
+- 수정 후 `:feature:live:testDebugUnitTest :app:assembleDebug :app:lintDebug :app:connectedDebugAndroidTest` (PlayerSettingsTest 한정, API 36 전용 serial) PASS. 실제 output identity는 반복 전환 검사에서 별도 확인한다. 최초 head의 원격 CI와 수정 head CI는 구분하며 원격 에뮬레이터는 OFF다.
+
+### PR 코드 head 원격 결과
+- 구현 head `604fa44c6d20a54d9aca120dfc69ddb636b6c0f1`의 [Android 빌드·lint·unit CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42231894078) PASS, [PostgreSQL·서버 장애 주입 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42231894057) PASS. Android 에뮬레이터 Job 및 M4 Android 에뮬레이터 단계는 사용자 설정에 따라 SKIPPED. 최초 head Android 실행은 새 head가 푸시되어 취소됐으며 최종 결과로 사용하지 않았다.
+- 해당 head의 별도 독립 정적 리뷰에서 추가 P0/P1/P2 지적 0건. 테스트별 임시 cache의 API 24 호환 수정과 실제 output identity 검사, 이전 View 분리 확인. 전체 프레임·모든 기기와 Media3 내부 필드 반사 한계는 유지. 문서 후속 head CI와 리뷰는 PR에서 별도 확인한다.
+
+### PR SHA별 로컬 근거 정정
+- 독립 리뷰가 `604fa44` 이후 전체 41/41로 읽힐 수 있는 문서의 P2 모호성을 지적했다. 기존 전체 회귀는 `85c9657` 구현 트리, `604fa44`의 테스트 경로 수정 후에는 전용 플레이어 12/12·빌드·단위를 재실행한 결과였다. 이후 정확한 `f99c224a37e0be621c9fa1271aef7be805a9fd73` head에서 Debug/Release/rcLocal/Benchmark/macrobenchmark 빌드, lint, 단위 56/56, 전체 계측 41/41 및 실제 채팅·7개 로컬 MP4를 재실행해 PASS했다. `ANDROID_SERIAL=127.0.0.1:5563`, API 36 headless AVD, 기존 토큰 재사용·별도 빈 DB. ExoPlayer Init/Release `fec69b` 각 1회.
+- 토큰 산출물 검출 0, 이번 재실행의 격리 컨테이너·DB만 정리, 기존 서버 health 200. 해당 결과 기록 이후 문서 전용 후속 head는 원격 CI 및 독립 리뷰에서 별도 확인한다.
+
+## PLAYER-001 병합 전 문서 정리 (2026-11-07)
+- [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) `78c91cdacc47e80626401d2fdaf02535f0b5bbf9`: 활성 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454714) 및 [PostgreSQL·서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454845) PASS. 원격 에뮬레이터 Job과 M4 Android 에뮬레이터 단계 SKIPPED. GitHub 공식 승인 리뷰는 없으며 별도 컨텍스트의 정적 독립 리뷰 결과와 구분한다.
+- SDD 테스트 매트릭스·ADR-0010 상태·STATUS 상단을 확인된 결과로 정리했다. 이전 FAIL·수정 이력 및 전환 프레임 전수, 실제 미선언 CEA 방송, 장시간 성능·메모리, 기기 접근성·오디오 청취 NOT_RUN은 보존한다. 본 후속 변경은 문서만 포함한다. 최종 head CI와 병합 결과는 후속 기록한다.

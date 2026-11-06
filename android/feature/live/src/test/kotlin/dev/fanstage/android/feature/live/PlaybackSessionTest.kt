@@ -6,6 +6,15 @@ import org.junit.Test
 
 private class FakePlayerController : PlayerController {
     override val state = MutableStateFlow<PlaybackState>(PlaybackState.Loading)
+    override val uiState = MutableStateFlow(PlayerUiState())
+    override fun setSpeed(value: Float) { uiState.value = uiState.value.copy(speed = value) }
+    override fun selectVideo(id: String?) { uiState.value = uiState.value.copy(selectedVideoId = id) }
+    override fun selectSubtitle(id: String?) {
+        uiState.value = uiState.value.copy(
+            subtitlesOff = id == null,
+            textTracks = uiState.value.textTracks.map { it.copy(selected = it.id == id) },
+        )
+    }
     var playCount = 0
     var pauseCount = 0
     var releaseCount = 0
@@ -42,4 +51,22 @@ class PlaybackSessionTest {
         session.onResume()
         assertEquals(0, fake.playCount)
     }
+    @Test fun backgroundPauseDoesNotResetPlayerSettings() {
+        val fake = FakePlayerController()
+        fake.uiState.value = PlayerUiState(textTracks = listOf(PlayerTrackOption("caption", "English")))
+        val session = PlaybackSession(fake)
+        session.onResume()
+        fake.setSpeed(1.5f)
+        fake.selectVideo("quality")
+        fake.selectSubtitle("caption")
+        session.onPause()
+        session.onResume()
+        assertEquals(1.5f, fake.uiState.value.speed)
+        assertEquals("quality", fake.uiState.value.selectedVideoId)
+        assertEquals(true, fake.uiState.value.textTracks.single().selected)
+        assertEquals(false, fake.uiState.value.subtitlesOff)
+        assertEquals(1, fake.playCount)
+        assertEquals(1, fake.pauseCount)
+    }
+
 }

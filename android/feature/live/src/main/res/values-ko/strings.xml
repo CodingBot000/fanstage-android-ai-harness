@@ -61,4 +61,18 @@
 <string name="demo_live_room">라이브 룸 데모 · 합성 영상</string>
 <string name="replay_back_generic">뒤로</string><string name="replay_title">다시보기</string>
 <string name="player_seek">영상 탐색</string>
+    <string name="player_speed">설정 · %1$.2fx</string>
+    <string name="player_speed_title">재생 속도</string>
+    <string name="player_speed_option">%1$.2fx %2$s</string>
+    <string name="player_quality">화질</string>
+    <string name="player_quality_single">원본 화질 (고정)</string>
+    <string name="player_auto">자동</string>
+    <string name="player_subtitles">자막</string>
+    <string name="player_unsupported">지원하지 않음</string>
+    <string name="player_off">끄기</string>
+    <string name="player_enter_fullscreen">전체 화면</string>
+    <string name="player_exit_fullscreen">전체 화면 종료</string>
+    <string name="player_video_track">영상 %1$d</string>
+    <string name="player_subtitle_track">자막 %1$d</string>
+    <string name="player_subtitle_cea_unknown">CEA-608 자막 (지원 여부 미확인)</string>
 </resources>

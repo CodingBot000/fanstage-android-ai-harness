@@ -10,9 +10,26 @@ sealed interface PlaybackState {
     data object Error : PlaybackState
 }
 
+data class PlayerTrackOption(val id: String, val label: String, val selected: Boolean = false)
+data class PlayerUiState(
+    val playback: PlaybackState = PlaybackState.Loading,
+    val fullscreen: Boolean = false,
+    val speed: Float = 1f,
+    val canSetSpeed: Boolean = false,
+    val canSelectTracks: Boolean = false,
+    val videoTracks: List<PlayerTrackOption> = emptyList(),
+    val selectedVideoId: String? = null,
+    val textTracks: List<PlayerTrackOption> = emptyList(),
+    val subtitlesOff: Boolean = true,
+)
+
 /** Screen-owned playback contract; never place a player in a ViewModel. */
 interface PlayerController {
     val state: StateFlow<PlaybackState>
+    val uiState: StateFlow<PlayerUiState>
+    fun setSpeed(value: Float)
+    fun selectVideo(id: String?)
+    fun selectSubtitle(id: String?)
     fun play()
     fun pause()
     fun retry()

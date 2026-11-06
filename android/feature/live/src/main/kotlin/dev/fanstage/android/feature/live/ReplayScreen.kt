@@ -12,7 +12,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ReplayScreen(onBack: () -> Unit, sourceUri: String = "asset:///hls/vod.m3u8", title: String = "Paper Lantern · Studio diary") {
+fun ReplayScreen(onBack: () -> Unit, sourceUri: String = "asset:///hls/captionless.m3u8", title: String = "Paper Lantern · Studio diary") {
     Scaffold(topBar = { BackTitleBar(title, onBack, backTag = "replay_back") }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState()).padding(16.dp).testTag("replay_detail")) {
             Text(stringResource(R.string.replay_title), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
