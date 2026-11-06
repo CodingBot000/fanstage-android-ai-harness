@@ -26,3 +26,6 @@ Contract/VM/Route/Screen 분리 및 Heading·Hero·Community·LIVE·Replay·추�
 
 ## READABILITY-003 Media
 Contract/VM/Route/Screen 분리, 필터 행 및 LIVE·로컬 영상·합성 Replay 카드 추출. Route의 saveable 필터와 그리드 조건·순서, artwork 조회 예외 정책 유지. SDK 지정 app/계측 컴파일 및 LoadCancellationTest PASS. 전체 계측 NOT_RUN. 다음 Messages.
+
+## READABILITY-004 Messages
+계약·VM·목록/대화 Route 및 Screen 분리, 메시지 버블과 composer 추출. 진입 읽음 effect, remember 초안, 대화 Screen 내 LazyListState와 두 effect의 키·수명·viewport 관찰 및 IME Modifier 순서를 유지한다. SDK 지정 app/계측 컴파일, MessagesViewModelTest 및 core:data:test PASS. 실제 IME/스크롤 계측 NOT_RUN (최종 단계).
