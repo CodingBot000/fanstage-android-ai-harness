@@ -567,3 +567,6 @@
 - 별도 18766 포트의 임시 Compose stack 및 포트만 수정한 임시 테스트 복사본으로 서버 integration.py와 m5_faults.py PASS; 테스트 스택 정리. 원래 미디어 서버는 유지했다.
 - 홈 화면을 README UX-008 이미지와 육안 비교: 구조 유사, 기존 UX-012/로컬 VOD의 간격·라벨 차이 존재. 전체 화면 동일성 미검증. 외부 MP4 opt-in·실기기·전체 접근성·성능 NOT_RUN. 원격 CI/리뷰 대기.
 - 구현 head `c4fda55` 원격 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42185550650), [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42185550673) PASS; 원격 에뮬레이터 SKIPPED (기존 사용자 설정). 같은 head `codex review --base origin/main` 수정 가능한 결함 0건. 기록 추가 후 최종 head 재확인 예정.
+
+## READABILITY-000 (2026-11-06)
+- 시작 main `09728c4`, clean 작업 트리에서 `codex/compose-readability` 생성. 기준선 SDK 지정 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin --no-daemon --max-workers=2` PASS. 기존 PR #43 증거는 변경 전 기준만 의미한다. 상세 SDD 참조. 다음 Community.
