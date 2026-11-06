@@ -107,3 +107,4 @@
 - UDF-001 진행: Community 액션 및 Post Detail Route/Screen 분리, 관련 컴파일·단위 테스트 PASS. 전체 통합·계측·CI NOT_RUN. [SDD](specs/UDF-001-004-ui-contracts.md).
 - UDF-002: Messages 상태·행동 및 목록/대화 Route·Screen 분리. 관련 컴파일·단위 PASS, 계측·전체 통합 NOT_RUN.
 - UDF-003: Discover/Media 재시도 행동과 Media 필터 경계 정리. 관련 컴파일·취소 회귀 PASS, 전체 통합 NOT_RUN.
+- UDF-004 로컬 통합: Android 빌드/lint/unit, 모듈·manifest 검사, 전용 API 36 기존 계측 18/18 및 상태 기반 UI 2/2, 격리 서버 통합·장애 테스트 PASS. 외부 MP4 7개·실기기·성능·전체 접근성 NOT_RUN. 최종 PR CI·독립 리뷰 대기.
