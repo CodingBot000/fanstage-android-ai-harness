@@ -10,3 +10,7 @@
 - Test Plan: 세션 자동재생/복귀/해제 단위 테스트, 실제 Media3 VOD 재생과 첫 프레임 렌더링, 상태·background/수동 재개·Activity recreation, 반복 진입 시 인스턴스 해제, 오류·수동 재시도, 갱신 LIVE timeline과 재생을 에뮬레이터에서 검증한다. Release ID 로그 짝을 검사하며 이를 메모리 누수 전체의 증명으로 과장하지 않는다. 에뮬레이터와 실기기의 실제 가로·세로 전환 및 스크롤 후 재생 버튼 접근을 검증한다. 실기기 합성 VOD 첫 프레임, 합성 LIVE timeline/playing 및 `am kill` 기반 process death 복원 결과를 기록한다.
 - Evidence / Commands: [build-log](../../harness/build-log.md)의 실기기 실행 환경·명령·결과 및 PR CI. 실기기에서 VOD 첫 프레임, 실제 HOME background/수동 재개, 가로·세로 전환, 6회 진입/이탈, 오류 화면 Retry, 갱신 LIVE playlist의 timeline/playing, `am kill` 이후 복구를 확인했다. player 13쌍·codec Surface 30쌍의 로그와 별도 controller/listener 수거 검사를 확인했으나 전체 heap 무누수를 보장하지 않는다.
 - Open Questions: 원격 네트워크 LIVE 및 합성 LIVE의 실기기 첫 프레임 렌더링, 실제 저메모리 종료(LMK), 장시간·다기기 heap/profile 검증은 NOT_RUN이다. 실제 LIVE 소스와 외부 라이선스는 별도 확인한다. PIP·백그라운드 오디오는 사용자 정책상 제외. 최초 listener 수거 검사 실패의 정확한 원인은 확인되지 않았으며 메인 큐 정리 후 재검증은 연속 통과했다.
+
+## 플레이어 컨트롤 표현
+영상 렌더링 높이와 기존 생명주기·오류·재시도 계약을 유지하며 재생/일시정지를 영상 중앙의 아이콘 버튼으로 제공한다. MP4 탐색은 터치 영역을 유지하면서 얇은 코랄색 트랙으로 표현한다.
+- 검증: Debug 빌드·lint·단위 PASS. API 36 전용 AVD에서 실제 MP4 첫 프레임·7개 영상, 아이콘의 영상 내부 위치·일시정지/재생·탐색, 합성 HLS·수명주기·화면 회전 및 기존 탐색/채팅 포함 25/25 PASS. 화면 회전 직후 애니메이션 중 버튼 검사 두 차례 FAIL, 전환 완료 후에도 실제 표시되는지 기다려 검사하도록 수정 후 PASS. 실기기·장시간 성능 NOT_RUN.

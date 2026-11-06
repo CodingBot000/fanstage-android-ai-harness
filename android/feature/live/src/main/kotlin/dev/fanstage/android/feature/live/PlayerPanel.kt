@@ -1,12 +1,20 @@
 package dev.fanstage.android.feature.live
 
 import android.view.LayoutInflater
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -18,6 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
@@ -31,6 +43,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.ui.PlayerView
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
     val context = LocalContext.current
@@ -73,14 +86,46 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
     }
 
     Column(Modifier.fillMaxWidth().testTag("player_panel")) {
-        AndroidView(
-            factory = { context -> (LayoutInflater.from(context).inflate(R.layout.fanstage_player_view, null, false) as PlayerView).apply { player = controller.player } },
-            update = { it.player = controller.player },
-            onRelease = { it.player = null },
-            modifier = Modifier.fillMaxWidth().height(200.dp).semantics { contentDescription = playerDescription }.testTag(if (rendered) "player_first_frame" else "player_surface"),
-        )
+        Box(Modifier.fillMaxWidth().height(200.dp)) {
+            AndroidView(
+                factory = { context -> (LayoutInflater.from(context).inflate(R.layout.fanstage_player_view, null, false) as PlayerView).apply { player = controller.player } },
+                update = { it.player = controller.player },
+                onRelease = { it.player = null },
+                modifier = Modifier.fillMaxSize().semantics { contentDescription = playerDescription }.testTag(if (rendered) "player_first_frame" else "player_surface"),
+            )
+            when (state) {
+                PlaybackState.Playing, PlaybackState.Paused -> {
+                    val playing = state == PlaybackState.Playing
+                    IconButton(
+                        onClick = { if (playing) controller.pause() else controller.play() },
+                        modifier = Modifier.align(Alignment.Center).size(56.dp).clip(CircleShape)
+                            .background(Color(0xB31C2327)).testTag(if (playing) "player_pause" else "player_play"),
+                    ) {
+                        Icon(
+                            painterResource(if (playing) R.drawable.ic_player_pause else R.drawable.ic_player_play),
+                            contentDescription = stringResource(if (playing) R.string.player_pause else R.string.player_play),
+                            tint = Color.White,
+                            modifier = Modifier.size(28.dp),
+                        )
+                    }
+                }
+                else -> Unit
+            }
+        }
         if (isMp4 && duration > 0) {
-            Slider(value = (position.toFloat() / duration).coerceIn(0f, 1f), onValueChange = { controller.player.seekTo((it * duration).toLong()); position = (it * duration).toLong() }, modifier = Modifier.semantics { contentDescription = seekDescription }.testTag("player_seek"))
+            val seekColors = SliderDefaults.colors(
+                thumbColor = Color(0xFFE76559),
+                activeTrackColor = Color(0xFFE76559),
+                inactiveTrackColor = Color(0xFFB8C0C1),
+            )
+            Slider(
+                value = (position.toFloat() / duration).coerceIn(0f, 1f),
+                onValueChange = { controller.player.seekTo((it * duration).toLong()); position = (it * duration).toLong() },
+                modifier = Modifier.fillMaxWidth().height(48.dp).semantics { contentDescription = seekDescription }.testTag("player_seek"),
+                colors = seekColors,
+                thumb = { Box(Modifier.size(12.dp).clip(CircleShape).background(Color(0xFFE76559))) },
+                track = { sliderState -> SliderDefaults.Track(sliderState = sliderState, modifier = Modifier.height(3.dp), colors = seekColors, thumbTrackGapSize = 0.dp, drawStopIndicator = null) },
+            )
         }
         Text(
             stringResource(when (state) {
@@ -95,12 +140,6 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/vod.m3u8") {
         when (state) {
             PlaybackState.Error -> Button(onClick = controller::retry, modifier = Modifier.testTag("player_retry")) {
                 Text(stringResource(R.string.player_retry))
-            }
-            PlaybackState.Playing -> Button(onClick = controller::pause, modifier = Modifier.testTag("player_pause")) {
-                Text(stringResource(R.string.player_pause))
-            }
-            PlaybackState.Paused -> Button(onClick = controller::play, modifier = Modifier.testTag("player_play")) {
-                Text(stringResource(R.string.player_play))
             }
             else -> Unit
         }

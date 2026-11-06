@@ -59,7 +59,7 @@ fun ConversationScreen(
     val transcript = conversation?.messages.orEmpty()
     val transcriptState = rememberLazyListState()
     LaunchedEffect(artistId, transcript.size) {
-        if (transcript.isNotEmpty()) transcriptState.scrollToItem(transcript.lastIndex)
+        if (transcript.isNotEmpty()) transcriptState.requestScrollToItem(transcript.lastIndex)
     }
     // Keep the tail reachable when the viewport shrinks, without pulling a user
     // who is reading older messages back to the bottom.
@@ -71,7 +71,7 @@ fun ConversationScreen(
                 val layout = transcriptState.layoutInfo
                 val last = layout.visibleItemsInfo.lastOrNull()?.index ?: return@collect
                 if (layout.totalItemsCount > 0 && last >= layout.totalItemsCount - 2) {
-                    transcriptState.scrollToItem(layout.totalItemsCount - 1)
+                    transcriptState.requestScrollToItem(layout.totalItemsCount - 1)
                 }
             }
     }
@@ -99,7 +99,7 @@ fun ConversationScreen(
             }
         }
         LazyColumn(
-            Modifier.weight(1f).fillMaxWidth(),
+            Modifier.weight(1f).fillMaxWidth().testTag("conversation_transcript"),
             state = transcriptState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(vertical = 16.dp),

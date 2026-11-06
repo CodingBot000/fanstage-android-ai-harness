@@ -31,6 +31,9 @@ class LocalMediaTest {
             rule.onNodeWithTag("media_$id").performClick()
             rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
             if (i == 1) {
+                val video = rule.onNodeWithTag("player_first_frame", useUnmergedTree = true).getUnclippedBoundsInRoot()
+                val pause = rule.onNodeWithTag("player_pause", useUnmergedTree = true).getUnclippedBoundsInRoot()
+                check(pause.left >= video.left && pause.right <= video.right && pause.top >= video.top && pause.bottom <= video.bottom)
                 rule.onNodeWithTag("player_pause").performClick()
                 rule.waitUntil(30_000) { rule.onAllNodesWithTag("player_seek").fetchSemanticsNodes().isNotEmpty() }
                 rule.onNodeWithTag("player_seek").performSemanticsAction(androidx.compose.ui.semantics.SemanticsActions.SetProgress) { it(0.5f) }

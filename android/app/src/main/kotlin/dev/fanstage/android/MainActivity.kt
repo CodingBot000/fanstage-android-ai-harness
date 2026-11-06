@@ -15,6 +15,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.runtime.CompositionLocalProvider
+import dev.fanstage.android.core.designsystem.LocalCollapsingTitleBar
+import dev.fanstage.android.core.designsystem.rememberCollapsingTitleBarState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeInput
@@ -72,8 +77,14 @@ private fun FanStageApp() {
     val tabs = listOf("rooms", "community", "media", "messages")
     val hazeState = rememberHazeState()
     val isTab = currentRoute in tabs
-    Scaffold(topBar = {
-        if (isTab) TopAppBar(title = { Text("fanstage", color = dev.fanstage.android.core.designsystem.Plum, style = MaterialTheme.typography.titleLarge) })
+    val titleBarState = rememberCollapsingTitleBarState(entry)
+    CompositionLocalProvider(LocalCollapsingTitleBar provides titleBarState) {
+    Scaffold(modifier = Modifier.nestedScroll(titleBarState.connection), topBar = {
+        if (isTab) Column(Modifier.statusBarsPadding()) {
+            Box(Modifier.fillMaxWidth().height(64.dp * titleBarState.visibleFraction).clipToBounds().testTag("collapsing_top_bar")) {
+                TopAppBar(title = { Text("fanstage", color = dev.fanstage.android.core.designsystem.Plum, style = MaterialTheme.typography.titleLarge) }, windowInsets = WindowInsets(0, 0, 0, 0))
+            }
+        }
     }) { shellPadding ->
     Box(Modifier.fillMaxSize().padding(shellPadding).consumeWindowInsets(shellPadding)) {
     NavHost(navController = navController, startDestination = "rooms", modifier = Modifier.fillMaxSize().hazeSource(hazeState)) {
@@ -156,6 +167,7 @@ private fun FanStageApp() {
                 }, icon = { Icon(painterResource(listOf(R.drawable.nav_discover, R.drawable.nav_community, R.drawable.nav_media, R.drawable.nav_messages)[index]), contentDescription = null) }, label = { Text(label) }, modifier = Modifier.testTag("tab_$route"), colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Black.copy(alpha = 0.08f), selectedIconColor = Color(0xFF172022), selectedTextColor = Color(0xFF172022), unselectedIconColor = Color(0xFF172022), unselectedTextColor = Color(0xFF172022)))
             }
         }
+    }
     }
     }
     }
