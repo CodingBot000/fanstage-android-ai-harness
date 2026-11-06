@@ -1,6 +1,6 @@
 # PLAYER-001 — 플레이어 설정과 전체 화면
 
-상태: [Draft PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) 검증 완료·병합 전 문서 정리. 로컬 단위 56/56·전용 AVD 전체 계측 41/41, 활성 원격 CI PASS; 최종 문서 head CI는 별도 확인한다. 독립 정적 리뷰 추가 P0/P1/P2 0건, 공식 GitHub 승인 리뷰 없음.
+상태: [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) Squash Merge `760ae1ec8e6106f09945ad7228dc062937701c1e`. 로컬 단위 56/56·전용 AVD 전체 계측 41/41, PR 최종 head `edc70e5` 활성 원격 CI PASS. 원격 에뮬레이터 SKIPPED; 별도 독립 정적 리뷰 추가 P0/P1/P2 0건, 공식 GitHub 승인 리뷰 없음. 병합 커밋 `760ae1e`의 main Android·서버 CI도 PASS했다.
 
 ## 목표와 범위
 LIVE와 Replay의 기존 화면 소유 재생 세션에서 실제 트랙 기반 화질·자막 선택, 배속, 전체 화면을 제공한다. PIP, 백그라운드 연속 재생, 자막 다운로드·크기 변경, DRM은 제외한다.
@@ -21,7 +21,7 @@ UI는 읽기 전용 재생 상태와 지원되는 트랙, 선택 정책, 실제 
 | Media3 통합 | **PASS:** 합성 다중 화질 HLS·WebVTT에서 트랙 선택과 Auto, 소스 교체, 자막 cue·끄기, 속도·첫 프레임 검사. 실제 미선언 CEA 방송은 NOT_RUN. |
 | 전체 화면·Lifecycle | **PASS:** 전용 API 36에서 동일 player output 교체·첫 프레임, 일시정지 위치·설정, Back·HOME·회전·이탈 후 잔상 검사. 전체 전환 프레임·모든 기기의 Surface 중복 부재와 장시간 누수는 NOT_RUN. |
 | 회귀·접근성 | **PASS:** 전체 계측 41/41 중 플레이어 12/12, 실제 채팅 1/1, 로컬 미디어 3/3(일곱 영상). Compose 2배 fontScale 레이블·Back 검사. 시스템 글꼴 설정·TalkBack 전수·오디오 청취는 NOT_RUN. |
-| 원격·리뷰 | **PASS:** `78c91cd`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454714) 및 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42233454845). 원격 에뮬레이터 Job 및 M4 Android 단계는 **SKIPPED**. 별도 정적 리뷰 추가 P0/P1/P2 0건; 공식 GitHub 승인 리뷰 없음. |
+| 원격·리뷰 | **PASS:** `edc70e5`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984158) 및 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227). 원격 에뮬레이터 Job 및 M4 Android 단계는 **SKIPPED**. 별도 정적 리뷰 추가 P0/P1/P2 0건; 공식 GitHub 승인 리뷰 없음. |
 
 ## 미검증 항목과 결정
 미선언 CEA-608은 사용자의 결정에 따라 선택 가능하게 유지하며 지원 여부 미확인으로 표시한다. 실제 미선언 CEA 방송, 장시간 heap/GC·성능, 전 제조사 기기와 TalkBack 전수는 별도 NOT_RUN이다. 관측하지 않은 전환 프레임의 절대적인 Surface 중복 부재를 주장하지 않는다. PIP는 PLAYER-002 범위로 남긴다.
@@ -66,21 +66,21 @@ UI는 읽기 전용 재생 상태와 지원되는 트랙, 선택 정책, 실제 
 
 - 2배 글꼴 검사는 Compose `LocalDensity`의 fontScale=2 환경에서 레이블·시트 Back을 확인한 것이다. 기기 시스템 글꼴 설정 변경과 TalkBack 전체 탐색은 NOT_RUN이다.
 
-## Draft PR 준비 검증 (2026-11-06)
+## 이력: Draft PR 준비 검증 (2026-11-06)
 
 - 최신 `origin/main` 92e4ae8 기반 분리 작업 트리에서 PLAYER-001만 검증한다. 기존 작업 트리는 보존한다. 독립 사전 리뷰에서 발견한 공용 Download 고정 파일 덮어쓰기, Surface 첫 프레임 증거의 이전 세대 재사용, 전체 화면 텍스트 대비 문제를 수정했다. 테스트 fixture는 매번 고유 cache 디렉터리를 만들고 해당 디렉터리만 정리한다.
 - View 전환 시 이전 PlayerView를 먼저 분리한 후 새 View를 연결하고 Surface 세대별 상태를 사용한다. 반복 전환 계측은 AnalyticsListener의 첫 프레임 output 객체가 ExoPlayer의 현재 videoOutput과 동일하고 직전 output과 다른지 검사한다. 일시정지 상태·탐색 위치·속도 유지와 화면 제거 후 픽셀도 검사한다. output identity 검사는 Media3 내부 필드 리플렉션에 의존하므로 버전 변경 시 테스트 재검토가 필요하다. 모든 전환 프레임이나 모든 기기에서 중복 Surface 부재를 증명한다는 의미는 아니다.
 - 추출한 선택 규칙 단위 테스트는 이전 그룹·범위를 벗어난 인덱스·미지원 트랙의 override, 자막 선택 상태, 사용 불가능한 명령·해제 후 및 지원하지 않는 속도를 검사한다. 실제 트랙 교체 및 설정 유지도 Media3 계측에서 별도 검증한다.
 - 장시간 메모리·전체 제조사·실제 미선언 CEA 방송·TalkBack 전수는 기능 결함이 확인된 항목과 구분해 NOT_RUN으로 유지한다. 원격 에뮬레이터 Job은 사용자 요청에 따라 OFF다.
 
-### Draft PR용 최종 로컬 Gate
+### 이력: Draft PR용 최종 로컬 Gate
 
 - `origin/main` 92e4ae8 기반 분리 트리에서 Debug/Release/rcLocal/Benchmark/macrobenchmark 빌드·lint, live 단위 56/56 및 전체 Android 계측 41/41 PASS. 이 중 전용 플레이어 12/12, 실제 채팅 1/1 및 로컬 미디어 3/3(7개 영상)이 포함된다. 별도 API 36 AVD 명시적 serial을 사용했고 원격 에뮬레이터는 OFF 유지.
 - 이전 View detach→새 View attach 및 세대별 첫 프레임, 실제 Media3 Analytics output과 현재 videoOutput identity, pause·재생 위치·속도 유지, 화면 제거 후 픽셀과 실제 회전 후 복귀 화면을 확인했다. Init/Release 로그는 동일 player 1쌍. 결과는 전용 AVD의 관측 범위에 한정되며 모든 전환 프레임 또는 모든 기기에서의 완전한 중복 부재를 증명하지 않는다.
 - 단위 규칙 검사는 그룹 교체·범위 이탈·미지원 트랙의 override, 자막 선택 상태, 속도 지원 값·명령 불가·해제 후 동작을 다루며, 실제 Media3 트랙 교체/Auto/자막·속도 선택은 계측으로 확인했다. 후보 도출의 모든 가능한 Media3 구현 조합은 전수하지 않았다.
 - 별도 사전 독립 리뷰의 공용 파일 덮어쓰기·첫 프레임 근거 P1 및 전체 화면 대비 P2를 수정하고 재검토에서 추가 확정 P0/P1 없음. PR 생성 후 해당 head의 독립 리뷰와 원격 CI는 별도로 확인한다. 실제 미선언 CEA 방송, 장시간 메모리·성능, 전 제조사 및 TalkBack 전수, 소리 청취는 후속 NOT_RUN이다.
 
-### PR 독립 리뷰
+### 이력: PR 독립 리뷰
 
 Draft [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47)의 최초 head `85c9657`을 별도 컨텍스트에서 검토해 추가 확정 P0/P1은 발견하지 못했다. 테스트 임시 디렉터리의 API 26 의존성 P2는 API 24 호환 File API로 수정하고 전용 검사를 재실행했다. LIVE/Replay 경로의 태그 대기는 실제 output identity를 직접 비교한 반복 전환 검사와 구별한다. 태그만으로 모든 경로의 새 output 첫 프레임을 증명하지 않는다. [독립 리뷰](../reviews/PLAYER-001-pr-review.md). 최종 head 원격 CI는 별도 확인하며 원격 에뮬레이터는 OFF다.
 

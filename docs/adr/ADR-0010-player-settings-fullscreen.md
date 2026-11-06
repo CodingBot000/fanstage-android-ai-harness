@@ -1,6 +1,6 @@
 # ADR-0010: 플레이어 설정과 전체 화면 호스트
 
-상태: ACCEPTED — 로컬 API 36 및 활성 원격 CI에서 검증한 범위. [Draft PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47), 코드·문서 head `78c91cd` 기준. 원격 에뮬레이터는 SKIPPED이고 공식 GitHub 승인 리뷰는 없다. ADR-0006의 화면 소유와 background pause·수동 재개 정책 및 ADR-0008의 TextureView 선택을 유지한다.
+상태: ACCEPTED — 로컬 API 36 및 활성 원격 CI에서 검증한 범위. [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) Squash Merge `760ae1ec8e6106f09945ad7228dc062937701c1e`, PR 최종 head `edc70e5` 기준. 병합 커밋 `760ae1e`의 main Android·서버 CI PASS. 원격 에뮬레이터는 SKIPPED이고 공식 GitHub 승인 리뷰는 없다. ADR-0006의 화면 소유와 background pause·수동 재개 정책 및 ADR-0008의 TextureView 선택을 유지한다.
 
 설정은 Media3 이벤트에서 읽은 지원 트랙과 playback parameters를 `PlayerUiState`로 노출하고, 선택 명령은 화면 소유 controller가 수행한다. 화질 수동 선택은 현재 TrackGroup의 특정 트랙 override이고 Auto는 비디오 override를 제거한다. 자막 끄기는 텍스트 타입을 비활성화한다. 플레이어의 자동 캡션 설정은 사용자의 명시적 자막 선택 전까지 유지한다. Group이 바뀌어 더 이상 유효하지 않은 override는 제거한다. 라이브러리나 모듈 의존성은 추가하지 않는다.
 
