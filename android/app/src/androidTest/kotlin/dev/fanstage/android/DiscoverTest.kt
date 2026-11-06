@@ -124,7 +124,7 @@ class DiscoverTest {
         rule.onNodeWithTag("post_comments").performScrollToNode(hasText("Sent with keyboard"))
         rule.onNodeWithText("Sent with keyboard").assertExists()
         rule.activityRule.scenario.recreate()
-        rule.onNodeWithTag("post_like").performScrollTo()
+        rule.onNodeWithTag("post_comments").performScrollToNode(hasTestTag("post_like"))
         rule.onNodeWithTag("post_like").assertIsOn()
         rule.onNodeWithTag("post_comments").performScrollToNode(hasText("Hello community"))
         rule.onNodeWithText("Hello community").assertExists()

@@ -577,3 +577,8 @@
 - READABILITY-005: 변경 feature import 및 Kotlin 형식 정리. `git diff --check`, 모듈 경계 검사 및 app/계측 컴파일 PASS. VM에 Compose import 없음. 최종 통합·UI·CI NOT_RUN.
 - READABILITY-006: SDK 지정 전체 Debug/Release/rcLocal/Benchmark 빌드·lint·unit PASS; 모듈·m4/m6 manifest 검사 및 `git diff --check` PASS. 신규 Pixel 2 API 36 AVD, ADB 5039 단일 장치에서 4 UI 클래스 20건 중 18 PASS/2 FAIL: Community 댓글 노드 미발견, LIVE 전송 버튼 bounds. 변경 전 `09728c4`에서 동일 두 실패 재현. 1080×2400 override에서 baseline LIVE PASS, Community FAIL 유지. 새 Pixel 6 AVD는 ADB 장치 미발견으로 NOT_RUN. 변경 범위/테스트 제약과 차단 게이트 때문에 PR/CI/독립 리뷰/병합 NOT_RUN. 전후 화면 캡처 결과와 나머지 한계는 SDD 참조.
 - READABILITY-006 再検証: ユーザーが失敗調査・必要なテスト/LIVE UI修正を承認。Communityの LazyColumn にテストタグを付け、画面外コメントまでスクロール後に同じ送信・再生成の assertion を実行。LIVE/DM位置検査はIMEアニメーション中の別フレーム測定を避けるため両矩形が300ms安定してから既存の全辺包含を判定。最終専用 Pixel 2 API 36・ADB 5039で4 UIクラス 20/20 PASS、ビルド/lint/unit・モジュル/manifest PASS。前述の失敗は基準/中間結果として維持。LIVE製品コードは変更せず、最初の座標失敗の完全な原因証明は未了。PR/CI/独立レビュー待ち。
+
+## READABILITY 실기기 검증 (2026-11-06)
+- 사용자 승인 후 SM-S908N/API 36에 `1239c2a` 일반 Debug 앱 `install -r` PASS, 별도 devicecheck 및 test 패키지 설치 PASS. 실기기 serial을 명시해 `am instrument`로 UiContractTest, DiscoverTest, DeviceUiRegressionTest, RoomNavigationSmokeTest 실행.
+- 최초 20건 중 19 PASS/1 FAIL: `communityPostLikeAndComment`에서 재생성 후 화면 밖 좋아요 노드를 직접 스크롤 시도. `post_comments`에서 해당 태그까지 실제 스크롤 후 기존 좋아요·댓글 assertion 유지. test APK 재빌드/설치 후 전체 **20/20 PASS**, runner `OK (20 tests)`. 일반 앱 한국어 홈 실행 확인. 실기기 상태/개인 정보 캡처는 커밋하지 않음.
+- NOT_RUN: 실제 서버·외부 MP4 7개·오디오 청취·장시간 성능·전체 TalkBack·프로세스 강제 종료. 테스트 변경 PR CI/독립 리뷰 별도 확인.
