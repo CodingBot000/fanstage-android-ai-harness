@@ -79,3 +79,7 @@ Dialog 호스트, 회전 처리와 사용자가 결정한 미선언 CEA 후보 �
 - 이전 View detach→새 View attach 및 세대별 첫 프레임, 실제 Media3 Analytics output과 현재 videoOutput identity, pause·재생 위치·속도 유지, 화면 제거 후 픽셀과 실제 회전 후 복귀 화면을 확인했다. Init/Release 로그는 동일 player 1쌍. 결과는 전용 AVD의 관측 범위에 한정되며 모든 전환 프레임 또는 모든 기기에서의 완전한 중복 부재를 증명하지 않는다.
 - 단위 규칙 검사는 그룹 교체·범위 이탈·미지원 트랙의 override, 자막 선택 상태, 속도 지원 값·명령 불가·해제 후 동작을 다루며, 실제 Media3 트랙 교체/Auto/자막·속도 선택은 계측으로 확인했다. 후보 도출의 모든 가능한 Media3 구현 조합은 전수하지 않았다.
 - 별도 사전 독립 리뷰의 공용 파일 덮어쓰기·첫 프레임 근거 P1 및 전체 화면 대비 P2를 수정하고 재검토에서 추가 확정 P0/P1 없음. PR 생성 후 해당 head의 독립 리뷰와 원격 CI는 별도로 확인한다. 실제 미선언 CEA 방송, 장시간 메모리·성능, 전 제조사 및 TalkBack 전수, 소리 청취는 후속 NOT_RUN이다.
+
+### PR 독립 리뷰
+
+Draft [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47)의 최초 head `85c9657`을 별도 컨텍스트에서 검토해 추가 확정 P0/P1은 발견하지 못했다. 테스트 임시 디렉터리의 API 26 의존성 P2는 API 24 호환 File API로 수정하고 전용 검사를 재실행했다. LIVE/Replay 경로의 태그 대기는 실제 output identity를 직접 비교한 반복 전환 검사와 구별한다. 태그만으로 모든 경로의 새 output 첫 프레임을 증명하지 않는다. [독립 리뷰](../reviews/PLAYER-001-pr-review.md). 최종 head 원격 CI는 별도 확인하며 원격 에뮬레이터는 OFF다.

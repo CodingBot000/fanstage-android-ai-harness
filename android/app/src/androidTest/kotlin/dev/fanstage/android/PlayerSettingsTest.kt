@@ -73,9 +73,11 @@ class PlayerSettingsTest {
     @get:Rule val rule = createAndroidComposeRule<MainActivity>()
     private val fixtureDirs = mutableListOf<File>()
 
-    private fun fixtureDir(): File = java.nio.file.Files.createTempDirectory(
-        InstrumentationRegistry.getInstrumentation().targetContext.cacheDir.toPath(), "player001-test-",
-    ).toFile().also { fixtureDirs.add(it) }
+    private fun fixtureDir(): File {
+        val dir = File.createTempFile("player001-test-", ".tmp", InstrumentationRegistry.getInstrumentation().targetContext.cacheDir)
+        check(dir.delete() && dir.mkdir())
+        return dir.also { fixtureDirs.add(it) }
+    }
 
     @After fun removeTestFixtures() {
         if (fixtureDirs.isNotEmpty()) {

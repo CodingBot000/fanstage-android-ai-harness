@@ -650,3 +650,7 @@
 - 전체 화면 반복 output 검사에서 AnalyticsListener의 새 output이 현재 ExoPlayer videoOutput과 동일하고 직전 output과 다름을 확인. pause·탐색 위치·배속 유지, Back, 회전·이탈 및 화면 제거 후 픽셀 검사 PASS. ExoPlayer `Init 5f8ad37` 및 `Release 5f8ad37` 각 1회. 내부 필드 반사·관측된 프레임/기기 범위의 한계를 유지한다.
 - 모듈 경계, M4/M6 manifest 및 `git diff --check` PASS. 테스트 산출물에서 기존 토큰 검출 0건. 이번 작업의 격리 서버·DB를 삭제했고 기존 서버 health 200 확인.
 - 독립 사전 리뷰의 P1 2건(공용 파일 덮어쓰기, 이전 프레임 상태 재사용 근거) 및 P2(전체 화면 대비) 수정 후 재검토에서 추가 확정 P0/P1 없음. PR head 기준 독립 리뷰와 원격 CI는 아직 NOT_RUN; 원격 에뮬레이터 Job은 사용자 결정에 따라 OFF 유지.
+
+### Draft PR 리뷰 후 보완
+- Draft [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) 최초 head `85c9657`을 별도 컨텍스트에서 검토. 추가 확정 P0/P1 없음. API 24~25에서 fixture 테스트가 실행되지 않을 수 있는 P2는 고유 앱 cache 경로를 File API로 생성하도록 수정했다. 별도 리뷰에서 LIVE/Replay 경로의 프레임 태그가 output identity 자체를 증명하지 않는 한계도 기록했다.
+- 수정 후 `:feature:live:testDebugUnitTest :app:assembleDebug :app:lintDebug :app:connectedDebugAndroidTest` (PlayerSettingsTest 한정, API 36 전용 serial) PASS. 실제 output identity는 반복 전환 검사에서 별도 확인한다. 최초 head의 원격 CI와 수정 head CI는 구분하며 원격 에뮬레이터는 OFF다.
