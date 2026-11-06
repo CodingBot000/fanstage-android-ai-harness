@@ -23,7 +23,8 @@ import dev.fanstage.android.core.designsystem.CardTwoLineText
 import dev.fanstage.android.core.designsystem.FanStageTheme
 import dev.fanstage.android.core.data.FakeCatalog
 import dev.fanstage.android.core.data.FakeMessageRepository
-import dev.fanstage.android.feature.messages.MessagesList
+import dev.fanstage.android.feature.messages.MessagesListRoute
+import dev.fanstage.android.feature.messages.MessagesUiAction
 import dev.fanstage.android.feature.messages.MessagesViewModel
 import dev.fanstage.android.core.model.ArtworkKey
 import dev.fanstage.android.core.model.DiscoverContent
@@ -67,12 +68,12 @@ class DeviceUiRegressionTest {
 
     @Test fun messageCardsRemainAlignedWithUnreadAndLongPreview() {
         val model = MessagesViewModel(FakeMessageRepository())
-        model.markRead("paper-lantern")
-        model.send("paper-lantern", "A long preview ".repeat(30))
+        model.onAction(MessagesUiAction.ConversationOpened("paper-lantern"))
+        model.onAction(MessagesUiAction.SendClicked("paper-lantern", "A long preview ".repeat(30)))
         rule.activityRule.scenario.onActivity { activity -> activity.setContent {
             val density = LocalDensity.current
             CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
-                FanStageTheme { MessagesList(model, FakeCatalog.artists(), {}) }
+                FanStageTheme { MessagesListRoute(model, FakeCatalog.artists(), {}) }
             }
         } }
         rule.waitForIdle()

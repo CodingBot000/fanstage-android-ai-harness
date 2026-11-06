@@ -93,7 +93,7 @@ class LoadCancellationTest {
             assertEquals(DiscoverState.Error, discover.state.value)
             assertEquals(3, container.artists.size)
             assertEquals(3, (community.state.value as CommunityState.Ready).posts.size)
-            assertEquals(3, messages.state.value.size)
+            assertEquals(3, messages.state.value.conversations.size)
         } finally { Dispatchers.resetMain() }
     }
 

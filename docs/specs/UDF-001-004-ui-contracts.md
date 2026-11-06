@@ -6,3 +6,8 @@
 CommunityState의 Loading/Error/Ready 의미를 유지하고 CommunityUiAction을 추가했다. CommunityRoute가 아티스트별 탭을 소유하고 PostDetailRoute가 상태와 초안을 관리하며 Screen은 값과 콜백만 받는다. 초안은 기존과 같이 저장하지 않는다. 앱 라우팅과 기존 UI 테스트 호출을 갱신했다.
 
 검증: SDK 경로 지정 후 `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*LoadCancellationTest*' :core:data:test` PASS; `:app:testDebugUnitTest --tests '*CommunityActionTest*' --tests '*LoadCancellationTest*' :core:data:test` PASS. 최초 실행은 잘못된 태스크명과 SDK 미설정으로 각각 FAIL 후 수정했다. 에뮬레이터·전체 통합·CI는 NOT_RUN (UDF-004). 다음: Messages.
+
+## UDF-002
+MessagesUiState와 ConversationOpened/SendClicked 행동을 추가하고 목록·대화를 Route와 Screen으로 분리했다. 진입 읽음 처리는 artistId 기준 LaunchedEffect에 있고 초안은 기존처럼 remember만 사용한다. 스크롤 및 IME 로직은 Screen에 남는 UI 전용 상태다. 기존 Repository 및 Navigation 계약은 유지한다.
+
+검증: `:app:compileDebugKotlin :app:compileDebugAndroidTestKotlin :app:testDebugUnitTest --tests '*MessagesViewModelTest*' --tests '*LoadCancellationTest*' :core:data:test` PASS. 최초 계측 컴파일은 기존 테스트의 직접 메서드 호출 때문에 FAIL, 액션으로 갱신 후 PASS. 실제 계측·통합·CI NOT_RUN. 다음: UDF-003.

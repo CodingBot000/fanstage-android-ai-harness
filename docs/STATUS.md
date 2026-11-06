@@ -105,3 +105,4 @@
 
 ## UDF-001~004 (2026-11-06)
 - UDF-001 진행: Community 액션 및 Post Detail Route/Screen 분리, 관련 컴파일·단위 테스트 PASS. 전체 통합·계측·CI NOT_RUN. [SDD](specs/UDF-001-004-ui-contracts.md).
+- UDF-002: Messages 상태·행동 및 목록/대화 Route·Screen 분리. 관련 컴파일·단위 PASS, 계측·전체 통합 NOT_RUN.
