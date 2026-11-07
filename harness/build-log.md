@@ -729,3 +729,10 @@
 - 최초 baseline에서 DM 상단이 움직이지 않아 FAIL. 최신 main의 LIVE 개발 입력은 영상 약 20dp 이동 FAIL, 다수 가상 팬에서 단일 avatar 가정 검사 FAIL, 2× 모드 간격 검사도 FAIL을 각각 재현했다. 화면 이동 및 개발 설정 공간을 수정하고 복수 avatar의 존재를 검사하도록 개선한 후 재실행했다. 최초 전체 IME 높이만큼 이동하는 시도는 메시지 표시 FAIL이어서 되돌렸다.
 - 최종 JDK 17 Debug 빌드·lint·전체 단위 62/62 PASS; API 36 전용 AVD DeviceUiRegressionTest·UiContractTest·PlayerSettingsTest 24/24 PASS. 댓글·DM 상단 이동/IME 위 입력/복귀, LIVE 채팅·주소·토큰의 IME 및 고정 영상, 모드 4dp와 2× 글꼴을 검사했다.
 - Galaxy SM-S908N API 36 별도 devicecheck 패키지에서 동일 입력 시나리오 3/3 PASS. 첫 실기기 실행은 절전/잠금 중 Compose 화면 미노출로 0/3 FAIL; 사용자 잠금 해제 후 재실행 PASS. 일반 Debug APK를 별도로 다시 빌드해 기존 앱 데이터 유지 설치·실행, 기존 서버 연결 HTTP 200 확인. 다른 키보드·가로 화면·전 제조사 검증은 NOT_RUN.
+
+
+### 실기기 README 촬영 (2026-11-08)
+- 기준 `a3530a0027d978f27a1b7647807f86572f6ef837`, Galaxy SM-S908N/API 36, 별도 Debug `devicecheck` 앱. 기존 영상 서버는 재시작하지 않고 MP4를 읽기만 했으며 데이터베이스와 기존 앱을 변경하지 않았다. 기존 USB reverse 보존. 촬영에만 상태 표시줄을 임시로 숨기고 원래 설정으로 복구했으며 별도 테스트 앱을 제거했다.
+- Discover·Community·Media·Messages·LIVE·Replay·대화·설정 화면 및 2개 무음 화면 녹화 제작. 녹화본은 초 단위 샘플 프레임으로 동선 및 화면 내용을 확인했다. 시연은 로컬 서버 MP4와 Fake 채팅이며 실시간 방송·실제 서버 채팅으로 주장하지 않는다. 사용자가 실제 영상 화면의 공개 사용 권한을 확인했다. 원본 MP4는 저장소에 넣지 않았다.
+- 시스템 UI·폰트에 관한 기존 라이선스 감사의 미확인 사항, 전체 프레임 권리 검증과 오디오 시연은 별도로 남는다.
+- 녹화 원본의 가변 타임스탬프를 README 재생 호환성을 위해 무음 H.264/30fps 복사본으로 변환했다. 초기 FFmpeg null 출력은 타임베이스 반올림에 따른 비단조 DTS 경고가 났고, 원본 패킷 DTS는 단조 증가를 확인했다. 변환본 두 개는 전체 비디오 디코딩 PASS. README 로컬 링크 37개와 `git diff --check` PASS.

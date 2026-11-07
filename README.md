@@ -6,23 +6,25 @@ FanStage는 가상의 팬 커뮤니티를 배경으로 **미디어 재생, 실�
 
 **핵심 기술:** Kotlin · Jetpack Compose · Coroutines / Flow · MVVM / UDF · Multi-module · AndroidX Media3 · WebSocket / HTTP · Spring Boot · PostgreSQL · GitHub Actions · Codex
 
-> **프로젝트 범위:** 학습·검증용 엔지니어링 포트폴리오(v0.1, 소스 공개)입니다. 앱 화면의 LIVE는 데모 UI이며, 기본 영상은 합성된 사전 녹화 HLS VOD입니다. 기본 채팅은 Fake 데이터로 동작하고, 실제 WebSocket/HTTP 통합은 별도의 로컬 개발 서버로 검증했습니다. 상용 방송 서비스나 운영 트래픽을 제공·재현한 프로젝트는 아닙니다.
+> **프로젝트 범위:** 학습·검증용 엔지니어링 포트폴리오(v0.1, 소스 공개)입니다. 앱 화면의 LIVE는 데모 UI입니다. 기본 합성 HLS와 Debug에서 로컬 서버의 사전 녹화 MP4를 재생할 수 있습니다. 기본 채팅은 Fake 데이터로 동작하고, 실제 WebSocket/HTTP 통합은 별도의 로컬 개발 서버로 검증했습니다. 상용 방송 서비스나 운영 트래픽을 제공·재현한 프로젝트는 아닙니다.
 
 ## 앱 미리보기
 
+아래 화면과 영상은 Galaxy S22 Ultra(Android 16) 실기기에서 촬영했습니다. 화면 데이터는 가상이며, 재생 시연은 로컬 서버의 사전 녹화 MP4를 사용합니다. 실제 생방송 장면은 아닙니다.
+
 | Discover | Community |
 |:---:|:---:|
-| ![Discover: 가상 아티스트와 콘텐츠 탐색](docs/evidence/ux-008/discover.png) | ![Community: 아티스트 커뮤니티와 피드](docs/evidence/ux-009/artist.png) |
+| ![Discover: 가상 아티스트와 콘텐츠 탐색](docs/evidence/physical-20261108/discover.png) | ![Community: 아티스트 커뮤니티와 피드](docs/evidence/physical-20261108/community.png) |
 | Media | Messages |
-| ![Media: 영상 목록과 필터](docs/evidence/ux-010/media.png) | ![Messages: 로컬 대화 목록](docs/evidence/ux-011/messages.png) |
+| ![Media: 영상 목록과 필터](docs/evidence/physical-20261108/media.png) | ![Messages: 로컬 대화 목록](docs/evidence/physical-20261108/messages.png) |
 
-[![Compose UI 시연 영상 미리보기](docs/portfolio/media/ux-premium-demo-preview.png)](docs/portfolio/media/ux-premium-demo.mp4)
+[![실기기 UI 탐색 시연 미리보기](docs/evidence/physical-20261108/discover.png)](docs/portfolio/media/physical-20261108/navigation.mp4)
 
-**[UI 탐색 시연 (16초)](docs/portfolio/media/ux-premium-demo.mp4)** · [LIVE 화면](docs/evidence/ux-010/live.png) · [Replay 화면](docs/evidence/ux-010/replay.png) · [채팅 화면](docs/evidence/ux-011/conversation.png)
+**[실기기 UI 탐색 시연 (약 13초, 무음)](docs/portfolio/media/physical-20261108/navigation.mp4)** · [LIVE 데모 화면](docs/evidence/physical-20261108/live.png) · [Replay 화면](docs/evidence/physical-20261108/replay.png) · [대화 화면](docs/evidence/physical-20261108/conversation.png)
 
-[![Media3 재생·Fake 채팅 시연 미리보기](docs/portfolio/media/offline-demo-preview.png)](docs/portfolio/media/offline-demo.mp4)
+[![실기기 Media3 재생 시연 미리보기](docs/evidence/physical-20261108/player-settings.png)](docs/portfolio/media/physical-20261108/playback.mp4)
 
-**[재생·채팅 시연 (23초)](docs/portfolio/media/offline-demo.mp4)** — 합성 VOD 재생과 Fake 채팅 전송을 보여줍니다. 두 영상에는 실제 네트워크 장애 주입이나 원격 LIVE 방송이 포함되지 않습니다. 화면과 콘텐츠는 데모용 가상 데이터입니다.
+**[실기기 영상 재생·설정 시연 (약 16초, 무음)](docs/portfolio/media/physical-20261108/playback.mp4)** — USB로 연결된 로컬 서버의 녹화 MP4와 데모 채팅, 플레이어 설정을 보여줍니다. 실제 서버 채팅이나 네트워크 장애 주입 장면은 포함하지 않습니다. 사용자 확인에 따라 영상 화면의 공개 사용 권한이 있는 자료를 촬영했으며, 원본 MP4는 저장소에 포함하지 않습니다.
 
 ## Engineering Highlights
 
@@ -46,7 +48,7 @@ AndroidX Media3 기반 HLS VOD 재생, 버퍼링·오류·재시도, 실제 트�
 
 재생과 채팅은 독립된 경로로 동작하도록 설계했습니다. 화면 재진입·회전·백그라운드 복귀 등 제한된 테스트는 수행했지만, 장시간 메모리 누수가 없음을 입증한 것은 아닙니다.
 
-**근거:** [플레이어 요구사항·검증](docs/specs/PLAYER-001-player-settings-fullscreen.md) · [화질/자막 화면](docs/evidence/player-001/caption.png) · [플레이어 PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47)
+**근거:** [플레이어 요구사항·검증](docs/specs/PLAYER-001-player-settings-fullscreen.md) · [플레이어 설정 화면](docs/evidence/physical-20261108/player-settings.png) · [플레이어 PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47)
 
 ### 4. 기능 경계를 분리한 Compose 아키텍처
 
