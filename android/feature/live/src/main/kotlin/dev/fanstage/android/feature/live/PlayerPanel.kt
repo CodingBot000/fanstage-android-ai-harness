@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
@@ -183,8 +184,16 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
                 track = { sliderState -> SliderDefaults.Track(sliderState = sliderState, modifier = Modifier.height(3.dp), colors = seekColors, thumbTrackGapSize = 0.dp, drawStopIndicator = null) },
             )
         }
-        TextButton(onClick = { showSpeedOptions = false; showSpeed = true }, enabled = canSetSpeed, colors = if (full) ButtonDefaults.textButtonColors(contentColor = Color.White, disabledContentColor = Color.LightGray) else ButtonDefaults.textButtonColors(), modifier = Modifier.testTag("player_speed")) {
-            Text(stringResource(R.string.player_speed, speed))
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            TextButton(
+                onClick = { showSpeedOptions = false; showSpeed = true },
+                enabled = canSetSpeed,
+                colors = if (full) ButtonDefaults.textButtonColors(contentColor = Color.White, disabledContentColor = Color.LightGray) else ButtonDefaults.textButtonColors(),
+                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                modifier = Modifier.testTag("player_speed"),
+            ) {
+                Text(stringResource(R.string.player_speed, speed))
+            }
         }
         if (state == PlaybackState.Playing || state == PlaybackState.Paused) {
             Box(Modifier.size(0.dp).testTag("player_state_${state.javaClass.simpleName.lowercase()}"))
