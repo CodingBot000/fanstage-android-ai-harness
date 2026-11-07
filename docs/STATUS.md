@@ -1,32 +1,21 @@
-# FanStage · Current Project Status
+# FanStage 개발 현황
 
-**기준:** 2026-11-08 · source portfolio · 메인 소스 PR #62 반영 시점 이후 문서 정리.
+**갱신:** 2026-11-08  
+**현재 상태:** Android 포트폴리오용 소스 공개 및 기능 검증 자료 정리 완료
 
-## 구현된 기능
+## 구현 범위
 
-- Kotlin / Compose, UDF 기반 Discover·Community·Media·Messages·LIVE 화면, app/feature/core로 분리된 11개 모듈.
-- Media3 HLS 합성 VOD, Debug 로컬 Progressive MP4, 트랙 기반 화질·자막·배속, 전체 화면과 화면별 Player lifecycle.
-- Fake 채팅과 로컬 Spring Boot·PostgreSQL WebSocket/HTTP 연동, ACK 재전송 멱등성, 순서·중복·누락 복구.
-- 테스트 전용 프록시의 ACK·echo 유실 및 지연 snapshot·재연결 시나리오.
-- 실기기 화면 녹화와 API 36 로컬 에뮬레이터 UI/계측 테스트.
+- **Android:** Compose 기반 Discover·Community·Media·Messages·LIVE 화면과 11개 Gradle 모듈
+- **Media3:** 합성 HLS VOD·선택형 로컬 MP4, 재생/오류 상태·화질/자막/배속·전체 화면 및 수명주기 관리
+- **채팅:** Fake transport와 로컬 WebSocket/HTTP·PostgreSQL, ACK 재전송 멱등성·메시지 순서·누락 복구
+- **검증:** Android 빌드·Lint·단위 테스트, 로컬 기기 계측, 서버 통합·장애 주입 CI
 
-## 최신 확인 가능한 대표 검증
+## 검증 기준
 
-| 기준 변경 | 검증 결과 |
-|---|---|
-| [PR #59](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59) | Debug 빌드·Lint·단위 62/62, 로컬 AVD 관련 24/24, Galaxy 실기기 관련 3/3 PASS |
-| [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) | 단위 56/56 및 로컬 API 36 계측 28/28 PASS |
-| [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) | 플레이어 단위 56/56 및 로컬 API 36 계측 41/41 PASS; PR Android·서버 CI 통과 |
-| [PR #61](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/61) | Galaxy S22 Ultra 화면·재생 데모 갱신, 링크·영상 디코딩 검사 |
-| [PR #62](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/62) | 사용하지 않는 미디어 파일 정리, Android Debug 빌드·Lint PASS |
+최근 주요 UI 변경의 기기 검증은 [PR #59](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59), 플레이어는 [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47), 채팅은 [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53)에 연결됩니다. [PR #63](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/63)에서는 공개 문서와 CI 참조 구조를 정리했습니다.
 
-검증 범위와 현재 CI 실행 정책은 [verification](verification.md)에서 확인한다. 원격 에뮬레이터 자동 작업은 사용하지 않으며, 계측 결과는 위 PR의 로컬 실행 증거다.
+기능별 테스트 수·실행 조건은 [검증 결과](verification.md), 자동화·계측 분리 기준은 [테스트 매트릭스](test-matrix.md)에서 확인할 수 있습니다.
 
-## 작업 방식 및 문서 기준
+## 이후 작업 기준
 
-- 코드·테스트·정적 검사 및 PR CI를 실제 완료 근거로 사용한다.
-- 기능 계약은 [specs](specs/), 아키텍처 선택은 [ADR](adr/), 실행 정책은 [test-matrix](test-matrix.md)를 따른다.
-- 상세한 과거 작업·실패·승인 과정은 Git 커밋·PR 기록을 참조한다. 현재 작업에서 새로 발견한 결함은 별도로 재현·수정한다.
-- 신규 작업 시 [AGENTS](../AGENTS.md)와 관련 기술 문서를 읽고 해당 기능에 필요한 테스트를 선택한다.
-
-**현재 데모 경계:** 합성/사전 녹화 영상, 로컬 개발 서버와 Fake 채팅. 운영 LIVE 서비스나 상용 대규모 트래픽을 제공하는 저장소는 아니다.
+변경할 기능의 계약과 테스트를 먼저 확인한 뒤 필요한 검증을 실행합니다. 설계 근거는 [ADR](adr/), 기능별 장애·통신 계약은 [specs](specs/)를 참조합니다.

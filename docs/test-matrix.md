@@ -1,17 +1,22 @@
-# Test Matrix · 변경 영향 기반 검증
+# 테스트 매트릭스 · 변경 영향 기반 검증
 
-테스트·품질 게이트는 **실행형 검사**와 **기기별 수동/로컬 계측**으로 분리합니다.
+FanStage는 **PR 자동 검사**와 **로컬 Android 기기 계측**을 역할에 맞게 나누어 실행합니다.
 
-| 계층 | 대상 | 실행 환경·판정 |
+| 검증 계층 | 주요 대상 | 실행 방식 |
 |---|---|---|
-| Android CI | assembleDebug/Release/RC/benchmark, Lint, Unit, 모듈 경계·Manifest 검사 | GitHub Actions의 [android-ci](../.github/workflows/android-ci.yml), 실패 시 PR에서 수정 |
-| Server CI | Spring Boot 테스트, 격리 PostgreSQL, WebSocket 중복·순서·재연결, ACK 유실 주입 | GitHub Actions의 [m4-integration](../.github/workflows/m4-integration.yml) |
-| Unit | ViewModel의 상태·취소, 메시지 순서/중복/누락, 플레이어 명령 | 관련 모듈의 Gradle test |
-| Android instrumentation | Compose 탐색, IME, 회전/복귀, Media3 재생·트랙·첫 프레임, 로컬 서버 연결 | 전용 로컬 AVD 또는 실제 Android 단말; 테스트 결과와 소스 SHA 연결 |
-| Fault injection | TCP 프록시 ACK/echo 소실, 지연 snapshot, 네트워크 오류, HLS segment 오류 | 격리된 테스트 환경·서버 |
-| Performance | AndroidX Macrobenchmark, Perfetto, 반복 측정 및 통계 비교 | 동일 실기기·동일 빌드/측정 조건으로 실행; PR 자동 차단 수치로 사용하지 않음 |
-| Review | Compose/Coroutine/Player/Socket 경계와 테스트·라이선스·시크릿 확인 | AI 보조 리뷰와 개발자 판단; 테스트 실행을 대신하지 않음 |
+| Android CI | Debug/Release/RC/Benchmark 빌드, Lint, 단위 테스트, Manifest·모듈 의존성 | [GitHub Actions](../.github/workflows/android-ci.yml) |
+| 서버 CI | Spring Boot 테스트, 격리 PostgreSQL, WebSocket 중복·순서·재연결, ACK 유실 주입 | [GitHub Actions](../.github/workflows/m4-integration.yml) |
+| Android 단위 테스트 | ViewModel 상태·취소, 채팅 ACK/정렬/누락, Player 설정 | 관련 모듈의 Gradle test |
+| Android 계측 테스트 | Compose 화면 이동·IME·회전, Media3 재생·전체 화면·로컬 서버 연결 | 로컬 AVD 또는 Android 실기기 |
+| 장애 주입 | ACK/echo 손실, 지연 snapshot, HLS segment 오류, 재연결 | 테스트 전용 프록시·fixture·서버 |
+| 성능 계측 | Macrobenchmark·Perfetto 기준선과 변경 전후 비교 | 동일 기기·빌드·시나리오로 별도 실행 |
+| 코드 리뷰 | Compose/UDF, Coroutine 취소, Player/Socket 자원, 메시지 정합성 | 변경 단위의 검토·PR 근거 |
 
-**CI 정책:** 원격 에뮬레이터 작업은 기본 PR CI에 포함하지 않습니다. 로컬 계측은 필요 시 실행하고 결과를 별도 기록하며, CI PASS와 계측 PASS를 혼동하지 않습니다. 상세 사례는 [verification](verification.md), [워크플로](ai-development-workflow.md)를 참조합니다.
+## 검사 기준
 
-**변경 승인 기준:** 필수 빌드/테스트 실패, 시크릿 노출, 재현 가능한 메시지 정합성·Player 리소스 오류는 해결 전 완료로 선언하지 않습니다. 실행하지 않은 범위를 통과했다고 표현하지 않습니다.
+- **CI 차단:** 컴파일·핵심 단위/통합 테스트 실패, 시크릿 노출, 관련 기능의 재현 가능한 메시지 정합성·리소스 오류
+- **기기 검증:** 화면·영상·키보드·수명주기를 변경할 때 관련 로컬 계측을 실행하고 PR에 기기·테스트 범위를 기록
+- **성능 검증:** 수치 비교 시 같은 장치와 측정 조건을 사용하고, 실제로 확인한 결과만 성과에 반영
+- **자동화 운영:** 원격 에뮬레이터는 기본 PR CI에서 제외하고, Android 계측은 로컬 환경의 실행 결과를 별도로 보관
+
+개별 작업의 테스트 수와 실제 결과는 [검증 기록](verification.md) 및 해당 PR을 참조합니다.
