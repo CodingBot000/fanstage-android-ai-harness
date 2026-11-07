@@ -685,3 +685,10 @@
 - 재생 중 중앙 버튼 기본 숨김, 화면 터치 시 표시 후 2초 경과 숨김, 일시정지 시 재생 버튼 유지 및 재생 후 재숨김을 구현했다. 기존 PlayerController·세션 소유권은 유지한다.
 - `:app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug :feature:live:testDebugUnitTest` PASS. 전용 API 36 AVD `emulator-5562`의 PlayerSettingsTest 13/13 PASS(신규 자동 숨김·일시정지 검증 포함). 실기기 새 빌드 검증은 별도다.
 - 기존 로컬 서버 영상을 읽기 전용으로 사용한 API 36 전용 AVD의 `LocalMediaTest#sevenVideosRenderAndRecognizeAudio` 1/1 PASS(7개 영상). 연결된 Galaxy SM-S908N에 Debug APK를 `install -r`로 갱신하고 앱 실행·기존 USB reverse 유지 확인. 실기기에서 오버레이 터치 동작과 오디오 청취는 NOT_RUN.
+
+
+### 메시지 키보드·영상 고정 (2026-11-07)
+- Activity adjustResize, LIVE 고정 영상·IME 시 보조 컨트롤 접기 및 개발 입력 중 채팅 composer 숨김을 적용. DM·댓글·채팅과 개발용 주소·토큰의 IME 위치를 확인한다.
+- 초기 통합 검사 7건 중 커뮤니티 복귀 1건이 IME 닫힘 대기 전 화면 전환으로 FAIL; IME 닫힘 확인 후 재실행 7/7 PASS. 개발용 입력에서 영상이 각각 56dp, 보조 컨트롤 축소 후 28dp 이동한 두 실행은 FAIL; composer 공간 정책을 수정한 뒤 재실행 PASS.
+- 최종 `:app:assembleDebug :app:lintDebug :feature:live:testDebugUnitTest` 및 전용 API 36 AVD `DeviceUiRegressionTest`, `UiContractTest`, `PlayerSettingsTest` 계측 21/21 PASS. 실기기 SM-S908N에 데이터 유지 방식 갱신 및 실행·USB reverse 유지 확인. 실기기 키보드 화면 실제 확인과 전 기기·가로 화면 검증 NOT_RUN.
+- 직전 재생 오버레이 커밋 `a2c3325`는 `codex/player-overlay-autohide`로 원격 업로드 완료. 이번 IME 변경은 별도 미커밋.

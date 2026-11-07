@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- 메시지 키보드 배치 개선 진행: 채팅·댓글·개인 대화의 입력창을 IME 위에 유지하고 LIVE 영상은 고정. API 36 전용 AVD 관련 계측 21/21 및 빌드·lint·플레이어 단위 PASS. 갱신 APK 실기기 설치; 실기기 IME 직접 검증 NOT_RUN.
+
 - 플레이어 중앙 재생 오버레이 개선: 재생 중 영상 터치로 표시·2초 후 숨김, 일시정지 중 재생 버튼 유지. 전용 API 36 PLAYER-001 계측 13/13 PASS; 상세 검증은 build-log 참조.
 
 - PORTFOLIO-FINAL-001: 기준 main `c1febd68171652fda46c062da3d507e9c992acd8`, v0.1 소스 포트폴리오 [Draft PR #49](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/49) 리뷰 완료. 초기 head `4bd251f`의 Android·서버 원격 CI PASS, 원격 에뮬레이터 및 서버 Android 단계 SKIPPED; 후속 문서 보완 head CI는 PR에서 확인한다. PLAYER-002는 **DEFERRED — v0.2 Candidate**, main 미포함이다. API 30 실제 시스템 닫기에서 release를 관찰했으나 별도 빠른 강제 스택 제거 후 미해제 P1은 미해결이다.

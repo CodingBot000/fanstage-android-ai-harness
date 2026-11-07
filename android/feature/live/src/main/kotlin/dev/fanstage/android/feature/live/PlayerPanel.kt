@@ -63,7 +63,7 @@ var SemanticsPropertyReceiver.playerSurfaceGeneration by PlayerSurfaceGeneration
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3u8") {
+fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3u8", compact: Boolean = false) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
     var autoPlay by rememberSaveable(roomId, sourceUri) { mutableStateOf(true) }
@@ -162,6 +162,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
                 else -> Unit
             }
         }
+        if (!compact) {
         if (seekable && duration > 0) {
             val seekColors = SliderDefaults.colors(
                 thumbColor = Color(0xFFE76559),
@@ -196,6 +197,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
                 Text(stringResource(R.string.player_retry))
             }
             else -> Unit
+        }
         }
     }
     }

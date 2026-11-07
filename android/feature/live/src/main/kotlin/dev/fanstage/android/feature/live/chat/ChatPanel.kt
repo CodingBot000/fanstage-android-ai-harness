@@ -13,6 +13,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.focus.onFocusChanged
 import dev.fanstage.android.core.designsystem.SendIcon
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material3.Text
@@ -41,7 +42,7 @@ internal fun fictionalMessageResource(key: String): Int? = when {
 }
 
 @Composable
-fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, showComposer: Boolean = true, sendSignal: Int = 0) {
+fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, showComposer: Boolean = true, sendSignal: Int = 0, onDevelopmentFocus: (Boolean) -> Unit = {}) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val locale = LocalConfiguration.current.locales[0]
@@ -69,8 +70,8 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
         if (developmentControls) {
             Text(stringResource(R.string.chat_dev_warning))
             Text(stringResource(if (state.localServer) R.string.chat_mode_real else R.string.chat_mode_fake), Modifier.testTag("chat_mode"))
-            OutlinedTextField(value = endpoint, onValueChange = { endpoint = it }, label = { Text(stringResource(R.string.chat_endpoint)) }, modifier = Modifier.fillMaxWidth().testTag("chat_endpoint"))
-            OutlinedTextField(value = token, onValueChange = { token = it }, label = { Text(stringResource(R.string.chat_token)) }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().testTag("chat_token"))
+            OutlinedTextField(value = endpoint, onValueChange = { endpoint = it }, label = { Text(stringResource(R.string.chat_endpoint)) }, modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_endpoint"))
+            OutlinedTextField(value = token, onValueChange = { token = it }, label = { Text(stringResource(R.string.chat_token)) }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_token"))
             Column {
                 TextButton(onClick = {
                     val transport = runCatching { RealChatTransport(endpoint, token, allowInsecure = true) }.getOrNull()
