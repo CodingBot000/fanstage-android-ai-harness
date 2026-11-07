@@ -1,6 +1,6 @@
 # UX-LIVE-001 — LIVE 채팅 UI
 
-상태: 로컬 검증 완료, PR CI 대기.
+상태: [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) 병합 완료 (`dd3302a`). PR Android·서버 CI PASS; 원격 에뮬레이터 SKIPPED.
 
 LIVE 채팅에 실제 transport 상태를 따르는 데모/로컬 서버 단일 선택, 기본 접힘 개발 설정, 좌우 말풍선을 제공한다. 서버 선택 시 주소·토큰이 없으면 설정을 열고, 임시 연결의 인증을 확인한 뒤 기존 `replaceTransport`를 호출한다. 실패·인증 오류는 데모 상태를 유지하고 표시하며 미확정 메시지의 전환 차단은 기존 ViewModel 계약을 따른다. 검증 중 임시 연결과 화면 이탈 시 작업은 취소되며 토큰은 저장 상태나 로그에 남기지 않는다. 연결이 이후 끊기면 기존 재연결·오류 상태를 표시한다.
 
