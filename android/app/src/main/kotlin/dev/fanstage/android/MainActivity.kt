@@ -84,7 +84,7 @@ private fun FanStageApp() {
     Scaffold(modifier = Modifier.nestedScroll(titleBarState.connection), containerColor = if (isPlaybackRoute) Color.Black else MaterialTheme.colorScheme.background, topBar = {
         if (isTab) Column(Modifier.statusBarsPadding()) {
             Box(Modifier.fillMaxWidth().height(64.dp * titleBarState.visibleFraction).clipToBounds().testTag("collapsing_top_bar")) {
-                TopAppBar(title = { Text("fanstage", color = dev.fanstage.android.core.designsystem.Plum, style = MaterialTheme.typography.titleLarge) }, windowInsets = WindowInsets(0, 0, 0, 0))
+                TopAppBar(title = { Text(stringResource(R.string.app_name), color = dev.fanstage.android.core.designsystem.Plum, style = MaterialTheme.typography.titleLarge) }, windowInsets = WindowInsets(0, 0, 0, 0))
             }
         }
     }) { shellPadding ->
