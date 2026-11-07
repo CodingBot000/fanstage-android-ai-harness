@@ -8,8 +8,8 @@ from pathlib import Path
 from urllib.parse import unquote
 
 ROOT = Path(__file__).resolve().parents[1]
-LINK = re.compile(r"!?(?:\\[[^\\]]*\\])\\(([^)]+)\\)")
-ADR_ID = re.compile(r"^ADR-(\\d+)-")
+LINK = re.compile(r"!?\[[^\]]*\]\(([^)]+)\)")
+ADR_ID = re.compile(r"^ADR-(\d+)-")
 SKIP = {".git", ".gradle", ".idea", "build", "node_modules"}
 errors: list[str] = []
 checked = 0
