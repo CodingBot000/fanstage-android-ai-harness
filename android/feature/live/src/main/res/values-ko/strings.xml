@@ -35,10 +35,10 @@
     <string name="chat_too_long">메시지는 유니코드 문자 1,000자까지 입력할 수 있습니다.</string>
     <string name="chat_endpoint">로컬 서버 주소</string>
     <string name="chat_token">임시 테스트 토큰</string>
-    <string name="chat_mode_real">로컬 서버</string>
-    <string name="chat_mode_fake">오프라인 데모</string>
+    <string name="chat_mode_real">로컬 서버 채팅</string>
+    <string name="chat_mode_fake">데모 채팅</string>
     <string name="chat_use_real">로컬 서버 사용</string>
-    <string name="chat_use_fake">오프라인 데모 사용</string>
+    <string name="chat_use_fake">데모 채팅 사용</string>
     <string name="chat_connecting">로컬 채팅에 연결 중…</string>
     <string name="chat_connected">로컬 채팅 연결됨</string>
     <string name="chat_reconnecting">채팅 연결이 끊겨 다시 연결 중…</string>
@@ -75,4 +75,6 @@
     <string name="player_subtitle_track">자막 %1$d</string>
     <string name="player_subtitle_cea_unknown">CEA-608 자막 (지원 여부 미확인)</string>
     <string name="local_server_vod">로컬 서버 영상 스트리밍 · 녹화 방송</string>
+    <string name="chat_settings">개발 설정</string>
+    <string name="chat_participant">참여자</string>
 </resources>

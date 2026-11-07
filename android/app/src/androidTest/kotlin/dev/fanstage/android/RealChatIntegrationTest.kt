@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
@@ -507,17 +508,21 @@ class RealChatIntegrationTest {
                 }
             }
             composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithTag("chat_settings_toggle").performScrollTo().performClick()
             composeRule.onNodeWithTag("chat_endpoint").performScrollTo().performTextClearance()
             composeRule.onNodeWithTag("chat_endpoint").performTextInput(base)
             // An actual server authentication error must not stop the independent player.
             composeRule.onNodeWithTag("chat_token").performScrollTo().performTextInput("invalid-temporary-token")
             composeRule.onNodeWithTag("chat_use_real").performScrollTo().performClick()
             composeRule.waitUntil(15_000L) { composeRule.onAllNodesWithTag("chat_connection_error").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onNodeWithTag("chat_use_fake").assertIsSelected()
             composeRule.onNodeWithTag("player_state_playing").assertExists()
             // Debug-only UI selects the local endpoint and transient synthetic credential.
-            composeRule.onNodeWithTag("chat_token").performScrollTo().performTextInput(alice)
+            composeRule.onNodeWithTag("chat_token").performScrollTo().performTextClearance()
+            composeRule.onNodeWithTag("chat_token").performTextInput(alice)
             composeRule.onNodeWithTag("chat_use_real").performScrollTo().performClick()
-            composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_mode_real)).fetchSemanticsNodes().isNotEmpty() }
+            composeRule.waitUntil(10_000L) { chatHolder[0]?.uiState?.value?.localServer == true }
+            composeRule.onNodeWithTag("chat_select_real").assertIsSelected()
             // Allow subscription before sending; existing snapshot messages prove the handshake completed.
             composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithText("missed while offline").fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("android real send")

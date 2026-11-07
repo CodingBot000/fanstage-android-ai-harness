@@ -134,6 +134,10 @@ class DeviceUiRegressionTest {
         assertComposerBounds("chat_input", "chat_send")
         rule.onNodeWithTag("chat_input").performImeAction()
         rule.waitUntil(10_000) { rule.onAllNodesWithText("Device LIVE IME").fetchSemanticsNodes().isNotEmpty() }
+        rule.waitUntil(10_000) { rule.onAllNodesWithTag("chat_bubble_own").fetchSemanticsNodes().isNotEmpty() && rule.onAllNodesWithTag("chat_bubble_other").fetchSemanticsNodes().isNotEmpty() }
+        val ownBubble = rule.onAllNodesWithTag("chat_bubble_own")[0].getUnclippedBoundsInRoot()
+        val otherBubble = rule.onAllNodesWithTag("chat_bubble_other")[0].getUnclippedBoundsInRoot()
+        assertTrue("own and other bubbles must align to opposite sides", ownBubble.left > otherBubble.left && ownBubble.right > otherBubble.right)
         rule.onNodeWithTag("room_back").performClick()
         rule.onNodeWithTag("rooms_content").assertExists()
         rule.waitUntil(10_000) { findPlayer(rule.activity.findViewById(android.R.id.content)) == null }
@@ -160,6 +164,7 @@ class DeviceUiRegressionTest {
         rule.onNodeWithTag("live_carousel").performScrollToNode(hasTestTag("room_benchmark"))
         rule.onNodeWithTag("room_benchmark").performClick()
         rule.waitUntil(30_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("chat_settings_toggle").performScrollTo().performClick()
         for (tag in listOf("chat_endpoint", "chat_token")) {
             rule.onNodeWithTag(tag).performScrollTo()
             val video = rule.onNodeWithTag("player_first_frame").getUnclippedBoundsInRoot()
@@ -168,6 +173,61 @@ class DeviceUiRegressionTest {
             val current = rule.onNodeWithTag("player_first_frame").getUnclippedBoundsInRoot()
             assertTrue("video moved for $tag: $video -> $current", abs((video.top - current.top).value) < 1f)
         }
+    }
+
+    @Test fun chatSettingsStartCollapsedAndInvalidConnectionKeepsDemoSelected() {
+        rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("live_carousel"))
+        rule.onNodeWithTag("live_carousel").performScrollToNode(hasTestTag("room_benchmark"))
+        rule.onNodeWithTag("room_benchmark").performClick()
+        rule.waitUntil(30_000) { rule.onAllNodesWithTag("chat_settings_toggle").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("chat_endpoint").assertDoesNotExist()
+        rule.onNodeWithTag("chat_use_fake").assertIsSelected()
+        rule.onNodeWithTag("chat_select_real").performScrollTo().performClick()
+        rule.onNodeWithTag("chat_endpoint").assertExists()
+        rule.onNodeWithTag("chat_use_real").performScrollTo().performClick()
+        rule.onNodeWithTag("chat_connection_error").assertExists()
+        rule.onNodeWithTag("chat_use_fake").assertIsSelected()
+        rule.onNodeWithTag("chat_select_real").assertIsNotSelected()
+        rule.onNodeWithTag("chat_settings_toggle").performScrollTo().performClick()
+        rule.onNodeWithTag("chat_endpoint").assertDoesNotExist()
+        rule.onNodeWithTag("chat_connection_error").assertExists()
+    }
+
+    @Test fun chatSettingsSurviveActivityRecreation() {
+        rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("live_carousel"))
+        rule.onNodeWithTag("live_carousel").performScrollToNode(hasTestTag("room_benchmark"))
+        rule.onNodeWithTag("room_benchmark").performClick()
+        rule.waitUntil(30_000) { rule.onAllNodesWithTag("chat_settings_toggle").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("chat_settings_toggle").performScrollTo().performClick()
+        rule.onNodeWithTag("chat_endpoint").assertExists()
+        rule.activityRule.scenario.recreate()
+        rule.waitUntil(30_000) { rule.onAllNodesWithTag("chat_endpoint").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("chat_use_fake").assertIsSelected()
+        val original = rule.activity.requestedOrientation
+        try {
+            rule.runOnUiThread { rule.activity.requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
+            rule.waitUntil(30_000) { rule.activity.resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE }
+            rule.waitUntil(30_000) { rule.onAllNodesWithTag("chat_endpoint").fetchSemanticsNodes().isNotEmpty() }
+            rule.onNodeWithTag("chat_use_fake").assertIsSelected()
+        } finally {
+            rule.runOnUiThread { rule.activity.requestedOrientation = original }
+        }
+    }
+
+    @Test fun chatModeControlsRemainSeparateAtDoubleFontAndNarrowWidth() {
+        val vm = dev.fanstage.android.feature.live.chat.ChatViewModel(dev.fanstage.android.feature.live.chat.FakeChatTransport("mode-layout", simulateIncoming = false), "mode-layout")
+        rule.activity.setContent {
+            val density = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(density.density, 2f)) {
+                MaterialTheme { androidx.compose.foundation.layout.Box(Modifier.width(320.dp)) { dev.fanstage.android.feature.live.chat.ChatPanel(vm, developmentControls = true) } }
+            }
+        }
+        val demo = rule.onNodeWithTag("chat_use_fake").assertIsDisplayed().getUnclippedBoundsInRoot()
+        val server = rule.onNodeWithTag("chat_select_real").assertIsDisplayed().getUnclippedBoundsInRoot()
+        assertTrue("mode controls must not overlap", demo.right <= server.left)
+        rule.onNodeWithTag("chat_use_fake").assertIsSelected()
     }
 
     private fun assertAboveKeyboard(tag: String) {
