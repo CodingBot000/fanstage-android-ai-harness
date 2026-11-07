@@ -692,3 +692,14 @@
 - 초기 통합 검사 7건 중 커뮤니티 복귀 1건이 IME 닫힘 대기 전 화면 전환으로 FAIL; IME 닫힘 확인 후 재실행 7/7 PASS. 개발용 입력에서 영상이 각각 56dp, 보조 컨트롤 축소 후 28dp 이동한 두 실행은 FAIL; composer 공간 정책을 수정한 뒤 재실행 PASS.
 - 최종 `:app:assembleDebug :app:lintDebug :feature:live:testDebugUnitTest` 및 전용 API 36 AVD `DeviceUiRegressionTest`, `UiContractTest`, `PlayerSettingsTest` 계측 21/21 PASS. 실기기 SM-S908N에 데이터 유지 방식 갱신 및 실행·USB reverse 유지 확인. 실기기 키보드 화면 실제 확인과 전 기기·가로 화면 검증 NOT_RUN.
 - 직전 재생 오버레이 커밋 `a2c3325`는 `codex/player-overlay-autohide`로 원격 업로드 완료. 이번 IME 변경은 별도 미커밋.
+
+### 로컬 서버 영상 표시 문구 (2026-11-07)
+- Debug의 서버 기반 MP4 카드를 한국어 '로컬 서버 영상', 영어 'Local server VOD'로 명시하고 상세 설명도 지역화했다. 재생 주소·서버 및 앱 데이터는 변경하지 않았다.
+- `:app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug` PASS, 실기기 Debug APK 데이터 유지 갱신 및 USB reverse 유지 확인. 이 문구 변경의 별도 기기 계측·화면 육안 검증은 NOT_RUN.
+
+
+### 플레이어 설정 UX·로컬 서버 표시 (2026-11-07)
+- 개발 전용 채팅 안내 문구를 제거하고 화질·자막·배속 상태 행, 배속 선택 화면, 진행 막대 간격 축소 및 재생·일시정지 문구 제거를 적용했다. 로컬 서버 영상 스트리밍 문구는 녹화된 HTTP MP4를 뜻한다. 서버 연결 전환 후 포커스를 해제해 채팅 입력창을 복구한다.
+- 최초 빌드는 padding import 누락으로 FAIL 후 수정했다. 최초 21개 계측에서는 선택 화질 중복 텍스트로 인한 검사 대상 모호성과 전체 화면 시트 Back 동작이 각각 FAIL; 선택 의미론 검사와 시트 부분 확장 정책을 보완했다. 후속 테스트 컴파일 시 matcher import 오류도 수정했다.
+- 첫 24개 최종 묶음에서 23개 PASS, 실제 채팅 1개는 토큰 인자 누락으로 FAIL. 기존 사용자 서버의 자격을 출력·새로 생성하지 않고 재사용해 별도 18766 포트·빈 테스트 DB를 기동했다. 첫 실제 채팅 재실행은 서버 설정 필드의 포커스가 남아 composer가 숨겨져 FAIL; 연결 전환에서 포커스를 해제한 후 재실행 PASS.
+- 최종 :app:assembleDebug :app:lintDebug :feature:live:testDebugUnitTest PASS, live 단위 56/56. API 36 전용 AVD에서 PlayerSettingsTest·DeviceUiRegressionTest·UiContractTest·LocalMediaTest 총 24/24 PASS; 로컬 MP4 7개는 기존 18765 서버에서 읽기 전용, 테스트 채팅은 18766의 빈 DB에만 전송했다. 실기기 새 UI 육안 확인·전체 기기·장시간 검증은 NOT_RUN.

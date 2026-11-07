@@ -118,7 +118,7 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
     Scaffold(topBar = { BackTitleBar(title, onBack, backTag = "room_back") }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().testTag("room_detail")) {
         Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
-            Text(if (roomId == "benchmark") "Benchmark · test video" else if (sourceUri.endsWith(".mp4")) "Local VOD · prerecorded" else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+            Text(if (roomId == "benchmark") "Benchmark · test video" else if (sourceUri.endsWith(".mp4")) stringResource(R.string.local_server_vod) else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(12.dp)) { PlayerPanel(roomId, sourceUri, compact = keyboardVisible) }
             }

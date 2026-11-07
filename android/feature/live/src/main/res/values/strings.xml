@@ -36,7 +36,6 @@
     <string name="chat_send">Send</string>
     <string name="chat_remove_failed">Remove failed message</string>
     <string name="chat_too_long">Messages can contain at most 1,000 Unicode characters.</string>
-    <string name="chat_dev_warning">Development only: switching clears confirmed chat history. Do not use real credentials.</string>
     <string name="chat_endpoint">Local server URL</string>
     <string name="chat_token">Temporary test token</string>
     <string name="chat_mode_real">Local server</string>
@@ -78,4 +77,5 @@
     <string name="player_video_track">Video %1$d</string>
     <string name="player_subtitle_track">Subtitle %1$d</string>
     <string name="player_subtitle_cea_unknown">CEA-608 captions (availability unknown)</string>
+    <string name="local_server_vod">Local server video streaming · prerecorded</string>
 </resources>

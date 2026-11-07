@@ -7,4 +7,4 @@
   <string name="room_studio_title">Studio session</string>
   <string name="room_sketch_title">Afternoon sketch break</string>
   <string name="room_tabletop_title">Tabletop night</string>
-<string name="local_vod">Local VOD</string><string name="benchmark_card">Benchmark · test video</string></resources>
+<string name="local_vod">Local server video streaming</string><string name="benchmark_card">Benchmark · test video</string></resources>

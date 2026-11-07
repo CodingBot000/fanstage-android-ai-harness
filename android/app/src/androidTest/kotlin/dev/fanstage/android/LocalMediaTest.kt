@@ -77,12 +77,12 @@ class LocalMediaTest {
         rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
         rule.onNodeWithTag("room_studio-session").performClick()
         rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithText("Local VOD · prerecorded").assertExists()
+        rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.local_server_vod)).assertExists()
         rule.onNodeWithTag("room_back").performClick()
         rule.onNodeWithTag("tab_media").performClick()
         rule.onNodeWithTag("media_studio-session").performClick()
         rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithText("Local VOD · prerecorded").assertExists()
+        rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.local_server_vod)).assertExists()
     }
 
 }

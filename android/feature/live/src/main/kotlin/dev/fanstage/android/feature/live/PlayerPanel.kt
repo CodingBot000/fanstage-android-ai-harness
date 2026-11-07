@@ -9,7 +9,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +21,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Button
@@ -71,6 +75,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
     val session = remember(controller) { PlaybackSession(controller, autoPlay) }
     val playerUi by controller.uiState.collectAsStateWithLifecycle()
     var showSpeed by remember(controller) { mutableStateOf(false) }
+    var showSpeedOptions by remember(controller) { mutableStateOf(false) }
     var fullscreen by rememberSaveable(roomId, sourceUri) { mutableStateOf(false) }
     val ui = playerUi.copy(fullscreen = fullscreen)
     val state = ui.playback
@@ -172,26 +177,29 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
             Slider(
                 value = (position.toFloat() / duration).coerceIn(0f, 1f),
                 onValueChange = { controller.seek((it * duration).toLong()); position = (it * duration).toLong() },
-                modifier = Modifier.fillMaxWidth().height(48.dp).semantics { contentDescription = seekDescription }.testTag("player_seek"),
+                modifier = Modifier.fillMaxWidth().height(28.dp).semantics { contentDescription = seekDescription }.testTag("player_seek"),
                 colors = seekColors,
                 thumb = { Box(Modifier.size(12.dp).clip(CircleShape).background(Color(0xFFE76559))) },
                 track = { sliderState -> SliderDefaults.Track(sliderState = sliderState, modifier = Modifier.height(3.dp), colors = seekColors, thumbTrackGapSize = 0.dp, drawStopIndicator = null) },
             )
         }
-        TextButton(onClick = { showSpeed = true }, enabled = canSetSpeed, colors = if (full) ButtonDefaults.textButtonColors(contentColor = Color.White, disabledContentColor = Color.LightGray) else ButtonDefaults.textButtonColors(), modifier = Modifier.testTag("player_speed")) {
+        TextButton(onClick = { showSpeedOptions = false; showSpeed = true }, enabled = canSetSpeed, colors = if (full) ButtonDefaults.textButtonColors(contentColor = Color.White, disabledContentColor = Color.LightGray) else ButtonDefaults.textButtonColors(), modifier = Modifier.testTag("player_speed")) {
             Text(stringResource(R.string.player_speed, speed))
         }
-        Text(
-            stringResource(when (state) {
-                PlaybackState.Loading -> R.string.player_loading
-                PlaybackState.Buffering -> R.string.player_buffering
-                PlaybackState.Playing -> R.string.player_playing
-                PlaybackState.Paused -> R.string.player_paused
-                PlaybackState.Error -> R.string.player_error
-            }),
-            Modifier.testTag("player_state_${state.javaClass.simpleName.lowercase()}"),
-            color = if (full) Color.White else Color.Unspecified,
-        )
+        if (state == PlaybackState.Playing || state == PlaybackState.Paused) {
+            Box(Modifier.size(0.dp).testTag("player_state_${state.javaClass.simpleName.lowercase()}"))
+        } else {
+            Text(
+                stringResource(when (state) {
+                    PlaybackState.Loading -> R.string.player_loading
+                    PlaybackState.Buffering -> R.string.player_buffering
+                    PlaybackState.Error -> R.string.player_error
+                    else -> R.string.player_loading
+                }),
+                Modifier.testTag("player_state_${state.javaClass.simpleName.lowercase()}"),
+                color = if (full) Color.White else Color.Unspecified,
+            )
+        }
         when (state) {
             PlaybackState.Error -> Button(onClick = controller::retry, modifier = Modifier.testTag("player_retry")) {
                 Text(stringResource(R.string.player_retry))
@@ -207,29 +215,50 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
         playerContent(false)
     }
     if (showSpeed) {
-        ModalBottomSheet(onDismissRequest = { showSpeed = false }) {
-          Column(Modifier.verticalScroll(rememberScrollState())) {
-            Text(stringResource(R.string.player_quality))
-            if (ui.videoTracks.isEmpty()) Text(stringResource(R.string.player_unsupported)) else if (ui.videoTracks.size == 1) Text(stringResource(R.string.player_quality_single)) else {
-                TextButton(onClick = { controller.selectVideo(null) }, enabled = ui.canSelectTracks, modifier = Modifier.fillMaxWidth().semantics { selected = ui.selectedVideoId == null }.testTag("player_quality_auto")) { Text(stringResource(R.string.player_auto) + if (ui.selectedVideoId == null) " ✓" else "") }
-                ui.videoTracks.forEach { option ->
-                    TextButton(onClick = { controller.selectVideo(option.id) }, enabled = ui.canSelectTracks, modifier = Modifier.fillMaxWidth().semantics { selected = ui.selectedVideoId == option.id }.testTag("player_quality_${option.id}")) { Text(option.label + if (ui.selectedVideoId == option.id) " ✓" else "") }
+        ModalBottomSheet(onDismissRequest = { showSpeed = false; showSpeedOptions = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+            Column(Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (showSpeedOptions) {
+                    Text(stringResource(R.string.player_speed_title), style = androidx.compose.material3.MaterialTheme.typography.titleMedium)
+                    PLAYBACK_SPEEDS.forEach { option ->
+                        TextButton(onClick = { controller.setSpeed(option); showSpeed = false; showSpeedOptions = false }, modifier = Modifier.fillMaxWidth().semantics { selected = speed == option }.testTag("player_speed_$option")) {
+                            Text(stringResource(R.string.player_speed_option, option, if (speed == option) "✓" else ""))
+                        }
+                    }
+                } else {
+                    val quality = when {
+                        ui.videoTracks.isEmpty() -> stringResource(R.string.player_unsupported)
+                        ui.videoTracks.size == 1 -> stringResource(R.string.player_quality_single)
+                        ui.selectedVideoId == null -> stringResource(R.string.player_auto)
+                        else -> ui.videoTracks.firstOrNull { it.id == ui.selectedVideoId }?.label ?: stringResource(R.string.player_auto)
+                    }
+                    val subtitle = when {
+                        ui.textTracks.isEmpty() -> stringResource(R.string.player_unsupported)
+                        ui.subtitlesOff -> stringResource(R.string.player_off)
+                        else -> ui.textTracks.firstOrNull { it.selected }?.label ?: stringResource(R.string.player_off)
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(stringResource(R.string.player_quality)); Text(quality)
+                    }
+                    if (ui.videoTracks.size > 1) {
+                        TextButton(onClick = { controller.selectVideo(null) }, enabled = ui.canSelectTracks, modifier = Modifier.fillMaxWidth().semantics { selected = ui.selectedVideoId == null }.testTag("player_quality_auto")) { Text(stringResource(R.string.player_auto) + if (ui.selectedVideoId == null) " ✓" else "") }
+                        ui.videoTracks.forEach { option ->
+                            TextButton(onClick = { controller.selectVideo(option.id) }, enabled = ui.canSelectTracks, modifier = Modifier.fillMaxWidth().semantics { selected = ui.selectedVideoId == option.id }.testTag("player_quality_${option.id}")) { Text(option.label + if (ui.selectedVideoId == option.id) " ✓" else "") }
+                        }
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(stringResource(R.string.player_subtitles)); Text(subtitle)
+                    }
+                    if (ui.textTracks.isNotEmpty()) {
+                        TextButton(onClick = { controller.selectSubtitle(null) }, enabled = ui.canSelectTracks, modifier = Modifier.fillMaxWidth().semantics { selected = ui.subtitlesOff }.testTag("player_subtitle_off")) { Text(stringResource(R.string.player_off) + if (ui.subtitlesOff) " ✓" else "") }
+                        ui.textTracks.forEach { option ->
+                            TextButton(onClick = { controller.selectSubtitle(option.id) }, enabled = ui.canSelectTracks, modifier = Modifier.fillMaxWidth().semantics { selected = option.selected }.testTag("player_subtitle_${option.id}")) { Text(option.label + if (option.selected) " ✓" else "") }
+                        }
+                    }
+                    Row(Modifier.fillMaxWidth().clickable { showSpeedOptions = true }.padding(vertical = 14.dp).testTag("player_speed_row"), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(stringResource(R.string.player_speed_title)); Text(stringResource(R.string.player_speed_option, speed, ""))
+                    }
                 }
             }
-            Text(stringResource(R.string.player_subtitles))
-            if (ui.textTracks.isEmpty()) Text(stringResource(R.string.player_unsupported)) else {
-                TextButton(onClick = { controller.selectSubtitle(null) }, enabled = ui.canSelectTracks, modifier = Modifier.fillMaxWidth().semantics { selected = ui.subtitlesOff }.testTag("player_subtitle_off")) { Text(stringResource(R.string.player_off) + if (ui.subtitlesOff) " ✓" else "") }
-                ui.textTracks.forEach { option ->
-                    TextButton(onClick = { controller.selectSubtitle(option.id) }, enabled = ui.canSelectTracks, modifier = Modifier.fillMaxWidth().semantics { selected = option.selected }.testTag("player_subtitle_${option.id}")) { Text(option.label + if (option.selected) " ✓" else "") }
-                }
-            }
-            Text(stringResource(R.string.player_speed_title))
-            PLAYBACK_SPEEDS.forEach { option ->
-                TextButton(onClick = { controller.setSpeed(option); showSpeed = false }, modifier = Modifier.fillMaxWidth().semantics { selected = speed == option }.testTag("player_speed_$option")) {
-                    Text(stringResource(R.string.player_speed_option, option, if (speed == option) "✓" else ""))
-                }
-            }
-          }
         }
     }
 

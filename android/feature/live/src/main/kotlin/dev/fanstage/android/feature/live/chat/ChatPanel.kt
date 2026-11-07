@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.fanstage.android.feature.live.R
@@ -46,6 +47,7 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val locale = LocalConfiguration.current.locales[0]
+    val focusManager = LocalFocusManager.current
     var endpoint by remember { mutableStateOf("http://10.0.2.2:18765") }
     var token by remember { mutableStateOf("") }
     var configError by remember { mutableStateOf(false) }
@@ -68,17 +70,17 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
     Column(Modifier.fillMaxWidth().testTag("chat_panel")) {
         Text(stringResource(R.string.chat_title))
         if (developmentControls) {
-            Text(stringResource(R.string.chat_dev_warning))
             Text(stringResource(if (state.localServer) R.string.chat_mode_real else R.string.chat_mode_fake), Modifier.testTag("chat_mode"))
             OutlinedTextField(value = endpoint, onValueChange = { endpoint = it }, label = { Text(stringResource(R.string.chat_endpoint)) }, modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_endpoint"))
             OutlinedTextField(value = token, onValueChange = { token = it }, label = { Text(stringResource(R.string.chat_token)) }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_token"))
             Column {
                 TextButton(onClick = {
+                    focusManager.clearFocus()
                     val transport = runCatching { RealChatTransport(endpoint, token, allowInsecure = true) }.getOrNull()
                     configError = transport == null
                     if (transport != null && viewModel.replaceTransport(transport)) token = ""
                 }, modifier = Modifier.testTag("chat_use_real")) { Text(stringResource(R.string.chat_use_real)) }
-                TextButton(onClick = { if (viewModel.useOfflineFake()) { token = ""; configError = false } }, modifier = Modifier.testTag("chat_use_fake")) { Text(stringResource(R.string.chat_use_fake)) }
+                TextButton(onClick = { focusManager.clearFocus(); if (viewModel.useOfflineFake()) { token = ""; configError = false } }, modifier = Modifier.testTag("chat_use_fake")) { Text(stringResource(R.string.chat_use_fake)) }
             }
             if (configError) Text(stringResource(R.string.chat_config_error))
             if (state.switchBlocked) Text(stringResource(R.string.chat_switch_blocked))

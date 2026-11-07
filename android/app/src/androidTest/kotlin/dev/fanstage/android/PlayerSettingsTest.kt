@@ -45,6 +45,8 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.isSelected
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -192,6 +194,7 @@ class PlayerSettingsTest {
         rule.onNodeWithTag("player_seek").performSemanticsAction(SemanticsActions.SetProgress) { it(0.5f) }
         val before = rule.onNodeWithTag("player_seek").fetchSemanticsNode().config[SemanticsProperties.ProgressBarRangeInfo].current
         rule.onNodeWithTag("player_speed").performClick()
+        rule.onNodeWithTag("player_speed_row").performScrollTo().performClick()
         rule.onNodeWithTag("player_speed_1.5").performClick()
         var previous = requireNotNull(renderedGeneration())
         var oldOutput = currentOutput()
@@ -203,6 +206,7 @@ class PlayerSettingsTest {
         val after = rule.onNodeWithTag("player_seek").fetchSemanticsNode().config[SemanticsProperties.ProgressBarRangeInfo].current
         assertEquals(before, after, 0.02f)
         rule.onNodeWithTag("player_speed").performClick()
+        rule.onNodeWithTag("player_speed_row").performScrollTo().performClick()
         rule.onNodeWithTag("player_speed_1.5").assertIsSelected()
         InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("input keyevent KEYCODE_BACK").close()
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_speed_1.5").fetchSemanticsNodes().isEmpty() }
@@ -299,6 +303,7 @@ class PlayerSettingsTest {
         rule.waitUntil(30000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         rule.waitForIdle()
         rule.onNodeWithTag("player_speed").performClick()
+        rule.onNodeWithTag("player_speed_row").assertTextContains(rule.activity.getString(dev.fanstage.android.feature.live.R.string.player_speed_option, 1f, "").trim(), substring = true)
         rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.player_quality_single)).assertExists()
         rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.player_unsupported)).assertExists()
     }
@@ -389,20 +394,23 @@ class PlayerSettingsTest {
         rule.waitUntil(10000) { rule.onAllNodesWithText("720p", substring = true).fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithText("720p", substring = true).performScrollTo().performClick()
         rule.onNodeWithText("English", substring = true).performScrollTo().performClick()
+        rule.onNodeWithTag("player_speed_row").performScrollTo().performClick()
         rule.onNodeWithTag("player_speed_1.5").performScrollTo().performClick()
         rule.onNodeWithTag("player_fullscreen").performClick()
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("player_speed").performClick()
-        rule.onNodeWithText("720p", substring = true).assertIsSelected().assertTextContains("✓", substring = true)
-        rule.onNodeWithText("English", substring = true).assertIsSelected().assertTextContains("✓", substring = true)
+        rule.onNode(hasText("720p", substring = true) and isSelected()).assertTextContains("✓", substring = true)
+        rule.onNode(hasText("English", substring = true) and isSelected()).assertTextContains("✓", substring = true)
+        rule.onNodeWithTag("player_speed_row").performScrollTo().performClick()
         rule.onNodeWithTag("player_speed_1.5").performScrollTo().assertIsSelected()
         instrumentation.uiAutomation.executeShellCommand("input keyevent KEYCODE_BACK").close()
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_speed_1.5").fetchSemanticsNodes().isEmpty() }
         rule.onNodeWithTag("player_fullscreen").performClick()
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("player_speed").performClick()
-        rule.onNodeWithText("720p", substring = true).assertIsSelected().assertTextContains("✓", substring = true)
-        rule.onNodeWithText("English", substring = true).assertIsSelected().assertTextContains("✓", substring = true)
+        rule.onNode(hasText("720p", substring = true) and isSelected()).assertTextContains("✓", substring = true)
+        rule.onNode(hasText("English", substring = true) and isSelected()).assertTextContains("✓", substring = true)
+        rule.onNodeWithTag("player_speed_row").performScrollTo().performClick()
         rule.onNodeWithTag("player_speed_1.5").performScrollTo().assertIsSelected()
     }
 
