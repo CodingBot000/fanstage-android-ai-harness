@@ -1,28 +1,19 @@
 # Third-party notices and distribution scope
 
-This file identifies third-party material in the current source repository and records dependencies used to build or run it. It does **not** declare that every dependency or media item is licensed under the project's MIT license. Preserve the original notices and follow each component's own license.
+FanStage's [MIT license](LICENSE) applies to the project's original code and documentation. It does **not** relicense included third-party code, tools, assets or user-interface components. Preserve each upstream copyright and applicable license.
 
-## Material included in this source repository
+## Included Gradle Wrapper
 
-### Gradle Wrapper
+This source repository contains the Gradle-generated scripts and Wrapper JARs under android/ and backend/chat-server/. The Wrapper is licensed under **Apache License 2.0**, with its original copyright notices retained. See the [Apache-2.0 license text](third_party/licenses/Apache-2.0.txt). Wrapper JARs were compared to the published Gradle 9.5.0 SHA-256 values; upstream notices within the JARs are preserved.
 
-The following Gradle-generated scripts and Wrapper JARs are included in the source tree:
+## Project media and images
 
-- `android/gradlew`, `android/gradlew.bat`, `android/gradle/wrapper/gradle-wrapper.jar`
-- `backend/chat-server/gradlew`, `backend/chat-server/gradlew.bat`, `backend/chat-server/gradle/wrapper/gradle-wrapper.jar`
+The Android synthetic HLS VOD and test media are generated with FFmpeg testsrc2; see the [playback specification](docs/specs/media3-player.md). FanStage illustrations are fictional/generated assets. Portfolio captures show FanStage running on Android hardware or emulator; embedded system/keyboard/UI fonts and any separately supplied video remain subject to their own rights. The current physical-device MP4 demo uses media the project owner confirmed was authorized for public display; the original supplied MP4 files are not committed here.
 
-Copyright © 2015 the original author or authors, as stated in the scripts. The scripts and Wrapper JARs are distributed under the [Apache License, Version 2.0](third_party/licenses/Apache-2.0.txt). Each JAR also contains `META-INF/LICENSE`. Both JARs match the published Gradle 9.5.0 Wrapper JAR SHA-256; the server batch script has LF rather than CRLF line endings. Other checked script content matches a Gradle 9.5.0 generated wrapper. Whether this newline-only difference requires an additional notice in the file remains to be confirmed.
+## Dependencies resolved during build
 
-### Synthetic media and UI captures
+Android and server dependencies are downloaded through Gradle and follow their respective upstream licenses. The source repository does not redistribute a public APK, server JAR or container image.
 
-The `android/feature/live/src/main/assets/hls/` VOD was generated locally with FFmpeg `testsrc2`; its generation command is in the [M2 specification](docs/specs/M2-hls-player.md). The portfolio MP4 and PNG were captured from a test emulator displaying the project demo, not a real artist or broadcast. A previously published revision of the MP4 briefly showed the emulator's `com.google.android.inputmethod.latin` keyboard. That segment has been removed from the current video; the prior revision remains in Git history. Permission and attribution for that third-party interface in this portfolio context have **not** been established; see the [audit](docs/reviews/M8-license-audit.md). Do not infer that the keyboard or other third-party UI elements are relicensed under MIT.
+Examples of third-party runtime/test dependencies include AndroidX, Media3, Jetpack Compose, Spring Boot, PostgreSQL JDBC (BSD-2-Clause), Logback (EPL-2.0 / LGPL-2.1), Jakarta components with separately declared licenses and Haze (Apache-2.0, copyright © 2024 Chris Banes). See the upstream project notices and license texts for each dependency. Some components have dual-license choices.
 
-## Dependencies resolved locally, not bundled in the source tree
-
-The [resolved dependency inventory](docs/reviews/M8-dependency-inventory.tsv) lists the audited Android and server runtime/test artifacts, artifact hashes, declared POM licenses, license-bearing POMs, and top-level license/notice entry paths. It is a snapshot of selected Gradle configurations, not an exhaustive bill of materials for every build tool, container image or future distribution. Dependencies retrieved separately by a developer remain subject to their own licenses.
-
-No APK or server binary is presently offered as the v0.1 public release. If distributing either later, regenerate an inventory from the **actual** artifacts and variants, review their full upstream LICENSE/NOTICE and bundled subcomponents, preserve required notices and license texts, and satisfy the applicable license conditions. The server runtime includes Logback (EPL-2.0 or LGPL-2.1), Jakarta Annotations (EPL-2.0 or GPL-2.0 with Classpath Exception), PostgreSQL JDBC (BSD-2-Clause), MIT-licensed SLF4J and other components; these do not inherit the project MIT license. Any future image distribution also needs a separate audit of its JRE, OS and PostgreSQL image layers.
-
-### Haze
-
-The Android app uses [Haze](https://github.com/chrisbanes/haze) 2.0.1 for backdrop blur, copyright © 2024 Chris Banes, licensed under the [Apache License, Version 2.0](third_party/licenses/Apache-2.0.txt). This dependency is newer than the M8 inventory snapshot; any future binary distribution requires an updated dependency and notice audit.
+**When distributing binaries:** Resolve actual dependency artifacts and embedded licenses/NOTICE entries for the exact build variant; preserve required copyright and notices, evaluate transitive dependencies, embedded media and container/JRE layers separately. Existing source-level review is not a substitute for checking the packaged distribution.
