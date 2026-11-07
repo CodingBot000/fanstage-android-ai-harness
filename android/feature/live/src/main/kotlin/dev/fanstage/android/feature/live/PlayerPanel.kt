@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
@@ -73,6 +74,22 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
     var fullscreen by rememberSaveable(roomId, sourceUri) { mutableStateOf(false) }
     val ui = playerUi.copy(fullscreen = fullscreen)
     val state = ui.playback
+    var playbackControlsVisible by remember(controller) { mutableStateOf(false) }
+    var hasPlayed by remember(controller) { mutableStateOf(false) }
+    var controlInteraction by remember(controller) { mutableLongStateOf(0L) }
+    LaunchedEffect(state) {
+        when (state) {
+            PlaybackState.Playing -> hasPlayed = true
+            PlaybackState.Paused -> if (hasPlayed) playbackControlsVisible = true
+            else -> Unit
+        }
+    }
+    LaunchedEffect(state, playbackControlsVisible, controlInteraction) {
+        if (state == PlaybackState.Playing && playbackControlsVisible) {
+            delay(2_000)
+            playbackControlsVisible = false
+        }
+    }
     val speed = ui.speed
     val canSetSpeed = ui.canSetSpeed
     val frame by controller.surfaceFrame.collectAsStateWithLifecycle()
@@ -122,14 +139,15 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
                 onRelease = { controller.detach(it) },
                 modifier = Modifier.fillMaxSize().semantics { contentDescription = playerDescription; playerSurfaceGeneration = surfaceId }.testTag(if (surfaceId >= 0 && frame.generation == surfaceId && frame.rendered) "player_first_frame" else "player_surface"),
             )
+            Box(Modifier.fillMaxSize().clickable { playbackControlsVisible = true; controlInteraction++ }.testTag("player_video_touch"))
             TextButton(onClick = { fullscreen = !fullscreen }, modifier = Modifier.align(Alignment.BottomEnd).clip(CircleShape).background(Color(0xB31C2327)).testTag("player_fullscreen")) {
                 Text(stringResource(if (full) R.string.player_exit_fullscreen else R.string.player_enter_fullscreen), color = Color.White)
             }
             when (state) {
-                PlaybackState.Playing, PlaybackState.Paused -> {
+                PlaybackState.Playing, PlaybackState.Paused -> if (playbackControlsVisible) {
                     val playing = state == PlaybackState.Playing
                     IconButton(
-                        onClick = { if (playing) controller.pause() else controller.play() },
+                        onClick = { controlInteraction++; if (playing) controller.pause() else controller.play() },
                         modifier = Modifier.align(Alignment.Center).size(56.dp).clip(CircleShape)
                             .background(Color(0xB31C2327)).testTag(if (playing) "player_pause" else "player_play"),
                     ) {

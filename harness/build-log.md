@@ -679,3 +679,9 @@
 - PLAYER-002는 main 외부에서 **DEFERRED — v0.2 Candidate**. 실제 닫기와 빠른 강제 스택 제거 결과는 별도이며 후자의 API 30 ExoPlayer 미해제 P1은 미해결이다. 로컬 보존본의 각 파일 해시를 대조했고 원본 작업 트리와 사용자 데이터는 보존했다.
 
 - [Draft PR #49](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/49) 초기 head `4bd251f1fbb3f6dce6e74c6822b9fa74e7be2467`: [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42355080054) 및 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42355080132) PASS. 원격 에뮬레이터 Job과 서버 Android 단계 SKIPPED. 이후 문서 보완 head의 검증은 PR CI에서 별도로 확인한다.
+
+
+### 플레이어 재생 오버레이 (2026-11-07)
+- 재생 중 중앙 버튼 기본 숨김, 화면 터치 시 표시 후 2초 경과 숨김, 일시정지 시 재생 버튼 유지 및 재생 후 재숨김을 구현했다. 기존 PlayerController·세션 소유권은 유지한다.
+- `:app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug :feature:live:testDebugUnitTest` PASS. 전용 API 36 AVD `emulator-5562`의 PlayerSettingsTest 13/13 PASS(신규 자동 숨김·일시정지 검증 포함). 실기기 새 빌드 검증은 별도다.
+- 기존 로컬 서버 영상을 읽기 전용으로 사용한 API 36 전용 AVD의 `LocalMediaTest#sevenVideosRenderAndRecognizeAudio` 1/1 PASS(7개 영상). 연결된 Galaxy SM-S908N에 Debug APK를 `install -r`로 갱신하고 앱 실행·기존 USB reverse 유지 확인. 실기기에서 오버레이 터치 동작과 오디오 청취는 NOT_RUN.
