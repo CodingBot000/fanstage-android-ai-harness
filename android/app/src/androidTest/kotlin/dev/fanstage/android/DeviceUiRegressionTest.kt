@@ -138,6 +138,12 @@ class DeviceUiRegressionTest {
         val ownBubble = rule.onAllNodesWithTag("chat_bubble_own")[0].getUnclippedBoundsInRoot()
         val otherBubble = rule.onAllNodesWithTag("chat_bubble_other")[0].getUnclippedBoundsInRoot()
         assertTrue("own and other bubbles must align to opposite sides", ownBubble.left > otherBubble.left && ownBubble.right > otherBubble.right)
+        rule.onNodeWithTag("chat_avatar_other").assertExists()
+        val transcript = rule.onNodeWithTag("chat_messages").getUnclippedBoundsInRoot()
+        assertTrue(
+            "short incoming bubble must wrap content instead of reserving 80% of the transcript",
+            otherBubble.width.value < transcript.width.value * 0.75f,
+        )
         rule.onNodeWithTag("room_back").performClick()
         rule.onNodeWithTag("rooms_content").assertExists()
         rule.waitUntil(10_000) { findPlayer(rule.activity.findViewById(android.R.id.content)) == null }
