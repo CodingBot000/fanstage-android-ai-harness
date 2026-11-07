@@ -1,97 +1,133 @@
-# FanStage — Native Android Fan Experience
+# FanStage
 
-FanStage는 **Kotlin·Jetpack Compose로 구현한 가상의 아티스트 팬 커뮤니티 Android 포트폴리오**입니다. Discover·Community·Media·Messages를 탐색하고, 기존 Media3 HLS 재생과 채팅 화면으로 이어집니다. 기본 데이터와 DM·좋아요·댓글은 로컬 Fake이며, 실제 WebSocket/HTTP·Spring Boot·PostgreSQL 연동은 별도의 로컬 개발 서버에서 검증했습니다. 실제 방송·운영 팬 서비스는 아닙니다.
+**Native Android Media & Realtime Messaging — Engineering Portfolio**
 
-**현재 상태: Portfolio Ready — 프리미엄 Compose UX + 11개 모듈**. 기본 기술 코어 [PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36)에 이어, 비주얼 개편·기능별 모듈 분리 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)가 병합됐습니다. 공개 APK 없이 소스와 로컬 빌드 절차를 제공합니다. [최종 아키텍처 기록](docs/specs/ARCH-001-feature-modularization.md), [v0.1 기술 코어의 검증·한계](docs/reviews/M8-final-readiness.md).
+FanStage는 가상의 팬 커뮤니티를 배경으로 **미디어 재생, 실시간 메시징, Android 앱 아키텍처, AI 보조 개발의 품질 검증**을 다루는 Kotlin 기반 Android 프로젝트입니다. 기능을 나열하는 데 그치지 않고, 네트워크 장애와 비동기 상태 경합을 재현하고 설계·테스트·CI 증거로 해결 과정을 설명하는 데 초점을 맞췄습니다.
 
-## v0.1 핵심 구현과 검증
+**핵심 기술:** Kotlin · Jetpack Compose · Coroutines / Flow · MVVM / UDF · Multi-module · AndroidX Media3 · WebSocket / HTTP · Spring Boot · PostgreSQL · GitHub Actions · Codex
 
-- **플레이어:** Media3 HLS와 로컬 HTTP MP4 VOD, 실제 트랙 기반 화질·자막 선택, 배속 및 Dialog 전체 화면. 화면 소유 세션과 읽기 전용 UI 상태를 유지하며 전체 화면에서 같은 플레이어를 사용합니다. [PLAYER-001 SDD](docs/specs/PLAYER-001-player-settings-fullscreen.md) · [설계 결정](docs/adr/ADR-0010-player-settings-fullscreen.md).
-- **화면과 채팅:** Kotlin·Jetpack Compose 멀티 모듈의 LIVE/Replay UI, Fake 채팅 및 별도 로컬 WebSocket 서버의 ACK·중복·순서·누락 복구를 구현했습니다.
-- **근거:** PLAYER-001 최종 PR 기준 로컬 단위 56/56과 API 36 전용 AVD 계측 41/41 PASS. 같은 PR의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984158)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227)는 PASS이며 원격 에뮬레이터 및 서버 Android 단계는 **SKIPPED**입니다. 이 수치는 해당 실행 범위와 소스 기준입니다.
-- **PLAYER-002 PiP:** v0.1에는 포함되지 않았으며 향후 확장 후보입니다.
+> **프로젝트 범위:** 학습·검증용 엔지니어링 포트폴리오(v0.1, 소스 공개)입니다. 앱 화면의 LIVE는 데모 UI이며, 기본 영상은 합성된 사전 녹화 HLS VOD입니다. 기본 채팅은 Fake 데이터로 동작하고, 실제 WebSocket/HTTP 통합은 별도의 로컬 개발 서버로 검증했습니다. 상용 방송 서비스나 운영 트래픽을 제공·재현한 프로젝트는 아닙니다.
 
-[합성 자막 화면](docs/evidence/player-001/caption.png) · [세로 영상](docs/evidence/player-001/portrait.png) · [회전 후 화면](docs/evidence/player-001/post-rotation.png). 캡처와 데모의 에뮬레이터 UI·폰트 및 Git 이력의 과거 키보드 구간은 [권리 감사](docs/reviews/M8-license-audit.md)에 남은 한계가 있습니다.
+## 앱 미리보기
 
-## Compose 화면 미리보기
-
-UX-007~011에서 에뮬레이터로 캡처한 화면입니다. 가상 아티스트·합성 콘텐츠와 로컬 Fake 데이터로 구성했습니다. 해당 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922626), [실제 WebSocket CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922691) 및 Codex 독립 리뷰는 최종 PR head에서 PASS했습니다.
-
-| Discover Home | Community Feed |
-|:--:|:--:|
-| ![Discover Home — Hero 및 추천 콘텐츠](docs/evidence/ux-008/discover.png) | ![Community — 아티스트와 피드](docs/evidence/ux-009/artist.png) |
+| Discover | Community |
+|:---:|:---:|
+| ![Discover: 가상 아티스트와 콘텐츠 탐색](docs/evidence/ux-008/discover.png) | ![Community: 아티스트 커뮤니티와 피드](docs/evidence/ux-009/artist.png) |
 | Media | Messages |
-| ![Media — 영상 그리드와 필터](docs/evidence/ux-010/media.png) | ![Messages — 로컬 대화 목록](docs/evidence/ux-011/messages.png) |
+| ![Media: 영상 목록과 필터](docs/evidence/ux-010/media.png) | ![Messages: 로컬 대화 목록](docs/evidence/ux-011/messages.png) |
 
-[LIVE 데모](docs/evidence/ux-010/live.png) · [Replay](docs/evidence/ux-010/replay.png) · [Post](docs/evidence/ux-009/post.png) · [Conversation](docs/evidence/ux-011/conversation.png) · 모든 아티스트와 콘텐츠는 가상입니다. 과거 UX-006 화면은 [기존 기록](docs/specs/UX-006-integration.md)에 보존합니다.
+[![Compose UI 시연 영상 미리보기](docs/portfolio/media/ux-premium-demo-preview.png)](docs/portfolio/media/ux-premium-demo.mp4)
 
-| 무엇을 만들었나 | 어떤 문제를 다뤘나 | 어떻게 확인했나 |
+**[UI 탐색 시연 (16초)](docs/portfolio/media/ux-premium-demo.mp4)** · [LIVE 화면](docs/evidence/ux-010/live.png) · [Replay 화면](docs/evidence/ux-010/replay.png) · [채팅 화면](docs/evidence/ux-011/conversation.png)
+
+[![Media3 재생·Fake 채팅 시연 미리보기](docs/portfolio/media/offline-demo-preview.png)](docs/portfolio/media/offline-demo.mp4)
+
+**[재생·채팅 시연 (23초)](docs/portfolio/media/offline-demo.mp4)** — 합성 VOD 재생과 Fake 채팅 전송을 보여줍니다. 두 영상에는 실제 네트워크 장애 주입이나 원격 LIVE 방송이 포함되지 않습니다. 화면과 콘텐츠는 데모용 가상 데이터입니다.
+
+## Engineering Highlights
+
+### 1. 불확실한 메시지 전송 결과와 중복 방지
+
+네트워크가 불안정할 때 **서버는 저장했지만 클라이언트는 ACK를 받지 못하는 상황**을 별도로 다뤘습니다. ACK 타임아웃을 곧바로 전송 실패로 확정하지 않고 Pending 상태를 유지하며, 동일한 `clientMessageId`로 재전송했을 때 서버가 중복 저장·방송하지 않도록 멱등 처리합니다.
+
+로컬 TCP 프록시에서 ACK와 발신자 echo를 유실시키고, Android 상태 전이·서버 저장 결과·다른 구독자의 이벤트를 확인했습니다. 이는 네트워크 전 구간의 *exactly-once delivery*를 보장한다는 뜻이 아닙니다.
+
+### 2. 재연결 시 메시지 순서·누락·오래된 응답 처리
+
+WebSocket 이벤트는 순서가 뒤바뀌거나, 재연결 중 HTTP Snapshot과 겹칠 수 있습니다. 룸 단위 `serverSequence`를 기준으로 중복 제거·누락 탐지·보충을 처리하고, 이전 룸이나 과거 Snapshot의 늦은 응답이 최신 화면 상태를 덮어쓰지 않도록 했습니다.
+
+단위 테스트에서 지연·중복·역순을 결정적으로 재현하고, 별도 로컬 서버·프록시·Android 에뮬레이터 통합 테스트로 일부 경로를 검증했습니다. 물리 네트워크 전환과 운영 규모의 부하는 검증 범위에 포함되지 않습니다.
+
+**근거:** [장애 주입 시나리오와 PASS/부분 PASS/NOT_RUN](docs/specs/M5-fault-recovery.md) · [아키텍처 및 검증 증거](docs/portfolio/architecture-and-evidence.md)
+
+### 3. Media3 플레이어의 상태와 Lifecycle 소유권
+
+AndroidX Media3 기반 HLS VOD 재생, 버퍼링·오류·재시도, 실제 트랙 기준 화질/자막 선택, 배속, 전체 화면을 구성했습니다. 화면과 플레이어 상태의 책임을 구분하고, 전체 화면 전환에서 같은 플레이어를 사용하며 화면 이탈 시 Player·Listener 해제를 검사했습니다.
+
+재생과 채팅은 독립된 경로로 동작하도록 설계했습니다. 화면 재진입·회전·백그라운드 복귀 등 제한된 테스트는 수행했지만, 장시간 메모리 누수가 없음을 입증한 것은 아닙니다.
+
+**근거:** [플레이어 요구사항·검증](docs/specs/PLAYER-001-player-settings-fullscreen.md) · [화질/자막 화면](docs/evidence/player-001/caption.png) · [플레이어 PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47)
+
+### 4. 기능 경계를 분리한 Compose 아키텍처
+
+Discover·Community·Media·Messages·LIVE 화면을 Compose로 구현하고, 기능 모듈과 공통 모델·데이터·아트워크·디자인 시스템을 분리했습니다. 현재 Android 프로젝트는 `app`, 5개 `feature`, 4개 `core`, `macrobenchmark`의 **11개 모듈**로 구성됩니다.
+
+`:app`은 Navigation과 AppContainer를 담당하고, 공통 도메인 모델은 기능 모듈에서 재사용합니다. 모듈화 자체를 성과로 간주하기보다, 기능 간 의존 방향과 `feature → app` 역참조 방지 규칙을 검사하도록 구성했습니다.
+
+**근거:** [모듈 구조·의존 방향](docs/specs/ARCH-001-feature-modularization.md) · [아키텍처 그림](docs/portfolio/architecture-and-evidence.md) · [화면·모듈 개편 PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)
+
+### 5. 실기기 측정과 개선안 철회 결정
+
+실기기(SM-G975N, Android 12)에서 성능 가설 두 가지를 비교했습니다. 수신 이벤트의 ViewModel 수용 구간이 단축된 경우도 있었지만 대조군 프레임 회귀 가능성이 나타났고, 다른 변경에서는 앱 시작 지표가 악화됐습니다. **두 변경 모두 되돌렸으며, 제품 성능 향상을 달성했다고 주장하지 않습니다.**
+
+측정 조건, 각 10회 반복, 비교 수치와 원본 증거의 관리 방식을 기록했습니다. 최적화는 코드 변경 자체가 아니라 비교 가능한 측정과 회귀 판단으로 평가했습니다.
+
+**근거:** [실기기 성능 A/B 실험 및 한계](docs/reviews/M6-002-ab-experiments.md)
+
+## AI-assisted Development & Quality Harness
+
+이 저장소에서 AI 코딩 에이전트는 구현 도구이며, **요구사항의 범위 설정과 검증 책임은 개발 프로세스에 명시적으로 남깁니다.**
+
+```text
+SDD (요구사항·계약·수용 기준)
+   ↓
+Codex 기반 구현 / 리팩토링
+   ↓
+빌드 · Lint · Unit / Integration / UI 테스트
+   ↓
+코드 리뷰 · GitHub Actions 검증
+   ↓
+실기기 검증·장애 재현 (해당 작업에서 가능한 범위)
+   ↓
+PASS / FAIL / NOT_RUN 증거 기록 → 변경 수용 또는 재작업
+```
+
+- **SDD / ADR:** 기능 범위, 정상·장애 시나리오, 아키텍처 변경의 이유와 대안을 문서화합니다.
+- **실행형 검증:** `AGENTS.md`와 Skills는 에이전트 행동 지침이며 품질을 보증하는 장치가 아닙니다. 실제 테스트·Lint·CI 결과를 근거로 판단합니다.
+- **결과 추적:** 검증 대상 커밋, 실행 환경, 실패와 미실행 사유를 구분해 기록합니다. 자동 리뷰 결과는 테스트나 사람의 최종 판단을 대체하지 않습니다.
+- **실제 적용:** UI/모듈 변경 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38), 플레이어 [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47), 채팅 UX·연동 [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53)에 변경·검증 기록을 연결했습니다.
+
+상세한 설계·검증 자료는 [개발 워크플로 ADR](docs/adr/ADR-0001-development-workflow.md), [테스트 매트릭스](docs/test-matrix.md), [실행 기록](harness/build-log.md)을 참고하세요.
+
+## 검증 증거와 범위
+
+| 검증 영역 | 확인한 내용 | 근거 |
 |---|---|---|
-| Compose 4개 메인 탭과 커뮤니티·게시물·대화·LIVE/Replay 상세, Media3 플레이어, Fake 및 실제 로컬 WebSocket 채팅 | 여러 화면의 상태·탭 복원, ACK 유실·중복·순서 역전·누락 복구, 화면 이탈 시 자원 해제 | UX 계측 14건 및 서버 장애 주입, CI·에뮬레이터·실기기에서 수행한 범위별 검증 |
+| Android 빌드·단위·계측 | PLAYER-001 PR 기준 로컬 단위 56/56, API 36 전용 AVD 계측 41/41 PASS | [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) · [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984158) |
+| WebSocket/DB 통합 | PostgreSQL, ACK 유실·재전송, 지연된 Snapshot과 재연결의 테스트 경로 | [장애 주입 결과](docs/specs/M5-fault-recovery.md) · [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) |
+| 최근 채팅 UX 변경 | PR #53 기준 Debug 빌드·Lint·단위 56/56, 로컬 API 36 AVD 계측 28/28 PASS | [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) |
+| 성능 실험 | 동일 기기의 반복 측정에서 개선안 회귀 가능성·시작 지표 악화를 관찰하고 철회 | [A/B 측정 보고서](docs/reviews/M6-002-ab-experiments.md) |
 
-### UX 화면 시연
+위 숫자는 **각 PR·측정 시점과 환경에서 수행한 범위**입니다. 일부 GitHub Actions 실행에서는 원격 에뮬레이터 또는 서버 측 Android 계측 단계가 **SKIPPED**였으며, 이를 전체 계측 테스트 통과로 해석하지 않습니다.
 
-[![UX 화면 시연 미리보기](docs/portfolio/media/ux-premium-demo-preview.png)](docs/portfolio/media/ux-premium-demo.mp4)
+## 로컬 실행
 
-[16초 무음 시연 보기](docs/portfolio/media/ux-premium-demo.mp4) · 전용 에뮬레이터에서 Discover·Community·Media·Messages 탭을 캡처했습니다. 실제 방송이나 서버 전달 장면은 포함하지 않습니다.
+**필요 환경:** JDK 17, Android Studio 또는 Android SDK (platform 37, build-tools 36.0.0). Android SDK 경로는 로컬 환경에 맞게 설정합니다.
 
-### 기존 LIVE/Chat 코어 시연 (UX 확장 이전 영상)
-
-[![합성 VOD와 Fake 채팅 시연 미리보기](docs/portfolio/media/offline-demo-preview.png)](docs/portfolio/media/offline-demo.mp4)
-
-[23초 무음 시연 영상 보기](docs/portfolio/media/offline-demo.mp4) · 에뮬레이터의 로컬 검증 전용 RC, 합성 영상과 Fake 채팅. 실제 네트워크 장애 장면은 포함하지 않습니다.
-
-## 빠른 시작
-
-JDK 17과 Android SDK platform 37/build-tools 36.0.0이 필요합니다. Android Studio에서 `android/`를 열거나 해당 디렉터리에서 실행합니다.
-
-```sh
-export ANDROID_HOME="$HOME/Library/Android/sdk" # SDK 경로에 맞게 변경
+```bash
+export ANDROID_HOME="$HOME/Library/Android/sdk"  # macOS 예시
 cd android
 ./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest :core:data:test --no-daemon
 ```
 
-Android Studio의 `app` Debug 구성을 에뮬레이터에 실행하면 Discover 홈에서 Community·Media·Messages를 탐색하고 LIVE/Replay 상세로 진입할 수 있습니다. 영상은 프로젝트에 포함된 무음 합성 VOD이고, 채팅은 장치 내부의 Fake 서버입니다. Debug 빌드는 Android 개발용 서명을 사용하며 처음 빌드하는 환경에서는 Android 도구가 Debug 키를 생성할 수 있습니다. **공개 APK는 제공하지 않습니다.** 다른 OS 설정과 자세한 빌드 안내는 [Android README](android/README.md)를 참조하세요.
+Android Studio에서 `android/` 디렉터리를 열고 `app` Debug 구성을 에뮬레이터 또는 기기에서 실행합니다. 기본 모드는 **Offline fake**이며 외부 서버 없이 UI 탐색, 앱에 포함된 합성 HLS VOD 재생과 Fake 채팅을 체험할 수 있습니다. Debug 빌드에는 개발용 서명이 적용됩니다. **공개 APK는 제공하지 않습니다.**
 
-터미널에서 실행하려면 부팅된 **새 에뮬레이터**를 사용하고 `android/`에서 다음 명령을 실행합니다. `adb devices -l`에서 확인한 에뮬레이터 ID를 지정하세요. `install`은 같은 패키지가 이미 있으면 실패하며, 기존 앱을 교체하지 않습니다.
+실제 로컬 WebSocket/HTTP·PostgreSQL 연동과 선택적 MP4 VOD 스트리밍에는 추가 서버 설정이 필요합니다. MP4 파일은 저장소에 포함되지 않으며 사전 녹화 Progressive VOD로, 실제 LIVE HLS가 아닙니다.
 
-```sh
-adb devices -l
-export ANDROID_SERIAL=emulator-5554 # 실제 에뮬레이터 ID로 변경
-adb -s "$ANDROID_SERIAL" install app/build/outputs/apk/debug/app-debug.apk
-adb -s "$ANDROID_SERIAL" shell am start -n dev.fanstage.android/.MainActivity
-```
+자세한 명령과 환경 설정: [Android 실행 안내](android/README.md) · [로컬 채팅/미디어 서버 안내](backend/chat-server/README.md)
 
-Debug 상세 화면에는 로컬 서버 개발 설정이 먼저 나타납니다. 기본값은 `Offline fake`이며 아래로 스크롤하면 Fake 채팅 입력과 전송 버튼을 볼 수 있습니다. 위 시연 영상은 개발 설정이 없는 로컬 검증 전용 rcLocal 화면입니다.
+## 적용 범위와 남은 한계
 
-실제 WebSocket 채팅은 별도 로컬 서버, Docker와 임시 테스트 자격값이 필요합니다. 실행·정리 절차는 [서버 README](backend/chat-server/README.md)에 있습니다. 개발 서버 선택은 Debug 전용이며 운영용 인증·TLS 구성이 아닙니다.
+- 원격 실시간 LIVE 방송 및 상용 인증/TLS·대규모 동시접속 운영은 구현·검증 범위가 아닙니다.
+- 실기기의 물리 네트워크 전환, 실제 저메모리 종료(LMK), 장시간 heap/누수 검사, 운영 환경의 스트리밍 지연은 충분히 검증하지 않았습니다.
+- PiP는 v0.1에 포함되지 않았습니다. 별도 로컬 실험에서 빠른 강제 스택 제거 후 Player 해제 결함이 남아 확장을 보류했습니다.
+- 성능 A/B 변경은 되돌렸습니다. 원본 실기기 trace는 공개하지 않으며, 환경·집계값과 manifest 해시를 기록했습니다.
+- 공개 소스와 시연 자산의 제3자 라이선스·권리 검토에는 남은 확인 항목이 있습니다. 자세한 내용은 [릴리스 검증 범위](docs/reviews/M8-final-readiness.md)와 [라이선스 감사](docs/reviews/M8-license-audit.md)를 참조하세요.
 
-## 설계와 검증
+## 문서
 
-현재 병합된 `main`은 `:app`의 Navigation·AppContainer를 중심으로 `:feature:discover`, `:feature:community`, `:feature:media`, `:feature:messages`, 기존 `:feature:live`와 `:core:model`, `:core:data`, `:core:artwork`, `:core:designsystem`으로 구성합니다. [모듈 경계 및 검증 결과](docs/specs/ARCH-001-feature-modularization.md)을 참조하세요.
-
-- [UX-001~006 통합 기록](docs/specs/UX-006-integration.md) — 확장 화면·로컬 계측 14건·서버 연동·남은 한계.
-- [UX 통합 최종 PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36) — Android·서버 CI PASS와 독립 리뷰 P2 두 건 수정 및 해결 기록.
-- [아키텍처와 검증 상세](docs/portfolio/architecture-and-evidence.md) — v0.1 Player·Chat·서버의 책임과 복구 경계.
-- [실행 시연과 장애 주입 안내](docs/portfolio/demo-and-faults.md) — 화면에서 직접 확인 가능한 흐름과 별도 테스트의 장애·복구 증거.
-- [포트폴리오 소개 문안](docs/portfolio/summary.md) — 구현과 검증 범위를 명시한 한 줄·상세 소개.
-- [M5 장애 검증](docs/specs/M5-fault-recovery.md) — ACK 유실, 소켓 단절, 지연 snapshot과 테스트별 범위.
-- [M6 성능 실험](docs/reviews/M6-002-ab-experiments.md) — 실기기 비교 조건과 결과. 두 변경은 되돌렸으며 제품 성능 개선은 입증하지 못했습니다.
-- [M8 릴리스 후보 검증](docs/reviews/M8-001-release-candidate.md) — 로컬 검증 전용 RC와 서명·공개물 검토의 한계.
-- CI 증거: [Android build/unit·에뮬레이터](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42003790103), [PostgreSQL·WebSocket 장애 및 Android 연동](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42003790152). 두 실행은 M8-001 PR head의 결과이며 실제 범위는 각 로그를 따릅니다.
-
-## 한계와 현재 상태
-
-PLAYER-002 PiP 로컬 실험은 **DEFERRED — v0.2 Candidate**입니다. API 30 실제 시스템 닫기에서는 release를 관찰했지만, 별도의 빠른 강제 스택 제거 후 ExoPlayer가 15초 내 해제되지 않는 P1은 미해결입니다. [검증 기록](harness/build-log.md).
-
-원격 네트워크 LIVE, 실제 저메모리 종료, 장시간 heap, 실기기 네트워크 전환과 운영 인증·TLS는 검증하지 않았습니다. 합성 트래픽은 실제 동시접속자 수가 아닙니다. 실제 WebSocket CI에서 발생한 20초 타임아웃의 원인은 미확정이며 [PR #30 한정 위험 수용 기록](docs/reviews/M8-001-risk-exception-proposal.md)에 재조사 조건을 남겼습니다. 공개 배포 서명은 미결정이며, 시연 영상의 제3자 UI 사용 권리 등 [라이선스 감사의 미확인 항목](docs/reviews/M8-license-audit.md)이 남아 있습니다.
-
-현재 작업은 [STATUS](docs/STATUS.md), 전체 범위는 [MASTER_PLAN](docs/MASTER_PLAN.md)을 확인하세요.
+[아키텍처·검증 근거](docs/portfolio/architecture-and-evidence.md) · [시연과 장애 테스트](docs/portfolio/demo-and-faults.md) · [현재 개발 상태](docs/STATUS.md) · [기능별 SDD](docs/specs/) · [설계 결정 ADR](docs/adr/)
 
 ## 라이선스
 
-프로젝트에서 직접 작성한 코드와 문서는 [MIT License](LICENSE)를 따릅니다. Gradle Wrapper와 그 밖의 제3자 구성요소는 각자의 조건이 적용되며, 포함 범위와 미확인 시연 화면 권리는 [제3자 고지](THIRD_PARTY_NOTICES.md)와 [라이선스 감사](docs/reviews/M8-license-audit.md)를 확인하세요.
-
-### Local MP4 VOD demonstration
-
-The Debug emulator can play seven privately supplied local MP4 files over HTTP Progressive VOD while retaining the synthetic HLS demo. This is prerecorded VOD, not live HLS or adaptive streaming. See [local server setup](backend/chat-server/README.md#optional-local-mp4-vod); video files are not included in the repository.
+직접 작성한 코드·문서는 [MIT License](LICENSE)를 따릅니다. Gradle Wrapper와 기타 제3자 구성요소는 별도 조건이 적용됩니다. [제3자 고지](THIRD_PARTY_NOTICES.md) 및 [라이선스 감사](docs/reviews/M8-license-audit.md)를 참고하세요.
