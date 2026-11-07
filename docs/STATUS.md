@@ -1,6 +1,8 @@
 # FanStage 작업 현황
 
-- UX-CARD-001: 카드 텍스트 한 줄·말줄임 개선 및 검증 중. [SDD](specs/UX-CARD-001-single-line-cards.md).
+- UX-LIVE-001: LIVE 채팅 모드·개발 설정 접기·말풍선 개선 로컬 검증 완료, PR CI 대기. [SDD](specs/UX-LIVE-001-chat-ui.md).
+
+- UX-CARD-001: 카드 텍스트 한 줄·말줄임 개선 [PR #52](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/52) 병합 완료. [SDD](specs/UX-CARD-001-single-line-cards.md).
 
 - 플레이어 설정 UX 및 채팅 입력 보완 진행: 화질·자막·배속 상태 행과 배속 선택 화면, 간격 축소, 개발 안내 문구 제거, 서버 연결 후 포커스 정리. API 36 전용 AVD 관련 계측 24/24 및 live 단위 56/56 PASS; PR CI는 별도 확인.
 

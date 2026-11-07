@@ -58,6 +58,7 @@ class LocalMediaTest {
         rule.onNodeWithTag("media_grid").performScrollToNode(hasTestTag("media_demo-01"))
         rule.onNodeWithTag("media_demo-01").performClick()
         rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("chat_settings_toggle").performScrollTo().performClick()
         InstrumentationRegistry.getArguments().getString("fanServerPort")?.let { port ->
             rule.onNodeWithTag("chat_endpoint").performScrollTo().performTextClearance()
             rule.onNodeWithTag("chat_endpoint").performTextInput("http://10.0.2.2:$port")
@@ -69,6 +70,8 @@ class LocalMediaTest {
         rule.onNodeWithTag("chat_send").performClick()
         rule.waitUntil(30_000) { rule.onAllNodesWithText("Local VOD test").fetchSemanticsNodes().isNotEmpty() }
         rule.waitUntil(30_000) { rule.onAllNodesWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_sent)).fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("chat_use_fake").performScrollTo().performClick()
+        rule.onNodeWithTag("chat_use_fake").assertIsSelected()
     }
 
     @Test fun firstHomeAndMediaCardsPlayLocalVideo() {

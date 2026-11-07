@@ -708,3 +708,10 @@
 ### UX-CARD-001 카드 한 줄 표시 (2026-11-07)
 - 공통 카드 텍스트를 글꼴 배율에 맞는 단일 줄·말줄임으로 변경하고 Discover Hero·아티스트·Replay 및 룸 목록 텍스트도 한 줄로 제한. 상세 본문과 썸네일은 유지했다.
 - Debug build·lint·단위 및 API 36 전용 AVD의 DeviceUiRegressionTest·DiscoverTest·UiContractTest 17/17 PASS. Media 카드 짧은/긴 텍스트 높이와 한 줄 말줄임 1×·2×, 메시지 카드 높이 2× 및 Discover 2× 표시 확인. 화면별 전수·전후 높이 수치·별도 캡처·실기기 검증 NOT_RUN.
+
+
+### UX-LIVE-001 LIVE 채팅 화면 (2026-11-07)
+- 상태 기반 데모/로컬 모드 선택, 기본 접힘 개발 설정, 인증 성공 전 임시 transport 연결 확인, 좌우 말풍선 및 데모 용어를 적용했다. 기존 pending 차단·전송·ACK·스크롤 로직은 보존. 화면 회전 시 주소·펼침 상태는 복원하되 토큰은 저장하지 않는다.
+- Debug 빌드·lint·live 단위 56/56 및 API 36 전용 AVD 최종 계측 28/28 PASS; 별도 Activity 재생성·실제 회전과 320dp·2배 글꼴 검사 2/2 및 실제 서버→데모 전환 1/1 PASS. 실제 서버 테스트는 기존 자격을 재사용해 격리된 18766 빈 DB에서 실행, 영상은 기존 18765 서버에서 읽기만 했다. 테스트 환경만 정리하고 기존 서버 200 확인.
+- [변경 전](../docs/evidence/ux-live-001/before.png)·[변경 후](../docs/evidence/ux-live-001/after.png)는 전용 AVD 합성 데이터 캡처. 전체 기기·모든 2× 문자 클리핑 및 TalkBack, 실제 방송은 NOT_RUN. 원격 에뮬레이터 정책은 유지한다.
+- UX-CARD-001은 PR #52 병합 `c328664`, main Android·서버 CI PASS; 원격 에뮬레이터 SKIPPED.

@@ -1,6 +1,23 @@
 package dev.fanstage.android.feature.live.chat
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Surface
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.FilterChip
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.coroutineScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +30,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.focus.onFocusChanged
 import dev.fanstage.android.core.designsystem.SendIcon
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -48,7 +66,11 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
     val listState = rememberLazyListState()
     val locale = LocalConfiguration.current.locales[0]
     val focusManager = LocalFocusManager.current
-    var endpoint by remember { mutableStateOf("http://10.0.2.2:18765") }
+    var endpoint by rememberSaveable { mutableStateOf("http://10.0.2.2:18765") }
+    var settingsExpanded by rememberSaveable { mutableStateOf(false) }
+    var checking by remember { mutableStateOf(false) }
+    var checkJob by remember { mutableStateOf<Job?>(null) }
+    val scope = rememberCoroutineScope()
     var token by remember { mutableStateOf("") }
     var configError by remember { mutableStateOf(false) }
     var followLatest by remember(state.roomId) { mutableStateOf(true) }
@@ -70,42 +92,66 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
     Column(Modifier.fillMaxWidth().testTag("chat_panel")) {
         Text(stringResource(R.string.chat_title))
         if (developmentControls) {
-            Text(stringResource(if (state.localServer) R.string.chat_mode_real else R.string.chat_mode_fake), Modifier.testTag("chat_mode"))
-            OutlinedTextField(value = endpoint, onValueChange = { endpoint = it }, label = { Text(stringResource(R.string.chat_endpoint)) }, modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_endpoint"))
-            OutlinedTextField(value = token, onValueChange = { token = it }, label = { Text(stringResource(R.string.chat_token)) }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_token"))
-            Column {
-                TextButton(onClick = {
-                    focusManager.clearFocus()
-                    val transport = runCatching { RealChatTransport(endpoint, token, allowInsecure = true) }.getOrNull()
-                    configError = transport == null
-                    if (transport != null && viewModel.replaceTransport(transport)) token = ""
-                }, modifier = Modifier.testTag("chat_use_real")) { Text(stringResource(R.string.chat_use_real)) }
-                TextButton(onClick = { focusManager.clearFocus(); if (viewModel.useOfflineFake()) { token = ""; configError = false } }, modifier = Modifier.testTag("chat_use_fake")) { Text(stringResource(R.string.chat_use_fake)) }
+            Row(Modifier.fillMaxWidth().testTag("chat_mode"), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                FilterChip(selected = !state.localServer, onClick = {
+                    checkJob?.cancel(); checking = false; focusManager.clearFocus()
+                    if (state.localServer && viewModel.useOfflineFake()) { token = ""; configError = false }
+                }, label = { Text(stringResource(R.string.chat_mode_fake), maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis) }, modifier = Modifier.weight(1f).testTag("chat_use_fake"))
+                FilterChip(selected = state.localServer, onClick = { if (!state.localServer) settingsExpanded = true }, label = { Text(stringResource(R.string.chat_mode_real), maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis) }, modifier = Modifier.weight(1f).testTag("chat_select_real"))
             }
-            if (configError) Text(stringResource(R.string.chat_config_error))
+            TextButton(onClick = { if (settingsExpanded) focusManager.clearFocus(); settingsExpanded = !settingsExpanded }, modifier = Modifier.testTag("chat_settings_toggle")) {
+                Text(stringResource(R.string.chat_settings) + if (settingsExpanded) " ▴" else " ▾")
+            }
+            if (settingsExpanded) {
+                OutlinedTextField(value = endpoint, onValueChange = { endpoint = it }, label = { Text(stringResource(R.string.chat_endpoint)) }, modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_endpoint"))
+                OutlinedTextField(value = token, onValueChange = { token = it }, label = { Text(stringResource(R.string.chat_token)) }, visualTransformation = PasswordVisualTransformation(), modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_token"))
+                TextButton(enabled = !checking, onClick = {
+                    focusManager.clearFocus()
+                    val target = endpoint; val credential = token; val room = state.roomId
+                    val probe = runCatching { RealChatTransport(target, credential, allowInsecure = true) }.getOrNull()
+                    configError = probe == null
+                    if (probe != null) {
+                        checking = true
+                        checkJob = scope.launch {
+                            try {
+                                val valid = try {
+                                    withTimeoutOrNull(10_000) {
+                                        coroutineScope {
+                                            val reader = async { probe.events(room).collect {} }
+                                            try { probe.connectionState.first { it == ChatConnectionStatus.CONNECTED }; true }
+                                            finally { reader.cancelAndJoin() }
+                                        }
+                                    } == true
+                                } catch (cancelled: CancellationException) { throw cancelled }
+                                catch (_: Exception) { false }
+                                if (valid) {
+                                    val next = RealChatTransport(target, credential, allowInsecure = true)
+                                    if (viewModel.replaceTransport(next)) { token = ""; settingsExpanded = false; configError = false }
+                                } else configError = true
+                            } finally { probe.close(); checking = false }
+                        }
+                    }
+                }, modifier = Modifier.testTag("chat_use_real")) { Text(stringResource(if (checking) R.string.chat_connecting else R.string.chat_use_real)) }
+            }
+            if (configError) Text(stringResource(R.string.chat_config_error), Modifier.testTag("chat_connection_error"))
             if (state.switchBlocked) Text(stringResource(R.string.chat_switch_blocked))
         }
         LazyColumn(Modifier.fillMaxWidth().height(200.dp).testTag("chat_messages"), state = listState) {
             items(state.messages, key = { it.key }) { message ->
-                Column(Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag("chat_message")) {
-                    Text(stringResource(if (message.isOwn) R.string.chat_you else R.string.chat_fixture))
-                    val fixtureResource = if (state.fictionalFixtures && !message.isOwn) fictionalMessageResource(message.key) else null
-                    val displayText = if (fixtureResource != null) stringResource(fixtureResource) else message.text
-                    Text(displayText)
-                    formatChatTimestamp(message.sentAt, locale, TimeZone.getDefault())?.let {
-                        Text(stringResource(R.string.chat_timestamp, it), Modifier.testTag("chat_timestamp"))
-                    }
-                    if (message.isOwn) {
-                        Text(stringResource(when (message.delivery) {
-                            Delivery.PENDING -> R.string.chat_pending
-                            Delivery.SENT -> R.string.chat_sent
-                            Delivery.FAILED -> R.string.chat_failed
-                        }))
-                        if ((message.delivery == Delivery.FAILED || message.isUncertain) && message.clientMessageId != null) {
-                            Column {
-                                TextButton(onClick = { viewModel.retry(message.clientMessageId) }) { Text(stringResource(R.string.chat_retry_message)) }
-                                if (message.delivery == Delivery.FAILED) {
-                                    TextButton(onClick = { viewModel.dismissFailed(message.clientMessageId) }) { Text(stringResource(R.string.chat_remove_failed)) }
+                Row(Modifier.fillMaxWidth().padding(vertical = 3.dp).testTag("chat_message"), horizontalArrangement = if (message.isOwn) Arrangement.End else Arrangement.Start) {
+                    Surface(color = if (message.isOwn) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth(0.8f).testTag(if (message.isOwn) "chat_bubble_own" else "chat_bubble_other")) {
+                        Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), horizontalAlignment = if (message.isOwn) Alignment.End else Alignment.Start) {
+                            if (!message.isOwn) Text(stringResource(if (state.fictionalFixtures) R.string.chat_fixture else R.string.chat_participant), style = MaterialTheme.typography.labelSmall)
+                            val fixtureResource = if (state.fictionalFixtures && !message.isOwn) fictionalMessageResource(message.key) else null
+                            Text(if (fixtureResource != null) stringResource(fixtureResource) else message.text)
+                            Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                                formatChatTimestamp(message.sentAt, locale, TimeZone.getDefault())?.let { Text(stringResource(R.string.chat_timestamp, it), Modifier.testTag("chat_timestamp"), style = MaterialTheme.typography.labelSmall) }
+                                if (message.isOwn) Text(stringResource(when (message.delivery) { Delivery.PENDING -> R.string.chat_pending; Delivery.SENT -> R.string.chat_sent; Delivery.FAILED -> R.string.chat_failed }), style = MaterialTheme.typography.labelSmall)
+                            }
+                            if (message.isOwn && (message.delivery == Delivery.FAILED || message.isUncertain) && message.clientMessageId != null) {
+                                Row {
+                                    TextButton(onClick = { viewModel.retry(message.clientMessageId) }) { Text(stringResource(R.string.chat_retry_message)) }
+                                    if (message.delivery == Delivery.FAILED) TextButton(onClick = { viewModel.dismissFailed(message.clientMessageId) }) { Text(stringResource(R.string.chat_remove_failed)) }
                                 }
                             }
                         }
