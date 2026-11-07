@@ -80,4 +80,7 @@
     <string name="local_server_vod">Local server video streaming · prerecorded</string>
     <string name="chat_settings">Development settings</string>
     <string name="chat_participant">Participant</string>
+    <string name="vod_chat_unavailable">Chat is not available for replay videos.</string>
+    <string name="live_demo_recording">LIVE demo · chat with a local prerecorded stream</string>
+    <string name="benchmark_stream">Benchmark · test video</string>
 </resources>
