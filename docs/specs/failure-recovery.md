@@ -1,27 +1,27 @@
-# Failure Injection & Recovery · 테스트 계약
+# 장애 주입 및 복구 · 테스트 시나리오
 
-단순한 성공 시나리오 외에 **결과 불명, 이전 이벤트, 순서 역전과 재연결**을 재현할 수 있도록 Fake transport·TCP 프록시·격리 PostgreSQL과 테스트용 HLS fixture를 사용합니다.
+FanStage는 Fake transport, 격리된 Spring Boot·PostgreSQL 서버, 테스트용 TCP 프록시와 HLS fixture를 사용해 **정상 응답뿐 아니라 유실·지연·중복·재연결 상황**을 재현합니다.
 
-| ID | 주입 상황 | 검증한 동작과 범위 |
+| 시나리오 | 주입 조건 | 확인한 동작 |
 |---|---|---|
-| NET-01 | 테스트 서버의 연결 단절/복구 | 재구독·snapshot, Android 소켓 취소 뒤 재연결 대기 및 재시도 상한. 물리 Wi-Fi 토글과 동일한 단일 실험은 아님 |
-| NET-02 | 서버 commit 후 ACK/발신자 echo 유실 | Android Pending 불명 유지, 같은 clientMessageId 재전송, 서버 중복 저장·방송 방지 |
-| NET-03 | 수신 이벤트 순서 역전·중복 | serverSequence 기반 정렬/중복 제거와 누락 cursor 처리 |
-| NET-04 | 재연결 중 룸 변경 | 이전 룸의 늦은 이벤트·요청을 현재 룸 상태에 적용하지 않음 |
-| NET-05 | 지연 HTTP snapshot | 최신 실시간 이벤트와 이전 snapshot을 합칠 때 현재 상태 보존 |
-| NET-06 | 합성 10/50/100 msg/s | Fake/Compose 경로의 메시지 보관·화면 표시 상한 검사. 운영 네트워크 부하 결과는 아님 |
-| MEDIA-01 | HLS segment 오류/지연 | Player 오류·재시도 UX, 채팅과 별개인 재생 수명 경계 |
-| LIFE | 화면 이탈·재진입·재생성 | Player/Listener/Collector, coroutine 취소와 채팅 transport 정리 경로 |
+| NET-01 · 연결 단절 | 테스트 서버의 10초 단절 및 별도 Android 소켓 취소 | 재구독·HTTP snapshot 복구 경로, 재연결 대기와 재시도 제한 |
+| NET-02 · ACK 유실 | 서버 commit 이후 ACK 및 발신자 echo 유실 | Pending 유지·같은 `clientMessageId` 재전송·서버 중복 저장 방지 |
+| NET-03 · 중복/역순 | 수신 이벤트 순서 역전과 중복 | `serverSequence` 기준 정렬·중복 제거·누락 탐지 |
+| NET-04 · 룸 전환 | 재연결 중 다른 채팅방으로 이동 | 이전 룸의 지연 응답을 현재 상태에 반영하지 않음 |
+| NET-05 · 지연 snapshot | WebSocket 이벤트보다 늦게 HTTP snapshot 응답 | 최신 이벤트 보존·중복 제거·누락 cursor 관리 |
+| NET-06 · 메시지 급증 | 가상시간 기반 10/50/100 msg/s 합성 이벤트 | Fake/Compose 경로의 보관·표시 메시지 상한 확인 |
+| MEDIA-01 · 미디어 오류 | HLS 세그먼트 지연·오류 | Player 오류·재시도 UI와 채팅의 독립성 |
+| LIFE · 화면 수명 | 이탈·재진입·화면 재생성 | Player/Listener/Collector 및 채팅 구독 정리 |
 
-## 핵심 판단
+## 복구 설계의 핵심
 
-ACK가 없다는 사실만으로 저장 실패를 의미하지 않습니다. 클라이언트는 동일 멱등 ID로 재전송하거나 서버 상태를 확인해야 하며, 재연결 후에는 serverSequence 기반으로 빠진 범위를 보충해야 합니다. 뷰가 바뀐 뒤 늦은 응답이 들어오더라도 현재 화면을 훼손하면 안 됩니다.
+ACK가 없어도 서버 저장은 성공했을 수 있으므로, 클라이언트는 동일 메시지 ID로 재전송하거나 저장 결과를 확인합니다. 재접속 후에는 서버 순번을 기준으로 빠진 범위를 보충합니다. 화면이 바뀐 뒤 도착한 과거 응답도 현재 상태와 분리합니다.
 
-## Reproduction / Evidence
+## 재현·검증 자료
 
-- [서버 GitHub Actions](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227)는 격리 DB·WebSocket 및 fault 테스트를 실행합니다.
-- [서버 테스트 스크립트](../../backend/chat-server/tests/)는 통합·장애 주입을 재현합니다.
-- [Android 계측 테스트](../../android/app/src/androidTest/kotlin/dev/fanstage/android/)는 실제 Android의 UI/transport/Player 상태를 검증합니다.
-- PR별 테스트 수와 로컬/CI 실행 구분은 [검증 인덱스](../verification.md)에 있습니다.
+- [서버 GitHub Actions](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227): 격리 DB·WebSocket·장애 주입 검사
+- [서버 테스트 코드](../../backend/chat-server/tests/): 통합 테스트와 프록시 장애 주입
+- [Android 계측 코드](../../android/app/src/androidTest/kotlin/dev/fanstage/android/): 화면·Transport·Player 테스트
+- [검증 결과 요약](../verification.md): PR별 테스트 수와 실행 환경
 
-위 각 경로의 PASS는 기록된 fixture·환경·커밋 범위의 결과이며, 운영 서버·실물 네트워크·장시간 리소스 안정성의 전수 보증은 아닙니다.
+NET-06은 합성 이벤트 기반의 처리·버퍼 정책 검증이며 운영 네트워크 부하 측정과는 구분합니다. NET-01의 서버 단절과 Android 소켓 취소도 각각의 테스트 경로에서 확인했습니다.

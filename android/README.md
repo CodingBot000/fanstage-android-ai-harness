@@ -1,44 +1,46 @@
-# FanStage Android · Build & Test
+# Android 앱 빌드 및 테스트
 
-## Project
+## 프로젝트 구성
 
-**Kotlin / Jetpack Compose / Coroutines / Flow / MVVM-UDF / Media3**, 11 Gradle modules:
+FanStage는 **Kotlin, Jetpack Compose, Coroutines/Flow, MVVM/UDF, Media3**를 사용하며 11개 Gradle 모듈로 구성됩니다.
 
-- **app**: Navigation, app assembly
-- **feature**: discover, community, media, messages, live
-- **core**: model, data, artwork, designsystem
-- **macrobenchmark**: separate release-like performance fixtures
+- `app`: Navigation과 앱 의존성 조립
+- `feature`: discover, community, media, messages, live
+- `core`: model, data, artwork, designsystem
+- `macrobenchmark`: 성능 계측용 독립 모듈
 
-The default Debug application runs without a server using fictional content, synthetic HLS VOD and Fake chat. A Debug-only transport selector can connect to the local Spring Boot WebSocket/HTTP server.
+기본 Debug 앱은 가상 콘텐츠, 합성 HLS VOD와 Fake 채팅을 사용해 서버 없이 실행됩니다. LIVE 화면의 개발 설정에서는 로컬 Spring Boot WebSocket/HTTP 서버를 선택해 채팅 연동을 테스트할 수 있습니다.
 
-## Requirements
+## 준비 환경
 
-- JDK 17 and Android Studio or command-line Android SDK
-- Android SDK platform **37**, Build Tools **36.0.0**
-- Gradle wrapper **9.5.0** (included)
-- Android **minSdk 24**, **targetSdk 36**, **compileSdk 37**
+- JDK 17, Android Studio 또는 Android SDK
+- Android SDK Platform **37**, Build Tools **36.0.0**
+- 저장소에 포함된 Gradle Wrapper **9.5.0**
+- Android `minSdk 24`, `targetSdk 36`, `compileSdk 37`
 
-Set ANDROID_HOME or a local.properties SDK path.
+`ANDROID_HOME`을 설정하거나 버전 관리에서 제외한 `local.properties`에 SDK 위치를 지정합니다.
+
+저장소 루트에서:
 
 ~~~bash
 cd android
 ./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest :core:data:test --no-daemon
 ~~~
 
-Open the **android/** directory in Android Studio and install the Debug variant. Test-specific synthetic HLS/MP4/WebVTT fixtures are bundled under androidTest assets; the ordinary app contains a separate synthetic HLS VOD.
+Android Studio에서는 `android/` 디렉터리를 열어 Debug 앱을 설치합니다.
 
-## Test scope and reference
+## 기능별 테스트
 
-- [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47): Media3 source revision — Unit 56/56, local API 36 instrumentation 41/41.
-- [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53): chat/transport source revision — Unit 56/56, local API 36 instrumentation 28/28.
-- [PR #59](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59): IME/UI source revision — Unit 62/62, local API 36 instrumentation 24/24, physical Galaxy instrumentation 3/3.
+| 주요 검증 | 기록 |
+|---|---|
+| Media3 재생·화질/자막·전체 화면 | [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) · 단위 56/56, 로컬 API 36 계측 41/41 |
+| 채팅 연결·상태·UI | [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) · 단위 56/56, 로컬 API 36 계측 28/28 |
+| 입력창·키보드·화면 위치 | [PR #59](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59) · 단위 62/62, 로컬 API 36 관련 계측 24/24, 실기기 3/3 |
 
-Android CI performs compile, lint, unit, module-boundary and manifest checks. The Android emulator jobs are **not part of the automatic PR gate**; device instrumentation results above were produced locally. See [verification](../docs/verification.md) for the distinction.
+테스트용 합성 다중 화질 HLS·MP4·WebVTT는 `androidTest` 자산에 포함되어 있습니다. 일반 앱에는 별도의 합성 HLS VOD가 포함됩니다. 위 계측 결과는 로컬 AVD·실기기에서 실행한 결과이며, GitHub Actions는 Android 빌드·Lint·단위 테스트와 코드 경계 검사를 담당합니다.
 
-## Video / live / local server
+## 로컬 미디어·채팅 서버
 
-- In-app synthetic HLS is **VOD**, even when opened from a LIVE-themed demo room.
-- The optional private local MP4 service is HTTP **Progressive VOD**, not a live-streaming server.
-- Local chat integration uses WebSocket events and HTTP snapshots with PostgreSQL; no production credentials or public deployment are required.
+기본 영상은 합성 HLS **VOD**, 별도의 로컬 HTTP 영상은 사전 녹화된 **Progressive MP4 VOD**입니다. LIVE 테마의 데모 룸에서는 재생과 채팅을 함께 다루고, Replay에서는 녹화 영상 재생 화면을 제공합니다.
 
-To start the isolated chat or optional MP4 server, see the [backend README](../backend/chat-server/README.md). Playback and transport contracts: [Media3](../docs/specs/media3-player.md) · [Chat](../docs/specs/realtime-chat.md).
+로컬 서버 준비와 연결 방법은 [서버 실행 안내](../backend/chat-server/README.md), 기능 계약은 [Media3 설계](../docs/specs/media3-player.md)와 [채팅 설계](../docs/specs/realtime-chat.md), 상세 결과는 [검증 기록](../docs/verification.md)을 참조하세요.

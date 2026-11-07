@@ -1,33 +1,31 @@
-# AI-assisted Engineering Workflow
+# AI 코딩 도구를 활용한 개발·검증 과정
 
-FanStage에서 AI 코딩 에이전트는 **구현 도구**, 요구사항·설계·검증 근거는 **개발 프로세스와 실행형 검사**가 담당합니다.
+FanStage는 Codex를 코드 구현·리팩토링에 활용하면서, **요구사항 정의와 품질 검증을 개발자가 관리하는 방식**으로 진행했습니다.
 
 ~~~text
-요구사항·SDD(정상/오류/수용 조건)
-  → Codex 구현·리팩토링
-  → 변경 영향·코드 리뷰
-  → Gradle build / Lint / Unit·Integration·UI
-  → GitHub Actions + 로컬 Android 계측
-  → PR별 증거 확인, 검증 결과 보고
+기능별 요구사항·수용 기준(SDD)
+    → Codex로 구현·리팩토링
+    → 변경 영향 분석·코드 리뷰
+    → 빌드·Lint·단위/통합/계측 테스트
+    → GitHub Actions 확인
+    → 검증 결과를 PR과 연결
 ~~~
 
-## 실행 원칙
+## 적용한 원칙
 
-- **Spec:** 변경할 화면·상태·네트워크 계약, 정상 및 실패 조건과 테스트 계획을 해당 기능 단위로 정의합니다.
-- **Scoped implementation:** Codex가 관련 모듈만 변경하고 API/모듈 경계·수명주기 영향이 있으면 기술 결정을 남깁니다.
-- **Quality gates:** 프로젝트 규칙인 [AGENTS](../AGENTS.md)는 행동 지침이고, [Gradle/CI](test-matrix.md)는 실제 통과 여부를 판단합니다. 지침의 존재만으로 검증되었다고 간주하지 않습니다.
-- **Regression:** 오류를 재현하고 수정한 뒤 관련 테스트·정적 검사와 Android 로컬 계측을 실행합니다. 변동 환경·커밋별 결과를 분리합니다.
-- **Review responsibility:** AI 리뷰는 보조 수단입니다. Android Lifecycle·Coroutine cancellation·오래된 응답·시크릿 등을 사람이 판단할 수 있는 근거로 남깁니다.
+- **작업 범위 정의:** 변경할 화면·모듈, 정상 흐름과 실패 조건, 완료 기준을 기능 단위로 정리합니다.
+- **구현과 설계 판단 분리:** Codex로 코드를 작성하되 아키텍처·네트워크·수명주기 변경은 영향 범위를 검토하고 결정 이유를 남깁니다.
+- **실행 결과 중심 검증:** [AGENTS.md](../AGENTS.md)로 공통 규칙을 제공하고, Gradle·테스트·CI 결과로 완료 여부를 확인합니다.
+- **재현과 회귀 확인:** 실패한 상태 전이·화면 전환·네트워크 이벤트를 테스트로 재현하고 수정 후 관련 경로를 재검증합니다.
+- **코드 리뷰:** Compose 책임, Coroutine 취소, Player/Socket 리소스, 데이터 정합성에 집중해 변경을 검토합니다.
 
-## 구체적 적용
+## 실제 작업 사례
 
-| 실제 PR | 구현·검증 연결 |
+| 변경 | 개발·검증 포인트 |
 |---|---|
-| [#38 Compose 모듈화](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) | 기능/공통 모듈 분리 후 의존 방향·회귀 검사 |
-| [#47 Media3](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) | TrackGroup 설정, 전체 화면·Surface/lifecycle, 56개 단위 및 41개 로컬 계측 |
-| [#53 LIVE 채팅](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) | 연결 인증 확인 후 transport 교체, Pending 보존·UI 회귀 |
-| [#59 IME](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59) | 키보드/화면 이동 계약, 로컬 AVD 및 실기기 회귀 |
+| [PR #38 · Compose 모듈화](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) | 기능/공통 모듈 책임 분리 후 의존성 검사와 회귀 검증 |
+| [PR #47 · Media3](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) | 트랙 설정·전체 화면·Surface 수명주기와 계측 테스트 |
+| [PR #53 · LIVE 채팅](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) | 서버 인증 확인 후 전송 경로 변경, 미확정 메시지 보존 |
+| [PR #59 · 키보드 대응](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59) | IME 표시 중 영상 위치와 입력창 배치, AVD·실기기 회귀 |
 
-**도구 범위:** Codex 실행과 GitHub Actions 기록은 저장소에 남아 있습니다. CLAUDE.md는 다른 에이전트의 공통 규칙 호환 진입점이며, 이 저장소가 Claude Code로 독립 검증까지 완료됐다는 주장에는 사용하지 않습니다.
-
-현재 공개 증거 인덱스는 [harness/build-log](../harness/build-log.md), 아키텍처 선택은 [ADR](adr/)에 있습니다.
+구체적인 PASS 범위와 실행 환경은 [검증 결과](verification.md), 자동화 대상과 실행 정책은 [테스트 매트릭스](test-matrix.md)에 정리했습니다.

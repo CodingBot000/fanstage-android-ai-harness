@@ -11,7 +11,6 @@ on:
       - 'android/README.md'
       - 'backend/chat-server/README.md'
       - 'docs/**'
-      - 'harness/build-log.md'
       - 'scripts/check-portfolio-docs.py'
       - '.github/workflows/docs-check.yml'
   push:
@@ -24,7 +23,6 @@ on:
       - 'android/README.md'
       - 'backend/chat-server/README.md'
       - 'docs/**'
-      - 'harness/build-log.md'
       - 'scripts/check-portfolio-docs.py'
       - '.github/workflows/docs-check.yml'
   workflow_dispatch:

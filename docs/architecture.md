@@ -1,53 +1,62 @@
-# Architecture · Android Native Media & Messaging
+# Android 아키텍처
 
-## 11개 모듈과 의존성 경계
+## 멀티모듈 구조
 
-- **app:** Navigation, AppContainer, 화면 조립.
-- **feature:** discover / community / media / messages / live. 화면 상태·이벤트와 UI를 기능별로 분리.
-- **core:** model / data / artwork / designsystem. 공통 도메인 모델, 세션 Fake 데이터, 이미지 리소스 매핑, 디자인 컴포넌트.
-- **macrobenchmark:** 별도 측정용 테스트 모듈.
+FanStage는 화면 기능 5개와 공통 기능 4개, 앱 진입점, 벤치마크를 포함한 **11개 Gradle 모듈**로 구성됩니다.
+
+- **app:** Navigation, ViewModel 생성과 의존성 조립
+- **feature:** discover / community / media / messages / live — 기능별 화면과 상태·이벤트 처리
+- **core:** model / data / artwork / designsystem — 공통 계약, Fake 데이터, 이미지 매핑, 디자인 컴포넌트
+- **macrobenchmark:** 별도 성능 측정용 모듈
 
 ~~~mermaid
 flowchart TB
-  APP["app · Navigation & wiring"] --> D["feature:discover"]
-  APP --> C["feature:community"]
-  APP --> M["feature:media"]
-  APP --> MSG["feature:messages"]
-  APP --> LIVE["feature:live"]
-  APP --> DATA["core:data"]
-  D & C & M & MSG --> MODEL["core:model"]
-  D & C & M & MSG --> ART["core:artwork"]
-  D & C & M & MSG --> DS["core:designsystem"]
-  DATA --> MODEL
-  LIVE --> MODEL
+    APP["app · Navigation / AppContainer"] --> DISC["feature:discover"]
+    APP --> COMM["feature:community"]
+    APP --> MEDIA["feature:media"]
+    APP --> MSG["feature:messages"]
+    APP --> LIVE["feature:live"]
+    APP --> MODEL["core:model"]
+    APP --> DATA["core:data"]
+    APP --> ART["core:artwork"]
+    APP --> DESIGN["core:designsystem"]
+    DISC & COMM & MEDIA & MSG --> MODEL
+    DISC & COMM & MEDIA & MSG --> ART
+    DISC & COMM & MEDIA & MSG --> DESIGN
+    LIVE --> MODEL
+    LIVE --> DESIGN
+    DATA --> MODEL
+    ART --> MODEL
 ~~~
 
-기능 모듈이 app을 역참조하지 않도록 [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)를 실행합니다. 공통 Model은 화면 구현·저장 라이브러리에 종속되지 않는 계약으로 사용합니다. [코드 이동과 검증 PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38).
+다이어그램은 `android/settings.gradle.kts`와 각 모듈의 Gradle 의존 관계를 기준으로 작성했습니다. [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)는 기능별 허용 의존성과 순수 Kotlin 모델의 Android UI 참조 여부를 확인합니다. 실제 모듈 분리 과정은 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 기록했습니다.
 
-## 화면 상태 흐름
+## Compose 상태 흐름
 
-**UI action → ViewModel → Repository/Transport → StateFlow/UiState → Compose 렌더링** 순으로 상태 흐름을 분리합니다. 세션 전환·요청 취소 후 이전 응답이 새 화면을 덮지 않도록 하고, 화면 전용 초안·스크롤 등은 필요한 위치에서 Compose 상태로 소유합니다. 세부 계약은 [Compose SDD](specs/compose-architecture.md)를 참조합니다.
+사용자 입력은 **UI Action → ViewModel → Repository/Transport → StateFlow(UiState) → Compose** 흐름으로 처리합니다.
 
-## Media3와 채팅 경계
+화면에 지속적으로 표시되는 상태는 ViewModel의 StateFlow로 관리하고, 탭 선택·입력 초안·스크롤 위치처럼 화면에 밀접한 임시 상태는 사용 범위에 맞춰 Compose 또는 ViewModel에서 관리합니다. 화면 전환이나 요청 취소 이후 도착한 이전 응답이 현재 화면을 바꾸지 않도록 상태와 취소 경계를 분리했습니다.
+
+## 영상 재생과 채팅의 독립성
 
 ~~~mermaid
 flowchart LR
-  SCREEN["Compose LIVE/Replay"] --> PLAYER["PlaybackSession · Media3"]
-  SCREEN --> VM["ChatViewModel"]
-  PLAYER --> HLS["합성 HLS VOD"]
-  PLAYER --> MP4["선택형 로컬 MP4 VOD"]
-  VM --> CT["ChatTransport contract"]
-  CT --> FAKE["Fake transport"]
-  CT --> REAL["Real transport · Debug"]
-  REAL --> WS["WebSocket events"]
-  REAL --> HTTP["HTTP snapshot"]
-  WS --> SERVER["Spring Boot"]
-  HTTP --> SERVER
-  SERVER --> PG["PostgreSQL"]
+    UI["Compose LIVE / Replay"] --> PLAYER["Media3 재생 세션"]
+    UI --> VM["ChatViewModel"]
+    PLAYER --> HLS["합성 HLS VOD"]
+    PLAYER --> MP4["선택형 로컬 MP4"]
+    VM --> CONTRACT["ChatTransport"]
+    CONTRACT --> FAKE["Fake"]
+    CONTRACT --> REAL["Real · Debug"]
+    REAL --> WS["WebSocket 이벤트"]
+    REAL --> HTTP["HTTP snapshot"]
+    WS --> SERVER["Spring Boot"]
+    HTTP --> SERVER
+    SERVER --> PG["PostgreSQL"]
 ~~~
 
-**Player는 화면 수명주기에**, **ChatTransport는 채팅 ViewModel의 연결·구독 수명에** 책임을 둡니다. 전체 화면으로 이동할 때 재생 세션을 유지하면서 화면이 소멸하면 Listener/Surface/Player를 정리합니다. 채팅 오류가 재생을 중단시키지 않고, 동영상 오류가 채팅을 불필요하게 종료하지 않도록 경계를 나눴습니다.
+Player는 재생 화면의 수명주기에서 관리하고, 채팅 연결과 구독은 ChatViewModel/Transport의 수명에 맞춰 관리합니다. 따라서 플레이어를 종료하거나 채팅이 재연결되는 과정에서도 서로의 상태를 독립적으로 다룰 수 있습니다.
 
-채팅은 같은 메시지 ID를 사용하는 재전송, serverSequence 기반 순서/누락 보충, 지연 HTTP snapshot 합성을 처리합니다. 재생과 메시지 도착 시각은 독립적이므로 미디어/채팅 간 정밀 동기화는 주장하지 않습니다.
+채팅은 동일 메시지 ID를 사용하는 재전송, `serverSequence` 기반 순서·누락 복구, 지연된 HTTP 응답의 정합성 처리를 적용했습니다.
 
-**연결 자료:** [플레이어 기술 계약](specs/media3-player.md) · [채팅 계약](specs/realtime-chat.md) · [장애 복구](specs/failure-recovery.md) · [ADR](adr/).
+**상세 설계:** [모듈 경계](adr/ADR-0001-module-boundaries.md) · [Media3 수명주기](adr/ADR-0002-player-lifecycle.md) · [채팅 일관성](adr/ADR-0003-chat-consistency.md)
