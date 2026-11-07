@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,6 +39,7 @@ import dev.fanstage.android.feature.live.chat.ChatPanel
 import dev.fanstage.android.feature.live.chat.ChatComposer
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dev.fanstage.android.feature.live.chat.ChatViewModel
 
@@ -109,22 +113,28 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
         else -> stringResource(R.string.room_detail)
     }
     var sendSignal by remember(roomId) { mutableIntStateOf(0) }
+    val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
+    var developmentFieldFocused by remember(roomId) { mutableStateOf(false) }
     Scaffold(topBar = { BackTitleBar(title, onBack, backTag = "room_back") }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().testTag("room_detail")) {
+        Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+            Text(if (roomId == "benchmark") "Benchmark · test video" else if (sourceUri.endsWith(".mp4")) "Local VOD · prerecorded" else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(Modifier.padding(12.dp)) { PlayerPanel(roomId, sourceUri, compact = keyboardVisible) }
+            }
+        }
         Column(
             modifier = Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Text(if (roomId == "benchmark") "Benchmark · test video" else if (sourceUri.endsWith(".mp4")) "Local VOD · prerecorded" else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
             Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(12.dp)) { PlayerPanel(roomId, sourceUri) }
-            }
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(12.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal) }
+                Column(Modifier.padding(12.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal, onDevelopmentFocus = { developmentFieldFocused = it }) }
             }
             Text(stringResource(R.string.placeholder_description), style = MaterialTheme.typography.bodySmall)
         }
-        Box(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) { ChatComposer(chatViewModel) { sendSignal++ } }
+        if (!developmentFieldFocused || !keyboardVisible) {
+            Box(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) { ChatComposer(chatViewModel) { sendSignal++ } }
+        }
         }
     }
 }

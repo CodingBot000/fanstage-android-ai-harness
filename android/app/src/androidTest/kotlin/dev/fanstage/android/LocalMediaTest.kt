@@ -32,6 +32,7 @@ class LocalMediaTest {
             rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
             if (i == 1) {
                 val video = rule.onNodeWithTag("player_first_frame", useUnmergedTree = true).getUnclippedBoundsInRoot()
+                rule.onNodeWithTag("player_video_touch").performClick()
                 val pause = rule.onNodeWithTag("player_pause", useUnmergedTree = true).getUnclippedBoundsInRoot()
                 check(pause.left >= video.left && pause.right <= video.right && pause.top >= video.top && pause.bottom <= video.bottom)
                 rule.onNodeWithTag("player_pause").performClick()

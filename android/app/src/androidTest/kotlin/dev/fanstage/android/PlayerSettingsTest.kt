@@ -186,6 +186,7 @@ class PlayerSettingsTest {
             rule.waitUntil(10000) { outputEvents.any { it !== previous } }
             assertTrue(outputEvents.any { it === currentOutput() && it !== previous })
         }
+        rule.onNodeWithTag("player_video_touch").performClick()
         rule.onNodeWithTag("player_pause").performClick()
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() && rule.onAllNodesWithTag("player_seek").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("player_seek").performSemanticsAction(SemanticsActions.SetProgress) { it(0.5f) }
@@ -341,7 +342,8 @@ class PlayerSettingsTest {
                 MaterialTheme { PlayerPanel("large-font-test") }
             }
         }
-        rule.waitUntil(30000) { rule.onAllNodesWithTag("player_pause").fetchSemanticsNodes().isNotEmpty() }
+        rule.waitUntil(30000) { rule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("player_video_touch").performClick()
         rule.onNodeWithContentDescription(rule.activity.getString(dev.fanstage.android.feature.live.R.string.player_pause)).assertExists()
         rule.onNodeWithTag("player_fullscreen").assertExists()
         rule.onNodeWithTag("player_speed").performClick()
@@ -425,6 +427,26 @@ class PlayerSettingsTest {
             rule.runOnUiThread { controller.selectSubtitle(candidate.id) }
             rule.waitUntil(10000) { controller.uiState.value.textTracks.any { it.id == candidate.id && it.selected } }
         } finally { rule.runOnUiThread { controller.release() } }
+    }
+
+    @Test fun playbackOverlayShowsOnTapAndHidesOnlyWhilePlaying() {
+        rule.activity.setContent { MaterialTheme { PlayerPanel("overlay-test") } }
+        rule.waitUntil(30000) { rule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("player_pause").assertDoesNotExist()
+        rule.onNodeWithTag("player_video_touch").performClick()
+        rule.onNodeWithTag("player_pause").assertExists()
+        rule.waitUntil(5000) { rule.onAllNodesWithTag("player_pause").fetchSemanticsNodes().isEmpty() }
+        rule.onNodeWithTag("player_state_playing").assertExists()
+        rule.onNodeWithTag("player_video_touch").performClick()
+        rule.onNodeWithTag("player_pause").performClick()
+        rule.waitUntil(10000) { rule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("player_play").assertExists()
+        Thread.sleep(2300)
+        rule.onNodeWithTag("player_play").assertExists()
+        rule.onNodeWithTag("player_play").performClick()
+        rule.waitUntil(10000) { rule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("player_pause").assertExists()
+        rule.waitUntil(5000) { rule.onAllNodesWithTag("player_pause").fetchSemanticsNodes().isEmpty() }
     }
 
 }
