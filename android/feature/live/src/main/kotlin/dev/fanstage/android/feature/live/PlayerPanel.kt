@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,7 +68,7 @@ var SemanticsPropertyReceiver.playerSurfaceGeneration by PlayerSurfaceGeneration
 
 @OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3u8", compact: Boolean = false) {
+fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3u8", compact: Boolean = false, settingsAtEnd: Boolean = false) {
     val context = LocalContext.current
     val owner = LocalLifecycleOwner.current
     var autoPlay by rememberSaveable(roomId, sourceUri) { mutableStateOf(true) }
@@ -183,7 +184,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
                 track = { sliderState -> SliderDefaults.Track(sliderState = sliderState, modifier = Modifier.height(3.dp), colors = seekColors, thumbTrackGapSize = 0.dp, drawStopIndicator = null) },
             )
         }
-        TextButton(onClick = { showSpeedOptions = false; showSpeed = true }, enabled = canSetSpeed, colors = if (full) ButtonDefaults.textButtonColors(contentColor = Color.White, disabledContentColor = Color.LightGray) else ButtonDefaults.textButtonColors(), modifier = Modifier.testTag("player_speed")) {
+        TextButton(onClick = { showSpeedOptions = false; showSpeed = true }, enabled = canSetSpeed, colors = if (full) ButtonDefaults.textButtonColors(contentColor = Color.White, disabledContentColor = Color.LightGray) else ButtonDefaults.textButtonColors(), contentPadding = if (settingsAtEnd) PaddingValues(horizontal = 12.dp, vertical = 4.dp) else PaddingValues(horizontal = 12.dp), modifier = (if (settingsAtEnd) Modifier.align(Alignment.End) else Modifier).testTag("player_speed")) {
             Text(stringResource(R.string.player_speed, speed))
         }
         if (state == PlaybackState.Playing || state == PlaybackState.Paused) {

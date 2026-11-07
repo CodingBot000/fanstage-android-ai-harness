@@ -717,3 +717,8 @@
 - UX-CARD-001은 PR #52 병합 `c328664`, main Android·서버 CI PASS; 원격 에뮬레이터 SKIPPED.
 
 - UX-LIVE-001 [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) head `c7342ea`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42365794207)·[서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42365794117) PASS. 원격 에뮬레이터 SKIPPED. Squash Merge `dd3302a7d71341c5f145cd53fa44738376c8c82f`.
+
+
+### LIVE 컨트롤 정렬 (2026-11-07)
+- 채팅 모드·개발 설정 우측 정렬 및 4dp 간격, Room Detail 설정 버튼 우측 정렬과 상하 콘텐츠 패딩 4dp 적용.
+- 최초 회귀에서 개발용 입력 시 영상이 약 2.3dp 이동해 FAIL. 채팅 카드 상하 여백 조정 후 동일 검사 PASS. 최종 Debug 빌드·lint·live 단위 및 전용 API 36 AVD의 DeviceUiRegressionTest·PlayerSettingsTest 22/22 PASS. 좁은 폭·2배 글꼴에서 4dp 간격·우측 정렬을 확인했다. 실기기 화면 확인 NOT_RUN.
