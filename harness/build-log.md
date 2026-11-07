@@ -722,3 +722,10 @@
 ### LIVE 컨트롤 정렬 (2026-11-07)
 - 채팅 모드·개발 설정 우측 정렬 및 4dp 간격, Room Detail 설정 버튼 우측 정렬과 상하 콘텐츠 패딩 4dp 적용.
 - 최초 회귀에서 개발용 입력 시 영상이 약 2.3dp 이동해 FAIL. 채팅 카드 상하 여백 조정 후 동일 검사 PASS. 최종 Debug 빌드·lint·live 단위 및 전용 API 36 AVD의 DeviceUiRegressionTest·PlayerSettingsTest 22/22 PASS. 좁은 폭·2배 글꼴에서 4dp 간격·우측 정렬을 확인했다. 실기기 화면 확인 NOT_RUN.
+
+
+### 비영상 화면 IME 이동·LIVE 영상 고정 (2026-11-07)
+- 최신 main `483874a`에서 모든 텍스트 입력은 댓글, 개인 대화, LIVE 채팅·개발 주소·토큰 총 5종임을 확인했다. 비영상 화면은 IME 여백을 적용한 전체 화면을 32dp 위로 이동하고, LIVE는 영상 고정 및 개발 입력 중 개발 헤더 축소를 적용했다. PR #56의 세그먼트 적용으로 사라진 기존 4dp 간격도 복구했다.
+- 최초 baseline에서 DM 상단이 움직이지 않아 FAIL. 최신 main의 LIVE 개발 입력은 영상 약 20dp 이동 FAIL, 다수 가상 팬에서 단일 avatar 가정 검사 FAIL, 2× 모드 간격 검사도 FAIL을 각각 재현했다. 화면 이동 및 개발 설정 공간을 수정하고 복수 avatar의 존재를 검사하도록 개선한 후 재실행했다. 최초 전체 IME 높이만큼 이동하는 시도는 메시지 표시 FAIL이어서 되돌렸다.
+- 최종 JDK 17 Debug 빌드·lint·전체 단위 62/62 PASS; API 36 전용 AVD DeviceUiRegressionTest·UiContractTest·PlayerSettingsTest 24/24 PASS. 댓글·DM 상단 이동/IME 위 입력/복귀, LIVE 채팅·주소·토큰의 IME 및 고정 영상, 모드 4dp와 2× 글꼴을 검사했다.
+- Galaxy SM-S908N API 36 별도 devicecheck 패키지에서 동일 입력 시나리오 3/3 PASS. 첫 실기기 실행은 절전/잠금 중 Compose 화면 미노출로 0/3 FAIL; 사용자 잠금 해제 후 재실행 PASS. 일반 Debug APK를 별도로 다시 빌드해 기존 앱 데이터 유지 설치·실행, 기존 서버 연결 HTTP 200 확인. 다른 키보드·가로 화면·전 제조사 검증은 NOT_RUN.

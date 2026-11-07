@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- IME 비영상 화면 이동 개선: 커뮤니티·개인 대화 전체 이동과 LIVE 영상 고정 및 개발 입력을 검증 중. API 36 AVD 관련 24/24·Galaxy SM-S908N 분리 테스트 3/3 PASS. [상세](../harness/build-log.md).
+
 - UX-LIVE-001: LIVE 채팅 모드·개발 설정 접기·말풍선 개선 [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) 병합 완료 (`dd3302a`). PR Android·서버 CI PASS, 원격 에뮬레이터 SKIPPED. [SDD](specs/UX-LIVE-001-chat-ui.md).
 
 - UX-CARD-001: 카드 텍스트 한 줄·말줄임 개선 [PR #52](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/52) 병합 완료. [SDD](specs/UX-CARD-001-single-line-cards.md).

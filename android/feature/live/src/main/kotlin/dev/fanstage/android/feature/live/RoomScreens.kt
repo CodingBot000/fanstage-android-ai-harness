@@ -142,7 +142,7 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = Color(0xFF111315), contentColor = MaterialTheme.colorScheme.onSurface),
             ) {
-                Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal, onDevelopmentFocus = { developmentFieldFocused = it }) }
+                Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal, onDevelopmentFocus = { developmentFieldFocused = it }, compactDevelopmentControls = developmentFieldFocused && keyboardVisible) }
             }
         }
         if (!developmentFieldFocused || !keyboardVisible) {

@@ -9,7 +9,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,7 +51,10 @@ fun PostDetailScreen(
     onAction: (CommunityUiAction) -> Unit,
     onBack: () -> Unit,
 ) {
+    val density = LocalDensity.current
+    val imeShift = if (WindowInsets.ime.getBottom(density) > 0) with(density) { 32.dp.roundToPx() } else 0
     Scaffold(
+        modifier = Modifier.imePadding().offset { IntOffset(0, -imeShift) },
         topBar = {
             BackTitleBar(
                 post?.title ?: stringResource(R.string.community),
@@ -55,7 +63,7 @@ fun PostDetailScreen(
             )
         }
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding).imePadding().testTag("post_detail")) {
+        Column(Modifier.fillMaxSize().padding(padding).testTag("post_detail")) {
             LazyColumn(
                 Modifier.weight(1f).fillMaxWidth().testTag("post_comments"),
                 contentPadding = PaddingValues(20.dp),

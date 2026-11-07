@@ -8,7 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -75,8 +80,9 @@ fun ConversationScreen(
                 }
             }
     }
-    // With edge-to-edge enabled, keep the composer above the software keyboard.
-    Column(Modifier.fillMaxSize().imePadding().padding(16.dp).testTag("conversation_detail")) {
+    val density = LocalDensity.current
+    val imeShift = if (WindowInsets.ime.getBottom(density) > 0) with(density) { 32.dp.roundToPx() } else 0
+    Column(Modifier.fillMaxSize().imePadding().offset { IntOffset(0, -imeShift) }.padding(16.dp).testTag("conversation_detail")) {
         BackTitleBar(artist?.name.orEmpty(), onBack, backTag = "messages_back")
         Row(
             verticalAlignment = Alignment.CenterVertically,
