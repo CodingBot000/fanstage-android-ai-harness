@@ -131,7 +131,7 @@ class DeviceUiRegressionTest {
         val afterVideo = rule.onNodeWithTag("player_first_frame").getUnclippedBoundsInRoot()
         assertTrue("video must stay fixed when IME opens: $beforeVideo -> $afterVideo", kotlin.math.abs((beforeVideo.top - afterVideo.top).value) < 1f)
         rule.onNodeWithTag("chat_input").performTextInput("Device LIVE IME")
-        assertComposerBounds("chat_input", "chat_send")
+        assertComposerBounds("chat_input", "chat_send", sendOutside = true)
         rule.onNodeWithTag("chat_input").performImeAction()
         rule.waitUntil(10_000) { rule.onAllNodesWithText("Device LIVE IME").fetchSemanticsNodes().isNotEmpty() }
         rule.waitUntil(10_000) { rule.onAllNodesWithTag("chat_bubble_own").fetchSemanticsNodes().isNotEmpty() && rule.onAllNodesWithTag("chat_bubble_other").fetchSemanticsNodes().isNotEmpty() }
@@ -252,7 +252,7 @@ class DeviceUiRegressionTest {
         }
     }
 
-    private fun assertComposerBounds(inputTag: String, sendTag: String) {
+    private fun assertComposerBounds(inputTag: String, sendTag: String, sendOutside: Boolean = false) {
         // Bounds must be sampled after the IME animation settles; otherwise the
         // two reads can observe different positions of the same moving composer.
         var previous: Pair<androidx.compose.ui.unit.DpRect, androidx.compose.ui.unit.DpRect>? = null
@@ -269,10 +269,15 @@ class DeviceUiRegressionTest {
             now - stableSince >= 300
         }
         val (input, send) = checkNotNull(previous)
-        assertTrue(
-            "$sendTag must be inside $inputTag: input=$input send=$send",
+        val aligned = if (sendOutside) {
+            send.left >= input.right && send.top >= input.top && send.bottom <= input.bottom
+        } else {
             send.left >= input.left && send.right <= input.right &&
-                send.top >= input.top && send.bottom <= input.bottom,
+                send.top >= input.top && send.bottom <= input.bottom
+        }
+        assertTrue(
+            "$sendTag must be correctly aligned with $inputTag: input=$input send=$send",
+            aligned,
         )
     }
 
