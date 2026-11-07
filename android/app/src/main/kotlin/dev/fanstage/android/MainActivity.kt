@@ -77,9 +77,11 @@ private fun FanStageApp() {
     val tabs = listOf("rooms", "community", "media", "messages")
     val hazeState = rememberHazeState()
     val isTab = currentRoute in tabs
+    val isPlaybackRoute = currentRoute == "rooms/{roomId}" ||
+        currentRoute == "local-video/{videoId}" || currentRoute == "replay"
     val titleBarState = rememberCollapsingTitleBarState(entry)
     CompositionLocalProvider(LocalCollapsingTitleBar provides titleBarState) {
-    Scaffold(modifier = Modifier.nestedScroll(titleBarState.connection), topBar = {
+    Scaffold(modifier = Modifier.nestedScroll(titleBarState.connection), containerColor = if (isPlaybackRoute) Color.Black else MaterialTheme.colorScheme.background, topBar = {
         if (isTab) Column(Modifier.statusBarsPadding()) {
             Box(Modifier.fillMaxWidth().height(64.dp * titleBarState.visibleFraction).clipToBounds().testTag("collapsing_top_bar")) {
                 TopAppBar(title = { Text("fanstage", color = dev.fanstage.android.core.designsystem.Plum, style = MaterialTheme.typography.titleLarge) }, windowInsets = WindowInsets(0, 0, 0, 0))
