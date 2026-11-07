@@ -20,6 +20,9 @@ class DiscoverTest {
         rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
         rule.onNodeWithTag("room_studio-session").performClick()
         rule.onNodeWithTag("room_detail").assertIsDisplayed()
+        rule.onNodeWithTag("video_playback_dark_screen").assertExists()
+        rule.onNodeWithTag("chat_panel").assertExists()
+        rule.onNodeWithTag("vod_chat_unavailable").assertDoesNotExist()
         rule.onNodeWithTag("room_back").performClick()
         rule.onNodeWithTag("rooms_content").assertIsDisplayed()
     }
@@ -93,6 +96,9 @@ class DiscoverTest {
         rule.onNodeWithTag("media_grid").performScrollToNode(hasTestTag("media_replay"))
         rule.onNodeWithTag("media_replay").assertIsDisplayed().performClick()
         rule.onNodeWithTag("replay_detail").assertIsDisplayed()
+        rule.onNodeWithTag("video_playback_dark_screen").assertExists()
+        rule.onNodeWithTag("vod_chat_unavailable").assertExists()
+        rule.onNodeWithTag("chat_panel").assertDoesNotExist()
         rule.waitUntil(30_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("replay_back").performClick()
         rule.onNodeWithTag("media_screen").assertIsDisplayed()
@@ -134,6 +140,9 @@ class DiscoverTest {
         rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("benchmark_replay"))
         rule.onNodeWithTag("benchmark_replay").performClick()
         rule.onNodeWithTag("replay_detail").assertIsDisplayed()
+        rule.onNodeWithTag("video_playback_dark_screen").assertExists()
+        rule.onNodeWithTag("vod_chat_unavailable").assertExists()
+        rule.onNodeWithTag("chat_panel").assertDoesNotExist()
         rule.waitUntil(30_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("replay_back").performClick()
         rule.onNodeWithTag("rooms_content").assertIsDisplayed()
