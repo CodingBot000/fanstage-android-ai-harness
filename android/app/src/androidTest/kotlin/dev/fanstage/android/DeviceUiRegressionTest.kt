@@ -125,6 +125,9 @@ class DeviceUiRegressionTest {
         rule.waitUntil(30_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         val backDescription = rule.activity.getString(dev.fanstage.android.core.designsystem.R.string.navigation_back)
         rule.onNodeWithTag("room_back").assertIsDisplayed().assert(hasContentDescription(backDescription))
+        val playerBounds = rule.onNodeWithTag("player_panel").getUnclippedBoundsInRoot()
+        val settingsBounds = rule.onNodeWithTag("player_speed").getUnclippedBoundsInRoot()
+        assertTrue("player settings must align with the right edge", abs((playerBounds.right - settingsBounds.right).value) < 1f)
         val beforeVideo = rule.onNodeWithTag("player_first_frame").getUnclippedBoundsInRoot()
         rule.onNodeWithTag("chat_input").performClick()
         assertAboveKeyboard("chat_input")
@@ -233,6 +236,11 @@ class DeviceUiRegressionTest {
         val demo = rule.onNodeWithTag("chat_use_fake").assertIsDisplayed().getUnclippedBoundsInRoot()
         val server = rule.onNodeWithTag("chat_select_real").assertIsDisplayed().getUnclippedBoundsInRoot()
         assertTrue("mode controls must not overlap", demo.right <= server.left)
+        assertTrue("mode controls must be separated by 4dp", abs((server.left - demo.right).value - 4f) < 1f)
+        val mode = rule.onNodeWithTag("chat_mode").getUnclippedBoundsInRoot()
+        val settings = rule.onNodeWithTag("chat_settings_toggle").getUnclippedBoundsInRoot()
+        assertTrue("settings must be 4dp below the mode row", abs((settings.top - mode.bottom).value - 4f) < 1f)
+        assertTrue("settings must align right", abs((mode.right - settings.right).value) < 1f)
         rule.onNodeWithTag("chat_use_fake").assertIsSelected()
     }
 
@@ -275,10 +283,7 @@ class DeviceUiRegressionTest {
             send.left >= input.left && send.right <= input.right &&
                 send.top >= input.top && send.bottom <= input.bottom
         }
-        assertTrue(
-            "$sendTag must be correctly aligned with $inputTag: input=$input send=$send",
-            aligned,
-        )
+        assertTrue("$sendTag must align with $inputTag: input=$input send=$send", aligned)
     }
 
     private fun findPlayer(view: View): PlayerView? {
