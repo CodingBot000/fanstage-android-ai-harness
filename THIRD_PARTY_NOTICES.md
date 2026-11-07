@@ -1,19 +1,19 @@
-# Third-party notices and distribution scope
+# 제3자 소프트웨어 및 저작물 안내
 
-FanStage's [MIT license](LICENSE) applies to the project's original code and documentation. It does **not** relicense included third-party code, tools, assets or user-interface components. Preserve each upstream copyright and applicable license.
+FanStage가 직접 작성한 코드·문서는 [MIT 라이선스](LICENSE)를 따릅니다. 외부 라이브러리·도구·이미지·시스템 UI에는 각 저작물의 원래 라이선스와 권리 조건이 적용됩니다.
 
-## Included Gradle Wrapper
+## 저장소에 포함된 Gradle Wrapper
 
-This source repository contains the Gradle-generated scripts and Wrapper JARs under android/ and backend/chat-server/. The Wrapper is licensed under **Apache License 2.0**, with its original copyright notices retained. See the [Apache-2.0 license text](third_party/licenses/Apache-2.0.txt). Wrapper JARs were compared to the published Gradle 9.5.0 SHA-256 values; upstream notices within the JARs are preserved.
+`android/`와 `backend/chat-server/`에는 Gradle Wrapper 스크립트·JAR가 포함됩니다. 해당 파일의 저작권 고지와 **Apache License 2.0** 조건을 유지합니다. [Apache-2.0 라이선스 전문](third_party/licenses/Apache-2.0.txt)을 함께 제공합니다. Wrapper JAR의 SHA-256은 Gradle 9.5.0의 공개 값과 대조한 기록이 있습니다.
 
-## Project media and images
+## 테스트 영상과 이미지
 
-The Android synthetic HLS VOD and test media are generated with FFmpeg testsrc2; see the [playback specification](docs/specs/media3-player.md). FanStage illustrations are fictional/generated assets. Portfolio captures show FanStage running on Android hardware or emulator; embedded system/keyboard/UI fonts and any separately supplied video remain subject to their own rights. The current physical-device MP4 demo uses media the project owner confirmed was authorized for public display; the original supplied MP4 files are not committed here.
+앱과 계측 테스트용 합성 HLS 영상은 FFmpeg `testsrc2`로 생성했습니다. [Media3 검증 자료](docs/specs/media3-player.md)에 사용 목적을 정리했습니다.
 
-## Dependencies resolved during build
+앱의 가상 아티스트 이미지는 생성형 도구로 제작했습니다. 화면 녹화에는 Android 시스템 UI·글꼴 등 별도 권리가 적용될 수 있습니다. 공개된 실기기 MP4 시연에는 프로젝트 사용자가 공개 표시 권한을 확인한 영상 자료를 사용했으며 원본 MP4 파일 자체는 저장소에 포함하지 않습니다.
 
-Android and server dependencies are downloaded through Gradle and follow their respective upstream licenses. The source repository does not redistribute a public APK, server JAR or container image.
+## 빌드 시 사용하는 의존성
 
-Examples of third-party runtime/test dependencies include AndroidX, Media3, Jetpack Compose, Spring Boot, PostgreSQL JDBC (BSD-2-Clause), Logback (EPL-2.0 / LGPL-2.1), Jakarta components with separately declared licenses and Haze (Apache-2.0, copyright © 2024 Chris Banes). See the upstream project notices and license texts for each dependency. Some components have dual-license choices.
+AndroidX·Media3·Jetpack Compose, Spring Boot, PostgreSQL JDBC(BSD-2-Clause), Logback(EPL-2.0 또는 LGPL-2.1), Jakarta 계열 구성요소, Haze(Apache-2.0, © 2024 Chris Banes) 등 외부 의존성은 각 구성요소의 라이선스를 따릅니다. 일부는 복수 라이선스 중 선택 가능한 조건이 있습니다.
 
-**When distributing binaries:** Resolve actual dependency artifacts and embedded licenses/NOTICE entries for the exact build variant; preserve required copyright and notices, evaluate transitive dependencies, embedded media and container/JRE layers separately. Existing source-level review is not a substitute for checking the packaged distribution.
+현재 저장소는 소스 중심으로 공개하며 APK·서버 JAR·컨테이너 이미지는 공개 배포하지 않습니다. 추후 바이너리를 배포할 경우 실제 포함된 의존성·미디어·NOTICE·저작권 고지와 컨테이너/JRE 구성요소를 해당 배포물 기준으로 다시 확인해야 합니다.
