@@ -154,7 +154,7 @@ private fun LocalVideoCard(video: DemoVideo, data: DiscoverData, onVideo: (Strin
             )
             Column(Modifier.padding(12.dp)) {
                 CardTwoLineText(
-                    "Local VOD",
+                    stringResource(R.string.local_vod),
                     style =
                         MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.primary
