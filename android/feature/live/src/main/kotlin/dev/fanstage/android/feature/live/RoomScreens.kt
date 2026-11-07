@@ -130,7 +130,6 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal, onDevelopmentFocus = { developmentFieldFocused = it }) }
             }
-            Text(stringResource(R.string.placeholder_description), style = MaterialTheme.typography.bodySmall)
         }
         if (!developmentFieldFocused || !keyboardVisible) {
             Box(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) { ChatComposer(chatViewModel) { sendSignal++ } }
