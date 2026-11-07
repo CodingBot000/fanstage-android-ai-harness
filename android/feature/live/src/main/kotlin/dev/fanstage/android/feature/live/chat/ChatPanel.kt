@@ -43,7 +43,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
@@ -138,6 +138,7 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
                     Box(Modifier.size(7.dp).background(indicator, CircleShape))
                     Text(
                         stringResource(connectionLabel),
+                        modifier = if (state.localServer) Modifier.testTag("chat_connection_status") else Modifier,
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1,
@@ -304,18 +305,9 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
             Text(stringResource(R.string.chat_gap))
             TextButton(onClick = viewModel::retryGap) { Text(stringResource(R.string.chat_retry_gap)) }
         }
-        if (state.localServer && state.connectionStatus != null) {
-            Text(stringResource(when (state.connectionStatus) {
-                ChatConnectionStatus.CONNECTING -> R.string.chat_connecting
-                ChatConnectionStatus.CONNECTED -> R.string.chat_connected
-                ChatConnectionStatus.RECONNECTING -> R.string.chat_reconnecting
-                ChatConnectionStatus.DISCONNECTED -> R.string.chat_disconnected
-                null -> R.string.chat_disconnected
-            }), Modifier.testTag("chat_connection_status"))
-            if (state.connectionStatus == ChatConnectionStatus.DISCONNECTED && !state.connectionError) {
-                TextButton(onClick = viewModel::retryConnection, modifier = Modifier.testTag("chat_retry_connection")) {
-                    Text(stringResource(R.string.chat_retry_connection))
-                }
+        if (state.localServer && state.connectionStatus == ChatConnectionStatus.DISCONNECTED && !state.connectionError) {
+            TextButton(onClick = viewModel::retryConnection, modifier = Modifier.testTag("chat_retry_connection")) {
+                Text(stringResource(R.string.chat_retry_connection))
             }
         }
         if (state.connectionError) Text(stringResource(R.string.chat_connection_error), Modifier.testTag("chat_connection_error"))
@@ -436,14 +428,27 @@ fun ChatComposer(viewModel: ChatViewModel, onSent: () -> Unit = {}) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val submit: () -> Unit = { if (viewModel.send(state.draft)) { viewModel.updateDraft(""); onSent() } }
     val sendDescription = stringResource(R.string.chat_send)
-    OutlinedTextField(
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        OutlinedTextField(
             value = state.draft,
             onValueChange = viewModel::updateDraft,
-            modifier = Modifier.fillMaxWidth().testTag("chat_input"),
-            label = { Text(stringResource(R.string.chat_message_label)) },
-            trailingIcon = { IconButton(onClick = submit, modifier = Modifier.testTag("chat_send")) { SendIcon(sendDescription) } },
+            modifier = Modifier.weight(1f).testTag("chat_input"),
+            placeholder = { Text(stringResource(R.string.chat_message_label)) },
+            shape = RoundedCornerShape(24.dp),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { submit() }),
             maxLines = 4,
         )
+        FilledIconButton(
+            onClick = submit,
+            enabled = state.draft.isNotBlank(),
+            modifier = Modifier.size(48.dp).testTag("chat_send"),
+        ) {
+            SendIcon(sendDescription)
+        }
+    }
 }
