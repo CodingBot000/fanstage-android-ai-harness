@@ -703,3 +703,8 @@
 - 최초 빌드는 padding import 누락으로 FAIL 후 수정했다. 최초 21개 계측에서는 선택 화질 중복 텍스트로 인한 검사 대상 모호성과 전체 화면 시트 Back 동작이 각각 FAIL; 선택 의미론 검사와 시트 부분 확장 정책을 보완했다. 후속 테스트 컴파일 시 matcher import 오류도 수정했다.
 - 첫 24개 최종 묶음에서 23개 PASS, 실제 채팅 1개는 토큰 인자 누락으로 FAIL. 기존 사용자 서버의 자격을 출력·새로 생성하지 않고 재사용해 별도 18766 포트·빈 테스트 DB를 기동했다. 첫 실제 채팅 재실행은 서버 설정 필드의 포커스가 남아 composer가 숨겨져 FAIL; 연결 전환에서 포커스를 해제한 후 재실행 PASS.
 - 최종 :app:assembleDebug :app:lintDebug :feature:live:testDebugUnitTest PASS, live 단위 56/56. API 36 전용 AVD에서 PlayerSettingsTest·DeviceUiRegressionTest·UiContractTest·LocalMediaTest 총 24/24 PASS; 로컬 MP4 7개는 기존 18765 서버에서 읽기 전용, 테스트 채팅은 18766의 빈 DB에만 전송했다. 실기기 새 UI 육안 확인·전체 기기·장시간 검증은 NOT_RUN.
+
+
+### UX-CARD-001 카드 한 줄 표시 (2026-11-07)
+- 공통 카드 텍스트를 글꼴 배율에 맞는 단일 줄·말줄임으로 변경하고 Discover Hero·아티스트·Replay 및 룸 목록 텍스트도 한 줄로 제한. 상세 본문과 썸네일은 유지했다.
+- Debug build·lint·단위 및 API 36 전용 AVD의 DeviceUiRegressionTest·DiscoverTest·UiContractTest 17/17 PASS. Media 카드 짧은/긴 텍스트 높이와 한 줄 말줄임 1×·2×, 메시지 카드 높이 2× 및 Discover 2× 표시 확인. 화면별 전수·전후 높이 수치·별도 캡처·실기기 검증 NOT_RUN.
