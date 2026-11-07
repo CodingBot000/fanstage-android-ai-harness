@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.fanstage.android.core.artwork.artworkResource
-import dev.fanstage.android.core.designsystem.CardTwoLineText
+import dev.fanstage.android.core.designsystem.CardSingleLineText
 import dev.fanstage.android.core.model.ArtworkKey
 import dev.fanstage.android.core.model.DemoVideo
 import dev.fanstage.android.core.model.DiscoverContent
@@ -122,7 +122,7 @@ private fun LiveMediaCard(
                 alignment = Alignment.TopCenter,
             )
             Column(Modifier.padding(12.dp)) {
-                CardTwoLineText(
+                CardSingleLineText(
                     if (videos.isNotEmpty()) stringResource(R.string.local_vod)
                     else stringResource(R.string.demo_live),
                     style =
@@ -130,11 +130,11 @@ private fun LiveMediaCard(
                             color = MaterialTheme.colorScheme.primary
                         ),
                 )
-                CardTwoLineText(
+                CardSingleLineText(
                     mediaContentTitle(content),
                     style = MaterialTheme.typography.titleMedium,
                 )
-                CardTwoLineText(content.artist, style = MaterialTheme.typography.bodyMedium)
+                CardSingleLineText(content.artist, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }
@@ -153,15 +153,15 @@ private fun LocalVideoCard(video: DemoVideo, data: DiscoverData, onVideo: (Strin
                 contentScale = ContentScale.Crop,
             )
             Column(Modifier.padding(12.dp)) {
-                CardTwoLineText(
+                CardSingleLineText(
                     stringResource(R.string.local_vod),
                     style =
                         MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.primary
                         ),
                 )
-                CardTwoLineText(video.title, style = MaterialTheme.typography.titleMedium)
-                CardTwoLineText(
+                CardSingleLineText(video.title, style = MaterialTheme.typography.titleMedium)
+                CardSingleLineText(
                     data.artists.firstOrNull { it.id == video.artistId }?.name.orEmpty(),
                     style = MaterialTheme.typography.bodyMedium,
                 )
@@ -182,15 +182,15 @@ private fun ReplayCard(onReplay: () -> Unit) {
                 alignment = Alignment.TopCenter,
             )
             Column(Modifier.padding(12.dp)) {
-                CardTwoLineText(
+                CardSingleLineText(
                     stringResource(R.string.benchmark_card),
                     style =
                         MaterialTheme.typography.labelLarge.copy(
                             color = MaterialTheme.colorScheme.primary
                         ),
                 )
-                CardTwoLineText("Synthetic HLS", style = MaterialTheme.typography.titleMedium)
-                CardTwoLineText("Paper Lantern", style = MaterialTheme.typography.bodyMedium)
+                CardSingleLineText("Synthetic HLS", style = MaterialTheme.typography.titleMedium)
+                CardSingleLineText("Paper Lantern", style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

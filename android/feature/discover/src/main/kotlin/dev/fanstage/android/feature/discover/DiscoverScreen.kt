@@ -42,7 +42,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.fanstage.android.core.artwork.artworkResource
-import dev.fanstage.android.core.designsystem.CardTwoLineText
+import dev.fanstage.android.core.designsystem.CardSingleLineText
 import dev.fanstage.android.core.designsystem.FanStageTheme
 import dev.fanstage.android.core.designsystem.Plum
 import dev.fanstage.android.core.model.ArtworkKey
@@ -190,18 +190,21 @@ private fun FeaturedHeroCarousel(data: DiscoverData, onRoomClick: (String) -> Un
                         stringResource(R.string.featured),
                         color = Color(0xFFFFD5E7),
                         style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         content.artist,
                         color = Color.White,
                         style = MaterialTheme.typography.headlineMedium,
-                        maxLines = 2,
+                        maxLines = 1,
+                        softWrap = false,
                         overflow = TextOverflow.Ellipsis,
                     )
                     Text(
                         localizedContentTitle(content),
                         color = Color.White,
-                        maxLines = 2,
+                        maxLines = 1,
+                        softWrap = false,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
@@ -237,7 +240,8 @@ private fun CommunityAvatarRow(data: DiscoverData, onArtistClick: (String) -> Un
                     Text(
                         artist.name,
                         style = MaterialTheme.typography.labelSmall,
-                        maxLines = 2,
+                        maxLines = 1,
+                        softWrap = false,
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
@@ -271,7 +275,7 @@ private fun LiveCarousel(data: DiscoverData, localVideos: Boolean, onRoomClick: 
                         Modifier.padding(12.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        CardTwoLineText(
+                        CardSingleLineText(
                             if (localVideos) stringResource(R.string.local_vod)
                             else stringResource(R.string.demo_live),
                             style =
@@ -280,11 +284,11 @@ private fun LiveCarousel(data: DiscoverData, localVideos: Boolean, onRoomClick: 
                                     fontWeight = FontWeight.Bold,
                                 ),
                         )
-                        CardTwoLineText(
+                        CardSingleLineText(
                             localizedContentTitle(content),
                             style = MaterialTheme.typography.titleMedium,
                         )
-                        CardTwoLineText(content.artist, style = MaterialTheme.typography.bodySmall)
+                        CardSingleLineText(content.artist, style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -305,7 +309,7 @@ private fun LiveCarousel(data: DiscoverData, localVideos: Boolean, onRoomClick: 
                         Modifier.padding(12.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
-                        CardTwoLineText(
+                        CardSingleLineText(
                             stringResource(R.string.benchmark_card),
                             style =
                                 MaterialTheme.typography.labelMedium.copy(
@@ -313,11 +317,11 @@ private fun LiveCarousel(data: DiscoverData, localVideos: Boolean, onRoomClick: 
                                     fontWeight = FontWeight.Bold,
                                 ),
                         )
-                        CardTwoLineText(
+                        CardSingleLineText(
                             "Synthetic HLS",
                             style = MaterialTheme.typography.titleMedium,
                         )
-                        CardTwoLineText("FanStage", style = MaterialTheme.typography.bodySmall)
+                        CardSingleLineText("FanStage", style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }
@@ -341,16 +345,9 @@ private fun ReplaySection(
             colors = CardDefaults.cardColors(containerColor = Color(0xFFECE5F6)),
         ) {
             Column(Modifier.fillMaxWidth().padding(18.dp)) {
-                Text(
-                    if (localVideos) stringResource(R.string.local_vod) else "REPLAY",
-                    color = Plum,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-                Text("Paper Lantern · Studio diary", style = MaterialTheme.typography.titleMedium)
-                Text(
-                    stringResource(R.string.replay_play),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                CardSingleLineText(if (localVideos) stringResource(R.string.local_vod) else "REPLAY", style = MaterialTheme.typography.labelMedium.copy(color = Plum))
+                CardSingleLineText("Paper Lantern · Studio diary", style = MaterialTheme.typography.titleMedium)
+                CardSingleLineText(stringResource(R.string.replay_play), style = MaterialTheme.typography.bodySmall)
             }
         }
         if (localVideos) {
@@ -359,7 +356,7 @@ private fun ReplaySection(
                 onClick = onBenchmarkClick,
                 modifier = Modifier.fillMaxWidth().testTag("benchmark_replay"),
             ) {
-                Text(stringResource(R.string.benchmark_card), Modifier.padding(18.dp))
+                CardSingleLineText(stringResource(R.string.benchmark_card), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(18.dp))
             }
         }
         Spacer(Modifier.height(24.dp))
@@ -388,11 +385,11 @@ private fun RecommendedContentRow(data: DiscoverData, onRoomClick: (String) -> U
                         modifier = Modifier.fillMaxWidth().height(110.dp),
                     )
                     Column(Modifier.padding(12.dp)) {
-                        CardTwoLineText(
+                        CardSingleLineText(
                             localizedContentTitle(content),
                             style = MaterialTheme.typography.titleMedium,
                         )
-                        CardTwoLineText(content.artist, style = MaterialTheme.typography.bodySmall)
+                        CardSingleLineText(content.artist, style = MaterialTheme.typography.bodySmall)
                     }
                 }
             }

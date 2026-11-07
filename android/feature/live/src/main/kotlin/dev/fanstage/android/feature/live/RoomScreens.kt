@@ -34,7 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.fanstage.android.core.designsystem.BackTitleBar
-import dev.fanstage.android.core.designsystem.CardTwoLineText
+import dev.fanstage.android.core.designsystem.CardSingleLineText
 import dev.fanstage.android.feature.live.chat.ChatPanel
 import dev.fanstage.android.feature.live.chat.ChatComposer
 import androidx.compose.runtime.remember
@@ -82,9 +82,9 @@ fun RoomListScreen(
                                     "tabletop-night" to "Tabletop night" -> stringResource(R.string.room_tabletop_title)
                                     else -> room.title
                                 }
-                                CardTwoLineText(title, style = MaterialTheme.typography.titleMedium)
-                                Text(stringResource(R.string.room_host, room.hostName))
-                                Text(pluralStringResource(R.plurals.room_viewers, room.viewerCount, room.viewerCount))
+                                CardSingleLineText(title, style = MaterialTheme.typography.titleMedium)
+                                CardSingleLineText(stringResource(R.string.room_host, room.hostName), style = MaterialTheme.typography.bodyMedium)
+                                CardSingleLineText(pluralStringResource(R.plurals.room_viewers, room.viewerCount, room.viewerCount), style = MaterialTheme.typography.bodyMedium)
                             }
                         }
                     }

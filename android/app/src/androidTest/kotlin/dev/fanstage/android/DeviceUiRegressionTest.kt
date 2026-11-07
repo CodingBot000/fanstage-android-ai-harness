@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.ui.PlayerView
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import dev.fanstage.android.core.designsystem.CardTwoLineText
+import dev.fanstage.android.core.designsystem.CardSingleLineText
 import dev.fanstage.android.core.designsystem.FanStageTheme
 import dev.fanstage.android.core.data.FakeCatalog
 import dev.fanstage.android.core.data.FakeMessageRepository
@@ -52,15 +52,15 @@ class DeviceUiRegressionTest {
                 val current = LocalDensity.current
                 CompositionLocalProvider(LocalDensity provides Density(current.density, scale)) {
                     FanStageTheme { Column {
-                        CardTwoLineText("A deliberately long line of words that cannot fit into the two available rows of this narrow card", TextStyle(fontSize = 20.sp, lineHeight = 24.sp), Modifier.width(120.dp), onTextLayout = { layout.set(it) })
+                        CardSingleLineText("A deliberately long line of words that cannot fit into the two available rows of this narrow card", TextStyle(fontSize = 20.sp, lineHeight = 24.sp), Modifier.width(120.dp), onTextLayout = { layout.set(it) })
                         MediaScreen(MediaState.Ready(DiscoverData(emptyList(), listOf(first, second))), 0, {}, {}, {}, {})
                     } }
                 }
             } }
             rule.waitForIdle()
             val result = requireNotNull(layout.get())
-            assertEquals("scale=$scale size=${result.size} overflow=${result.hasVisualOverflow}", 2, result.lineCount)
-            assertTrue(result.isLineEllipsized(1))
+            assertEquals("scale=$scale size=${result.size} overflow=${result.hasVisualOverflow}", 1, result.lineCount)
+            assertTrue(result.isLineEllipsized(0))
             val one = rule.onNodeWithTag("media_short").getUnclippedBoundsInRoot()
             val two = rule.onNodeWithTag("media_long").getUnclippedBoundsInRoot()
             assertTrue("peer card heights differ at fontScale=$scale: ${one.bottom - one.top} vs ${two.bottom - two.top}", abs((one.bottom - one.top).value - (two.bottom - two.top).value) < 1f)

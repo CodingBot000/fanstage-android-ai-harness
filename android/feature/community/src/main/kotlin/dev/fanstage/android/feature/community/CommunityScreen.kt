@@ -41,7 +41,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import dev.fanstage.android.core.artwork.artworkResource
 import dev.fanstage.android.core.designsystem.BackTitleBar
-import dev.fanstage.android.core.designsystem.CardTwoLineText
+import dev.fanstage.android.core.designsystem.CardSingleLineText
 import dev.fanstage.android.core.model.CommunityPost
 import dev.fanstage.android.core.model.FictionalArtist
 
@@ -104,7 +104,7 @@ fun CommunityScreen(
                                 contentScale = ContentScale.Crop,
                             )
                             Spacer(Modifier.width(16.dp))
-                            CardTwoLineText(
+                            CardSingleLineText(
                                 artist.name,
                                 style = MaterialTheme.typography.titleLarge,
                             )
@@ -231,13 +231,9 @@ private fun CommunityPostCard(post: CommunityPost, onPost: (String) -> Unit) {
                 contentScale = ContentScale.Crop,
             )
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                CardTwoLineText(post.title, style = MaterialTheme.typography.titleLarge)
-                Text(
-                    stringResource(R.string.community),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.labelMedium,
-                )
-                CardTwoLineText(
+                CardSingleLineText(post.title, style = MaterialTheme.typography.titleLarge)
+                CardSingleLineText(stringResource(R.string.community), style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.primary))
+                CardSingleLineText(
                     if (post.body == "A little moment from our world.")
                         stringResource(R.string.demo_post_body)
                     else post.body,

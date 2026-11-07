@@ -30,7 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.fanstage.android.core.artwork.artworkResource
-import dev.fanstage.android.core.designsystem.CardTwoLineText
+import dev.fanstage.android.core.designsystem.CardSingleLineText
 import dev.fanstage.android.core.model.FictionalArtist
 
 @Composable
@@ -67,11 +67,11 @@ fun MessagesListScreen(
                         )
                         Spacer(Modifier.width(14.dp))
                         Column(Modifier.weight(1f)) {
-                            CardTwoLineText(
+                            CardSingleLineText(
                                 artist.name,
                                 style = MaterialTheme.typography.titleMedium,
                             )
-                            CardTwoLineText(
+                            CardSingleLineText(
                                 conversation.messages
                                     .lastOrNull()
                                     ?.let {
@@ -94,6 +94,7 @@ fun MessagesListScreen(
                                         stringResource(R.string.unread),
                                         modifier = Modifier.testTag("unread_${artist.id}"),
                                         style = MaterialTheme.typography.labelSmall,
+                                        maxLines = 1, softWrap = false, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                                     )
                             }
                         }
