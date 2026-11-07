@@ -137,7 +137,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
 
     val playerContent: @Composable (Boolean) -> Unit = { full ->
     var surfaceId by remember(full) { mutableLongStateOf(-1L) }
-    Column((if (full) Modifier.fillMaxSize().background(Color.Black).windowInsetsPadding(WindowInsets.safeDrawing) else Modifier.fillMaxWidth()).testTag("player_panel")) {
+    Column((if (full) Modifier.fillMaxSize().background(Color.Black).windowInsetsPadding(WindowInsets.safeDrawing) else Modifier.fillMaxWidth().background(Color.Black)).testTag("player_panel")) {
         Box(if (full) Modifier.fillMaxWidth().weight(1f) else Modifier.fillMaxWidth().height(200.dp)) {
             AndroidView(
                 factory = { context -> (LayoutInflater.from(context).inflate(R.layout.fanstage_player_view, null, false) as PlayerView).apply { surfaceId = controller.attach(this) } },
