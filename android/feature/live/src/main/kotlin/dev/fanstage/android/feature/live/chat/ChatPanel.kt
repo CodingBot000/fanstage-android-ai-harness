@@ -79,7 +79,7 @@ internal fun fictionalMessageResource(key: String): Int? = when {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, showComposer: Boolean = true, sendSignal: Int = 0, onDevelopmentFocus: (Boolean) -> Unit = {}) {
+fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, showComposer: Boolean = true, sendSignal: Int = 0, onDevelopmentFocus: (Boolean) -> Unit = {}, compactDevelopmentControls: Boolean = false) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val locale = LocalConfiguration.current.locales[0]
@@ -109,9 +109,9 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
     }
     Column(
         Modifier.fillMaxWidth().testTag("chat_panel"),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(0.dp),
     ) {
-        Row(
+        if (!compactDevelopmentControls) Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -148,7 +148,9 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
             }
         }
         if (developmentControls) {
-            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().testTag("chat_mode")) {
+            if (!compactDevelopmentControls) {
+            // The row subtracts space for a shared border; negative space leaves a 4dp gap.
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().testTag("chat_mode"), space = (-4).dp) {
                 SegmentedButton(
                     selected = !state.localServer,
                     onClick = {
@@ -203,6 +205,7 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
                     Spacer(Modifier.width(4.dp))
                     Text(if (settingsExpanded) "⌃" else "⌄", style = MaterialTheme.typography.labelMedium)
                 }
+            }
             }
             if (settingsExpanded) {
                 Surface(

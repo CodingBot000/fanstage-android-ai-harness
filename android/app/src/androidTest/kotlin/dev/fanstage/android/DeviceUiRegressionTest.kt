@@ -93,6 +93,8 @@ class DeviceUiRegressionTest {
         assertTrue("back icon must be left of title", backBounds.right <= titleBounds.left)
         rule.onNodeWithTag("dm_input").performClick()
         assertAboveKeyboard("dm_input")
+        val movedDmHeader = rule.onNodeWithTag("messages_back").getUnclippedBoundsInRoot()
+        assertTrue("non-video DM content must move up when IME opens", movedDmHeader.top.value < backBounds.top.value - 20f)
         rule.onNodeWithTag("dm_input").performTextInput("Device IME message")
         assertComposerBounds("dm_input", "dm_send")
         rule.onNodeWithTag("dm_input").performImeAction()
@@ -104,10 +106,14 @@ class DeviceUiRegressionTest {
         rule.onNodeWithTag("community_feed").performScrollToNode(hasTestTag("post_post-paper-lantern"))
         rule.onNodeWithTag("post_post-paper-lantern").performClick()
         rule.onNodeWithTag("post_back").assertIsDisplayed().assert(hasContentDescription(backDescription))
+        val beforePostHeader = rule.onNodeWithTag("post_back").getUnclippedBoundsInRoot()
         rule.onNodeWithTag("comment_input").performClick()
         assertAboveKeyboard("comment_input")
+        val movedPostHeader = rule.onNodeWithTag("post_back").getUnclippedBoundsInRoot()
+        assertTrue("non-video community content must move up when IME opens", movedPostHeader.top.value < beforePostHeader.top.value - 20f)
         InstrumentationRegistry.getInstrumentation().uiAutomation.executeShellCommand("input keyevent KEYCODE_BACK").close()
         rule.waitUntil(10_000) { androidx.core.view.ViewCompat.getRootWindowInsets(rule.activity.window.decorView)?.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime()) == false }
+        rule.waitUntil(10_000) { abs((rule.onNodeWithTag("post_back").getUnclippedBoundsInRoot().top - beforePostHeader.top).value) < 1f }
         rule.onNodeWithTag("post_back").performClick()
         rule.waitUntil(10_000) { rule.onAllNodesWithTag("community_back").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("community_back").performClick()
@@ -141,7 +147,7 @@ class DeviceUiRegressionTest {
         val ownBubble = rule.onAllNodesWithTag("chat_bubble_own")[0].getUnclippedBoundsInRoot()
         val otherBubble = rule.onAllNodesWithTag("chat_bubble_other")[0].getUnclippedBoundsInRoot()
         assertTrue("own and other bubbles must align to opposite sides", ownBubble.left > otherBubble.left && ownBubble.right > otherBubble.right)
-        rule.onNodeWithTag("chat_avatar_other").assertExists()
+        assertTrue("incoming avatar must be present", rule.onAllNodesWithTag("chat_avatar_other").fetchSemanticsNodes().isNotEmpty())
         val transcript = rule.onNodeWithTag("chat_messages").getUnclippedBoundsInRoot()
         assertTrue(
             "short incoming bubble must wrap content instead of reserving 80% of the transcript",
@@ -239,7 +245,7 @@ class DeviceUiRegressionTest {
         assertTrue("mode controls must be separated by 4dp", abs((server.left - demo.right).value - 4f) < 1f)
         val mode = rule.onNodeWithTag("chat_mode").getUnclippedBoundsInRoot()
         val settings = rule.onNodeWithTag("chat_settings_toggle").getUnclippedBoundsInRoot()
-        assertTrue("settings must be 4dp below the mode row", abs((settings.top - mode.bottom).value - 4f) < 1f)
+        assertTrue("settings must be 4dp below the mode row: mode=$mode settings=$settings", abs((settings.top - mode.bottom).value - 4f) < 1f)
         assertTrue("settings must align right", abs((mode.right - settings.right).value) < 1f)
         rule.onNodeWithTag("chat_use_fake").assertIsSelected()
     }
