@@ -1,6 +1,6 @@
 # FanStage 작업 현황
 
-- UX-LIVE-001: LIVE 채팅 모드·개발 설정 접기·말풍선 개선 로컬 검증 완료, PR CI 대기. [SDD](specs/UX-LIVE-001-chat-ui.md).
+- UX-LIVE-001: LIVE 채팅 모드·개발 설정 접기·말풍선 개선 [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) 병합 완료 (`dd3302a`). PR Android·서버 CI PASS, 원격 에뮬레이터 SKIPPED. [SDD](specs/UX-LIVE-001-chat-ui.md).
 
 - UX-CARD-001: 카드 텍스트 한 줄·말줄임 개선 [PR #52](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/52) 병합 완료. [SDD](specs/UX-CARD-001-single-line-cards.md).
 
