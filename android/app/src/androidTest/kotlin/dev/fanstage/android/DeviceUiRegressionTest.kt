@@ -142,7 +142,7 @@ class DeviceUiRegressionTest {
         val transcript = rule.onNodeWithTag("chat_messages").getUnclippedBoundsInRoot()
         assertTrue(
             "short incoming bubble must wrap content instead of reserving 80% of the transcript",
-            otherBubble.width.value < transcript.width.value * 0.75f,
+            (otherBubble.right - otherBubble.left).value < (transcript.right - transcript.left).value * 0.75f,
         )
         rule.onNodeWithTag("room_back").performClick()
         rule.onNodeWithTag("rooms_content").assertExists()
