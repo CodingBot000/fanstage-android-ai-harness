@@ -92,15 +92,17 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
     Column(Modifier.fillMaxWidth().testTag("chat_panel")) {
         Text(stringResource(R.string.chat_title))
         if (developmentControls) {
-            Row(Modifier.fillMaxWidth().testTag("chat_mode"), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Row(Modifier.fillMaxWidth().testTag("chat_mode"), horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.End)) {
                 FilterChip(selected = !state.localServer, onClick = {
                     checkJob?.cancel(); checking = false; focusManager.clearFocus()
                     if (state.localServer && viewModel.useOfflineFake()) { token = ""; configError = false }
-                }, label = { Text(stringResource(R.string.chat_mode_fake), maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis) }, modifier = Modifier.weight(1f).testTag("chat_use_fake"))
-                FilterChip(selected = state.localServer, onClick = { if (!state.localServer) settingsExpanded = true }, label = { Text(stringResource(R.string.chat_mode_real), maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis) }, modifier = Modifier.weight(1f).testTag("chat_select_real"))
+                }, label = { Text(stringResource(R.string.chat_mode_fake), maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis) }, modifier = Modifier.weight(1f, fill = false).testTag("chat_use_fake"))
+                FilterChip(selected = state.localServer, onClick = { if (!state.localServer) settingsExpanded = true }, label = { Text(stringResource(R.string.chat_mode_real), maxLines = 1, softWrap = false, overflow = TextOverflow.Ellipsis) }, modifier = Modifier.weight(1f, fill = false).testTag("chat_select_real"))
             }
             TextButton(onClick = { if (settingsExpanded) focusManager.clearFocus(); settingsExpanded = !settingsExpanded }, modifier = Modifier.testTag("chat_settings_toggle")) {
                 Text(stringResource(R.string.chat_settings) + if (settingsExpanded) " ▴" else " ▾")
+            }
             }
             if (settingsExpanded) {
                 OutlinedTextField(value = endpoint, onValueChange = { endpoint = it }, label = { Text(stringResource(R.string.chat_endpoint)) }, modifier = Modifier.fillMaxWidth().onFocusChanged { onDevelopmentFocus(it.isFocused) }.testTag("chat_endpoint"))

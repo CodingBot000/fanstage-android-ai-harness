@@ -120,7 +120,7 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
         Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
             Text(if (roomId == "benchmark") "Benchmark · test video" else if (sourceUri.endsWith(".mp4")) stringResource(R.string.local_server_vod) else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
             Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(12.dp)) { PlayerPanel(roomId, sourceUri, compact = keyboardVisible) }
+                Column(Modifier.padding(12.dp)) { PlayerPanel(roomId, sourceUri, compact = keyboardVisible, settingsAtEnd = true) }
             }
         }
         Column(
@@ -128,7 +128,7 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Card(modifier = Modifier.fillMaxWidth()) {
-                Column(Modifier.padding(12.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal, onDevelopmentFocus = { developmentFieldFocused = it }) }
+                Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal, onDevelopmentFocus = { developmentFieldFocused = it }) }
             }
             Text(stringResource(R.string.placeholder_description), style = MaterialTheme.typography.bodySmall)
         }

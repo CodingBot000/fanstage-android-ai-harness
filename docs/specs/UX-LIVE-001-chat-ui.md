@@ -10,3 +10,6 @@ LIVE 채팅에 실제 transport 상태를 따르는 데모/로컬 서버 단일 
 - Debug 빌드·lint·live 단위 56/56 PASS. 전용 API 36 AVD에서 최종 PlayerSettingsTest·DeviceUiRegressionTest·UiContractTest·LocalMediaTest·RealChatIntegrationTest 28/28 PASS(기존 자격 재사용, 별도 빈 DB, 기존 MP4 읽기 전용). 실제 서버 인증 실패 후 데모 유지, 정상 연결, 메시지·ACK·재연결과 영상 회귀 포함. 서버에서 데모로 전환하는 별도 검사 1/1 PASS.
 - 설정 접힘·빈 자격 오류·모드 선택, 채팅 말풍선 좌우 정렬, IME·영상 위치 검사 PASS. Activity 재생성과 실제 화면 회전 후 설정 유지, 320dp 폭·2배 글꼴에서 모드 컨트롤 비겹침 별도 2/2 PASS. Pending 메시지 차단은 기존 ViewModel 단위 테스트로 확인했다.
 - 합성 영상·데모 데이터로 캡처한 [변경 전](../evidence/ux-live-001/before.png) 및 [변경 후](../evidence/ux-live-001/after.png). 화면의 모든 기기·언어·2배 글꼴 픽셀 전수, TalkBack 및 실제 운영 방송은 NOT_RUN. 2배 글꼴에서는 모드 텍스트가 화면 폭에 따라 말줄임될 수 있다.
+
+## 컨트롤 정렬 보완 (2026-11-07)
+채팅 모드 선택과 개발 설정을 우측에 정렬하고 행 내부 및 두 행의 간격을 4dp로 맞춘다. Room Detail의 플레이어 설정 버튼은 우측에 두고 상하 콘텐츠 패딩을 4dp로 조정한다. 키보드 표시 중 영상 위치를 유지하기 위해 채팅 카드의 상하 여백을 조정한다.
