@@ -46,17 +46,21 @@ class LocalMediaTest {
                 check(player.currentTracks.groups.any { it.type == C.TRACK_TYPE_AUDIO && it.isSupported })
                 if (i == 1) check(player.currentPosition > 10_000)
             }
-            rule.onNodeWithTag(if (i <= 3) "room_back" else "replay_back").performClick()
+            rule.onNodeWithTag("vod_chat_unavailable").assertExists()
+            rule.onNodeWithTag("chat_panel").assertDoesNotExist()
+            rule.onNodeWithTag("video_playback_dark_screen").assertExists()
+            rule.onNodeWithTag("replay_back").performClick()
             rule.onNodeWithTag("media_screen").assertIsDisplayed()
         }
     }
-    @Test fun recordedVideoAndRealChatWorkTogether() {
+    @Test fun liveDemoVideoAndRealChatWorkTogether() {
         assumeTrue(InstrumentationRegistry.getArguments().getString("fanstageLocalMedia") == "true")
         val token = requireNotNull(InstrumentationRegistry.getArguments().getString("fanTokenA"))
-        rule.onNodeWithTag("tab_media").performClick()
-        rule.onNodeWithTag("media_filter_2").performClick()
-        rule.onNodeWithTag("media_grid").performScrollToNode(hasTestTag("media_demo-01"))
-        rule.onNodeWithTag("media_demo-01").performClick()
+        rule.waitUntil(20_000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
+        rule.onNodeWithTag("room_studio-session").performClick()
+        rule.onNodeWithTag("room_detail").assertIsDisplayed()
+        rule.onNodeWithTag("chat_panel").assertExists()
         rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("chat_settings_toggle").performScrollTo().performClick()
         InstrumentationRegistry.getArguments().getString("fanServerPort")?.let { port ->
@@ -80,12 +84,12 @@ class LocalMediaTest {
         rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("room_studio-session"))
         rule.onNodeWithTag("room_studio-session").performClick()
         rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.local_server_vod)).assertExists()
+        rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.live_demo_recording)).assertExists()
         rule.onNodeWithTag("room_back").performClick()
         rule.onNodeWithTag("tab_media").performClick()
         rule.onNodeWithTag("media_studio-session").performClick()
         rule.waitUntil(45_000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
-        rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.local_server_vod)).assertExists()
+        rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.live_demo_recording)).assertExists()
     }
 
 }
