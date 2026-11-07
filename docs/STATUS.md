@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- PORTFOLIO-FINAL-001: 기준 main `c1febd68171652fda46c062da3d507e9c992acd8`, v0.1 소스 포트폴리오 문서 정리 중. Draft PR 검증 결과는 build-log 참조. PLAYER-002는 **DEFERRED — v0.2 Candidate**, main 미포함이다. API 30 실제 시스템 닫기에서 release를 관찰했으나 별도 빠른 강제 스택 제거 후 미해제 P1은 미해결이다.
+
 - PLAYER-001 [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) Squash Merge `760ae1ec8e6106f09945ad7228dc062937701c1e`. 로컬 단위 56/56·전용 AVD 전체 계측 41/41 및 PR head `edc70e5` 활성 원격 Android/서버 CI PASS. 원격 에뮬레이터 SKIPPED; 별도 독립 리뷰 추가 P0/P1/P2 0건, 공식 GitHub 승인 리뷰 없음. 병합 후 main Android·서버 CI PASS. [SDD](specs/PLAYER-001-player-settings-fullscreen.md).
 
 - 상단바 스와이프 접힘 및 플레이어 아이콘·얇은 탐색 트랙 구현. 전체 변형 빌드·lint·단위, 전용 API 36 통합 25/25·상단바 검사 4/4·실제 서버 Android 통합 1/1 PASS. 원격 에뮬레이터 OFF, 실기기·장시간 성능 NOT_RUN. [PR #46](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/46) 병합 완료.

@@ -4,6 +4,15 @@ FanStage는 **Kotlin·Jetpack Compose로 구현한 가상의 아티스트 팬 �
 
 **현재 상태: Portfolio Ready — 프리미엄 Compose UX + 11개 모듈**. 기본 기술 코어 [PR #36](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/36)에 이어, 비주얼 개편·기능별 모듈 분리 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)가 병합됐습니다. 공개 APK 없이 소스와 로컬 빌드 절차를 제공합니다. [최종 아키텍처 기록](docs/specs/ARCH-001-feature-modularization.md), [v0.1 기술 코어의 검증·한계](docs/reviews/M8-final-readiness.md).
 
+## v0.1 핵심 구현과 검증
+
+- **플레이어:** Media3 HLS와 로컬 HTTP MP4 VOD, 실제 트랙 기반 화질·자막 선택, 배속 및 Dialog 전체 화면. 화면 소유 세션과 읽기 전용 UI 상태를 유지하며 전체 화면에서 같은 플레이어를 사용합니다. [PLAYER-001 SDD](docs/specs/PLAYER-001-player-settings-fullscreen.md) · [설계 결정](docs/adr/ADR-0010-player-settings-fullscreen.md).
+- **화면과 채팅:** Kotlin·Jetpack Compose 멀티 모듈의 LIVE/Replay UI, Fake 채팅 및 별도 로컬 WebSocket 서버의 ACK·중복·순서·누락 복구를 구현했습니다.
+- **근거:** PLAYER-001 최종 PR 기준 로컬 단위 56/56과 API 36 전용 AVD 계측 41/41 PASS. 같은 PR의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984158)와 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227)는 PASS이며 원격 에뮬레이터 및 서버 Android 단계는 **SKIPPED**입니다. 이 수치는 해당 실행 범위와 소스 기준입니다.
+- **PLAYER-002 PiP: DEFERRED — v0.2 Candidate.** main에 포함되지 않은 로컬 실험입니다. API 30 실제 시스템 닫기에서 release가 관측됐지만, 별도의 빠른 강제 스택 제거에서는 ExoPlayer가 15초 내 해제되지 않는 P1이 미해결입니다. 이 실험을 v0.1 완료 기능으로 주장하지 않습니다.
+
+[합성 자막 화면](docs/evidence/player-001/caption.png) · [세로 영상](docs/evidence/player-001/portrait.png) · [회전 후 화면](docs/evidence/player-001/post-rotation.png). 캡처와 데모의 에뮬레이터 UI·폰트 및 Git 이력의 과거 키보드 구간은 [권리 감사](docs/reviews/M8-license-audit.md)에 남은 한계가 있습니다.
+
 ## Compose 화면 미리보기
 
 UX-007~011에서 에뮬레이터로 캡처한 화면입니다. 가상 아티스트·합성 콘텐츠와 로컬 Fake 데이터로 구성했습니다. 해당 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922626), [실제 WebSocket CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42066922691) 및 Codex 독립 리뷰는 최종 PR head에서 PASS했습니다.

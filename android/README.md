@@ -1,7 +1,6 @@
 # Android foundation
 
-The Android project contains `:app`, `:feature:live`, and the Kotlin/JVM
-`:core:model` module. The app owns navigation and constructs the fake repository
+The Android project contains `:app`, feature modules for discover, community, media, messages and live, and shared core modules including Kotlin/JVM `:core:model`. The app owns navigation and constructs the fake repository
 and ViewModel factory. The feature exposes the model dependency because its public
 state and factory use the model contract; the model has no Android, UI, storage,
 or networking dependency.
@@ -55,8 +54,8 @@ and [build log](../harness/build-log.md) for the current project state.
 
 M2 player behavior and fixture provenance are documented in the [M2 SDD](../docs/specs/M2-hls-player.md). M2 physical-device validation is recorded with the stated limitations.
 
-### PLAYER-001 test fixture (work in progress)
+### PLAYER-001 test fixture and validation
 
-`scripts/generate-player001-fixture.sh` (run from the repository root) uses FFmpeg's synthetic `testsrc2` source to generate a six-second 360p/720p HLS playlist, a 9:16 MP4, and a synthetic English WebVTT caption under `android/app/src/androidTest/assets/player001`. It contains no third-party footage or audio; the audio is a synthetic 440 Hz tone. The generated fixture is approximately 5.0 MiB with FFmpeg 8.0.1; encoder versions can change its bytes. PLAYER-001 is not yet fully verified; consult its SDD and build log for actual results and remaining limitations.
+`scripts/generate-player001-fixture.sh` (run from the repository root) uses FFmpeg's synthetic `testsrc2` source to generate a six-second 360p/720p HLS playlist, a 9:16 MP4, and a synthetic English WebVTT caption under `android/app/src/androidTest/assets/player001`. It contains no third-party footage or audio; the audio is a synthetic 440 Hz tone. The generated fixture is approximately 5.0 MiB with FFmpeg 8.0.1; encoder versions can change its bytes. PLAYER-001 is merged. Its final local run passed 56 live unit tests and 41 API 36 AVD instrumentation tests; the remote emulator job was skipped. See the [PLAYER-001 SDD](../docs/specs/PLAYER-001-player-settings-fullscreen.md) for the exact source revision, test scope and remaining limitations.
 
 The bundled captionless HLS advertises `CLOSED-CAPTIONS=NONE`. For HLS with no caption declaration, an inferred CEA-608 choice is labeled as availability unknown; it may contain no captions.
