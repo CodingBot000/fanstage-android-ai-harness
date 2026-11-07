@@ -3,13 +3,15 @@ package dev.fanstage.android.feature.live
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.os.Build
+import android.view.View
+import android.view.WindowInsetsController
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.view.WindowCompat
 
 /** A neutral playback palette; Discover, Community, Media and Messages retain the light theme. */
 private val videoColors = darkColorScheme(
@@ -44,17 +46,25 @@ internal fun VideoPlaybackTheme(content: @Composable () -> Unit) {
     val activity = LocalContext.current.findPlaybackActivity()
     // Edge-to-edge system bar icons must remain visible against the black surface.
     DisposableEffect(activity) {
-        val controller = activity?.window?.let { WindowCompat.getInsetsController(it, it.decorView) }
-        val wasLightStatus = controller?.isAppearanceLightStatusBars
-        val wasLightNavigation = controller?.isAppearanceLightNavigationBars
+        val decor = activity?.window?.decorView
+        val controller = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) activity?.window?.insetsController else null
+        val appearanceMask = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS or
+                WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
+        } else 0
+        val oldAppearance = controller?.systemBarsAppearance
+        val oldLegacyFlags = if (controller == null) decor?.systemUiVisibility else null
         if (controller != null) {
-            controller.isAppearanceLightStatusBars = false
-            controller.isAppearanceLightNavigationBars = false
+            controller.setSystemBarsAppearance(0, appearanceMask)
+        } else if (decor != null) {
+            val lightMask = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+            decor.systemUiVisibility = decor.systemUiVisibility and lightMask.inv()
         }
         onDispose {
-            if (controller != null) {
-                if (wasLightStatus != null) controller.isAppearanceLightStatusBars = wasLightStatus
-                if (wasLightNavigation != null) controller.isAppearanceLightNavigationBars = wasLightNavigation
+            if (controller != null && oldAppearance != null) {
+                controller.setSystemBarsAppearance(oldAppearance and appearanceMask, appearanceMask)
+            } else if (decor != null && oldLegacyFlags != null) {
+                decor.systemUiVisibility = oldLegacyFlags
             }
         }
     }
