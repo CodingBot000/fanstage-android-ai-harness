@@ -77,9 +77,11 @@ private fun FanStageApp() {
     val tabs = listOf("rooms", "community", "media", "messages")
     val hazeState = rememberHazeState()
     val isTab = currentRoute in tabs
+    val isPlaybackRoute = currentRoute == "rooms/{roomId}" ||
+        currentRoute == "local-video/{videoId}" || currentRoute == "replay"
     val titleBarState = rememberCollapsingTitleBarState(entry)
     CompositionLocalProvider(LocalCollapsingTitleBar provides titleBarState) {
-    Scaffold(modifier = Modifier.nestedScroll(titleBarState.connection), topBar = {
+    Scaffold(modifier = Modifier.nestedScroll(titleBarState.connection), containerColor = if (isPlaybackRoute) Color.Black else MaterialTheme.colorScheme.background, topBar = {
         if (isTab) Column(Modifier.statusBarsPadding()) {
             Box(Modifier.fillMaxWidth().height(64.dp * titleBarState.visibleFraction).clipToBounds().testTag("collapsing_top_bar")) {
                 TopAppBar(title = { Text("fanstage", color = dev.fanstage.android.core.designsystem.Plum, style = MaterialTheme.typography.titleLarge) }, windowInsets = WindowInsets(0, 0, 0, 0))
@@ -90,9 +92,7 @@ private fun FanStageApp() {
     NavHost(navController = navController, startDestination = "rooms", modifier = Modifier.fillMaxSize().hazeSource(hazeState)) {
         composable("rooms") {
             DiscoverRoute(viewModel = discoverViewModel, localVideos = BuildConfig.DEBUG, onRoomClick = { roomId ->
-                val index = listOf("studio-session", "sketch-break", "tabletop-night").indexOf(roomId)
-                if (BuildConfig.DEBUG && index >= 0) navController.navigate("local-video/${DemoVideos.all[index % DemoVideos.all.size].id}")
-                else navController.navigate("rooms/${Uri.encode(roomId)}") { launchSingleTop = true }
+                navController.navigate("rooms/${Uri.encode(roomId)}") { launchSingleTop = true }
             }, onReplayClick = { navController.navigate(if (BuildConfig.DEBUG) "local-video/${DemoVideos.all[3 % DemoVideos.all.size].id}" else "replay") { launchSingleTop = true } }, onBenchmarkClick = { navController.navigate("replay") }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
         }
         composable("messages") { MessagesListRoute(messagesViewModel, artists, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
@@ -100,7 +100,7 @@ private fun FanStageApp() {
             ConversationRoute(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
         }
         composable("media") {
-            MediaRoute(mediaViewModel, onLive = { roomId -> val index = listOf("studio-session", "sketch-break", "tabletop-night").indexOf(roomId); if (BuildConfig.DEBUG && index >= 0) navController.navigate("local-video/${DemoVideos.all[index % DemoVideos.all.size].id}") else navController.navigate("rooms/${Uri.encode(roomId)}") }, onReplay = { navController.navigate("replay") }, videos = if (BuildConfig.DEBUG) DemoVideos.all else emptyList(), onVideo = { navController.navigate("local-video/$it") })
+            MediaRoute(mediaViewModel, onLive = { roomId -> navController.navigate("rooms/${Uri.encode(roomId)}") { launchSingleTop = true } }, onReplay = { navController.navigate("replay") }, videos = if (BuildConfig.DEBUG) DemoVideos.all else emptyList(), onVideo = { navController.navigate("local-video/$it") })
         }
         composable("community") {
             CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, artists = artists)
@@ -112,19 +112,15 @@ private fun FanStageApp() {
         composable("community/post/{postId}") { postEntry ->
             PostDetailRoute(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
         }
+        // These cards are explicitly VOD regardless of video ID or MP4 file number.
         composable("local-video/{videoId}") { videoEntry ->
             val video = DemoVideos.all.firstOrNull { it.id == videoEntry.arguments?.getString("videoId") }
             if (BuildConfig.DEBUG && video != null) {
-                val emulator = android.os.Build.HARDWARE.contains("ranchu", ignoreCase = true) || android.os.Build.HARDWARE.contains("goldfish", ignoreCase = true)
-                val host = if (emulator) "10.0.2.2" else "127.0.0.1"
-                val source = "http://$host:18765/demo-media/${video.fileName}"
-                val index = DemoVideos.all.indexOf(video)
-                val roomId = listOf("studio-session", "sketch-break", "tabletop-night").getOrNull(index)
-                if (roomId != null) {
-                    val chatFactory = remember(roomId) { ChatViewModel.Factory(roomId) }
-                    val chatViewModel: ChatViewModel = viewModel(viewModelStoreOwner = videoEntry, factory = chatFactory)
-                    RoomDetailScreen(roomId, chatViewModel, developmentControls = true, sourceUri = source, onBack = { navController.popBackStack() })
-                } else ReplayScreen(onBack = { navController.popBackStack() }, sourceUri = source, title = video.title)
+                ReplayScreen(
+                    onBack = { navController.popBackStack() },
+                    sourceUri = localDemoVideoUrl(video.fileName),
+                    title = video.title,
+                )
             }
         }
         composable("replay") { ReplayScreen(onBack = { navController.popBackStack() }) }
@@ -135,10 +131,19 @@ private fun FanStageApp() {
             val roomId = requireNotNull(entry.arguments?.getString("roomId"))
             val chatFactory = remember(roomId) { ChatViewModel.Factory(roomId) }
             val chatViewModel: ChatViewModel = viewModel(viewModelStoreOwner = entry, factory = chatFactory)
+            val demoVideoId = when (roomId) {
+                "studio-session" -> "demo-01"
+                "sketch-break" -> "demo-02"
+                "tabletop-night" -> "demo-03"
+                else -> null
+            }
+            // A LIVE demo may use a prerecorded stream, but navigation remains LIVE + chat.
+            val liveDemoVideo = if (BuildConfig.DEBUG) DemoVideos.all.firstOrNull { it.id == demoVideoId } else null
             RoomDetailScreen(
                 roomId = roomId,
                 chatViewModel = chatViewModel,
                 developmentControls = BuildConfig.DEBUG,
+                sourceUri = liveDemoVideo?.let { localDemoVideoUrl(it.fileName) } ?: "asset:///hls/captionless.m3u8",
                 onBack = { navController.popBackStack() },
             )
         }
@@ -171,4 +176,12 @@ private fun FanStageApp() {
     }
     }
     }
+}
+
+/** Emulators use the host bridge; devices can access the same host through an explicit ADB reverse port. */
+private fun localDemoVideoUrl(fileName: String): String {
+    val emulator = android.os.Build.HARDWARE.contains("ranchu", ignoreCase = true) ||
+        android.os.Build.HARDWARE.contains("goldfish", ignoreCase = true)
+    val host = if (emulator) "10.0.2.2" else "127.0.0.1"
+    return "http://$host:18765/demo-media/$fileName"
 }

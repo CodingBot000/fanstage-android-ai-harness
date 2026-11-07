@@ -77,4 +77,7 @@
     <string name="local_server_vod">로컬 서버 영상 스트리밍 · 녹화 방송</string>
     <string name="chat_settings">개발 설정</string>
     <string name="chat_participant">참여자</string>
+    <string name="vod_chat_unavailable">다시보기 영상에서는 채팅을 제공하지 않습니다.</string>
+    <string name="live_demo_recording">LIVE 데모 · 로컬 서버 녹화 영상으로 채팅 시연</string>
+    <string name="benchmark_stream">벤치마크 · 테스트 영상</string>
 </resources>

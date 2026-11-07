@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -106,6 +108,7 @@ fun RoomListScreen(
 
 @Composable
 fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, sourceUri: String = "asset:///hls/captionless.m3u8", onBack: () -> Unit) {
+    VideoPlaybackTheme {
     val title = when (roomId) {
         "studio-session" -> stringResource(R.string.room_studio_title)
         "sketch-break" -> stringResource(R.string.room_sketch_title)
@@ -115,11 +118,19 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
     var sendSignal by remember(roomId) { mutableIntStateOf(0) }
     val keyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     var developmentFieldFocused by remember(roomId) { mutableStateOf(false) }
-    Scaffold(topBar = { BackTitleBar(title, onBack, backTag = "room_back") }) { padding ->
+    Scaffold(
+        modifier = Modifier.testTag("video_playback_dark_screen"),
+        containerColor = Color.Black,
+        contentColor = MaterialTheme.colorScheme.onBackground,
+        topBar = { BackTitleBar(title, onBack, backTag = "room_back") },
+    ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).imePadding().testTag("room_detail")) {
         Column(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
-            Text(if (roomId == "benchmark") "Benchmark · test video" else if (sourceUri.endsWith(".mp4")) stringResource(R.string.local_server_vod) else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.primary, style = MaterialTheme.typography.labelLarge)
-            Card(modifier = Modifier.fillMaxWidth()) {
+            Text(if (roomId == "benchmark") stringResource(R.string.benchmark_stream) else if (sourceUri.endsWith(".mp4")) stringResource(R.string.live_demo_recording) else stringResource(R.string.demo_live_room), color = MaterialTheme.colorScheme.onSurfaceVariant, style = MaterialTheme.typography.labelLarge)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.Black, contentColor = MaterialTheme.colorScheme.onBackground),
+            ) {
                 Column(Modifier.padding(12.dp)) { PlayerPanel(roomId, sourceUri, compact = keyboardVisible, settingsAtEnd = true) }
             }
         }
@@ -127,7 +138,10 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
             modifier = Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            Card(modifier = Modifier.fillMaxWidth()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF111315), contentColor = MaterialTheme.colorScheme.onSurface),
+            ) {
                 Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) { ChatPanel(chatViewModel, developmentControls, showComposer = false, sendSignal = sendSignal, onDevelopmentFocus = { developmentFieldFocused = it }) }
             }
         }
@@ -135,5 +149,6 @@ fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentCo
             Box(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) { ChatComposer(chatViewModel) { sendSignal++ } }
         }
         }
+    }
     }
 }
