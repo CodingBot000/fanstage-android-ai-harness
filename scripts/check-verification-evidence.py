@@ -110,6 +110,9 @@ def xml_counts(path: Path):
         fail(f'{path.name}: invalid XML: {error}')
     if root.tag not in ('testsuite', 'testsuites'):
         fail(f'{path.name}: unexpected JUnit root')
+    for parent in root.iter():
+        if any(child.tag == 'testcase' and parent.tag != 'testsuite' for child in parent):
+            fail(f'{path.name}: testcase outside a testsuite')
     suites = list(root.iter('testsuite'))
     if not suites:
         fail(f'{path.name}: no test suites')

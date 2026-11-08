@@ -78,6 +78,10 @@ class EvidenceTests(unittest.TestCase):
         self.manifest['results'][0].pop('head_at_execution'); self.manifest['results'][0].pop('tested_code_snapshot_commit'); self.assert_bad()
     def test_suite_count_mismatch_with_updated_hash(self):
         (self.root/'pass.xml').write_bytes(PASS.replace(b'tests="1"',b'tests="2"')); self.rehash('pass.xml'); self.assert_bad()
+    def test_orphan_testcase_outside_suite_is_rejected(self):
+        orphan = b'<testsuites tests="2" failures="0" errors="0" skipped="0">' + PASS + b'<testcase classname="C" name="orphan"/></testsuites>'
+        (self.root/'pass.xml').write_bytes(orphan); self.rehash('pass.xml'); self.manifest['results'][0]['tests']=2
+        self.assert_bad()
     def test_historical_failure_erasure_even_if_hash_and_manifest_changed(self):
         (self.root/'failure.xml').write_bytes(PASS); self.rehash('failure.xml')
         e=self.manifest['results'][1];e.update(failures=0,outcome='PASS',expected_failure_cases=[])
