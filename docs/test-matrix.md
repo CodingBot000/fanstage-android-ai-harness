@@ -7,6 +7,7 @@ FanStage는 변경된 코드의 역할에 따라 테스트를 선택합니다. G
 | 변경 대상 | 우선 실행할 검사 | 추가 확인 |
 |---|---|---|
 | Compose 화면·ViewModel | 빌드·Lint·관련 단위 테스트 | 탐색·IME·회전 등 변경 화면의 로컬 계측 |
+| UI 공통 컴포넌트·디자인 토큰 | 영향받는 feature/app 빌드·Lint·기존 Compose 계측 및 모듈 경계 검사 | 호출처·접근성·testTag·카드 배치·Navigation/IME 확인; 시각적 동일성은 별도 캡처 대조 |
 | Media3·Player | 빌드·Lint·Player 단위 테스트 | 실제 첫 프레임, 전체 화면 전환, Listener·Surface 해제 |
 | ChatTransport·메시지 모델 | 관련 단위 테스트·서버 통합·장애 주입 | ACK 유실, 중복·역순·누락 및 Android 상태 전이 |
 | Hilt 주입·ViewModel 범위 | 빌드·단위 테스트·모듈 경계 검사 | 바인딩 교체, 화면 재생성 및 룸 재진입 계측 |
@@ -19,7 +20,7 @@ FanStage는 변경된 코드의 역할에 따라 테스트를 선택합니다. G
 
 - **[Android CI](../.github/workflows/android-ci.yml):** Debug/Release 계열 빌드, Lint, 단위 테스트, Manifest·모듈 의존성 검사, 일반/Hilt 전용 계측 APK 각각 컴파일(기기 실행 아님)
 - **[서버 CI](../.github/workflows/m4-integration.yml):** 격리 PostgreSQL·WebSocket 통합과 ACK 유실·연결 단절 테스트
-- **[문서 CI](../.github/workflows/docs-check.yml):** Markdown 내부 링크와 ADR 번호 중복 검사
+- **[문서 CI](../.github/workflows/docs-check.yml):** Markdown 내부 링크·ADR 번호 검사, 공개 검증 증거의 SHA-256·JUnit 집계·실패 이력·출처 검사 및 음성 fixture 단위 검사
 
 Hilt 전용 `RepositoryBindingsTest`는 `-PfanstageHiltInstrumentation=true`에서만 테스트 러너와 소스가 구성됩니다. [기기 실행 결과](specs/hilt-di-migration-verification.md)는 별도 기록으로 구분합니다.
 
@@ -27,4 +28,4 @@ Hilt 전용 `RepositoryBindingsTest`는 `-PfanstageHiltInstrumentation=true`에�
 
 [실제 실행 결과](verification.md) · [AI 개발·검증 절차](ai-development-workflow.md)
 
-PR에서는 [통합 품질 게이트 제안](specs/ci-required-quality-policy.md)의 `required-quality`가 선택된 검사의 결과를 집계한다. GitHub의 필수 체크 강제 정책은 별도 승인 전이며, CI 성공과 병합 차단을 혼동하지 않는다.
+PR에서는 [적용된 통합 품질 게이트](specs/ci-required-quality-policy.md)의 `required-quality`가 변경 범위별 선택 검사를 집계한다. `main` Branch Protection에서 이 체크를 필수로 지정했으나 관리자는 우회할 수 있다. 실제 고의 실패 PR의 병합 거부 실험은 `NOT_RUN`이며 CI 통과와 강제 정책의 실험적 검증은 구분한다.

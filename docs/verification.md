@@ -11,6 +11,8 @@
 | PostgreSQL·WebSocket·장애 주입 | GitHub Actions의 격리 서버 | **통과** · [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) |
 | 실기기 시연 | Galaxy S22 Ultra / 로컬 MP4 | 화면 탐색·재생 영상 검증 · [PR #61](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/61) |
 | Hilt DI·룸 수명주기 전환 | Galaxy S22 Ultra/API 36 및 격리 API 36 에뮬레이터 | 선택 일반 39/39, Hilt 바인딩 1/1, 격리 서버 Android 통합 1/1 PASS · [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) · [실행 기록](specs/hilt-di-migration-verification.md) |
+| Android 증거·회전 진단 및 통합 게이트 | Galaxy S22 Ultra/API 36 / GitHub Actions | 회전 진단 두 배치 각 20/20, 최종 선택 회귀 42/42, Hilt 3/3, 실제 서버 Android 2/2 기록. 최초 실패 원인 미확정 · [PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69) · [공개 증거](evidence/verification/audit-20261108/README.md) |
+| UI 공통화·화면 조립 분리 | API 36 에뮬레이터·Galaxy S22 Ultra / GitHub Actions | 변경 PR에 선택 UI 회귀 각 43/43, Hilt 3/3 등이 기록됨. 스크린샷 전후 비교·해당 PR 실제 서버 재실행은 `NOT_RUN` · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70) · [SDD](specs/ui-designsystem-refactoring.md) |
 
 위 수치는 각 PR에서 기록한 **해당 코드 버전의 실행 결과**입니다.
 
@@ -23,18 +25,18 @@
 
 ## Android 최종 감사 실행
 
-PR #68 이후의 소스에서 Hilt 실제 Activity 생성 경로, 실기기 화면·플레이어 회귀와 격리 PostgreSQL·WebSocket 연결을 다시 검증했습니다. 추가 로컬 미디어는 무음 합성 영상으로 확인했습니다. 초기 회전 계측 실패와 재실행, 반복 자원 관찰, 성능 원본 해시 및 미해결 위험은 [감사 보고](evidence/verification/audit-20261108/audit-report.md)와 [기계 판독 증거](evidence/verification/audit-20261108/README.md)에 구분해 기록했습니다. `main`에는 확인 시점에 필수 검사 강제 규칙이 없었습니다.
+PR #68 이후의 소스에서 Hilt 실제 Activity 생성 경로, 실기기 화면·플레이어 회귀와 격리 PostgreSQL·WebSocket 연결을 다시 검증했습니다. 추가 로컬 미디어는 무음 합성 영상으로 확인했습니다. 초기 회전 계측 실패와 재실행, 반복 자원 관찰, 성능 원본 해시 및 미해결 위험은 [감사 보고](evidence/verification/audit-20261108/audit-report.md)와 [기계 판독 증거](evidence/verification/audit-20261108/README.md)에 구분해 기록했습니다. **PR #69의 초기 감사 시점에는** `main`에 필수 검사 강제 규칙이 없었습니다. 이후 승인받아 보호 정책을 적용했으며 현재 설정과 차단 실험의 한계는 [정책 기록](specs/ci-required-quality-policy.md)을 참조합니다.
 
 ## 증거 무결성과 회전 진단 후속
 
-공개 증거 파일의 해시·JUnit 집계·실패 이력과 출처를 검사하는 CI를 추가했습니다. 의도적 오류 fixture로 검사 실패도 확인했습니다. Galaxy S22 Ultra에서 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만, 이전에 한 차례 발생한 실패의 원인은 확인되지 않았습니다. [후속 근거와 제한](evidence/verification/audit-20261108/README.md) · [필수 체크 정책 제안](specs/ci-required-quality-policy.md). 2026-11-09 사용자 승인으로 GitHub main 보호 정책을 적용하고 관리자 상시 우회는 허용했습니다. 실제 병합 차단 실험은 NOT_RUN이며 게이트 workflow는 아직 PR에만 있습니다.
+공개 증거 파일의 해시·JUnit 집계·실패 이력과 출처를 검사하는 CI를 추가했습니다. 의도적 오류 fixture로 검사 실패도 확인했습니다. Galaxy S22 Ultra에서 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만, 이전에 한 차례 발생한 실패의 원인은 확인되지 않았습니다. [후속 근거와 제한](evidence/verification/audit-20261108/README.md) · [필수 체크 정책 제안](specs/ci-required-quality-policy.md). 2026-11-09 사용자 승인으로 GitHub `main` 보호 정책을 적용했고 관리자 우회는 허용했습니다. 실제 병합 차단 실험은 `NOT_RUN`입니다. 게이트 워크플로는 [PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69)를 통해 이미 `main`에 병합됐고, [PR #70의 `required-quality`](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)가 성공했습니다.
 
 ## 자동화와 기기 검증의 역할
 
 **GitHub Actions**
 - [Android CI](../.github/workflows/android-ci.yml): Debug·Release 계열 빌드, Android Lint, 단위 테스트, 모듈 의존성·Manifest 검사
 - [서버 CI](../.github/workflows/m4-integration.yml): PostgreSQL·WebSocket 통합, 순번·재전송, ACK 유실·서버 단절 테스트
-- [문서 검사](../.github/workflows/docs-check.yml): Markdown 내부 링크와 ADR 번호 검사
+- [문서 검사](../.github/workflows/docs-check.yml): Markdown 내부 링크·ADR 번호 및 공개 증거 SHA-256·JUnit·출처 무결성 검사
 
 **로컬 Android 기기 검증**
 - 에뮬레이터: 플레이어 전환·화질·자막, Compose 화면 복귀, 채팅 연결과 키보드 처리
