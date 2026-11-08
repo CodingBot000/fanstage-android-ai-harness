@@ -1,30 +1,32 @@
-# 실시간 채팅 · WebSocket/HTTP 계약
+# 실시간 채팅 · WebSocket/HTTP 설계
 
-## 메시지 모델
+## 1. 데이터 모델과 역할
 
-| 필드 | 역할 |
-|---|---|
-| `roomId` | LIVE 채팅방 식별자 |
-| `clientMessageId` | 재전송 시 유지하는 클라이언트 메시지 ID(멱등 키) |
-| `messageId` | 서버에서 확정한 메시지 ID |
-| `serverSequence` | 채팅방 단위 서버 메시지 순번 |
-| `status` | Pending / Sent / Failed 등 전송 상태 |
-| `connectionState` | 연결 중 / 연결됨 / 재연결 / 종료 등 연결 상태 |
+서버 메시지, 화면 표시 메시지, 연결 상태를 서로 다른 모델로 관리합니다.
 
-## 전송·복구 처리
+| 모델·인터페이스 | 실제 필드 | 역할 |
+|---|---|---|
+| `ServerMessage` | `roomId`, `messageId`, `clientMessageId`, `serverSequence` | 서버가 확정한 메시지와 룸 내 순서 |
+| `ChatMessage` | `key`, `clientMessageId`, `sequence`, `delivery`, `isUncertain` | 화면에 표시하는 메시지와 전송 상태 |
+| `ChatTransport` | `connectionState` | 연결 상태를 제공하는 `StateFlow<ChatConnectionStatus>` |
+| `ChatUiState` | `messages`, `connectionStatus`, `gapUnresolved` | Compose가 구독하는 화면 상태 |
 
-1. ACK 수신이 지연되면 메시지를 Pending으로 유지하고 결과를 확인합니다.
-2. 동일 `clientMessageId`로 재전송한 메시지는 서버에서 중복 저장·방송하지 않도록 처리합니다.
-3. WebSocket 실시간 이벤트와 HTTP snapshot을 같은 `serverSequence` 기준으로 합쳐 중복·역순·누락을 관리합니다.
-4. 화면을 나가거나 룸을 변경한 뒤 도착한 이전 응답은 현재 화면에 반영하지 않습니다.
-5. 클라이언트 메시지 보관·표시 버퍼를 제한해 무한 적재를 막습니다.
+`ChatMessage.delivery`는 `PENDING`, `SENT`, `FAILED` 중 하나입니다. 연결 상태는 `CONNECTING`, `CONNECTED`, `RECONNECTING`, `DISCONNECTED`로 구분합니다. 서버 순번은 `ServerMessage.serverSequence`에 보관합니다.
 
-## 데이터 경로
+## 2. 전송·재연결 처리
 
-- **Fake transport:** 오프라인 데모 및 지연·중복·누락 상황을 재현하는 결정적 테스트
-- **Real transport:** Android Debug에서 선택할 수 있는 로컬 WebSocket 이벤트와 HTTP snapshot
-- **Backend:** Spring Boot·PostgreSQL에서 메시지 순번·중복 전송·조회 처리
+1. **ACK 유실:** 전송 결과가 확인되지 않으면 Pending을 유지합니다. 같은 `clientMessageId`로 다시 보내 서버의 중복 저장·방송을 방지합니다.
+2. **순서·누락:** WebSocket 이벤트와 HTTP 메시지 조회 결과를 `serverSequence`로 합칩니다. 확인된 연속 순번과 가장 큰 관측 순번을 구분해 빠진 구간을 찾아 보충합니다.
+3. **룸 변경:** 이전 룸에서 늦게 도착한 이벤트나 취소된 요청은 현재 룸에 적용하지 않습니다.
+4. **전송 경로 변경:** `ChatViewModel.replaceTransport()`는 미확정 메시지가 있으면 전환을 차단합니다. 로컬 서버를 선택할 때는 인증을 확인한 뒤 새 연결을 적용합니다.
+5. **메모리 관리:** Fake 채팅과 화면 메시지에는 보관·표시 개수 제한을 둡니다.
 
-[PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53)에서 LIVE 채팅 UI·연결 전환과 로컬 API 36 계측 28개를 검증했습니다. 메시지 전송 실패와 복구는 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) 및 [장애 주입 시나리오](failure-recovery.md)에 연결됩니다.
+## 3. 구현과 검증
 
-**설계 근거:** [메시지 정합성 ADR](../adr/ADR-0003-chat-consistency.md) · [로컬 서버 실행](../../backend/chat-server/README.md).
+- **`FakeChatTransport`:** 서버 없이 채팅 상태를 시연하고 지연·중복·누락 상황을 테스트합니다.
+- **`RealChatTransport`:** Android Debug에서 로컬 WebSocket 메시지와 HTTP 누락 조회를 사용합니다.
+- **Spring Boot·PostgreSQL:** 메시지 순번과 멱등 키를 저장하고 ACK·메시지 조회를 처리합니다.
+
+[PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53)에서 전송 경로 변경·인증 실패·미확정 메시지 보호를 포함한 Android 로컬 계측 **28/28**을 확인했습니다. 서버의 중복 처리와 장애 주입은 [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227)에서 검증했습니다.
+
+[채팅 설계 결정](../adr/ADR-0003-chat-consistency.md) · [장애 주입 시나리오](failure-recovery.md) · [로컬 서버 실행](../../backend/chat-server/README.md)
