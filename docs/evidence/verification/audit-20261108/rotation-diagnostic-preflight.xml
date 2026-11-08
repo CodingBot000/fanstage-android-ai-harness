@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="3" failures="0" errors="0" skipped="0" time="11.66" timestamp="2026-11-08T14:50:19" hostname="localhost">
+  <testsuite name="dev.fanstage.android.RotationAuditTest" tests="1" failures="0" errors="0" skipped="0" time="1.977" timestamp="2026-11-08T14:50:19" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="syntheticFailureRetainsDiagnosticEvents" classname="dev.fanstage.android.RotationAuditTest" time="1.977" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.PlayerSettingsTest" tests="2" failures="0" errors="0" skipped="0" time="8.499" timestamp="2026-11-08T14:50:19" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="fullscreenRestoresAfterActualRotation" classname="dev.fanstage.android.PlayerSettingsTest" time="5.177" />
+    <testcase name="fullscreenSurvivesExplicitActivityRecreation" classname="dev.fanstage.android.PlayerSettingsTest" time="3.322" />
+  </testsuite>
+</testsuites>

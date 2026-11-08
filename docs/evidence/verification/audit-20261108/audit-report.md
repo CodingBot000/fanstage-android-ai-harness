@@ -22,7 +22,7 @@
 
 SM-S908N/API 36, non-debuggable `benchmark`, JDK 17, `CompilationMode.None`, 동일 `ColdStartupBenchmark` 10회씩을 순서대로 실행했다. 도입 전 `0451c02817f2ae48e8f7ae5d898c55984e0cf87e`의 TTID 중앙값은 618.19 ms, nearest-rank p95는 664.35 ms, 표본 표준편차는 32.18 ms였다. 이후 `dd7ef1bbf3fe23c76caa8424c7d8f159cb0e06a5`는 각각 587.42 ms, 609.13 ms, 12.60 ms였다. 테스트 APK 해시는 동일하며 앱 APK는 다르다. 한 번의 고정 순서 실행이고 OS 캐시·백그라운드 상태가 통제되지 않았으며 소스 변경이 Hilt만으로 제한되지 않아 인과적 개선·회귀를 판정하지 않는다. n=10의 nearest-rank p95는 최대값이며 TTFD는 측정하지 않았다. [반복값과 원본 해시](cold-start-observations.json).
 
-각 실행의 원본 Macrobenchmark JSON과 Perfetto trace 10개는 기기 시스템 정보가 포함될 수 있어 비공개 로컬에 보존한다. 공개 JSON은 실제 원본에서 추출한 값과 원본 해시를 담은 **파생 자료**다. 이전 다른 모델 실기기의 M6 기준 원본도 로컬에 존재했다. 과거 manifest 9개와 각 manifest가 가리키는 원본 189개를 해시 검증했고, 10회 반복값의 중앙값·nearest-rank p95를 재계산해 과거 기록과 일치함을 확인했다. [검사 요약](historical-manifest-check.json). 기기가 달라 이번 결과와 개선율을 계산하지 않는다.
+각 실행의 원본 Macrobenchmark JSON과 Perfetto trace 10개는 기기 시스템 정보가 포함될 수 있어 비공개 로컬에 보존한다. 공개 JSON은 실제 원본에서 추출한 값과 원본 해시를 담은 **파생 자료**다. 이전 다른 모델 실기기의 M6 기준 원본도 로컬에 존재했다. 과거 manifest 9개와 각 manifest가 가리키는 원본 189개를 해시 검증했고, 10회 반복값의 중앙값·nearest-rank p95를 재계산해 과거 기록과 일치함을 확인했다. [검사 요약](historical-manifest-check.json). 기기가 달라 이번 결과와 개선율을 계산하지 않는다. 과거 실험 중 `7e38fa5f06055877cb1749053421bfa95799572a`는 로컬 Git에 있으나 GitHub 커밋 API에서 조회되지 않아 공개 저장소만으로 해당 실험 소스를 재현할 수 없다.
 
 ## 도구 체인 공식 지원 범위
 
@@ -45,3 +45,15 @@ Hilt 2.60.1과 KSP 2.3.10을 사용한다. [Dagger KSP 안내](https://dagger.de
 ### 추가 성능 범위
 
 이번 전후 정량 비교는 Cold Startup TTID에 한정한다. LIVE 룸 첫 프레임 시간, 실제 채팅 이벤트 지연, 스크롤 Jank의 Hilt 전후 비교와 장시간 메모리·GC 추세는 NOT_RUN이다. 화면 첫 프레임의 존재나 기존 단위 테스트 통과를 이런 지연·성능 측정으로 대체하지 않는다. 성능 개선을 주장하거나 배포 결정을 내리려면 동일 기기에서 반복·순서 교차 측정을 추가한다.
+
+## 2026-11-09 증거 무결성과 회전 진단 후속
+
+공개 파일의 SHA-256, 중복·누락·경로 이탈, JUnit 스위트·케이스 집계 및 선언된 실패 이력, 소스 커밋 존재와 회전 코드 fingerprint를 검사하도록 보완했다. 정상 증거는 통과하고 임시 fixture의 누락·변조·XML 오류·출처 불일치는 거부한다. 통합 `required-quality`는 선택된 검사의 실패·취소·예상치 못한 미실행을 실패로 처리한다. 실제 PR에서 해당 체크의 성공을 확인했으나 **GitHub 보호 정책은 설정하지 않았다**. [설정 제안](../../../specs/ci-required-quality-policy.md).
+
+Galaxy S22 Ultra/API 36에서 진단 도입 초기와 보강 후의 회전 테스트를 각각 20회 독립 실행해 **20/20 + 20/20** 통과했다. 보강 후 매 실행에서 가로 회전 전 Player 재생과 TextureView 상태, Activity 생성·종료, 회전 후 일시정지 관찰 및 Listener 등록·제거 이벤트가 기록됐다. 20회에서 일반→전체 화면은 같은 Player 식별자였고 실제 Activity 회전 후에는 다른 Player 식별자가 관찰됐다. 이는 그 실행의 관찰이지 장시간 누수 부재의 증명이 아니다. [실행 기록](README.md) · [최종 추적](rotation-final-trace.json).
+
+예를 들어 최종 배치 첫 실행의 단조 시계 기준: 전체 화면에서 재생 중인 Player·사용 가능한 TextureView 확인(1.612초) → 가로 회전 요청(1.678초) → 기존 Activity pause/stop 및 Player listener 제거·해제(1.845–1.936초) → 새 Activity 생성·재개(1.956–1.960초) → 새 Player의 일시정지와 사용 가능한 TextureView 확인(2.547초) → 세로 복귀 후 화면 이탈 및 PlayerView 부재 확인(3.747초) 순서였다. 수치는 해당 진단 실행의 이벤트 상대 시각이지 앱 성능 측정값이 아니다.
+
+초기 실기기 전체 회귀의 한 차례 시간 초과는 당시 진단이 없었고 이번 40회에서 재현되지 않았다. **FLAKY / ROOT_CAUSE_UNCONFIRMED**로 유지하며 제품 결함이나 단순 기기 문제 어느 쪽으로도 확정하지 않는다. 진단은 Debug에서만 켤 수 있고 RcLocal·Release에서는 no-op이다. API 24–28에서는 별도 Dialog window의 Player를 직접 찾지 못할 수 있다. 로깅은 타이밍에 영향을 줄 수 있다. JUnit XML에는 실행 ID가 없으므로 XML과 trace의 개별 대응은 수집 순번에 의존하고 파일만으로 동일 실행임을 암호학적으로 증명하지 못한다.
+
+`rotation-intentional-negative.xml`은 오류 보고에 진단이 남는지 확인하려고 별도 fixture에서 의도적으로 실패시킨 결과다. 실제 결함으로 집계하지 않는다. 기존의 실제 초기 실패 `ui-physical-initial.xml`은 별도로 유지한다. 테스트 전 작업 트리에 있던 소스와 사후 생성한 커밋의 관계는 [manifest](manifest.json)에 기록한다.

@@ -13,3 +13,8 @@ Media3 ExoPlayer, Listener, Surface는 화면의 재생 세션이 관리합니�
 포그라운드에서 재생하고, 백그라운드 진입 시 일시정지하며, 복귀 시 사용자 조작으로 재개합니다. 로드 오류에는 제한된 재시도와 수동 재시도를 제공합니다. DRM/HDR 또는 전력 효율이 중요한 환경에는 Surface 선택을 별도로 검토해야 합니다.
 
 **구현·검증:** [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) · [플레이어 검증 계약](../specs/media3-player.md) · [Media3 Surface 안내](https://developer.android.com/media/media3/ui/surface).
+
+
+## 회전 검증 진단
+
+Debug 계측에서만 단조 시간 기반의 상태 진단을 활성화한다. Release/RcLocal 진단은 비활성이며 Player의 화면 소유권과 재생·해제 정책은 바꾸지 않는다. [검증 증거](../evidence/verification/audit-20261108/README.md).

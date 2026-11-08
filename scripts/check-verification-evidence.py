@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 import hashlib
 import json
 import math
@@ -51,10 +52,23 @@ REQUIRED = {'additional-ui-physical.xml',
  'unit/feature/live/TEST-dev.fanstage.android.feature.live.TrackGroupIdsTest.xml',
  'unit/feature/live/TEST-dev.fanstage.android.feature.live.chat.ChatTimestampTest.xml',
  'unit/feature/live/TEST-dev.fanstage.android.feature.live.chat.ChatViewModelTest.xml'}
-PINNED_FAILURE_HASHES = {'ui-physical-initial.xml': '3e8079711b8f95475e3e6c2cc1ee174b203dc70ea854a6672660c890f926f18a'}
+REQUIRED |= {'unit-rotation-final/' + path.removeprefix('unit/') for path in REQUIRED if path.startswith('unit/')}
+REQUIRED |= {f'rotation-instrumented-{phase}-{index:02}.xml' for phase in ('initial', 'final') for index in range(1, 21)}
+REQUIRED |= {'rotation-diagnostic-preflight.xml', 'rotation-intentional-negative.xml', 'rotation-initial-trace.json', 'rotation-final-trace.json', 'rotation-source-fingerprints.json', 'rotation-final-regression.xml', 'rotation-final-hilt.xml', 'rotation-negative-fresh.xml'}
+PINNED_FAILURE_HASHES = {
+    'ui-physical-initial.xml': '3e8079711b8f95475e3e6c2cc1ee174b203dc70ea854a6672660c890f926f18a',
+    'rotation-intentional-negative.xml': '1bbb14e078cc84e9680d82b9d9024d37e56bc17147083a8bdbe47b1c3bf5097d',
+    'rotation-negative-fresh.xml': '25f7555fee38aba1a787c9a6db6b46037d2f30016196e2e9b0048510461643ae',
+}
 PINNED_FAILURES = {
     'ui-physical-initial.xml': {
         ('dev.fanstage.android.PlayerSettingsTest', 'fullscreenRestoresAfterActualRotation', 'failure')
+    },
+    'rotation-intentional-negative.xml': {
+        ('dev.fanstage.android.RotationAuditFailureProbe', 'controlledFailureCarriesRotationEvents', 'failure')
+    },
+    'rotation-negative-fresh.xml': {
+        ('dev.fanstage.android.RotationAuditFailureProbe', 'controlledFailureCarriesRotationEvents', 'failure')
     },
 }
 
@@ -146,7 +160,7 @@ def xml_counts(path: Path):
     for i, suite in enumerate(suites):
         verify(suite, f'{path.name}:suite[{i}]')
     totals = verify(root, f'{path.name}:root')
-    return totals, failures
+    return totals, failures, {(case.get('classname'), case.get('name')) for case in all_cases}
 
 
 def commit_provenance(entry, git_check):
@@ -199,6 +213,103 @@ def check_cold(data, git_check=False):
             fail('cold-start: invalid private trace hash list')
 
 
+ROTATION_SOURCE_PATHS = {
+    'android/app/src/androidTest/kotlin/dev/fanstage/android/PlayerSettingsTest.kt',
+    'android/app/src/androidTest/kotlin/dev/fanstage/android/RotationAudit.kt',
+    'android/app/src/androidTest/kotlin/dev/fanstage/android/RotationAuditTest.kt',
+    'android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/Media3PlayerController.kt',
+    'android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/PlayerPanel.kt',
+    'android/feature/live/src/debug/kotlin/dev/fanstage/android/feature/live/PlayerRotationTrace.kt',
+    'android/feature/live/src/release/kotlin/dev/fanstage/android/feature/live/PlayerRotationTrace.kt',
+}
+
+
+def check_rotation_fingerprints(data, git_check=False):
+    if not isinstance(data, dict): fail('rotation fingerprints: invalid object')
+    for phase in ('initial', 'final'):
+        entry = data.get(phase)
+        if not isinstance(entry, dict): fail('rotation fingerprints: missing phase')
+        head, snapshot, files = entry.get('head_at_execution'), entry.get('tested_code_snapshot_commit'), entry.get('files')
+        if not isinstance(head, str) or not COMMIT.fullmatch(head) or not isinstance(snapshot, str) or not COMMIT.fullmatch(snapshot):
+            fail('rotation fingerprints: invalid commit')
+        if head == snapshot or not any(word in str(entry.get('note','')).lower() for word in ('modified','uncommitted')):
+            fail('rotation fingerprints: pre-commit execution is not disclosed')
+        if not isinstance(files, dict) or set(files) != ROTATION_SOURCE_PATHS:
+            fail('rotation fingerprints: relevant source file set differs')
+        for path, digest in files.items():
+            if not isinstance(digest, str) or not SHA256.fullmatch(digest): fail('rotation fingerprints: invalid source file hash')
+            if git_check:
+                result = subprocess.run(['git','-C',str(REPO),'show',f'{snapshot}:{path}'],capture_output=True)
+                if result.returncode or hashlib.sha256(result.stdout).hexdigest() != digest:
+                    fail(f'rotation fingerprints: committed file hash mismatch: {path}')
+        if git_check and subprocess.run(['git','-C',str(REPO),'merge-base','--is-ancestor',head,snapshot],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode:
+            fail('rotation fingerprints: execution HEAD is not an ancestor of the snapshot')
+
+
+ROTATION_EVENTS = {
+    'test_start', 'activity_created', 'activity_destroyed', 'activity_started', 'activity_stopped',
+    'activity_resumed', 'activity_paused', 'player_events', 'compose_recompose',
+    'compose_state_observed', 'dialog_created', 'dialog_disposed', 'surface_attached',
+    'surface_detached', 'listener_registered', 'listener_removed', 'player_released', 'ui_checkpoint',
+}
+
+
+def check_rotation_trace(data, name):
+    prefix = 'finalRotation' if name == 'rotation-final-trace.json' else 'rotation'
+    if not isinstance(data, dict) or not isinstance(data.get('source_log_sha256'), str) or not SHA256.fullmatch(data['source_log_sha256']):
+        fail(f'{name}: invalid private source log hash')
+    lines = data.get('events')
+    if not isinstance(lines, list) or not lines:
+        fail(f'{name}: no diagnostic events')
+    runs = {}
+    pattern = re.compile(r'^run=(' + prefix + r'[0-9]{2}) ns=([0-9]+) event=([A-Za-z_]+)(?: |$)')
+    for line in lines:
+        if not isinstance(line, str) or not re.fullmatch(r'[A-Za-z0-9_=,:. -]+', line):
+            fail(f'{name}: invalid diagnostic line')
+        match = pattern.match(line)
+        if not match: fail(f'{name}: invalid run, timestamp or event')
+        runs.setdefault(match.group(1), []).append((int(match.group(2)), match.group(3), line))
+    if set(runs) != {f'{prefix}{i:02}' for i in range(1, 21)}:
+        fail(f'{name}: expected exactly 20 run IDs')
+    for run, events in runs.items():
+        if any(a[0] > b[0] for a, b in zip(events, events[1:])):
+            fail(f'{name}: nonmonotonic events for {run}')
+        if not ROTATION_EVENTS.issubset({event for _, event, _ in events}):
+            fail(f'{name}: missing diagnostic event for {run}')
+        lines_for_run = [line for _, _, line in events]
+        for checkpoint in ('playing_before_fullscreen', 'fullscreen_before_rotation', 'landscape_paused', 'room_exited'):
+            if not any(f'event=ui_checkpoint name={checkpoint} ' in line for line in lines_for_run):
+                fail(f'{name}: missing {checkpoint} for {run}')
+        if prefix == 'finalRotation':
+            def listener_ids(kind):
+                pairs = []
+                for line in lines_for_run:
+                    if f'event={kind} ' in line:
+                        player = re.search(r'\bplayer=([0-9]+)\b', line)
+                        listener = re.search(r'\blistener=([0-9]+)\b', line)
+                        if not player or not listener: fail(f'{name}: invalid listener event for {run}')
+                        pairs.append((player.group(1), listener.group(1)))
+                return Counter(pairs)
+            if listener_ids('listener_registered') != listener_ids('listener_removed'):
+                fail(f'{name}: listener registration/removal events differ for {run}')
+            if not any('event=player_snapshot name=fullscreen_before_rotation ' in line and re.search(r'\bsurface=[1-9][0-9]*\b', line) and 'available=true' in line for line in lines_for_run):
+                fail(f'{name}: fullscreen surface observation missing for {run}')
+            if not any('event=player_snapshot name=room_exited views=0' in line for line in lines_for_run):
+                fail(f'{name}: room-exit observation missing for {run}')
+            def player_ids(checkpoint):
+                return {match.group(1) for line in lines_for_run
+                        if f'event=player_snapshot name={checkpoint} ' in line
+                        for match in [re.search(r'\bplayer=([1-9][0-9]*)\b', line)] if match}
+            before, fullscreen, landscape = (player_ids(x) for x in ('playing_before_fullscreen', 'fullscreen_before_rotation', 'landscape_paused'))
+            if not before.intersection(fullscreen) or not landscape or fullscreen.intersection(landscape):
+                fail(f'{name}: Player identity observations differ from the recorded transition for {run}')
+            if not any('event=player_snapshot name=landscape_paused ' in line and re.search(r'\bsurface=[1-9][0-9]*\b', line) and 'available=true' in line for line in lines_for_run):
+                fail(f'{name}: rotated surface observation missing for {run}')
+            for checkpoint, state in (('playing_before_fullscreen', 'playing=true'), ('fullscreen_before_rotation', 'playing=true'), ('landscape_paused', 'playing=false')):
+                if not any(f'event=player_snapshot name={checkpoint} ' in line and state in line and re.search(r'\bplayer=[1-9][0-9]*\b', line) for line in lines_for_run):
+                    fail(f'{name}: missing player snapshot for {run}/{checkpoint}')
+
+
 def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES, pinned_hashes=PINNED_FAILURE_HASHES, git_check=True):
     directory = directory.resolve(strict=True)
     manifest = read_json(directory / 'manifest.json')
@@ -209,6 +320,7 @@ def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES
     if not isinstance(entries, list) or not entries:
         fail('manifest: results must be a nonempty list')
     seen = set()
+    by_name = {}
     for entry in entries:
         if not isinstance(entry, dict): fail('manifest: entry must be an object')
         name = entry.get('file')
@@ -219,6 +331,7 @@ def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES
             fail(f'manifest: noncanonical or escaping path: {name}')
         if name in seen: fail(f'manifest: duplicate path: {name}')
         seen.add(name)
+        by_name[name] = entry
         cursor = directory
         for part in pure.parts:
             cursor = cursor / part
@@ -236,7 +349,11 @@ def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES
             fail(f'{name}: invalid original SHA-256 format')
         commit_provenance(entry, git_check)
         if path.suffix == '.xml':
-            actual, failures = xml_counts(path)
+            actual, failures, identities = xml_counts(path)
+            if re.fullmatch(r'rotation-instrumented-(initial|final)-[0-9]{2}\.xml', name):
+                expected_identity = {('dev.fanstage.android.PlayerSettingsTest', 'fullscreenRestoresAfterActualRotation')}
+                if actual['tests'] != 1 or identities != expected_identity:
+                    fail(f'{name}: incorrect rotation testcase identity')
             declared = {k: count(entry.get(k), f'{name}:{k}') for k in actual}
             if actual != declared: fail(f'{name}: manifest/JUnit count mismatch')
             outcome = 'FAIL' if actual['failures'] or actual['errors'] else 'SKIP' if actual['skipped'] else 'PASS'
@@ -257,8 +374,19 @@ def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES
         elif path.suffix == '.json':
             data = read_json(path)
             if name == 'cold-start-observations.json': check_cold(data, git_check=git_check)
+            if name in ('rotation-initial-trace.json', 'rotation-final-trace.json'): check_rotation_trace(data, name)
+            if name == 'rotation-source-fingerprints.json': check_rotation_fingerprints(data, git_check=git_check)
         else:
             fail(f'{name}: unsupported evidence type')
+    if 'rotation-source-fingerprints.json' in seen:
+        fingerprints = read_json(directory / 'rotation-source-fingerprints.json')
+        for phase in ('initial', 'final'):
+            source = fingerprints[phase]
+            related = [f'rotation-{phase}-trace.json'] + [f'rotation-instrumented-{phase}-{i:02}.xml' for i in range(1, 21)]
+            for artifact in related:
+                entry = by_name.get(artifact)
+                if not entry or any(entry.get(key) != source.get(key) for key in ('head_at_execution','tested_code_snapshot_commit')):
+                    fail(f'{artifact}: provenance does not match {phase} source fingerprint')
     if not set(required).issubset(seen):
         fail('manifest: missing required evidence: ' + ', '.join(sorted(set(required)-seen)))
     items = list(directory.rglob('*'))

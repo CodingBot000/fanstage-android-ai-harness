@@ -22,3 +22,7 @@
 ## 증거 무결성 검사 보완
 
 공개 evidence Manifest v2의 파일·해시·JUnit 집계·실패 이력·커밋 출처를 검증하고, v1 이력의 고정 실패 정책을 지원한다. 비공개 원본 해시와 실행 당시 미커밋 작업 트리 일치는 검증했다고 주장하지 않는다. 임시 fixture에 의도적 오류를 주입해 검사 실패를 확인하고 문서 CI에 연결한다. 상세는 [증거 안내](../evidence/verification/audit-20261108/README.md).
+
+## 회전 진단 및 통합 게이트 후속
+
+실기기 회전은 두 진단 버전에서 각 20/20, 관련 최종 회귀 42/42 및 Hilt 3/3을 실행했다. 기존 최초 실패는 재현되지 않아 원인 미확정으로 보존한다. Debug 전용 단조 시간 진단과 격리 실패 probe·원본은 [증거 안내](../evidence/verification/audit-20261108/README.md)에 있다. GitHub 필수 체크 적용은 [정책 제안](ci-required-quality-policy.md)의 사용자 승인 전까지 미완료다.

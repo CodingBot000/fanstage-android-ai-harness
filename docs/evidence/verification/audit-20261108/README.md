@@ -35,7 +35,7 @@ adb -s "$ANDROID_SERIAL" reverse --remove tcp:18767
 
 서버 테스트의 기본 포트는 18765이며, 격리 포트 실행 시 Compose의 `FANSTAGE_PORT`와 Python 테스트의 `FANSTAGE_TEST_PORT`를 동일하게 설정한다. Python 서버 회귀는 DB 재시작을 수행하며 허용된 `fanstage-m4-validation` 또는 `fanstage-m5-validation` 프로젝트를 사용한다. 실행 전에 해당 프로젝트에 기존 컨테이너나 볼륨이 없는지 확인한다. Android 계측만 실행할 때는 기존 데이터와 격리된 별도 Compose 프로젝트를 사용할 수 있다.
 
-`unit/`은 JDK 17에서 캐시 재사용 없이 실행한 단위 테스트 XML이다. `historical-manifest-check.json`은 과거 로컬 원본의 해시를 재검사한 파생 요약이다. 각 실행의 현재 공개 파일 해시는 manifest에서 확인할 수 있다.
+`unit/`과 `unit-rotation-final/`은 각각 해당 시점에 JDK 17에서 캐시 재사용 없이 실행한 단위 테스트 XML이다. `historical-manifest-check.json`은 과거 로컬 원본의 해시를 재검사한 파생 요약이다. 각 실행의 현재 공개 파일 해시는 manifest에서 확인할 수 있다.
 
 `additional-ui-physical.xml`은 별도 탐색바·상단바 5건의 결과다. `synthetic-media-physical.xml`은 실제 Hilt 화면·채팅 전환을 포함한 로컬 미디어 3건이다. 테스트에는 24초 무음 합성 MP4 한 개를 일곱 경로에 복사해 사용했으며 사용자 원본 영상은 사용하지 않았다. 인증값은 XML에 포함되지 않았음을 실행 직후 확인했다.
 
@@ -62,3 +62,29 @@ python3 scripts/check-verification-evidence.py
 ```
 
 해시 검사는 실수나 예상 밖 변경을 탐지한다. 증거와 검사 코드·정책을 함께 변경할 수 있는 주체의 고의적 위변조까지 방지하지는 않는다. GitHub의 병합 통제와 코드 리뷰는 별도로 필요하다.
+
+`rotation-intentional-negative.xml`은 로그 보존 검증을 위해 의도적으로 실패시킨 별도 probe이며 실제 회전 결함 기록이 아니다. 실행 당시 관련 fixture·runner는 미커밋이었고 사후 커밋을 기록했다. 두 파일의 실행 시점 해시를 수집하지 못했으므로 사후 커밋과의 바이트 동일성을 독립적으로 증명하지 못한다.
+
+## 2026-11-09 회전 진단 후속
+
+`rotation-instrumented-initial-01.xml`~`20.xml`과 `rotation-instrumented-final-01.xml`~`20.xml`은 동일 Galaxy S22 Ultra/API 36, 격리 Debug 패키지에서 각각 독립 실행한 원본 JUnit 결과를 줄바꿈만 정규화한 것이다. 두 배치 모두 20/20이며, 최초 38/39 실행의 회전 실패 원인은 재현되지 않아 미확정으로 유지한다. JUnit XML에는 실행 ID가 포함되지 않아 각 XML과 trace의 대응은 수집 스크립트의 순번에 의존하며 파일만으로 동일 실행을 암호학적으로 증명하지 못한다. 각 배치의 실행 당시 HEAD와 이후 코드 스냅샷, 테스트 시작 시 일곱 소스 파일 해시 및 커밋과의 대조 결과는 `rotation-source-fingerprints.json`과 `manifest.json`에 구분했다.
+
+`rotation-initial-trace.json`과 `rotation-final-trace.json`은 각 실행 ID에 해당하는 진단 태그만 실제 logcat 스트림에서 추출한 파생 자료다. `ns`는 Android 단조 시계이며, Activity·Player·Surface·Compose·Dialog 이벤트를 같은 실행 ID로 연결한다. 사용자 입력·URL·토큰은 기록하지 않는다. 필터링 전 진단 태그 스트림의 SHA-256을 기록했지만 CI는 로컬 원본을 재검증하지 않는다. 최종 배치의 각 실행에서 회전 전 재생, 전체 화면 Surface, 회전 후 일시정지와 화면 이탈을 확인했다. 진단 로깅은 실행 타이밍에 영향을 줄 수 있다.
+
+`rotation-diagnostic-preflight.xml`은 오류 첨부 검사·실제 회전·명시적 전체 화면 Activity 재생성 3건의 결과다. `rotation-intentional-negative.xml`은 재현 가능한 격리 probe가 **의도적으로 실패**한 결과이며 Player/Surface 상태와 단조 시간 로그가 AndroidJUnitRunner 실패 XML에 보존되는지 검증한다. 실제 제품 실패가 아니다. API 24–28의 Player snapshot은 Activity decorView만 탐색하므로 별도 Dialog window를 찾지 못할 수 있고, Release/RcLocal 진단은 no-op이다.
+
+`rotation-negative-fresh.xml`은 재사용된 오래된 결과 XML을 잘못 성공으로 판정하지 않도록 실행 시작·종료와 파일 시각을 확인한 뒤 수집한 두 번째 **의도적 실패 probe**다. 이 실행의 테스트 fixture와 Player 진단은 당시 커밋에 있었고 probe runner의 최신성 확인 변경만 미커밋 상태였다. 실제 결함으로 집계하지 않는다. `rotation-final-regression.xml`과 `rotation-final-hilt.xml`은 최종 코드의 실기기 선택 회귀 42/42 및 Hilt 3/3 원본이다. `unit-rotation-final/`은 최종 Android 코드의 JDK 17 단위 테스트 원본으로 호스트명을 가렸다.
+
+단독 회전 반복의 대표 명령은 다음과 같다. 기기 두 대 이상이 같은 ADB 서버에 보이면 대상 분리를 먼저 확인한다.
+
+```sh
+cd android
+for run in $(seq -w 1 20); do
+  ./gradlew :app:connectedDebugAndroidTest -PfanstageDeviceTest=true \
+    '-Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.PlayerSettingsTest#fullscreenRestoresAfterActualRotation' \
+    "-Pandroid.testInstrumentationRunnerArguments.fanRotationRunId=finalRotation$run" \
+    --no-daemon --max-workers=2
+done
+```
+
+실행마다 생성되는 JUnit 결과를 다음 실행 전에 별도 보관해야 한다. 진단 이벤트는 `FSRotationAudit` 태그만 수집해 실행 ID로 걸러낸다. `scripts/verify-rotation-diagnostic-failure.sh`는 선택된 기기만 ADB 서버에 보이는지 확인하고 임시 fixture의 의도적 실패 XML에 진단이 있는지 확인한 뒤 fixture를 삭제한다.

@@ -1,0 +1,31 @@
+{
+  "kind": "SHA-256 of relevant uncommitted source files at execution; subsequently compared to the cited commits",
+  "initial": {
+    "head_at_execution": "3e177c484c6b82fc5e754331084d40be22792b9e",
+    "note": "These source files were modified/untracked at execution; hashes identify tested files, not a clean checkout.",
+    "files": {
+      "android/app/src/androidTest/kotlin/dev/fanstage/android/PlayerSettingsTest.kt": "165fe01e402d26e9b5e5c3fd3c42386701da0440529ce78b3722a98e30f67f77",
+      "android/app/src/androidTest/kotlin/dev/fanstage/android/RotationAudit.kt": "4afbe650f434a1bc36f748b13766f0445bf53eaee0425b9f267652a5839514c8",
+      "android/app/src/androidTest/kotlin/dev/fanstage/android/RotationAuditTest.kt": "1ba5a6443ac1e32ebd281b882f7116258a77fbb54623feee2cce515c3f1e2c47",
+      "android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/Media3PlayerController.kt": "9eb177d5bb5c84b0dcdc9fa49bfd88113d254c27de82175b371a364c0a7510e3",
+      "android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/PlayerPanel.kt": "128448a666ca351b44cc3ebb1c37659f0cd10376a0b5deb1148a7f413bc5d414",
+      "android/feature/live/src/debug/kotlin/dev/fanstage/android/feature/live/PlayerRotationTrace.kt": "519f92d13c4944cae9263a49f52c8330041f15259c3f3639ddeef5fb0a4fbf18",
+      "android/feature/live/src/release/kotlin/dev/fanstage/android/feature/live/PlayerRotationTrace.kt": "5d066488366b4da03349d7d728c24d953f6ff4dd5aed15e5df41d3a654458900"
+    },
+    "tested_code_snapshot_commit": "c05d2e2d62644375810f5a0a25b4b426403be7b3"
+  },
+  "final": {
+    "head_at_execution": "c05d2e2d62644375810f5a0a25b4b426403be7b3",
+    "note": "Modified source at execution; file hashes permit comparison to the subsequent commit.",
+    "files": {
+      "android/app/src/androidTest/kotlin/dev/fanstage/android/PlayerSettingsTest.kt": "2d0834250fd6f5075e4af5003e2b6912402bbae3dc0ffccabf9b312416123111",
+      "android/app/src/androidTest/kotlin/dev/fanstage/android/RotationAudit.kt": "38881dd28c27c6e8b2a945c326fc74c8887351b68827bcf07a6f9993d40ea8ef",
+      "android/app/src/androidTest/kotlin/dev/fanstage/android/RotationAuditTest.kt": "5dd6d923d07cde55a77d12c1d533d8408cc092d64149b4a15bf20e84ebca29eb",
+      "android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/Media3PlayerController.kt": "9eb177d5bb5c84b0dcdc9fa49bfd88113d254c27de82175b371a364c0a7510e3",
+      "android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/PlayerPanel.kt": "84a4c19ee7b0f97da75fe8d565fc4abf86fa2cbb3537462c7b93e95085c42524",
+      "android/feature/live/src/debug/kotlin/dev/fanstage/android/feature/live/PlayerRotationTrace.kt": "41407393a2f43f2358112ac79d7a43652a32df76a77e88d1e337b3f2aa3401fa",
+      "android/feature/live/src/release/kotlin/dev/fanstage/android/feature/live/PlayerRotationTrace.kt": "359cf17a18fbf5e5433280946a3398b8d0a446f46499ad780c8b685a880eccbc"
+    },
+    "tested_code_snapshot_commit": "245195d664ea7cc0cb186fc7f1ca61a5de363fc6"
+  }
+}

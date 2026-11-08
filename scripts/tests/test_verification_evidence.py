@@ -57,6 +57,30 @@ class EvidenceTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertIn('SHA-256 mismatch', result.stderr)
 
+    def test_rotation_xml_identity_tamper_rejected_even_if_hash_updated(self):
+        copy_root = self.root / 'rotation-copy'
+        shutil.copytree(check.EVIDENCE, copy_root)
+        target = copy_root / 'rotation-instrumented-final-01.xml'
+        target.write_bytes(target.read_bytes().replace(b'fullscreenRestoresAfterActualRotation', b'wrongRotationCase'))
+        path = copy_root/'manifest.json'; manifest = json.loads(path.read_text())
+        next(e for e in manifest['results'] if e['file']==target.name)['sha256'] = hashlib.sha256(target.read_bytes()).hexdigest()
+        path.write_text(json.dumps(manifest))
+        result = subprocess.run([sys.executable, str(SCRIPT), '--directory', str(copy_root)], capture_output=True, text=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn('incorrect rotation testcase identity', result.stderr)
+
+    def test_rotation_provenance_must_match_fingerprint(self):
+        copy_root = self.root / 'provenance-copy'
+        shutil.copytree(check.EVIDENCE, copy_root)
+        path = copy_root/'manifest.json'; manifest = json.loads(path.read_text())
+        entry = next(e for e in manifest['results'] if e['file']=='rotation-instrumented-final-01.xml')
+        entry['tested_code_snapshot_commit'] = entry['head_at_execution']
+        entry['snapshot_interpretation'] = 'HEAD at execution'
+        path.write_text(json.dumps(manifest))
+        result = subprocess.run([sys.executable, str(SCRIPT), '--directory', str(copy_root)], capture_output=True, text=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn('provenance does not match', result.stderr)
+
     def test_valid_pass_and_historical_failure(self): self.assertEqual(2, self.validate())
     def test_v1_legacy_failure_compatibility(self):
         self.manifest.pop('schema_version')
@@ -113,6 +137,47 @@ class EvidenceTests(unittest.TestCase):
     def test_duplicate_json_keys_rejected(self):
         (self.root/'manifest.json').write_text('{"results":[],"results":[]}')
         with self.assertRaises(check.EvidenceError): self.validate()
+    def test_rotation_source_fingerprints_require_all_files(self):
+        phase={'head_at_execution':'a'*40, 'tested_code_snapshot_commit':'b'*40,
+               'note':'source files were modified', 'files':{path:'c'*64 for path in check.ROTATION_SOURCE_PATHS}}
+        data={'initial':copy.deepcopy(phase),'final':copy.deepcopy(phase)}
+        check.check_rotation_fingerprints(data)
+        data['final']['files'].pop(next(iter(check.ROTATION_SOURCE_PATHS)))
+        with self.assertRaises(check.EvidenceError): check.check_rotation_fingerprints(data)
+
+    def test_rotation_trace_requires_all_runs_and_monotonic_events(self):
+        data={'source_log_sha256':'a'*64, 'events':[]}
+        for index in range(1,21):
+            run=f'rotation{index:02}'
+            events=sorted(check.ROTATION_EVENTS)
+            for number,event in enumerate(events,1):
+                extra=' name=playing_before_fullscreen states=synthetic' if event=='ui_checkpoint' else ''
+                data['events'].append(f'run={run} ns={number} event={event}{extra}')
+            for number,name in enumerate(('fullscreen_before_rotation','landscape_paused','room_exited'),len(events)+1):
+                data['events'].append(f'run={run} ns={number} event=ui_checkpoint name={name} states=synthetic')
+        check.check_rotation_trace(data,'rotation-initial-trace.json')
+        data['events'].pop()
+        with self.assertRaises(check.EvidenceError): check.check_rotation_trace(data,'rotation-initial-trace.json')
+
+    def test_final_rotation_trace_rejects_missing_surface_and_exit_observation(self):
+        data=json.loads((check.EVIDENCE/'rotation-final-trace.json').read_text())
+        check.check_rotation_trace(data,'rotation-final-trace.json')
+        for marker in ('event=player_snapshot name=fullscreen_before_rotation ', 'event=player_snapshot name=room_exited views=0'):
+            altered=copy.deepcopy(data)
+            altered['events']=[line for line in altered['events'] if not (line.startswith('run=finalRotation01 ') and marker in line)]
+            with self.subTest(marker=marker), self.assertRaises(check.EvidenceError):
+                check.check_rotation_trace(altered,'rotation-final-trace.json')
+
+    def test_final_rotation_trace_rejects_changed_fullscreen_player(self):
+        import re
+        data=json.loads((check.EVIDENCE/'rotation-final-trace.json').read_text())
+        for index,line in enumerate(data['events']):
+            if line.startswith('run=finalRotation01 ') and 'event=player_snapshot name=fullscreen_before_rotation ' in line:
+                data['events'][index]=re.sub(r'\bplayer=[1-9][0-9]*', 'player=999999999', line)
+                break
+        else: self.fail('fullscreen observation missing')
+        with self.assertRaises(check.EvidenceError): check.check_rotation_trace(data,'rotation-final-trace.json')
+
     def test_cold_statistics_checked(self):
         values=list(range(1,11)); good={'observations': []}
         for label in ('baseline','candidate'):

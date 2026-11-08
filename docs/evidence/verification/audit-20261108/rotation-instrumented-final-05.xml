@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="1" failures="0" errors="0" skipped="0" time="7.573" timestamp="2026-11-08T14:53:38" hostname="localhost">
+  <testsuite name="dev.fanstage.android.PlayerSettingsTest" tests="1" failures="0" errors="0" skipped="0" time="6.351" timestamp="2026-11-08T14:53:38" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="fullscreenRestoresAfterActualRotation" classname="dev.fanstage.android.PlayerSettingsTest" time="6.351" />
+  </testsuite>
+</testsuites>
