@@ -1,5 +1,8 @@
 package dev.fanstage.android
 
+import androidx.lifecycle.ViewModelProvider
+import androidx.test.core.app.ActivityScenario
+import java.util.concurrent.atomic.AtomicReference
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -47,6 +50,20 @@ class RepositoryBindingsTest {
             viewModel.state.first { it is DiscoverState.Ready }
         } as DiscoverState.Ready
         assertEquals(listOf("hilt-di-probe"), ready.data.content.map { it.id })
+    }
+
+    @Test fun activityHiltViewModelUsesReplacementRepository() = runBlocking {
+        hiltRule.inject()
+        ActivityScenario.launch(MainActivity::class.java).use { scenario ->
+            val model = AtomicReference<DiscoverViewModel>()
+            scenario.onActivity { activity ->
+                model.set(ViewModelProvider(activity)[DiscoverViewModel::class.java])
+            }
+            val ready = withTimeout(5_000) {
+                model.get().state.first { it is DiscoverState.Ready }
+            } as DiscoverState.Ready
+            assertEquals(listOf("hilt-di-probe"), ready.data.content.map { it.id })
+        }
     }
 
     @Test fun replacedBindingsAreInjected() {
