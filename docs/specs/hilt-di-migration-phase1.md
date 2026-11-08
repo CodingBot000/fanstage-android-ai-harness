@@ -1,13 +1,14 @@
 # FanStage Hilt DI Migration — Phase 1 SDD
 
-- Status: IMPLEMENTED / STATIC_GATES_PASS / DEVICE_NOT_RUN
+- Status: IMPLEMENTED / STATIC_GATES_PASS / DEVICE_NOT_RUN_AT_PHASE_1
+- Note: `DEVICE_NOT_RUN`은 **Phase 1 종료 당시** 기록이다. 이후 Phase 3에서 선택된 실기기 계측 39/39, Hilt 바인딩 1/1을 실행한 사실은 [후속 검증 기록](hilt-di-migration-verification.md)과 분리한다.
 - 기준: 2026-11-08, `main` commit `8dd532f2114d8588a4f2e8a21d0844edf01e5014` (Codex 실행 시 HEAD 재확인)
 - Related ADR: `../adr/ADR-0004-hilt-di-migration.md`
 - 목표: Hilt가 앱 시작점에서 실제로 Repository 의존성을 공급하도록 연결하면서 기존 UI·채팅·Media3 동작을 보존한다.
 
-## 배경과 문제
+## 배경과 문제 (Phase 1 착수 당시)
 
-현재 `android/app/src/main/kotlin/dev/fanstage/android/AppContainer.kt`는 Fake Repository를 기본 인자로 직접 생성하며 수동 `ViewModelProvider.Factory`를 제공한다. `MainActivity.kt`는 Compose에서 `remember { AppContainer() }`를 생성한다. Hilt는 아직 Gradle/Manifest/앱 시작점에 연결되어 있지 않다. Multi Module 경계, ViewModel 생성·재생/채팅 자원 소유권, 기존 테스트를 보존하는 점진적 DI 전환이 필요하다.
+당시 `android/app/src/main/kotlin/dev/fanstage/android/AppContainer.kt`는 Fake Repository를 기본 인자로 직접 생성하며 수동 `ViewModelProvider.Factory`를 제공한다. `MainActivity.kt`는 Compose에서 `remember { AppContainer() }`를 생성한다. Hilt는 아직 Gradle/Manifest/앱 시작점에 연결되어 있지 않다. Multi Module 경계, ViewModel 생성·재생/채팅 자원 소유권, 기존 테스트를 보존하는 점진적 DI 전환이 필요하다.
 
 ## 범위 (Phase 1만)
 
@@ -49,16 +50,19 @@
 4. 가용한 에뮬레이터/실기기에서 기존 `MainActivity` Compose UI smoke 및 Activity 재생성 회귀를 실행. 기기가 없으면 `NOT_RUN`과 사유 기록. 기존 일반 `AndroidJUnitRunner`와 프로덕션 `Application`으로 동작하는 계측은 우선 그대로 둔다.
 5. 변경 범위 `git diff --stat`, 중요 diff 리뷰 및 Gradle 설정·Manifest·DI Graph·라이프사이클 점검. 실제 결과는 PR/CI/실기기 증거로 구분한다.
 
-## Acceptance Criteria / Exit Gate
+## Acceptance Criteria / Exit Gate (Phase 1 종료 시점의 근거)
 
-- [ ] Hilt/KSP 버전이 Version Catalog에서 고정되고 공식 문서 링크/사용 이유가 남는다.
-- [ ] `@HiltAndroidApp` + Manifest `android:name` + `@AndroidEntryPoint` 연결이 실제 빌드에서 검증된다.
-- [ ] 3개 Repository가 Hilt 그래프에서 공급되고 `MainActivity`에 주입된 `AppContainer`가 이를 소비한다. 단순히 의존성만 선언하고 사용하지 않는 상태는 불합격.
-- [ ] Phase 1에서 기존 ViewModel `Factory`, `ChatViewModel.Factory`, Player/ChatTransport 수명·동작이 보존된다.
-- [ ] 필수 Android CI 등가 명령과 모듈/Manifest 검사 PASS. 실패·미실행 항목은 숨김 없이 기록한다.
-- [ ] 기존 앱 주요 진입·탭·회전 경로의 계측 결과가 확인되거나 `NOT_RUN`으로 명시된다.
-- [ ] 문서가 부분 적용 상태를 정확히 밝히고, 사용자 승인 전 merge/push를 하지 않는다.
+- [x] Hilt 2.60.1/KSP 2.3.10을 Version Catalog에 고정하고 공식 문서 근거를 기록했다.
+- [x] `@HiltAndroidApp` + Manifest `android:name` + `@AndroidEntryPoint`를 빌드에서 확인했다.
+- [x] Repository 3종이 Hilt에서 제공되고 Phase 1의 `AppContainer`가 주입받도록 구성했다. *`AppContainer`는 이후 Phase 2A에서 제거되었다.*
+- [x] Phase 1 당시 기존 ViewModel 수동 Factory 및 ChatTransport·Media3 수명주기를 유지했다. 후속 변경은 Phase 2A·2B의 별도 커밋에서 수행했다.
+- [x] Phase 1 필수 Android 빌드·Lint·단위 테스트와 모듈/Manifest 검사 PASS를 기록했다.
+- [x] 당시 연결된 기기가 없어 주요 화면·회전 계측은 `NOT_RUN`으로 기록했다. **해당 Phase 자체의 계측 PASS를 의미하지 않는다.**
+- [x] Phase 1은 부분 전환으로 문서화하고 별도 로컬 커밋 `1c234c6`을 만들었다. 이후 PR #67로 전체 단계가 병합되었으나 사용자 승인 절차는 공개 Git 로그만으로 판정하지 않는다.
 
+**후속 완료 근거:** [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) · [Phase 3](hilt-di-migration-phase3.md) · [실기기/서버 검증 이력](hilt-di-migration-verification.md). 체크박스는 Phase 1 종료 시점의 충족/기록을 뜻하며 후속 검증 결과를 소급 적용한 것이 아니다.
+
+---
 ## 전체 Migration Roadmap (Phase 1 이후는 이번 구현 대상 아님)
 
 - Phase 2A: Discover/Community/Media/Messages 등 일반 ViewModel을 `@HiltViewModel`과 Hilt Navigation 경로로 전환, 테스트 유지.

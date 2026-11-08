@@ -1,5 +1,14 @@
 # Hilt DI Migration — Phase 3
 
+## 최종 판정 (2026-11-08 / PR #67)
+
+- **구현·정적 검사:** PASS. 기본 Android CI와 별도 로컬 Hilt 테스트 APK 컴파일 근거를 구분한다.
+- **기기 회귀:** Galaxy S22 Ultra/API 36 선택 일반 계측 39/39 및 Hilt 바인딩 1/1 PASS(로컬 기록).
+- **실제 프로토콜 연결:** API 36 에뮬레이터의 격리 PostgreSQL·WebSocket Android 통합 1/1 PASS(로컬 기록).
+- **미실행:** 실기기의 실제 서버 연결, 장시간 누수·정량 성능과 전 기기 검증은 `NOT_RUN`.
+- **추적:** [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) · [명령·실패·수정 이력](hilt-di-migration-verification.md). 아래 기록은 수정 전 실패를 포함한 시간순 이력이다.
+
+
 상태: 빌드·정적 게이트, 선택 실기기 계측 및 격리 서버 Android 통합 PASS; 실기기 서버 연결·장시간 검증 NOT_RUN. Hilt 테스트 전용 선택적 계측 구성에서 Repository 바인딩 대체를 검증하고 기본 일반 계측 러너 및 애플리케이션은 유지한다. Hilt 테스트 러너는 전용 Gradle 속성으로만 활성화하고 해당 테스트 클래스만 실행한다. 전체 빌드·lint·단위·모듈/manifest·benchmark 서명과 기기가 있으면 계측 및 재생/채팅 수명주기 회귀를 수행한다. 기기가 없으면 계측은 NOT_RUN. 테스트용 명시적 Transport Factory는 유지하고 프로덕션 중복 조립을 제거한다. Media3 소유권 변경은 범위 밖이다.
 
 Open Questions: 없음.
