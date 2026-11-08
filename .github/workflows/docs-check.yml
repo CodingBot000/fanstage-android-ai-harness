@@ -13,6 +13,8 @@ on:
       - 'backend/chat-server/README.md'
       - 'docs/**'
       - 'scripts/check-portfolio-docs.py'
+      - 'scripts/check-verification-evidence.py'
+      - 'scripts/tests/test_verification_evidence.py'
       - '.github/workflows/docs-check.yml'
   push:
     branches: [main]
@@ -26,6 +28,8 @@ on:
       - 'backend/chat-server/README.md'
       - 'docs/**'
       - 'scripts/check-portfolio-docs.py'
+      - 'scripts/check-verification-evidence.py'
+      - 'scripts/tests/test_verification_evidence.py'
       - '.github/workflows/docs-check.yml'
   workflow_dispatch:
 
@@ -40,5 +44,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
+          fetch-depth: 0
       - name: Verify internal Markdown links and ADR IDs
         run: python3 scripts/check-portfolio-docs.py
+      - name: Test evidence checker against invalid fixtures
+        run: python3 -m unittest discover -s scripts/tests -p 'test_verification_evidence.py' -v
+      - name: Verify published evidence integrity and provenance
+        run: python3 scripts/check-verification-evidence.py

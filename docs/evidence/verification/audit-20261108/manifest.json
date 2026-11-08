@@ -15,7 +15,8 @@
       "normalization": "CRLF to LF only",
       "tested_code_snapshot_commit": "81701e845edf891569c78a9233ec0c01b231fbe5",
       "head_at_execution": "81701e845edf891569c78a9233ec0c01b231fbe5",
-      "snapshot_interpretation": "HEAD at execution"
+      "snapshot_interpretation": "HEAD at execution",
+      "outcome": "PASS"
     },
     {
       "file": "hilt-activity.xml",
@@ -31,7 +32,8 @@
       "normalization": "CRLF to LF only",
       "tested_code_snapshot_commit": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
       "head_at_execution": "81701e845edf891569c78a9233ec0c01b231fbe5",
-      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout."
+      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout.",
+      "outcome": "PASS"
     },
     {
       "file": "hilt-physical.xml",
@@ -47,7 +49,8 @@
       "normalization": "CRLF to LF only",
       "tested_code_snapshot_commit": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
       "head_at_execution": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
-      "snapshot_interpretation": "HEAD at execution"
+      "snapshot_interpretation": "HEAD at execution",
+      "outcome": "PASS"
     },
     {
       "file": "ui-physical-initial.xml",
@@ -63,7 +66,15 @@
       "normalization": "CRLF to LF only",
       "tested_code_snapshot_commit": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
       "head_at_execution": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
-      "snapshot_interpretation": "HEAD at execution"
+      "snapshot_interpretation": "HEAD at execution",
+      "outcome": "FAIL",
+      "expected_failure_cases": [
+        {
+          "classname": "dev.fanstage.android.PlayerSettingsTest",
+          "name": "fullscreenRestoresAfterActualRotation",
+          "kind": "failure"
+        }
+      ]
     },
     {
       "file": "rotation-retry.xml",
@@ -79,7 +90,8 @@
       "normalization": "CRLF to LF only",
       "tested_code_snapshot_commit": "c109d276f681b97e253707b8f606ad9f1cffa652",
       "head_at_execution": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
-      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout."
+      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout.",
+      "outcome": "PASS"
     },
     {
       "file": "real-chat-physical.xml",
@@ -95,7 +107,8 @@
       "normalization": "CRLF to LF only",
       "tested_code_snapshot_commit": "c109d276f681b97e253707b8f606ad9f1cffa652",
       "head_at_execution": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
-      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout."
+      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout.",
+      "outcome": "PASS"
     },
     {
       "file": "resource-lifecycle-physical.xml",
@@ -111,7 +124,8 @@
       "normalization": "CRLF to LF only",
       "tested_code_snapshot_commit": "8382bdf8439787ac9e333796872ae3421fecfed4",
       "head_at_execution": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
-      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout."
+      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout.",
+      "outcome": "PASS"
     },
     {
       "file": "ui-physical-retry.xml",
@@ -125,9 +139,10 @@
       "skipped": 0,
       "original_sha256": "128586e034abbcf75e8775e51734051214ecd39587ed65bff7865556c3ec31b6",
       "normalization": "CRLF to LF only",
-      "tested_code_snapshot_commit": "d2a8b6c85a98cb9070ecc71549e065d5a51be385",
+      "tested_code_snapshot_commit": "8382bdf8439787ac9e333796872ae3421fecfed4",
       "head_at_execution": "8382bdf8439787ac9e333796872ae3421fecfed4",
-      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout."
+      "snapshot_interpretation": "HEAD at execution; documentation and CI changes were uncommitted, while Android code matched HEAD.",
+      "outcome": "PASS"
     },
     {
       "file": "backend-regression.json",
@@ -161,7 +176,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "c2f791464aba88444d29a654f936fdb327d3d94d",
       "head_at_execution": "799853bf8c30b262dacfb4b532392193def4c4d2",
-      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout."
+      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout.",
+      "outcome": "PASS"
     },
     {
       "file": "real-chat-30-physical.xml",
@@ -177,7 +193,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "b4c5306c2e55fa65021343f03339a5f282148ca4",
       "head_at_execution": "dd7ef1bbf3fe23c76caa8424c7d8f159cb0e06a5",
-      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout."
+      "snapshot_interpretation": "Relevant tested code was uncommitted; snapshot commit was created after execution. It identifies relevant test/application files, not a clean whole-repository checkout.",
+      "outcome": "PASS"
     },
     {
       "file": "cold-start-observations.json",
@@ -199,7 +216,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "rotation-repeat-2.xml",
@@ -215,7 +233,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "rotation-repeat-3.xml",
@@ -231,7 +250,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "rotation-repeat-4.xml",
@@ -247,7 +267,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "rotation-repeat-5.xml",
@@ -263,7 +284,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "branch-policy.json",
@@ -283,7 +305,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/app/TEST-dev.fanstage.android.MessagesViewModelTest.xml",
@@ -298,7 +321,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/app/TEST-dev.fanstage.android.LoadCancellationTest.xml",
@@ -313,7 +337,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/feature/live/TEST-dev.fanstage.android.feature.live.FakeRoomRepositoryTest.xml",
@@ -328,7 +353,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/feature/live/TEST-dev.fanstage.android.feature.live.chat.ChatTimestampTest.xml",
@@ -343,7 +369,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/feature/live/TEST-dev.fanstage.android.feature.live.PlaybackSessionTest.xml",
@@ -358,7 +385,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/feature/live/TEST-dev.fanstage.android.feature.live.PlayerSelectionRulesTest.xml",
@@ -373,7 +401,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/feature/live/TEST-dev.fanstage.android.feature.live.RoomListViewModelTest.xml",
@@ -388,7 +417,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/feature/live/TEST-dev.fanstage.android.feature.live.chat.ChatViewModelTest.xml",
@@ -403,7 +433,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/feature/live/TEST-dev.fanstage.android.feature.live.TrackGroupIdsTest.xml",
@@ -418,7 +449,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "unit/core/data/TEST-dev.fanstage.android.core.data.FakeRepositoriesTest.xml",
@@ -433,7 +465,8 @@
       "skipped": 0,
       "tested_code_snapshot_commit": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
       "head_at_execution": "f09eac8a5a0ea5694cf251848ee47f01291709bf",
-      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified."
+      "snapshot_interpretation": "HEAD at execution; evidence/report files could be untracked or modified.",
+      "outcome": "PASS"
     },
     {
       "file": "historical-manifest-check.json",
@@ -454,7 +487,8 @@
       "tests": 39,
       "failures": 0,
       "errors": 0,
-      "skipped": 0
+      "skipped": 0,
+      "outcome": "PASS"
     },
     {
       "file": "additional-ui-physical.xml",
@@ -470,7 +504,8 @@
       "tests": 5,
       "failures": 0,
       "errors": 0,
-      "skipped": 0
+      "skipped": 0,
+      "outcome": "PASS"
     },
     {
       "file": "synthetic-media-physical.xml",
@@ -479,14 +514,16 @@
       "normalization": "CRLF to LF only; temporary test credentials checked and not present",
       "tested_code_snapshot_commit": "fd6790e81162d905f4629f207c8ac7554e5d5f06",
       "head_at_execution": "52d6126230fd0c5cf44c72cde7da6f7120e47e45",
-      "snapshot_interpretation": "Relevant LocalMediaTest host change was uncommitted at execution and committed afterwards; no clean whole-repository checkout is claimed.",
+      "snapshot_interpretation": "Relevant LocalMediaTest host change was uncommitted; snapshot commit was created after execution. It identifies the relevant test/application files, not a clean whole-repository checkout.",
       "environment": "SM-S908N / API 36",
       "variant": "debug (.devicecheck)",
       "purpose": "Seven synthetic media paths and actual Hilt UI real-chat switching",
       "tests": 3,
       "failures": 0,
       "errors": 0,
-      "skipped": 0
+      "skipped": 0,
+      "outcome": "PASS"
     }
-  ]
+  ],
+  "schema_version": 2
 }

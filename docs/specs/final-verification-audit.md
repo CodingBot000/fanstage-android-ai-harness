@@ -18,3 +18,7 @@
 ## 결과
 
 실제 실행·기기·소스 SHA·실패와 후속 결과는 [감사 보고](../evidence/verification/audit-20261108/audit-report.md)와 [원본 증거](../evidence/verification/audit-20261108/README.md)를 참조한다. 보안 설정은 변경하지 않았다.
+
+## 증거 무결성 검사 보완
+
+공개 evidence Manifest v2의 파일·해시·JUnit 집계·실패 이력·커밋 출처를 검증하고, v1 이력의 고정 실패 정책을 지원한다. 비공개 원본 해시와 실행 당시 미커밋 작업 트리 일치는 검증했다고 주장하지 않는다. 임시 fixture에 의도적 오류를 주입해 검사 실패를 확인하고 문서 CI에 연결한다. 상세는 [증거 안내](../evidence/verification/audit-20261108/README.md).
