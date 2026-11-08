@@ -1,5 +1,11 @@
 # FanStage 작업 현황
 
+- 2026-11-08 LIVE 실기기 회귀 수정: compact 상태 태그 의존을 실제 Player 확인으로 교체하고, 회전 후 일시정지 화면의 재생 버튼 표시를 수정했다. SM-S908N/API 36 선택 회귀 39/39, Hilt 바인딩 1/1, 전체 빌드·lint·단위·경계·manifest PASS. 실제 백엔드 연동 및 장시간 누수는 NOT_RUN. [상세](verification.md).
+
+- 2026-11-08 LIVE 계측 실패 조사: 키보드 표시 compact 모드에서 재생 상태 테스트 태그가 제거되는 것이 원인. 동일 실기기에서 동일 플레이어의 채팅 전송 후 `isPlaying`을 확인했고 신규 수명주기/재생 테스트 2/2 PASS. 기존 LIVE 통합 테스트는 여전히 FAIL이며 판정 경로 수정 후 전체 재실행 필요. [근거](verification.md).
+
+- 2026-11-08 Hilt 실기기 계측: SM-S908N/API 36에서 Hilt 바인딩 1/1 및 별도 룸 재생성/재진입 1/1 PASS. 기존 UI·Player 회귀 37건 중 36 PASS, LIVE 통합 1 FAIL은 Hilt 전 기준에서도 동일 재현. 실제 서버·장시간 누수는 NOT_RUN. [상세](verification.md).
+
 - 2026-11-08 Hilt Phase 3: 전용 Hilt 계측 APK 구성 및 로컬 전체 빌드·lint·단위·모듈/manifest PASS. 기기 미연결로 Hilt 바인딩 실행·UI·Activity 재생성·Chat/Media3 계측 NOT_RUN. [검증 기록](verification.md).
 
 - 2026-11-08 Hilt Phase 2B: 룸별 ChatViewModel 주입 및 SavedStateHandle 인자 전환, 로컬 빌드·lint·단위·모듈/manifest PASS. 기기 계측 NOT_RUN. [SDD](specs/hilt-di-migration-phase2b.md).

@@ -2,6 +2,10 @@
 
 상태: [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47) Squash Merge `760ae1ec8e6106f09945ad7228dc062937701c1e`. 로컬 단위 56/56·전용 AVD 전체 계측 41/41, PR 최종 head `edc70e5` 활성 원격 CI PASS. 원격 에뮬레이터 SKIPPED; 별도 독립 정적 리뷰 추가 P0/P1/P2 0건, 공식 GitHub 승인 리뷰 없음. 병합 커밋 `760ae1e`의 main Android·서버 CI도 PASS했다.
 
+## 재생 오버레이 실기기 회귀 수정 (2026-11-08)
+
+Activity 재생성·회전 후 새 PlayerPanel이 일시정지 상태이면 이전 재생 이력과 관계없이 재생 버튼을 표시한다. 기존 자동 재생·수동 재개 정책은 유지한다. SM-S908N/API 36의 LIVE 통합 및 선택 UI·플레이어 계측 39/39 PASS; 상세와 이전 실패는 [검증 기록](../verification.md).
+
 ## 재생 오버레이 개선 (2026-11-07)
 재생 시작 시 중앙 버튼을 숨긴다. 영상 터치는 재생 상태를 바꾸지 않고 버튼을 표시하며, 재생 중에는 마지막 터치 또는 재생 재개 후 2초 뒤 숨긴다. 일시정지 중 재생 버튼은 유지한다. 전체 화면에서도 같은 상태와 플레이어를 사용한다.
 

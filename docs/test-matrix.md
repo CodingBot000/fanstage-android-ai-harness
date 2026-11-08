@@ -29,3 +29,7 @@ G 계층은 검증 종류, P 등급은 영향과 차단 여부를 뜻한다. 변
 ## Hilt 마이그레이션 (2026-11-08)
 
 로컬 빌드·lint·단위 및 모듈/manifest PASS; Hilt 전용 계측 APK 컴파일 PASS. 실행 기기 미연결로 Hilt 바인딩 교체, UI, Activity 재생성 및 Chat/Media3 수명주기 계측은 NOT_RUN. [실행 명령·상세](verification.md).
+
+실기기 후속 실행: Hilt 대체 바인딩 1/1, 별도 룸 수명주기 1/1 PASS; 일반 회귀 36/37 PASS, LIVE 재생 상태 1건 FAIL(기준 커밋에서도 재현). 실제 서버·장시간 누수 NOT_RUN. [상세](verification.md).
+
+후속 수정 후 SM-S908N/API 36 선택 회귀 39/39 및 별도 Hilt 바인딩 1/1 PASS. 기존 36/37 실패는 위에 보존하며 후속 통과로 구분한다. 실제 서버·장시간 검증은 NOT_RUN. [상세](verification.md).
