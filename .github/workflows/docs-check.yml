@@ -1,0 +1,42 @@
+name: Portfolio documentation integrity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - 'THIRD_PARTY_NOTICES.md'
+      - 'android/README.md'
+      - 'backend/chat-server/README.md'
+      - 'docs/**'
+      - 'scripts/check-portfolio-docs.py'
+      - '.github/workflows/docs-check.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'README.md'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - 'THIRD_PARTY_NOTICES.md'
+      - 'android/README.md'
+      - 'backend/chat-server/README.md'
+      - 'docs/**'
+      - 'scripts/check-portfolio-docs.py'
+      - '.github/workflows/docs-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-links-and-adr-ids:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify internal Markdown links and ADR IDs
+        run: python3 scripts/check-portfolio-docs.py

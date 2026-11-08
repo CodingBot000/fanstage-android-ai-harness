@@ -1,28 +1,19 @@
-# Third-party notices and distribution scope
+# 제3자 소프트웨어 및 저작물 안내
 
-This file identifies third-party material in the current source repository and records dependencies used to build or run it. It does **not** declare that every dependency or media item is licensed under the project's MIT license. Preserve the original notices and follow each component's own license.
+FanStage가 직접 작성한 코드·문서는 [MIT 라이선스](LICENSE)를 따릅니다. 외부 라이브러리·도구·이미지·시스템 UI에는 각 저작물의 원래 라이선스와 권리 조건이 적용됩니다.
 
-## Material included in this source repository
+## 저장소에 포함된 Gradle Wrapper
 
-### Gradle Wrapper
+`android/`와 `backend/chat-server/`에는 Gradle Wrapper 스크립트·JAR가 포함됩니다. 해당 파일의 저작권 고지와 **Apache License 2.0** 조건을 유지합니다. [Apache-2.0 라이선스 전문](third_party/licenses/Apache-2.0.txt)을 함께 제공합니다. Wrapper JAR의 SHA-256은 Gradle 9.5.0의 공개 값과 대조한 기록이 있습니다.
 
-The following Gradle-generated scripts and Wrapper JARs are included in the source tree:
+## 테스트 영상과 이미지
 
-- `android/gradlew`, `android/gradlew.bat`, `android/gradle/wrapper/gradle-wrapper.jar`
-- `backend/chat-server/gradlew`, `backend/chat-server/gradlew.bat`, `backend/chat-server/gradle/wrapper/gradle-wrapper.jar`
+앱과 계측 테스트용 합성 HLS 영상은 FFmpeg `testsrc2`로 생성했습니다. [Media3 검증 자료](docs/specs/media3-player.md)에 사용 목적을 정리했습니다.
 
-Copyright © 2015 the original author or authors, as stated in the scripts. The scripts and Wrapper JARs are distributed under the [Apache License, Version 2.0](third_party/licenses/Apache-2.0.txt). Each JAR also contains `META-INF/LICENSE`. Both JARs match the published Gradle 9.5.0 Wrapper JAR SHA-256; the server batch script has LF rather than CRLF line endings. Other checked script content matches a Gradle 9.5.0 generated wrapper. Whether this newline-only difference requires an additional notice in the file remains to be confirmed.
+앱의 가상 아티스트 이미지는 생성형 도구로 제작했습니다. 화면 녹화에는 Android 시스템 UI·글꼴 등 별도 권리가 적용될 수 있습니다. 공개된 실기기 MP4 시연에는 프로젝트 사용자가 공개 표시 권한을 확인한 영상 자료를 사용했으며 원본 MP4 파일 자체는 저장소에 포함하지 않습니다.
 
-### Synthetic media and UI captures
+## 빌드 시 사용하는 의존성
 
-The `android/feature/live/src/main/assets/hls/` VOD was generated locally with FFmpeg `testsrc2`; its generation command is in the [M2 specification](docs/specs/M2-hls-player.md). The portfolio MP4 and PNG were captured from a test emulator displaying the project demo, not a real artist or broadcast. A previously published revision of the MP4 briefly showed the emulator's `com.google.android.inputmethod.latin` keyboard. That segment has been removed from the current video; the prior revision remains in Git history. Permission and attribution for that third-party interface in this portfolio context have **not** been established; see the [audit](docs/reviews/M8-license-audit.md). Do not infer that the keyboard or other third-party UI elements are relicensed under MIT.
+AndroidX·Media3·Jetpack Compose, Spring Boot, PostgreSQL JDBC(BSD-2-Clause), Logback(EPL-2.0 또는 LGPL-2.1), Jakarta 계열 구성요소, Haze(Apache-2.0, © 2024 Chris Banes) 등 외부 의존성은 각 구성요소의 라이선스를 따릅니다. 일부는 복수 라이선스 중 선택 가능한 조건이 있습니다.
 
-## Dependencies resolved locally, not bundled in the source tree
-
-The [resolved dependency inventory](docs/reviews/M8-dependency-inventory.tsv) lists the audited Android and server runtime/test artifacts, artifact hashes, declared POM licenses, license-bearing POMs, and top-level license/notice entry paths. It is a snapshot of selected Gradle configurations, not an exhaustive bill of materials for every build tool, container image or future distribution. Dependencies retrieved separately by a developer remain subject to their own licenses.
-
-No APK or server binary is presently offered as the v0.1 public release. If distributing either later, regenerate an inventory from the **actual** artifacts and variants, review their full upstream LICENSE/NOTICE and bundled subcomponents, preserve required notices and license texts, and satisfy the applicable license conditions. The server runtime includes Logback (EPL-2.0 or LGPL-2.1), Jakarta Annotations (EPL-2.0 or GPL-2.0 with Classpath Exception), PostgreSQL JDBC (BSD-2-Clause), MIT-licensed SLF4J and other components; these do not inherit the project MIT license. Any future image distribution also needs a separate audit of its JRE, OS and PostgreSQL image layers.
-
-### Haze
-
-The Android app uses [Haze](https://github.com/chrisbanes/haze) 2.0.1 for backdrop blur, copyright © 2024 Chris Banes, licensed under the [Apache License, Version 2.0](third_party/licenses/Apache-2.0.txt). This dependency is newer than the M8 inventory snapshot; any future binary distribution requires an updated dependency and notice audit.
+현재 저장소는 소스 중심으로 공개하며 APK·서버 JAR·컨테이너 이미지는 공개 배포하지 않습니다. 추후 바이너리를 배포할 경우 실제 포함된 의존성·미디어·NOTICE·저작권 고지와 컨테이너/JRE 구성요소를 해당 배포물 기준으로 다시 확인해야 합니다.
