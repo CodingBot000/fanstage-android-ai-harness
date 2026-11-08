@@ -20,7 +20,7 @@ Galaxy S22 Ultra(Android 16)에서 촬영한 화면입니다. 앱의 아티스�
 
 [LIVE 상세 화면](docs/evidence/physical-20261108/live.png) · [Replay 화면](docs/evidence/physical-20261108/replay.png) · [플레이어 설정](docs/evidence/physical-20261108/player-settings.png)
 
-**시연 구성:** Replay는 앱에 포함된 합성 HLS 영상을 재생합니다. Debug의 LIVE 룸 세 곳은 로컬 서버의 녹화 MP4와 채팅 화면을 함께 사용합니다. 채팅은 기본적으로 Fake 데이터로 동작하고, 개발 설정에서 로컬 WebSocket 서버로 전환해 실제 송수신·복구를 확인할 수 있습니다.
+**시연 구성:** 기본 Replay 경로는 앱에 포함된 합성 HLS 영상을 재생합니다. Debug의 LIVE 룸 세 곳과 Media의 로컬 영상 항목은 로컬 서버의 녹화 MP4를 사용합니다. 채팅은 LIVE 화면에서 기본적으로 Fake 데이터로 동작하며, 개발 설정에서 로컬 WebSocket 서버로 전환해 실제 송수신·복구를 확인할 수 있습니다.
 
 ## 주요 구현과 문제 해결
 
