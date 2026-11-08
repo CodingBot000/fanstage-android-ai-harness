@@ -41,7 +41,15 @@ DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hil
 
 **수동 Factory 잔존 범위:** `ChatViewModel.Factory`는 테스트·벤치마크에서 명시적 Transport를 주입하기 위해 유지합니다. `RoomListViewModel.Factory`는 초기 독립 룸 목록 구현과 단위 테스트에 남아 있지만, 현재 `MainActivity`가 실제 화면 진입에 사용하는 것은 `DiscoverRoute`입니다. 따라서 일반 ViewModel 네 개의 Hilt 전환과 혼동하지 않으며, 미사용 경로 정리는 테스트 보존 여부를 검토한 별도 작업으로 다룹니다.
 
-## 2. Compose 상태 관리
+## 2. UI 디자인 시스템과 화면 조립 책임
+
+- **`core:designsystem`:** `FanStageTheme`, `FanStageSpacing`, `BackTitleBar`, `CardSingleLineText`, `SendIcon`, 접히는 타이틀바 상태 등 **기존 공통 API**를 제공합니다. Feature 도메인 모델·Navigation·ViewModel·Media3 Player에는 의존하지 않습니다. 이번 PR에서 신규 Gradle 모듈이나 범용 카드 래퍼를 추가하지 않았습니다.
+- **`feature:media`:** LIVE·로컬 영상·Replay의 카드가 공유하는 16:10 이미지/라벨/제목/설명 레이아웃을 비공개 Composable `MediaArtworkCard`로 통합했습니다. 데이터 매핑, 이미지 리소스, 클릭 행동과 `media_*` 테스트 태그는 각 카드의 호출부에서 유지합니다. 이 컴포넌트는 다른 Feature에서 직접 사용하지 않습니다.
+- **`app`:** `MainActivity.kt`의 `FanStageApp`에서 NavController와 일반 ViewModel 네 개를 생성하고, 같은 파일 안의 `FanStageAppShell`은 Scaffold·상단바·FloatingNavigation을, `FanStageNavHost`는 목적지·화면 조립을 담당합니다. `ChatViewModel`의 룸별 Navigation BackStackEntry 소유권은 변경하지 않았습니다.
+
+복수 Feature가 동일한 UI 표현·상호작용 계약을 공유할 때에만 `core:designsystem`으로 승격합니다. Material3의 단순 일대일 래퍼나 기능별 모델을 받는 공통 컴포넌트는 만들지 않는 기준입니다. [UI 재사용 결정 ADR-0005](adr/ADR-0005-ui-component-reuse.md) · [설계·구현 SDD](specs/ui-designsystem-refactoring.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70).
+
+## 3. Compose 상태 관리
 
 ~~~text
 사용자 입력 → ViewModel → Repository/ChatTransport
@@ -53,7 +61,7 @@ DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hil
 
 ViewModel은 화면에 표시할 상태와 비동기 요청을 관리합니다. Compose는 상태를 읽어 UI를 그리고 사용자 동작을 ViewModel로 전달합니다. 룸이 바뀌거나 요청이 취소되면 이전 응답이 현재 화면에 반영되지 않도록 처리합니다.
 
-## 3. LIVE와 Replay의 역할
+## 4. LIVE와 Replay의 역할
 
 **LIVE 상세**에는 영상 플레이어와 채팅 화면이 있습니다. **Replay**는 영상 재생 화면이며 채팅 입력 기능을 제공하지 않습니다. 두 화면은 Media3 재생 컴포넌트를 재사용합니다.
 

@@ -11,6 +11,12 @@ FanStage는 Kotlin·Jetpack Compose·Coroutines/Flow·MVVM/UDF·Hilt·Media3를 
 
 총 **11개 Gradle 모듈**이며 각 기능의 의존 관계는 [아키텍처 문서](../docs/architecture.md)에 정리했습니다.
 
+## UI 재사용과 화면 조립
+
+`core:designsystem`은 Theme·spacing·기존 공통 Composable을 제공하며, 새로운 기능을 만들 때 먼저 재사용 가능성을 검토합니다. `feature:media`의 `MediaArtworkCard`는 LIVE·로컬 영상·Replay 카드 3종이 같은 레이아웃을 공유하는 **Feature 내부** 컴포넌트입니다. `app`의 `FanStageAppShell`과 `FanStageNavHost`는 `MainActivity.kt` 내부에서 Scaffold와 Navigation 책임을 분리합니다. 새 Gradle 모듈이나 범용 UI 래퍼는 만들지 않았습니다.
+
+[ADR-0005: 공통화 기준](../docs/adr/ADR-0005-ui-component-reuse.md) · [구현·회귀 SDD](../docs/specs/ui-designsystem-refactoring.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70). UI 변경 검증은 관련 Compose 계측과 병합 PR의 CI 결과를 구분해서 확인하며, 변경 전후 시각적 동일성 비교는 별도 실행 전까지 `NOT_RUN`입니다.
+
 ## 필요한 환경
 
 - JDK 17 및 Android Studio 또는 Android SDK

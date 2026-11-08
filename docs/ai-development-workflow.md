@@ -47,6 +47,12 @@ FanStage에서는 Codex를 코드 작성과 리팩토링에 사용했습니다. 
 
 **검증:** [`check-ux-module-boundaries.py`](../scripts/check-ux-module-boundaries.py)는 기능·공통 모듈의 허용 의존 관계와 순수 Kotlin 모델의 Android UI 참조 여부를 검사합니다. 이 스크립트를 Android GitHub Actions에서 실행합니다. 기능별 분리와 검증 이력은 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 남겼습니다.
 
+## 6. 사례: UI 공통화 범위 제한과 회귀 보존
+
+**설계:** [UI SDD](specs/ui-designsystem-refactoring.md)와 [ADR-0005](adr/ADR-0005-ui-component-reuse.md)에서 기존 `core:designsystem` 우선 재사용과 **무엇을 공통화하지 않을지**를 함께 결정했습니다. Media 세 카드의 반복 배치만 `feature:media` 내부 `MediaArtworkCard`로 통합하고, `app`의 Shell과 NavHost 구성 책임을 분리했습니다. 불필요한 범용 카드 래퍼나 새 Gradle 모듈은 추가하지 않았습니다.
+
+**검증:** [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)은 기존 API 36 에뮬레이터·실기기 UI 계측 각각 43/43, Hilt 3/3 등을 기록했고 [PR 필수 품질 게이트](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)가 PASS했습니다. 다만 동일 조건의 변경 전후 화면 캡처 비교와 해당 PR의 실제 서버·장시간 누수 재실행은 `NOT_RUN`입니다. 코딩 에이전트의 향후 UI 변경 기준은 [AGENTS.md](../AGENTS.md)에 연결했습니다.
+
 ## 최종 검증 감사의 범위
 
 별도 에이전트 세션이 코드와 증거를 재검토했고, Hilt ViewModel의 실제 Activity 생성 경로와 실기기 서버 연결을 추가로 검증했습니다. 같은 모델 계열의 별도 리뷰이며 다른 모델의 평가로 주장하지 않습니다. 실패·미실행과 GitHub 병합 정책의 한계는 [감사 보고](evidence/verification/audit-20261108/audit-report.md)에 기록했습니다.
