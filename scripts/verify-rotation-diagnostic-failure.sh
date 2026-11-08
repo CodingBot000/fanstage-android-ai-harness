@@ -16,6 +16,7 @@ cleanup() { if [ -f "$target" ] && cmp -s "$fixture" "$target"; then rm "$target
 trap cleanup EXIT
 cp "$fixture" "$target"
 cd "$root/android"
+start_ns="$(python3 -c 'import time; print(time.time_ns())')"
 set +e
 ./gradlew :app:connectedDebugAndroidTest -PfanstageDeviceTest=true \
   '-Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RotationAuditFailureProbe' \
@@ -23,11 +24,13 @@ set +e
   --no-daemon --max-workers=2 > "$output/gradle.log" 2>&1
 status=$?
 set -e
-python3 - "$status" "$output" <<'PY'
+python3 - "$status" "$output" "$start_ns" <<'PY'
 from pathlib import Path
 import re,shutil,sys,xml.etree.ElementTree as ET
-status=int(sys.argv[1]);out=Path(sys.argv[2]);reports=list(Path('app/build/outputs/androidTest-results/connected').rglob('TEST-*.xml'))
-if status==0 or len(reports)!=1: raise SystemExit('FAIL: expected exactly one failed instrumentation result')
+status=int(sys.argv[1]);out=Path(sys.argv[2]);start_ns=int(sys.argv[3]);reports=list(Path('app/build/outputs/androidTest-results/connected').rglob('TEST-*.xml'))
+log=(out/'gradle.log').read_text(errors='replace')
+if status==0 or len(reports)!=1 or 'Starting 1 tests' not in log or 'Finished 1 tests' not in log: raise SystemExit('FAIL: expected one newly executed failed instrumentation result')
+if reports[0].stat().st_mtime_ns < start_ns: raise SystemExit('FAIL: test result predates this execution')
 r=ET.parse(reports[0]).getroot();cases=list(r.iter('testcase'))
 if r.get('tests')!='1' or r.get('failures')!='1' or r.get('errors')!='0' or r.get('skipped')!='0' or len(cases)!=1: raise SystemExit('FAIL: unexpected negative-probe result')
 case=cases[0];failure=case.find('failure');text='' if failure is None else ''.join(failure.itertext())
