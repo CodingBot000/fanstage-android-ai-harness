@@ -78,6 +78,23 @@ jobs:
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify app/build/outputs/apk/benchmark/app-benchmark.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify macrobenchmark/build/outputs/apk/benchmark/macrobenchmark-benchmark.apk
 
+      # The default build compiles only the ordinary AndroidJUnitRunner test sources.
+      # Hilt tests live in a property-gated source set and must be compiled independently.
+      - name: Compile Hilt-specific AndroidTest sources with Hilt test runner
+        working-directory: android
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew :app:assembleDebugAndroidTest -PfanstageHiltInstrumentation=true --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/hilt-androidtest-ci.log"
+
+      # Recheck the default variant after switching source sets to catch generated-code leaks.
+      - name: Recompile ordinary AndroidTest after Hilt source-set switch
+        working-directory: android
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew :app:assembleDebugAndroidTest --no-daemon --max-workers=2 --stacktrace 2>&1 | tee "$GITHUB_WORKSPACE/default-androidtest-after-hilt-ci.log"
+
       - name: Upload logs and unit test XML
         if: always()
         uses: actions/upload-artifact@v4
@@ -85,6 +102,8 @@ jobs:
           name: android-pr-gate-evidence
           path: |
             android-ci.log
+            hilt-androidtest-ci.log
+            default-androidtest-after-hilt-ci.log
             android/**/build/test-results/testDebugUnitTest/*.xml
             android/core/data/build/test-results/test/*.xml
             android/**/build/reports/lint-results-*.html
