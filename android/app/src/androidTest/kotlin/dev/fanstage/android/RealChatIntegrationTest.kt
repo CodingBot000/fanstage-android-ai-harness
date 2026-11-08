@@ -67,7 +67,8 @@ import org.junit.runner.RunWith
 class RealChatIntegrationTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()
     private val serverPort = InstrumentationRegistry.getArguments().getString("fanServerPort")?.toIntOrNull() ?: 18765
-    private val base = "http://10.0.2.2:$serverPort"
+    private val serverHost = InstrumentationRegistry.getArguments().getString("fanServerHost") ?: "10.0.2.2"
+    private val base = "http://$serverHost:$serverPort"
 
     // Only fixed phase names, enum states and exception class names may enter CI logs.
     private inline fun <T> phase(id: String, state: () -> String = { "none" }, block: () -> T): T {
@@ -152,7 +153,7 @@ class RealChatIntegrationTest {
             try {
                 val downstream = listener.accept(); sockets.add(downstream)
                 proxyEvent("accepted")
-                val upstream = java.net.Socket("10.0.2.2", serverPort); sockets.add(upstream)
+                val upstream = java.net.Socket(serverHost, serverPort); sockets.add(upstream)
                 proxyEvent("upstream_connected")
                 thread(name = "m5-proxy-uplink", isDaemon = true) {
                     try {
@@ -269,7 +270,7 @@ class RealChatIntegrationTest {
                     val downstream = listener.accept(); sockets.add(downstream)
                     workers.add(thread(isDaemon = true) {
                         try {
-                            val upstream = java.net.Socket("10.0.2.2", serverPort); sockets.add(upstream)
+                            val upstream = java.net.Socket(serverHost, serverPort); sockets.add(upstream)
                             val source = downstream.getInputStream()
                             val request = StringBuilder()
                             while (!request.endsWith("\r\n\r\n") && request.length < 16_384) {
