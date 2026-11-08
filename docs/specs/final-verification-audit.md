@@ -1,9 +1,9 @@
 # Android 최종 검증 감사
 
-- 기준 코드: `4191a1dd1adf9debd95a3cc0c4366943c751f67e` (PR #68 이후 main)
-- 상태: PARTIAL — 주요 기기·서버 검증 실행, GitHub 강제 정책과 간헐 회전 실패 원인 및 장시간 누수는 미해결. 실행하지 않은 검증은 PASS로 추정하지 않는다.
+- 착수 기준 코드: `4191a1dd1adf9debd95a3cc0c4366943c751f67e` (PR #68 이후 `main`). 후속 검증 대상은 [Draft PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69)이며 최신 코드·CI 결과는 해당 PR의 HEAD를 따른다.
+- 상태: **PARTIAL** — 주요 기기·서버 검증과 PR 통합 품질 게이트는 확인했다. 2026-11-09 `main` Branch Protection 및 `required-quality` 필수 체크를 적용했으나 관리자 우회를 허용한다. 실제 GitHub 병합 차단 실험은 `NOT_RUN`이다. 최초 회전 실패 원인 및 장시간 누수 부재는 미확정이며, 미실행 검증을 PASS로 추정하지 않는다.
 - 범위: Hilt 계측, Android 빌드·UI·생명주기, 격리 서버 연결·복구, 자원 반복 관찰, 기존 성능 근거, 레거시 DI, CI 정책, 원본 증거·문서 정합성.
-- 제외: 상시 인프라, 실제 사용자 데이터, GitHub 보안 설정 변경 및 PR 자동 병합.
+- 제외: 상시 인프라, 실제 사용자 데이터, PR 자동 병합. GitHub 보안 설정 변경은 착수 당시 제외했으나, 이후 사용자 승인을 받아 `main` 보호 정책만 별도로 적용했다.
 
 ## 수용 기준
 
@@ -12,12 +12,12 @@
 ## Open Questions / 제약
 
 - 실기기가 연결되지 않으면 격리 에뮬레이터 결과와 실기기 NOT_RUN을 분리한다.
-- Branch Protection과 Ruleset은 읽기 전용 확인하며 보안 설정을 바꾸지 않는다.
+- 착수 당시 Branch Protection/Ruleset은 읽기 전용 점검 대상이었다. 이후 사용자 승인 하에 `main` Branch Protection을 적용했다. 관리자 우회 여부와 실제 차단 실험 미실행을 [정책 기록](ci-required-quality-policy.md)에 분리한다.
 - 성능·누수 합격 수치나 데이터 보존 정책은 임의로 확정하지 않는다.
 
 ## 결과
 
-실제 실행·기기·소스 SHA·실패와 후속 결과는 [감사 보고](../evidence/verification/audit-20261108/audit-report.md)와 [원본 증거](../evidence/verification/audit-20261108/README.md)를 참조한다. 보안 설정은 변경하지 않았다.
+실제 실행·기기·소스 SHA·실패와 후속 결과는 [감사 보고](../evidence/verification/audit-20261108/audit-report.md)와 [원본 증거](../evidence/verification/audit-20261108/README.md)를 참조한다. 최초 감사 당시 GitHub 설정 변경은 없었지만, 2026-11-09 사용자 승인으로 `main` Branch Protection을 적용했다. `required-quality`의 PR CI 성공은 확인했으며, 정책에 따른 실제 병합 차단 실험은 수행하지 않았다.
 
 ## 증거 무결성 검사 보완
 
@@ -25,4 +25,4 @@
 
 ## 회전 진단 및 통합 게이트 후속
 
-실기기 회전은 두 진단 버전에서 각 20/20, 관련 최종 회귀 42/42 및 Hilt 3/3을 실행했다. 기존 최초 실패는 재현되지 않아 원인 미확정으로 보존한다. Debug 전용 단조 시간 진단과 격리 실패 probe·원본은 [증거 안내](../evidence/verification/audit-20261108/README.md)에 있다. GitHub 필수 체크 적용은 [정책 제안](ci-required-quality-policy.md)의 사용자 승인 전까지 미완료다.
+실기기 회전은 두 진단 버전에서 각 20/20, 관련 최종 회귀 42/42 및 Hilt 3/3을 실행했다. 기존 최초 실패는 재현되지 않아 원인 미확정으로 보존한다. Debug 전용 단조 시간 진단과 격리 실패 probe·원본은 [증거 안내](../evidence/verification/audit-20261108/README.md)에 있다. GitHub 필수 체크는 사용자 승인 후 `main`에 적용되었다. 현재 `required-quality`는 GitHub Actions 출처의 필수 검사로 설정되어 있지만, 관리자는 우회할 수 있다. 별도의 실패 PR 병합 차단 실험은 `NOT_RUN`이다. 상세 내용은 [정책 적용 기록](ci-required-quality-policy.md)을 참조한다.

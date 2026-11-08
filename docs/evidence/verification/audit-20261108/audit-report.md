@@ -1,10 +1,10 @@
 # Android 최종 검증 감사 — 2026-11-08
 
-> 이 보고서의 보호 정책 관련 본문은 적용 전 감사 시점의 이력이다. 2026-11-09 적용된 정책과 관리자 우회 및 미실행 차단 실험은 [현재 정책](../../../specs/ci-required-quality-policy.md)을 따른다.
+> **기록 시점 주의:** 아래의 초기 High 발견 및 '미설정' 설명은 2026-11-08 당시 감사 이력이다. 2026-11-09 사용자 승인으로 `main` Branch Protection이 적용되었고 GitHub Actions 출처의 `required-quality`가 필수로 지정됐다(관리자 우회 허용). 실제 실패 PR 병합 차단 실험은 `NOT_RUN`이다. 현재 적용 상태는 [정책 기록](../../../specs/ci-required-quality-policy.md)을 우선한다.
 
 ## 범위와 판정
 
-**PARTIAL.** 기준 main은 `4191a1dd1adf9debd95a3cc0c4366943c751f67e`이며, 후속 실행의 당시 HEAD와 커밋 전 변경을 포함한 관련 코드 스냅샷은 [manifest](manifest.json)에 구분해 기록했다. 확인된 미해결 사항은 High 1건, Medium 1건이다. Critical·Low 확정 항목은 없다. 등급은 이 감사의 운영·검증 위험이며 애플리케이션 보안 취약점의 발견을 의미하지 않는다.
+**PARTIAL (초기 감사 판정).** 기준 main은 `4191a1dd1adf9debd95a3cc0c4366943c751f67e`이며, 후속 실행의 당시 HEAD와 커밋 전 변경을 포함한 관련 코드 스냅샷은 [manifest](manifest.json)에 구분해 기록했다. 당시 발견 사항은 High 1건(보호 정책 미설정), Medium 1건(회전 간헐 실패)이었다. High의 설정 부재는 이후 보호 정책 적용으로 해소되었으나 관리자 우회와 실제 차단 미실행 한계는 남는다. Critical·Low 확정 항목은 없다. 등급은 이 감사의 운영·검증 위험이며 애플리케이션 보안 취약점의 발견을 의미하지 않는다.
 
 - **High — main 병합 차단 정책 부재:** 읽기 전용 GitHub API는 `protected=false`, 필수 검사 `off`, 적용 Ruleset `[]`를 반환했다. 현재 계정은 push 권한을 갖지만 main 직접 push나 실패 PR 병합은 시도하지 않았다. 따라서 특정 시도의 성공 여부를 단정하지 않는다. [관찰 원본 요약](branch-policy.json).
 - **Medium — 회전 계측 간헐 실패:** 실기기 선택 회귀 첫 실행은 38/39였고, `fullscreenRestoresAfterActualRotation`에서 일시정지 태그 대기가 시간 초과됐다. 단독 재실행, 두 차례 전체 39/39 재실행, 별도 단독 5회는 통과했다. 최초 원인은 미확정이며 실패를 환경 문제로 단정하거나 통과 결과로 덮어쓰지 않는다. [첫 결과](ui-physical-initial.xml) · [전체 재실행](ui-physical-retry.xml) · [manifest](manifest.json).
@@ -30,11 +30,11 @@ SM-S908N/API 36, non-debuggable `benchmark`, JDK 17, `CompilationMode.None`, 동
 
 Hilt 2.60.1과 KSP 2.3.10을 사용한다. [Dagger KSP 안내](https://dagger.dev/dev-guide/ksp.html)는 Dagger 2.60 이상과 KSP 2.3.9 이상의 안정 지원을 설명하고, [Kotlin KSP 예제](https://kotlinlang.org/docs/ksp-quickstart.html)는 Kotlin 2.4.21과 KSP 2.3.10을 함께 사용한다. 다만 [Kotlin 호환표](https://kotlinlang.org/docs/gradle-configure-project.html)는 Kotlin 2.4.21의 AGP 완전 지원 상한을 9.3.1로 기재하며 현재 AGP는 9.3.3이다. 로컬 빌드 성공은 이 조합에 대한 공식 완전 지원 보증이 아니다.
 
-## GitHub 정책 권고 — 설정은 변경하지 않음
+## GitHub 정책 권고 — 최초 감사 당시 미설정 (이력)
 
-현재는 어떤 체크도 필수로 강제된다는 근거가 없다. 관리자에게 main 대상 Ruleset/Branch Protection, PR 필수, 관리자 우회 여부, 필수 검사의 출처를 검토하도록 제안한다. 현 상태의 `build-lint-unit`, `PostgreSQL and WebSocket server integration`, `markdown-links-and-adr-ids`는 workflow 경로 필터가 있어 그대로 필수로 지정하면 해당 workflow가 실행되지 않는 PR이 대기 상태에 남을 수 있다. 모든 PR에서 실행되는 안정적인 집계 체크를 먼저 설계하고 경로별 작업의 성공·실패·정당한 미실행을 명시한 뒤 그 체크를 필수화하는 것을 권장한다. [GitHub 필수 검사 문서](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
+2026-11-08 최초 감사 당시에는 어떤 체크도 필수로 강제된다는 근거가 없었다. 관리자에게 main 대상 Ruleset/Branch Protection, PR 필수, 관리자 우회 여부, 필수 검사의 출처를 검토하도록 제안한다. 현 상태의 `build-lint-unit`, `PostgreSQL and WebSocket server integration`, `markdown-links-and-adr-ids`는 workflow 경로 필터가 있어 그대로 필수로 지정하면 해당 workflow가 실행되지 않는 PR이 대기 상태에 남을 수 있다. 모든 PR에서 실행되는 안정적인 집계 체크를 먼저 설계하고 경로별 작업의 성공·실패·정당한 미실행을 명시한 뒤 그 체크를 필수화하는 것을 권장한다. [GitHub 필수 검사 문서](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
 
-실제 direct push 및 고의 실패 PR의 병합 차단 실험, 보안 정책 설정 변경은 **NOT_RUN**이다. 기기 CI를 실제 실행할 것인지도 별도 운영 선택이다. Hilt 전용 테스트를 APK 컴파일만 하는 CI와 로컬 기기 실행 결과는 구분한다.
+이 최초 감사 시점에는 실제 direct push 및 고의 실패 PR의 병합 차단 실험, 보안 정책 변경이 모두 **NOT_RUN**이었다. 보호 정책 적용은 2026-11-09 사용자 승인 후 별도로 진행되었으며, 병합 차단 실험은 여전히 **NOT_RUN**이다. 기기 CI를 실제 실행할 것인지도 별도 운영 선택이다. Hilt 전용 테스트를 APK 컴파일만 하는 CI와 로컬 기기 실행 결과는 구분한다.
 
 ## 독립 재검토
 
@@ -50,7 +50,7 @@ Hilt 2.60.1과 KSP 2.3.10을 사용한다. [Dagger KSP 안내](https://dagger.de
 
 ## 2026-11-09 증거 무결성과 회전 진단 후속
 
-공개 파일의 SHA-256, 중복·누락·경로 이탈, JUnit 스위트·케이스 집계 및 선언된 실패 이력, 소스 커밋 존재와 회전 코드 fingerprint를 검사하도록 보완했다. 정상 증거는 통과하고 임시 fixture의 누락·변조·XML 오류·출처 불일치는 거부한다. 통합 `required-quality`는 선택된 검사의 실패·취소·예상치 못한 미실행을 실패로 처리한다. 실제 PR에서 해당 체크의 성공을 확인했으나 **GitHub 보호 정책은 설정하지 않았다**. [설정 제안](../../../specs/ci-required-quality-policy.md).
+공개 파일의 SHA-256, 중복·누락·경로 이탈, JUnit 스위트·케이스 집계 및 선언된 실패 이력, 소스 커밋 존재와 회전 코드 fingerprint를 검사하도록 보완했다. 정상 증거는 통과하고 임시 fixture의 누락·변조·XML 오류·출처 불일치는 거부한다. 통합 `required-quality`는 선택된 검사의 실패·취소·예상치 못한 미실행을 실패로 처리한다. 실제 PR에서 해당 체크의 성공을 확인했다. **이 검증 실행 당시에는 보호 정책 변경을 수행하지 않았지만**, 2026-11-09 사용자 승인 후 `main`에 Branch Protection을 적용했다(관리자 우회 허용). 병합 차단 실험은 `NOT_RUN`이다. [정책 적용 기록](../../../specs/ci-required-quality-policy.md).
 
 Galaxy S22 Ultra/API 36에서 진단 도입 초기와 보강 후의 회전 테스트를 각각 20회 독립 실행해 **20/20 + 20/20** 통과했다. 보강 후 매 실행에서 가로 회전 전 Player 재생과 TextureView 상태, Activity 생성·종료, 회전 후 일시정지 관찰 및 Listener 등록·제거 이벤트가 기록됐다. 20회에서 일반→전체 화면은 같은 Player 식별자였고 실제 Activity 회전 후에는 다른 Player 식별자가 관찰됐다. 이는 그 실행의 관찰이지 장시간 누수 부재의 증명이 아니다. [실행 기록](README.md) · [최종 추적](rotation-final-trace.json).
 
