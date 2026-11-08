@@ -18,6 +18,9 @@ on:
       - 'scripts/tests/test_verification_evidence.py'
       - 'scripts/quality_gate.py'
       - 'scripts/tests/test_quality_gate.py'
+      - 'scripts/tests/test_rotation_negative_runner.py'
+      - 'scripts/verify-rotation-diagnostic-failure.sh'
+      - 'scripts/fixtures/RotationAuditFailureProbe.kt'
       - '.github/workflows/docs-check.yml'
   workflow_dispatch:
 
