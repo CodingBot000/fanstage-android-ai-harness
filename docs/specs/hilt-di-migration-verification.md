@@ -1,5 +1,15 @@
 # Hilt 마이그레이션 검증 기록
 
+## 최종 검증 범위 및 증거 출처
+
+- 코드 기준: [Hilt 전환 PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) (최종 `main` 병합 `898dabebf`).
+- GitHub-hosted CI 근거: [Android 빌드·Lint·Unit](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874845), [격리 서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874806), [Markdown 링크/ADR CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874813) — 모두 해당 커밋 기준 PASS.
+- 로컬 기기 계측 근거: Galaxy S22 Ultra/API 36에서 선택 일반 39/39, 별도 Hilt 바인딩 1/1 PASS. API 36 에뮬레이터·격리 PostgreSQL/WebSocket Android 통합 1/1 PASS. 아래에 테스트 이름·실행 조건·최초 FAIL과 재검증을 기록했다.
+- **증거 한계:** 로컬 실행 결과의 원본 JUnit XML/logcat·실기기 환경 재현은 GitHub-hosted CI가 대신하지 못한다. 원본 로그의 공개 업로드 여부는 별도 확인이 필요하다. 장시간 누수·실기기 실제 서버 연결·성능은 `NOT_RUN`.
+- 기존 CI의 기본 `assembleDebugAndroidTest`는 별도 property를 요구하는 Hilt 전용 테스트 소스를 포함하지 않는다. 이를 보완하는 [CI 워크플로](../../.github/workflows/android-ci.yml)는 전용 APK를 **컴파일**하는 검사를 추가하며, 기기에서 실행했다고 주장하지 않는다.
+
+## 시간순 실행 기록
+
 2026-11-08, 로컬 macOS, JDK 21.0.10, 로컬 Android SDK, Gradle 9.5.0. Phase 3 작업 트리에서 아래 명령을 실행했다.
 
 ```sh

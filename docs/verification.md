@@ -10,6 +10,7 @@
 | Compose 기능별 모듈 분리 | Android 빌드·단위/기기 회귀 / 모듈 경계 검사 | **통과** · [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) |
 | PostgreSQL·WebSocket·장애 주입 | GitHub Actions의 격리 서버 | **통과** · [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) |
 | 실기기 시연 | Galaxy S22 Ultra / 로컬 MP4 | 화면 탐색·재생 영상 검증 · [PR #61](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/61) |
+| Hilt DI·룸 수명주기 전환 | Galaxy S22 Ultra/API 36 및 격리 API 36 에뮬레이터 | 선택 일반 39/39, Hilt 바인딩 1/1, 격리 서버 Android 통합 1/1 PASS · [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) · [실행 기록](specs/hilt-di-migration-verification.md) |
 
 위 수치는 각 PR에서 기록한 **해당 코드 버전의 실행 결과**입니다.
 
@@ -17,7 +18,7 @@
 
 로컬 JDK 21과 JDK 17·Android SDK에서 Debug·Release 계열 빌드, Lint, 단위 테스트와 모듈·Manifest 검사를 실행했습니다. Galaxy S22 Ultra / API 36에서 선택한 화면·플레이어·채팅 계측 39/39와 Hilt 테스트 바인딩 교체 1/1이 통과했습니다. 별도 API 36 에뮬레이터와 격리된 PostgreSQL·WebSocket 서버를 사용한 Android 연결·복구 통합 테스트도 1/1 통과했습니다. 실제 백엔드의 실기기 연결, 장시간 누수와 성능 검증은 **NOT_RUN**입니다.
 
-기기 계측 이후 최신 main을 통합했으며 Android 코드·테스트는 계측 당시와 같습니다. 최초 LIVE 테스트 실패, 원인 조사, 일시정지 버튼 수정과 재검증의 명령·범위는 [작업 검증 기록](specs/hilt-di-migration-verification.md)에 남겼습니다. GitHub PR·CI 결과는 해당 PR에서 별도로 확인합니다.
+기기 계측 이후 최신 main을 통합했으며 Android 코드·테스트는 계측 당시와 같습니다. 최초 LIVE 테스트 실패, 원인 조사, 일시정지 버튼 수정과 재검증의 명령·범위는 [작업 검증 기록](specs/hilt-di-migration-verification.md)에 남겼습니다. GitHub [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67)과 병합 후 `main`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874845) · [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874806) · [문서 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874813)가 성공했습니다. CI의 성공은 로컬 기기 테스트 재실행을 의미하지 않으며, 원본 로컬 계측 로그는 공개 증거로 첨부됐는지 별도 확인이 필요합니다. Hilt 전용 테스트 APK를 별도 컴파일하는 CI 단계는 [워크플로](../.github/workflows/android-ci.yml)에서 확인할 수 있습니다.
 
 
 ## 자동화와 기기 검증의 역할

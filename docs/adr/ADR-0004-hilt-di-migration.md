@@ -1,14 +1,24 @@
 # ADR-0004 · Hilt 기반 의존성 주입으로의 점진적 전환
 
-- Status: MIGRATED / SELECTED_DEVICE_TESTS_PASS
+- Status: ACCEPTED / PHASES_1_TO_3_IMPLEMENTED / SELECTED_DEVICE_TESTS_PASS
 - Date: 2026-11-08
-- Related SDD: `../specs/hilt-di-migration-phase1.md`
+- Related SDD: [Phase 1](../specs/hilt-di-migration-phase1.md) · [Phase 2A](../specs/hilt-di-migration-phase2a.md) · [Phase 2B](../specs/hilt-di-migration-phase2b.md) · [Phase 3](../specs/hilt-di-migration-phase3.md)
+- Evidence: [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) · [회귀 검증](../specs/hilt-di-migration-verification.md)
 
-## Context
+## Context (전환 전 기록)
 
-FanStage는 11개 Android Gradle 모듈을 사용하며, 현재 `app/AppContainer.kt`가 Repository 인스턴스를 직접 생성하고 `ViewModelProvider.Factory`를 수동 구성한다. `MainActivity`는 Composable에서 `AppContainer`를 `remember`한다. 모듈/도메인 경계는 이미 분리되어 있으므로 이를 유지한 채 Android 표준 DI인 Dagger Hilt를 도입한다. LIVE 룸 채팅, Media3의 자원 소유권과 기기 회귀를 함께 고려해야 한다.
+FanStage는 11개 Android Gradle 모듈을 사용하며, 전환 전 `app/AppContainer.kt`가 Repository 인스턴스를 직접 생성하고 `ViewModelProvider.Factory`를 수동 구성했다. `MainActivity`는 Composable에서 `AppContainer`를 `remember`했다. 모듈/도메인 경계는 이미 분리되어 있으므로 이를 유지한 채 Android 표준 DI인 Dagger Hilt를 도입한다. LIVE 룸 채팅, Media3의 자원 소유권과 기기 회귀를 함께 고려해야 한다.
 
-## Decision
+## 최종 구현 상태 (Phase 1~3 완료 후)
+
+- `FanStageApplication`에 `@HiltAndroidApp`, `MainActivity`에 `@AndroidEntryPoint`를 적용했다.
+- Discover/Community/Media/Messages ViewModel은 `@HiltViewModel`로 전환했고 기존 Activity 소유 범위를 유지했다. `AppContainer`는 Phase 2A에서 제거했다.
+- `ChatViewModel`은 Navigation BackStackEntry 범위를 사용하고 `SavedStateHandle`의 `roomId`와 `ChatTransportFactory`로 룸별 Transport를 생성한다. 테스트·벤치마크에서 명시적 Transport를 주입하는 Factory는 남겼다.
+- Repository 바인딩은 `app` 모듈에서 제공하고 `core:data`는 순수 Kotlin을 유지한다. 가변 Fake Repository·WebSocket·Media3 리소스를 전역 Singleton으로 전환하지 않았다.
+- 일반 Android 계측과 전용 Hilt 계측은 서로 다른 러너를 사용한다. [Android CI](../../.github/workflows/android-ci.yml)에서 전용 테스트 APK를 **컴파일**하도록 보완하며, 실제 기기 실행과 구분한다.
+- 초기 독립 룸 목록 경로의 수동 Factory는 현재 런처 경로에서 사용하지 않지만 관련 단위 테스트가 있어 잔존한다. '수동 Factory 전부 제거'를 주장하지 않는다.
+
+## Decision (Phase 1 수립 당시의 단계적 결정)
 
 1. 애플리케이션 진입점은 `@HiltAndroidApp Application`, Activity는 `@AndroidEntryPoint`로 구성한다.
 2. 현재 Fake Repository 3개 (`DiscoverRepository`, `CommunityRepository`, `MessageRepository`)의 Hilt 바인딩은 우선 `app` 모듈의 `@Module`/`@Provides`/`@InstallIn(SingletonComponent::class)`에서 제공한다. `core:data`에 DI 프레임워크 의존성을 추가하지 않으며, 구현 선택 자체를 제품 기능의 변경으로 간주하지 않는다.
@@ -30,9 +40,11 @@ FanStage는 11개 Android Gradle 모듈을 사용하며, 현재 `app/AppContaine
 - 비용/위험: KSP/Hilt 코드 생성에 따른 빌드 비용·플러그인 호환성, 단계 전환 기간의 Factory 중복, Activity 재생성 시 Repository 수명 범위 확인 필요.
 - 검증 의무: 모든 빌드 변형, Lint, 단위 테스트, 모듈 경계 검사, 가용한 기기의 UI/재생·채팅 회귀를 확인한다. 실패 또는 미실행은 PASS로 기재하지 않는다.
 
-## Rollback
+## Rollback (최종 구조 기준)
 
-Hilt 전환의 Stage 1 작업 diff만 되돌려 수동 `AppContainer` 조립으로 복귀할 수 있도록 서버·데이터 계약과 Feature 코드 변경을 금지한다. 실패 시 `main` CI를 통과하지 않은 상태로 병합하지 않는다.
+Phase 1 수립 당시에는 첫 단계만 되돌릴 수 있도록 계획했다. 그러나 Phase 2A·2B·3이 적용된 현재 구조에서 **Phase 1만 revert하면 Hilt ViewModel과 DI 그래프가 깨질 수 있다.**
+
+복구가 필요하면 [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) 전체 변경을 검토하거나 의존 관계 역순으로 단계별 revert를 계획하고, Debug/Release·Lint·Unit·관련 계측을 다시 검증한다. 기존 Git 이력을 강제 재작성하는 reset/force push는 피한다.
 
 ## Sources
 
