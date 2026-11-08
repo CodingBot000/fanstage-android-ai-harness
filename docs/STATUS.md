@@ -1,6 +1,6 @@
 # FanStage 개발 현황
 
-**현재 기준:** 2026-11-09 · `main` [`5d335ec`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/5d335ec2f26d4655f713083ecded85b06b44806e) ([PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70) 병합). 아래 과거 PR별 검증 이력은 실행 당시 상태로 보존합니다.
+**구현 확인 기준:** 2026-11-09 · [PR #70 병합 커밋 `5d335ec`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/5d335ec2f26d4655f713083ecded85b06b44806e). 후속 문서 정리는 앱 구현 변경이 아니며, 아래 과거 PR별 검증 이력은 실행 당시 상태로 보존합니다.
 
 ## 현재 구현
 
