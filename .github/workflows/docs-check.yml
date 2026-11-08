@@ -4,6 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
+      - '**/*.md'
       - 'README.md'
       - 'AGENTS.md'
       - 'CLAUDE.md'
@@ -16,6 +17,7 @@ on:
   push:
     branches: [main]
     paths:
+      - '**/*.md'
       - 'README.md'
       - 'AGENTS.md'
       - 'CLAUDE.md'
