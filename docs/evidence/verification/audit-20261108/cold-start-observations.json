@@ -1,0 +1,122 @@
+{
+  "kind": "derived values from actual Macrobenchmark JSON; original JSON and Perfetto traces remain private",
+  "metric": "timeToInitialDisplayMs",
+  "method": "ColdStartupBenchmark, CompilationMode.None, 10 iterations per build, same device, baseline then candidate",
+  "limitations": "Single ordered run, n=10, uncontrolled OS cache and background activity; comparison is descriptive, not a causal Hilt performance conclusion. TTFD not measured.",
+  "observations": [
+    {
+      "label": "baseline",
+      "source_commit": "0451c02817f2ae48e8f7ae5d898c55984e0cf87e",
+      "device_model": "SM-S908N",
+      "api": "36",
+      "build_variant": "benchmark",
+      "compilation_mode": "None",
+      "iterations_ms": [
+        664.354531,
+        633.544323,
+        637.312447,
+        609.563645,
+        570.121093,
+        596.431614,
+        626.812708,
+        644.727396,
+        580.937135,
+        576.551875
+      ],
+      "median_ms": 618.1881765,
+      "p95_nearest_rank_ms": 664.354531,
+      "sample_stdev_ms": 32.177559782004856,
+      "raw_benchmark_json_sha256": "e6580ecfe005b52a3093a59302c791f91716c197e89dc2f444b16855b8fb0aa4",
+      "private_manifest_sha256": "e57c163886e8ba143fdbea24f485fee519586d8824c7b0acaa9b922be797584a",
+      "perfetto_trace_sha256": [
+        "0629b0b78d3cf42a7bc86f45a6e4f7cb6a0d2f253c8886bc735a1853e49c82c3",
+        "b0066b850627ce251cf2851fb377eaa7d1ad7d97ad72fe3ddb7d16656f99a4e2",
+        "9312bff07120546ffb35cb2a7ed5b7d90fadfbd9c6fc729e66aca06994277e77",
+        "7495ed25a19c4fda6c549e609d7af430f9e7b5ac6edee05c2d2189939828e876",
+        "a29b3e25d9281649495d9778507e40bf5b0278cb29a4e06da4fa5280d89120ff",
+        "093233b564ef24f522eff7c5ddf68d84db7484144fc18d7e8afb1890174061bc",
+        "eca07f5f8394f81cb287aa281f7ba40d292d70bd63085a080ef79ad8ea69a742",
+        "5b9ac4c0d6d43a5c5e3a7a554f55f4d7f860c5cd3a160099b169aad0bd50fbf0",
+        "98eb1f4ceb9f641b370b78fbc42252cf44ce9dfb857c7bafca7fe98e1f89b4f1",
+        "b050a0cc2fbb3c5e8e69743f733dc48627a289fb06b968397f552f59ed076267"
+      ],
+      "apk_sha256": {
+        "target": "c22b8d85bc847a2a40c1dbd9eb46bc2eaf1c8df5bfdbea852abe1f75cad37c66",
+        "test": "f65d301b8467c6786037c8a42d5d695d74872331a8162976bd93b2d55bc4aecb"
+      },
+      "before_battery": [
+        "AC powered: false",
+        "USB powered: true",
+        "Wireless powered: false",
+        "status: 5",
+        "level: 100",
+        "temperature: 318"
+      ],
+      "after_battery": [
+        "AC powered: false",
+        "USB powered: true",
+        "Wireless powered: false",
+        "status: 5",
+        "level: 100",
+        "temperature: 315"
+      ]
+    },
+    {
+      "label": "candidate",
+      "source_commit": "dd7ef1bbf3fe23c76caa8424c7d8f159cb0e06a5",
+      "device_model": "SM-S908N",
+      "api": "36",
+      "build_variant": "benchmark",
+      "compilation_mode": "None",
+      "iterations_ms": [
+        586.124063,
+        575.191874,
+        565.562084,
+        594.024219,
+        590.22375,
+        609.125938,
+        591.893177,
+        580.013542,
+        571.717656,
+        588.718177
+      ],
+      "median_ms": 587.42112,
+      "p95_nearest_rank_ms": 609.125938,
+      "sample_stdev_ms": 12.596443196901626,
+      "raw_benchmark_json_sha256": "75c17ac891b739669ffaa97fa4fb47ace71ce6acda3ff3b7bd411f6ce0dc4290",
+      "private_manifest_sha256": "b48584c90ec11a5f6879c664d108976d6fc903e8c5171f448b7ac7a934d12dd2",
+      "perfetto_trace_sha256": [
+        "209f600a38199742996ba4cbf83379b94c2a6eb021e9eec44a0087373aa1f8fd",
+        "c8013fcf565d4610f1b8288559f4f9b06ed51ee9dd6f870972aad7b1b0ada41b",
+        "a833078ba1b8f95022b60e7ca250295feddda3373145309de5ed441bf07735ee",
+        "fc63559f76ad0f6c38d4375d91ce8e90e0e9c40ba93ee2942c3db2360ab8b37d",
+        "ad245b72789c721bad400a88ed67e36eeeef253cb4a8d427e84ec98a6c22f584",
+        "a1f5c7036875d9b0d4e9f1bf1fcb2df8937b320206718604db30581bea33aba9",
+        "d9c903f34e312ce85d0963480840abbaa1ef926c323faf8e48c6c778e9bfaa3e",
+        "f342d82a8caabc24ff1b6ec476eb49f71431a34aee87663a1a3dc916b9e82ccf",
+        "8bf7c512cb95d3cf9a44adf69ab94c48723286140860bfc321df727f78302f3f",
+        "2b334ddef9797acd9547d1bf9baed19dcdba58e0b948be3b54956e603c4d9ac3"
+      ],
+      "apk_sha256": {
+        "target": "5b0b3f7a86ac64bf5d375e2ef82f4eaa1128544851a042b434fda203b670a775",
+        "test": "f65d301b8467c6786037c8a42d5d695d74872331a8162976bd93b2d55bc4aecb"
+      },
+      "before_battery": [
+        "AC powered: false",
+        "USB powered: true",
+        "Wireless powered: false",
+        "status: 5",
+        "level: 100",
+        "temperature: 317"
+      ],
+      "after_battery": [
+        "AC powered: false",
+        "USB powered: true",
+        "Wireless powered: false",
+        "status: 5",
+        "level: 100",
+        "temperature: 310"
+      ]
+    }
+  ]
+}

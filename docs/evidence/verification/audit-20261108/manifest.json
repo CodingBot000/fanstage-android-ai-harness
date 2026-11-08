@@ -140,6 +140,26 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    {
+      "file": "real-chat-30-physical.xml",
+      "sha256": "5acff6a1c2d3d59eda80b582980b42267c2f2af4d98c42f8057c0019705d0dcc",
+      "original_sha256": "4b63c4bd2e5c80826a3b5d7872cce1008d5751a29dfa86972f0f93ea4c486402",
+      "normalization": "CRLF to LF only",
+      "source_commit": "b4c5306c2e55fa65021343f03339a5f282148ca4",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "real server integration and 30 distinct transport cleanup cycles",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "cold-start-observations.json",
+      "sha256": "fb0f639a31d9abfa7372fcc69cf558833fd688e621eb2e88eb7aea1510ed58b7",
+      "environment": "SM-S908N / API 36",
+      "purpose": "derived from private Macrobenchmark raw JSON; both source commits and original JSON/trace hashes are recorded inside"
     }
   ]
 }
