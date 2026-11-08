@@ -27,7 +27,7 @@ PR #68 이후의 소스에서 Hilt 실제 Activity 생성 경로, 실기기 화�
 
 ## 증거 무결성과 회전 진단 후속
 
-공개 증거 파일의 해시·JUnit 집계·실패 이력과 출처를 검사하는 CI를 추가했습니다. 의도적 오류 fixture로 검사 실패도 확인했습니다. Galaxy S22 Ultra에서 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만, 이전에 한 차례 발생한 실패의 원인은 확인되지 않았습니다. [후속 근거와 제한](evidence/verification/audit-20261108/README.md) · [필수 체크 정책 제안](specs/ci-required-quality-policy.md). GitHub의 실제 보호 정책은 적용하지 않았습니다.
+공개 증거 파일의 해시·JUnit 집계·실패 이력과 출처를 검사하는 CI를 추가했습니다. 의도적 오류 fixture로 검사 실패도 확인했습니다. Galaxy S22 Ultra에서 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만, 이전에 한 차례 발생한 실패의 원인은 확인되지 않았습니다. [후속 근거와 제한](evidence/verification/audit-20261108/README.md) · [필수 체크 정책 제안](specs/ci-required-quality-policy.md). 2026-11-09 사용자 승인으로 GitHub main 보호 정책을 적용하고 관리자 상시 우회는 허용했습니다. 실제 병합 차단 실험은 NOT_RUN이며 게이트 workflow는 아직 PR에만 있습니다.
 
 ## 자동화와 기기 검증의 역할
 

@@ -33,7 +33,7 @@ Hilt 기기 실행, 실제 서버 연동, 반복 수명주기·성능 관찰 및
 
 ## PR #69 후속 검증
 
-공개 증거 무결성 검사와 PR 통합 품질 게이트를 보완했다. 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만 최초 실패 원인은 미확정이다. 실제 GitHub 보호 정책은 승인 대기이며 [적용안](specs/ci-required-quality-policy.md)과 [검증 근거](evidence/verification/audit-20261108/README.md)를 구분한다.
+공개 증거 무결성 검사와 PR 통합 품질 게이트를 보완했다. 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만 최초 실패 원인은 미확정이다. 2026-11-09 사용자 승인으로 main 보호 정책을 적용했으며 관리자 상시 우회는 허용한다. 실제 병합 차단 실험은 NOT_RUN이고 게이트 workflow는 아직 PR에만 있다. [적용 내용](specs/ci-required-quality-policy.md)과 [검증 근거](evidence/verification/audit-20261108/README.md)를 구분한다.
 
 ## 개발·검증 기준
 
