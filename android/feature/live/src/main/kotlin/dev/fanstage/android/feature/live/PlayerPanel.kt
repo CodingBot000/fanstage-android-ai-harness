@@ -83,8 +83,8 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
     val state = ui.playback
     var playbackControlsVisible by remember(controller) { mutableStateOf(false) }
     var controlInteraction by remember(controller) { mutableLongStateOf(0L) }
-    SideEffect {
-        if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=compose_recompose controller=${System.identityHashCode(controller)} state=${state.javaClass.simpleName} fullscreen=$fullscreen compact=$compact pausedTag=${!compact && state == PlaybackState.Paused}")
+    if (PlayerRotationTrace.enabled) SideEffect {
+        PlayerRotationTrace.emit("event=compose_recompose controller=${System.identityHashCode(controller)} state=${state.javaClass.simpleName} fullscreen=$fullscreen compact=$compact pausedTag=${!compact && state == PlaybackState.Paused}")
     }
     LaunchedEffect(state) {
         if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=compose_state_observed controller=${System.identityHashCode(controller)} state=${state.javaClass.simpleName}")
@@ -216,9 +216,9 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
     }
     }
     if (fullscreen) {
-        DisposableEffect(controller) {
-            if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=dialog_created controller=${System.identityHashCode(controller)}")
-            onDispose { if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=dialog_disposed controller=${System.identityHashCode(controller)}") }
+        if (PlayerRotationTrace.enabled) DisposableEffect(controller) {
+            PlayerRotationTrace.emit("event=dialog_created controller=${System.identityHashCode(controller)}")
+            onDispose { PlayerRotationTrace.emit("event=dialog_disposed controller=${System.identityHashCode(controller)}") }
         }
         Dialog(onDismissRequest = { fullscreen = false }, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) { playerContent(true) }
     } else {

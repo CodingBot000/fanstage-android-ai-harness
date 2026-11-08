@@ -280,6 +280,7 @@ class PlayerSettingsTest {
         rule.onNodeWithTag("player_fullscreen").performClick()
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         checkpoint("fullscreen_before_rotation")
+        var primaryFailure: Throwable? = null
         try {
             PlayerRotationTrace.emit("event=rotation_requested orientation=landscape")
             rule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
@@ -291,10 +292,19 @@ class PlayerSettingsTest {
             checkpoint("landscape_paused")
             rule.onNodeWithTag("player_fullscreen").performClick()
             checkpoint("fullscreen_exited")
+        } catch (error: Throwable) {
+            primaryFailure = error
+            failureCheckpoint("landscape_failure_before_cleanup")
+            throw error
         } finally {
-            PlayerRotationTrace.emit("event=rotation_requested orientation=portrait")
-            rule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
-            rule.waitUntil(20000) { rule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
+            try {
+                PlayerRotationTrace.emit("event=rotation_requested orientation=portrait")
+                rule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+                rule.waitUntil(20000) { rule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
+            } catch (cleanup: Throwable) {
+                PlayerRotationTrace.emit("event=rotation_cleanup_failed type=${cleanup.javaClass.simpleName}")
+                if (primaryFailure != null) primaryFailure.addSuppressed(cleanup) else throw cleanup
+            }
         }
         checkpoint("portrait_observed")
         rule.waitUntil(20000) { rule.onAllNodesWithTag("room_back").fetchSemanticsNodes().isNotEmpty() }

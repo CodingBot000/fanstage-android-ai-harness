@@ -3,6 +3,13 @@ package dev.fanstage.android
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import android.os.Build
+import android.view.View
+import android.view.ViewGroup
+import android.view.TextureView
+import android.view.SurfaceView
+import android.view.inspector.WindowInspector
+import androidx.media3.ui.PlayerView
 import androidx.compose.ui.test.junit4.AndroidComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.lifecycle.LifecycleOwner
@@ -31,7 +38,38 @@ internal class RotationAudit(
         override fun onActivityDestroyed(activity: Activity) = event("destroyed", activity)
     }
 
+    private fun playerSnapshot(name: String) {
+        if (!PlayerRotationTrace.enabled) return
+        try {
+            rule.runOnUiThread {
+                val roots = if (Build.VERSION.SDK_INT >= 29) WindowInspector.getGlobalWindowViews()
+                    else listOf(rule.activity.window.decorView)
+                val found = mutableListOf<PlayerView>()
+                fun scan(view: View) {
+                    if (view is PlayerView) found.add(view)
+                    if (view is ViewGroup) for (index in 0 until view.childCount) scan(view.getChildAt(index))
+                }
+                roots.forEach(::scan)
+                if (found.isEmpty()) PlayerRotationTrace.emit("event=player_snapshot name=$name views=0")
+                found.distinctBy(System::identityHashCode).forEach { view ->
+                    val player = view.player
+                    val surface = view.videoSurfaceView
+                    val available = when (surface) {
+                        is TextureView -> surface.isAvailable
+                        is SurfaceView -> surface.holder.surface.isValid
+                        else -> false
+                    }
+                    PlayerRotationTrace.emit("event=player_snapshot name=$name view=${System.identityHashCode(view)} attached=${view.isAttachedToWindow} player=${player?.let(System::identityHashCode) ?: 0} playback=${player?.playbackState ?: -1} ready=${player?.playWhenReady ?: false} playing=${player?.isPlaying ?: false} error=${player?.playerError?.errorCodeName ?: "none"} surfaceType=${surface?.javaClass?.simpleName ?: "none"} surface=${surface?.let(System::identityHashCode) ?: 0} available=$available")
+                }
+            }
+        } catch (error: Exception) {
+            PlayerRotationTrace.emit("event=player_snapshot_failed name=$name type=${error.javaClass.simpleName}")
+        }
+    }
+
     fun checkpoint(name: String) {
+        if (!PlayerRotationTrace.enabled) return
+        playerSnapshot(name)
         val states = listOf("playing", "paused", "loading", "buffering", "error").joinToString(",") { state ->
             "$state:${rule.onAllNodesWithTag("player_state_$state").fetchSemanticsNodes().size}"
         }
@@ -40,24 +78,47 @@ internal class RotationAudit(
         PlayerRotationTrace.emit("event=ui_checkpoint name=$name states=$states frame=$frame fullscreenControl=$fullscreen")
     }
 
+    fun failureCheckpoint(name: String) {
+        runCatching { checkpoint(name) }.onFailure { issue ->
+            PlayerRotationTrace.emit("event=checkpoint_failed name=$name type=${issue.javaClass.simpleName}")
+        }
+    }
+
     fun run(block: RotationAudit.() -> Unit) {
         val supplied = InstrumentationRegistry.getArguments().getString("fanRotationRunId")
         val runId = supplied ?: "rot-${UUID.randomUUID().toString().take(12)}"
-        PlayerRotationTrace.start(runId)
         val app = rule.activity.application
-        rule.runOnUiThread { app.registerActivityLifecycleCallbacks(callbacks) }
-        PlayerRotationTrace.emit("event=test_start activity=${System.identityHashCode(rule.activity)} orientation=${rule.activity.resources.configuration.orientation}")
+        PlayerRotationTrace.start(runId)
+        var registered = false
+        var primaryFailure: Throwable? = null
         try {
+            rule.runOnUiThread { app.registerActivityLifecycleCallbacks(callbacks); registered = true }
+            PlayerRotationTrace.emit("event=test_start activity=${System.identityHashCode(rule.activity)} orientation=${rule.activity.resources.configuration.orientation}")
             checkpoint("start")
             block()
             checkpoint("complete")
         } catch (error: Throwable) {
-            runCatching { checkpoint("failure") }
-            error.addSuppressed(AssertionError("rotation diagnostic events:\n" + PlayerRotationTrace.snapshot().joinToString("\n")))
+            primaryFailure = error
+            failureCheckpoint("failure_after_cleanup")
+            val events = PlayerRotationTrace.snapshot()
+            val details = if (events.isEmpty()) "rotation diagnostics unavailable for this build variant" else events.joinToString("\n")
+            error.addSuppressed(AssertionError("rotation diagnostic events:\n$details"))
             throw error
         } finally {
-            rule.runOnUiThread { app.unregisterActivityLifecycleCallbacks(callbacks) }
-            PlayerRotationTrace.stop()
+            var cleanupFailure: Throwable? = null
+            try {
+                if (registered) rule.runOnUiThread { app.unregisterActivityLifecycleCallbacks(callbacks) }
+            } catch (error: Throwable) {
+                cleanupFailure = error
+            }
+            try {
+                PlayerRotationTrace.stop()
+            } catch (error: Throwable) {
+                if (cleanupFailure == null) cleanupFailure = error else cleanupFailure.addSuppressed(error)
+            }
+            if (cleanupFailure != null) {
+                if (primaryFailure != null) primaryFailure.addSuppressed(cleanupFailure) else throw cleanupFailure
+            }
         }
     }
 }
