@@ -5,7 +5,6 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
 import dev.fanstage.android.core.data.FakeCommunityRepository
-import dev.fanstage.android.core.data.FakeDiscoverRepository
 import dev.fanstage.android.core.data.FakeMessageRepository
 import dev.fanstage.android.core.model.CommunityRepository
 import dev.fanstage.android.core.model.DiscoverRepository

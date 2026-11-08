@@ -39,6 +39,8 @@ flowchart TB
 
 DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hilt-di-migration.md)과 [검증 결과](verification.md)를 참조합니다.
 
+**수동 Factory 잔존 범위:** `ChatViewModel.Factory`는 테스트·벤치마크에서 명시적 Transport를 주입하기 위해 유지합니다. `RoomListViewModel.Factory`는 초기 독립 룸 목록 구현과 단위 테스트에 남아 있지만, 현재 `MainActivity`가 실제 화면 진입에 사용하는 것은 `DiscoverRoute`입니다. 따라서 일반 ViewModel 네 개의 Hilt 전환과 혼동하지 않으며, 미사용 경로 정리는 테스트 보존 여부를 검토한 별도 작업으로 다룹니다.
+
 ## 2. Compose 상태 관리
 
 ~~~text

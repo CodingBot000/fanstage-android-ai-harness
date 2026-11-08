@@ -2,7 +2,7 @@
 
 ## 프로젝트 구성
 
-FanStage는 Kotlin·Jetpack Compose·Coroutines/Flow·MVVM/UDF·Media3를 사용합니다.
+FanStage는 Kotlin·Jetpack Compose·Coroutines/Flow·MVVM/UDF·Hilt·Media3를 사용합니다.
 
 - `app`: 화면 이동, ViewModel 생성, 의존성 조립
 - `feature`: discover, community, media, messages, live
@@ -54,3 +54,16 @@ Android 계측 테스트에는 합성 HLS·MP4·WebVTT 자산을 사용합니다
 ## Hilt 의존성 주입
 
 일반 ViewModel은 Activity 범위에서 공유하며, ChatViewModel은 룸별 Navigation 항목에 속합니다. 테스트용 바인딩 교체와 기기 검증 범위는 [검증 문서](../docs/verification.md)를 참조하세요.
+
+기본 CI는 `AndroidJUnitRunner`의 일반 계측 APK뿐 아니라 `HiltTestRunner`를 사용하는 Hilt 전용 계측 APK를 **별도로 컴파일**합니다. 전용 소스셋 컴파일 이후 일반 계측 APK도 재컴파일해 전환 과정의 생성 코드 누락·잔존 위험을 확인합니다. CI 작업은 계측 테스트의 **실행**이 아니라 컴파일 검사입니다.
+
+별도 Hilt 계측을 연결된 기기에서 실제 실행하려면:
+
+~~~bash
+cd android
+./gradlew :app:connectedDebugAndroidTest \
+  -PfanstageHiltInstrumentation=true \
+  -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RepositoryBindingsTest
+~~~
+
+일반 계측은 `-PfanstageHiltInstrumentation=true` 없이 실행합니다. [실행 이력](../docs/specs/hilt-di-migration-verification.md)과 [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67)에서 검증 환경과 미실행 범위를 확인할 수 있습니다.

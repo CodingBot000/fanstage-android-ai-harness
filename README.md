@@ -73,6 +73,8 @@ flowchart TB
 
 **검증 보완 사례 — [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47):** 전체 화면 전환에서 이전 Surface의 첫 프레임을 새 출력의 성공으로 잘못 판단할 수 있음을 코드 리뷰에서 확인했습니다. 이전 PlayerView의 분리 순서를 조정하고 출력 객체를 확인하도록 테스트를 보완했습니다. 해당 PR에서 단위 테스트 56개와 로컬 API 36 계측 테스트 41개를 통과했습니다.
 
+**Hilt 전환 검증 사례 — [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67):** LIVE 재생 회귀 테스트가 실패하자 전환 이전 커밋에서도 같은 실패가 재현되는지 확인했습니다. 채팅 입력 시 UI 테스트 태그가 사라지는 문제를 실제 Player 상태 검사로 분리했고, 회전 후 일시정지 화면의 재생 버튼 문제도 수정했습니다. 실기기 선택 계측 39/39, 별도 Hilt 바인딩 1/1을 통과했으며 [실패부터 재검증까지의 기록](docs/specs/hilt-di-migration-verification.md)을 남겼습니다.
+
 [AI 개발 제어·검증 상세 과정](docs/ai-development-workflow.md)
 
 ## 테스트 결과
@@ -83,6 +85,7 @@ flowchart TB
 | 채팅 화면·로컬 서버 전환 | 단위 56/56, 로컬 API 36 계측 28/28 통과 | [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53) |
 | 키보드·입력 화면 | 단위 62/62, 로컬 API 36 관련 계측 24/24, 실기기 3/3 통과 | [PR #59](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59) |
 | 기능별 모듈 분리 | 모듈 경계 검사·Android CI 통과 | [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) |
+| Hilt DI·룸 수명주기 | 선택된 실기기 계측 39/39, 바인딩 대체 1/1, 격리 서버 Android 통합 1/1 PASS | [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) · [실행 이력](docs/specs/hilt-di-migration-verification.md) |
 | WebSocket·PostgreSQL 복구 | 서버 통합·장애 주입 CI 통과 | [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) |
 
 숫자는 링크된 **각 PR의 코드 버전에서 실행한 결과**입니다. Android 기기 계측은 로컬 에뮬레이터·실기기에서, 빌드·단위 테스트와 서버 통합 검사는 GitHub Actions에서 수행했습니다. [검증 환경과 테스트 항목](docs/verification.md)
@@ -102,6 +105,6 @@ Android Studio에서 `android/`를 열어 Debug 앱을 실행할 수 있습니�
 
 ## 상세 기술 문서
 
-[아키텍처](docs/architecture.md) · [AI 개발 제어·검증 과정](docs/ai-development-workflow.md) · [채팅 장애 주입 시나리오](docs/specs/failure-recovery.md) · [검증 결과](docs/verification.md) · [설계 결정](docs/adr/)
+[아키텍처](docs/architecture.md) · [Hilt 설계 결정](docs/adr/ADR-0004-hilt-di-migration.md) · [AI 개발 제어·검증 과정](docs/ai-development-workflow.md) · [채팅 장애 주입 시나리오](docs/specs/failure-recovery.md) · [검증 결과](docs/verification.md) · [설계 결정](docs/adr/)
 
 직접 작성한 코드·문서는 [MIT 라이선스](LICENSE)를 따르며, 외부 구성요소는 [제3자 라이선스 안내](THIRD_PARTY_NOTICES.md)를 따릅니다.
