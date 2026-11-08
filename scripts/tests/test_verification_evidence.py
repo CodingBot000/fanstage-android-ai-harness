@@ -52,6 +52,9 @@ class EvidenceTests(unittest.TestCase):
         self.save(); self.assertEqual(2, self.validate())
     def test_missing_file(self): (self.root/'pass.xml').unlink(); self.assert_bad()
     def test_hash_mismatch(self): (self.root/'pass.xml').write_bytes(PASS+b' '); self.assert_bad()
+    def test_utf16_entity_xml_rejected_even_with_updated_hash(self):
+        xml = '<?xml version="1.0" encoding="UTF-16"?><!DOCTYPE testsuite [<!ENTITY x "value">]><testsuite name="s" tests="1" failures="0" errors="0" skipped="0"><testcase classname="C" name="&x;"/></testsuite>'
+        (self.root/'pass.xml').write_bytes(xml.encode('utf-16')); self.rehash('pass.xml'); self.assert_bad()
     def test_manifest_test_count_mismatch(self): self.manifest['results'][0]['tests']=2; self.assert_bad()
     def test_manifest_failure_count_mismatch(self): self.manifest['results'][1]['failures']=0; self.assert_bad()
     def test_duplicate_manifest_entry(self): self.manifest['results'].append(copy.deepcopy(self.manifest['results'][0])); self.assert_bad()
@@ -69,6 +72,10 @@ class EvidenceTests(unittest.TestCase):
     def test_required_missing_even_when_file_and_entry_removed(self):
         (self.root/'pass.xml').unlink(); self.manifest['results'].pop(0); self.assert_bad()
     def test_unregistered_evidence(self): (self.root/'extra.json').write_text('{}'); self.assert_bad()
+    def test_unregistered_nested_manifest_is_not_exempt(self):
+        (self.root/'nested').mkdir(); (self.root/'nested/manifest.json').write_text('{}'); self.assert_bad()
+    def test_missing_provenance_is_rejected(self):
+        self.manifest['results'][0].pop('head_at_execution'); self.manifest['results'][0].pop('tested_code_snapshot_commit'); self.assert_bad()
     def test_suite_count_mismatch_with_updated_hash(self):
         (self.root/'pass.xml').write_bytes(PASS.replace(b'tests="1"',b'tests="2"')); self.rehash('pass.xml'); self.assert_bad()
     def test_historical_failure_erasure_even_if_hash_and_manifest_changed(self):

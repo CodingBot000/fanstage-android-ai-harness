@@ -102,10 +102,11 @@ def attrs(element, label):
 def xml_counts(path: Path):
     try:
         raw = path.read_bytes()
-        if b'<!DOCTYPE' in raw.upper() or b'<!ENTITY' in raw.upper():
-            fail(f'{path.name}: XML DTD/entity not allowed')
+        text = raw.decode('utf-8-sig')
+        if '\x00' in text or '<!DOCTYPE' in text.upper() or '<!ENTITY' in text.upper():
+            fail(f'{path.name}: XML DTD/entity or non-UTF-8 encoding not allowed')
         root = ET.fromstring(raw)
-    except (OSError, ET.ParseError) as error:
+    except (OSError, UnicodeError, ET.ParseError) as error:
         fail(f'{path.name}: invalid XML: {error}')
     if root.tag not in ('testsuite', 'testsuites'):
         fail(f'{path.name}: unexpected JUnit root')
@@ -169,7 +170,7 @@ def commit_provenance(entry, git_check):
             fail(f"{entry['file']}: execution HEAD is not an ancestor of later snapshot")
 
 
-def check_cold(data):
+def check_cold(data, git_check=False):
     observations = data.get('observations') if isinstance(data, dict) else None
     if not isinstance(observations, list) or len(observations) != 2 or any(not isinstance(x, dict) for x in observations):
         fail('cold-start: expected baseline and candidate')
@@ -185,6 +186,8 @@ def check_cold(data):
                 fail(f'cold-start: {name} inconsistent')
         if not isinstance(x.get('source_commit'), str) or not COMMIT.fullmatch(x['source_commit']):
             fail('cold-start: invalid source commit')
+        if git_check and subprocess.run(['git', '-C', str(REPO), 'cat-file', '-e', x['source_commit']+'^{commit}'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
+            fail('cold-start: source commit not available')
         for key in ('raw_benchmark_json_sha256', 'private_manifest_sha256'):
             if not isinstance(x.get(key), str) or not SHA256.fullmatch(x[key]):
                 fail(f'cold-start: invalid {key}')
@@ -196,7 +199,7 @@ def check_cold(data):
 def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES, pinned_hashes=PINNED_FAILURE_HASHES, git_check=True):
     directory = directory.resolve(strict=True)
     manifest = read_json(directory / 'manifest.json')
-    if not isinstance(manifest, dict) or isinstance(manifest.get('schema_version', 1), bool) or manifest.get('schema_version', 1) not in (1, 2):
+    if not isinstance(manifest, dict) or isinstance(manifest.get('schema_version', 1), bool) or not isinstance(manifest.get('schema_version', 1), int) or manifest.get('schema_version', 1) not in (1, 2):
         fail('unsupported manifest schema')
     version = manifest.get('schema_version', 1)
     entries = manifest.get('results')
@@ -250,12 +253,12 @@ def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES
                 fail(f'{name}: historical failure detail does not match declaration')
         elif path.suffix == '.json':
             data = read_json(path)
-            if name == 'cold-start-observations.json': check_cold(data)
+            if name == 'cold-start-observations.json': check_cold(data, git_check=git_check)
         else:
             fail(f'{name}: unsupported evidence type')
     if not set(required).issubset(seen):
         fail('manifest: missing required evidence: ' + ', '.join(sorted(set(required)-seen)))
-    public = {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file() and p.suffix in ('.xml','.json') and p.name != 'manifest.json'}
+    public = {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file() and p.suffix in ('.xml','.json') and p != directory / 'manifest.json'}
     if public != seen:
         fail('manifest: unregistered or missing public evidence: ' + ', '.join(sorted(public ^ seen)))
     return len(seen)
