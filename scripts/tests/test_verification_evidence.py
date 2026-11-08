@@ -69,6 +69,18 @@ class EvidenceTests(unittest.TestCase):
         self.assertNotEqual(0, result.returncode)
         self.assertIn('incorrect rotation testcase identity', result.stderr)
 
+    def test_final_real_chat_case_tamper_is_rejected(self):
+        copy_root = self.root / 'chat-copy'
+        shutil.copytree(check.EVIDENCE, copy_root)
+        target = copy_root / 'rotation-final-real-chat.xml'
+        target.write_bytes(target.read_bytes().replace(b'thirtyRealRoomSubscriptionsCloseTheirSocketsAndCollectors', b'wrongChatCase'))
+        path = copy_root/'manifest.json'; manifest = json.loads(path.read_text())
+        next(e for e in manifest['results'] if e['file']==target.name)['sha256'] = hashlib.sha256(target.read_bytes()).hexdigest()
+        path.write_text(json.dumps(manifest))
+        result = subprocess.run([sys.executable, str(SCRIPT), '--directory', str(copy_root)], capture_output=True, text=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn('incorrect final real-chat testcase identities', result.stderr)
+
     def test_rotation_provenance_must_match_fingerprint(self):
         copy_root = self.root / 'provenance-copy'
         shutil.copytree(check.EVIDENCE, copy_root)

@@ -57,3 +57,9 @@ Galaxy S22 Ultra/API 36에서 진단 도입 초기와 보강 후의 회전 테�
 초기 실기기 전체 회귀의 한 차례 시간 초과는 당시 진단이 없었고 이번 40회에서 재현되지 않았다. **FLAKY / ROOT_CAUSE_UNCONFIRMED**로 유지하며 제품 결함이나 단순 기기 문제 어느 쪽으로도 확정하지 않는다. 진단은 Debug에서만 켤 수 있고 RcLocal·Release에서는 no-op이다. API 24–28에서는 별도 Dialog window의 Player를 직접 찾지 못할 수 있다. 로깅은 타이밍에 영향을 줄 수 있다. JUnit XML에는 실행 ID가 없으므로 XML과 trace의 개별 대응은 수집 순번에 의존하고 파일만으로 동일 실행임을 암호학적으로 증명하지 못한다.
 
 `rotation-intentional-negative.xml`, `rotation-negative-fresh.xml`, `rotation-negative-unique-run.xml`은 오류 보고에 진단이 남는지 확인하려고 별도 fixture에서 의도적으로 실패시킨 결과다. 실제 결함으로 집계하지 않는다. 최신 runner는 실행별 임의 ID, 단조 시간과 이벤트 순서를 확인하며 오래된 XML·다른 실행의 로그 혼합을 격리 fixture에서 거부했다. 기존의 실제 초기 실패 `ui-physical-initial.xml`은 별도로 유지한다. 테스트 전 작업 트리에 있던 소스와 사후 생성한 커밋의 관계는 [manifest](manifest.json)에 기록한다.
+
+### 최종 회귀와 자동 검사
+
+회전 진단 보강 후 실기기 선택 회귀 42/42, Hilt 전용 3/3, 격리 실제 서버 Android 통합 2/2가 통과했다. Debug·Release·RcLocal·Benchmark 빌드, Lint, 단위 테스트와 일반/Hilt/RcLocal 계측 APK 컴파일도 통과했다. [최종 실제 서버 JUnit](rotation-final-real-chat.xml). Release/RcLocal 진단은 no-op이며 RcLocal 계측 APK 컴파일은 실행 성공을 뜻하지 않는다.
+
+증거 검사기는 필수 파일 95개의 공개 바이트·JUnit 집계·실패 이력과 출처를 확인한다. 격리 오류 fixture에서는 누락·해시·개수·중복·경로·XML·테스트 ID·소스 지문 변조를 거부했다. 실제 AndroidJUnitRunner에서 일으킨 통제된 실패의 진단도 [별도 XML](rotation-negative-unique-run.xml)에 보존했다. stale XML·다른 실행의 이벤트 혼합·잘못된 이벤트 순서는 runner 단위 fixture에서 거부했다. 비공개 원본 또는 당시에 해시하지 않은 미커밋 파일의 동일성은 이 검사로 증명할 수 없다.

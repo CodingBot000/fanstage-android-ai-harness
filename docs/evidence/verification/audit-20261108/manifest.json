@@ -1529,6 +1529,23 @@
           "kind": "failure"
         }
       ]
+    },
+    {
+      "file": "rotation-final-real-chat.xml",
+      "sha256": "67d3d380b1cfb2a428a14617db991c5b442b883b4f10b3c7a4016243de29885a",
+      "original_sha256": "9ec33f276802f8862cc6a520de5bb5fd234fe13bfd7d5f05b4d9dd3e80135a2a",
+      "normalization": "CRLF to LF only; temporary test credentials checked and not present",
+      "head_at_execution": "2ad17496608e691b4c1fd2675c20a5647e5b800a",
+      "tested_code_snapshot_commit": "2ad17496608e691b4c1fd2675c20a5647e5b800a",
+      "snapshot_interpretation": "HEAD at execution; the test used only temporary external server data and no source edits.",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Final real-server Android integration and 30 transport teardown cycles after debug tracing changes",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "outcome": "PASS"
     }
   ],
   "schema_version": 2

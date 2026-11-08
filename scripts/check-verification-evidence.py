@@ -54,7 +54,7 @@ REQUIRED = {'additional-ui-physical.xml',
  'unit/feature/live/TEST-dev.fanstage.android.feature.live.chat.ChatViewModelTest.xml'}
 REQUIRED |= {'unit-rotation-final/' + path.removeprefix('unit/') for path in REQUIRED if path.startswith('unit/')}
 REQUIRED |= {f'rotation-instrumented-{phase}-{index:02}.xml' for phase in ('initial', 'final') for index in range(1, 21)}
-REQUIRED |= {'rotation-diagnostic-preflight.xml', 'rotation-intentional-negative.xml', 'rotation-initial-trace.json', 'rotation-final-trace.json', 'rotation-source-fingerprints.json', 'rotation-final-regression.xml', 'rotation-final-hilt.xml', 'rotation-negative-fresh.xml', 'rotation-negative-unique-run.xml'}
+REQUIRED |= {'rotation-diagnostic-preflight.xml', 'rotation-intentional-negative.xml', 'rotation-initial-trace.json', 'rotation-final-trace.json', 'rotation-source-fingerprints.json', 'rotation-final-regression.xml', 'rotation-final-hilt.xml', 'rotation-negative-fresh.xml', 'rotation-negative-unique-run.xml', 'rotation-final-real-chat.xml'}
 PINNED_FAILURE_HASHES = {
     'ui-physical-initial.xml': '3e8079711b8f95475e3e6c2cc1ee174b203dc70ea854a6672660c890f926f18a',
     'rotation-intentional-negative.xml': '1bbb14e078cc84e9680d82b9d9024d37e56bc17147083a8bdbe47b1c3bf5097d',
@@ -358,6 +358,11 @@ def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES
                 expected_identity = {('dev.fanstage.android.PlayerSettingsTest', 'fullscreenRestoresAfterActualRotation')}
                 if actual['tests'] != 1 or identities != expected_identity:
                     fail(f'{name}: incorrect rotation testcase identity')
+            if name == 'rotation-final-real-chat.xml':
+                expected_real = {('dev.fanstage.android.RealChatIntegrationTest', 'androidRealWebSocketHistoryReconnectAndPlayerIsolation'),
+                                 ('dev.fanstage.android.RealChatIntegrationTest', 'thirtyRealRoomSubscriptionsCloseTheirSocketsAndCollectors')}
+                if actual['tests'] != 2 or identities != expected_real:
+                    fail(f'{name}: incorrect final real-chat testcase identities')
             declared = {k: count(entry.get(k), f'{name}:{k}') for k in actual}
             if actual != declared: fail(f'{name}: manifest/JUnit count mismatch')
             outcome = 'FAIL' if actual['failures'] or actual['errors'] else 'SKIP' if actual['skipped'] else 'PASS'
