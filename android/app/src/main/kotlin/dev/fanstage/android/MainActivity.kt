@@ -40,7 +40,6 @@ import dev.fanstage.android.feature.live.ReplayScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -130,8 +129,7 @@ private fun FanStageApp() {
             arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
         ) { entry ->
             val roomId = requireNotNull(entry.arguments?.getString("roomId"))
-            val chatFactory = remember(roomId) { ChatViewModel.Factory(roomId) }
-            val chatViewModel: ChatViewModel = viewModel(viewModelStoreOwner = entry, factory = chatFactory)
+            val chatViewModel: ChatViewModel = hiltViewModel(viewModelStoreOwner = entry)
             val demoVideoId = when (roomId) {
                 "studio-session" -> "demo-01"
                 "sketch-break" -> "demo-02"

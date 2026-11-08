@@ -60,4 +60,4 @@ M2 player behavior and fixture provenance are documented in the [M2 SDD](../docs
 
 The bundled captionless HLS advertises `CLOSED-CAPTIONS=NONE`. For HLS with no caption declaration, an inferred CEA-608 choice is labeled as availability unknown; it may contain no captions.
 
-일반 ViewModel 네 개는 Activity 범위의 Hilt 주입을 사용한다. Chat은 별도 전환 전이며 검증 범위와 미실행 기기 검증은 [SDD](../docs/specs/hilt-di-migration-phase2a.md)를 참조한다.
+일반 ViewModel 네 개는 Activity 범위의 Hilt 주입을 사용한다. Chat은 Navigation 항목별 Hilt ViewModel을 사용하며 검증 범위와 미실행 기기 검증은 [SDD](../docs/specs/hilt-di-migration-phase2a.md)를 참조한다.

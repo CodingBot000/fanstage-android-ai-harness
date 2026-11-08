@@ -49,3 +49,7 @@ Hilt 2.60.1과 KSP 2.3.10으로 Repository를 unscoped 제공하고 Activity의 
 ## Phase 2A 실행 결과
 
 일반 ViewModel 네 개를 Activity 소유 `@HiltViewModel`로 전환하고 AppContainer의 수동 Factory를 제거했다. Discover Fake는 무상태이며 가변 Fake는 해당 ViewModel 수명에 묶인다. 기기 회귀는 NOT_RUN.
+
+## Phase 2B 실행 결과
+
+ChatViewModel은 Navigation BackStackEntry와 SavedStateHandle을 사용하고 룸별 Transport를 생성한다. 테스트·벤치마크의 명시적 Transport Factory는 보존한다. 기기 회귀는 NOT_RUN.

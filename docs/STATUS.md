@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- 2026-11-08 Hilt Phase 2B: 룸별 ChatViewModel 주입 및 SavedStateHandle 인자 전환, 로컬 빌드·lint·단위·모듈/manifest PASS. 기기 계측 NOT_RUN. [SDD](specs/hilt-di-migration-phase2b.md).
+
 - 2026-11-08 Hilt Phase 2A: 일반 ViewModel 네 개 Activity 소유 범위를 유지해 Hilt로 전환, 로컬 빌드·lint·단위·모듈/manifest PASS. 기기 UI·재생성 NOT_RUN. [SDD](specs/hilt-di-migration-phase2a.md).
 
 - 2026-11-08 Hilt Phase 1: 앱 시작점 및 Repository 주입 전환, 필수 로컬 빌드·lint·단위·모듈/manifest 검사 PASS. 기기 계측 NOT_RUN; 나머지 ViewModel 및 테스트 전환은 진행 전. [SDD](specs/hilt-di-migration-phase1.md).
