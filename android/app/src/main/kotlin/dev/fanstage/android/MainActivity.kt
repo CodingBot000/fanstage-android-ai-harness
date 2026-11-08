@@ -51,21 +51,22 @@ import androidx.navigation.navArgument
 import dev.fanstage.android.feature.live.RoomDetailScreen
 import dev.fanstage.android.feature.live.chat.ChatViewModel
 
+@dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @javax.inject.Inject lateinit var container: AppContainer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            dev.fanstage.android.core.designsystem.FanStageTheme { FanStageApp() }
+            dev.fanstage.android.core.designsystem.FanStageTheme { FanStageApp(container) }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FanStageApp() {
+private fun FanStageApp(container: AppContainer) {
     val navController = rememberNavController()
-    val container = remember { AppContainer() }
     val communityViewModel: CommunityViewModel = viewModel(factory = container.viewModelFactory)
     val discoverViewModel: DiscoverViewModel = viewModel(factory = container.viewModelFactory)
     val messagesViewModel: MessagesViewModel = viewModel(factory = container.viewModelFactory)

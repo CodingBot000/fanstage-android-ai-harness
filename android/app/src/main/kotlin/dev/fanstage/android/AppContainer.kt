@@ -8,21 +8,19 @@ import dev.fanstage.android.feature.community.*
 
 import dev.fanstage.android.feature.discover.*
 
+import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import dev.fanstage.android.core.data.FakeCatalog
-import dev.fanstage.android.core.data.FakeCommunityRepository
-import dev.fanstage.android.core.data.FakeDiscoverRepository
-import dev.fanstage.android.core.data.FakeMessageRepository
 import dev.fanstage.android.core.model.*
 
 /** Activity-session dependencies; no Android UI or network client is retained. */
-class AppContainer(
-    private val discover: DiscoverRepository = FakeDiscoverRepository(),
-    private val community: CommunityRepository = FakeCommunityRepository(),
-    private val messages: MessageRepository = FakeMessageRepository(),
-    val artists: List<FictionalArtist> = FakeCatalog.artists(),
+class AppContainer @Inject constructor(
+    private val discover: DiscoverRepository,
+    private val community: CommunityRepository,
+    private val messages: MessageRepository,
 ) {
+    val artists: List<FictionalArtist> = FakeCatalog.artists()
     val viewModelFactory = object : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             val value = when (modelClass) {

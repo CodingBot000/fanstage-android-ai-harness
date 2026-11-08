@@ -85,7 +85,8 @@ class LoadCancellationTest {
         try {
             val container = AppContainer(discover = object : DiscoverRepository {
                 override suspend fun load(): DiscoverData = throw IllegalStateException()
-            })
+            }, community = dev.fanstage.android.core.data.FakeCommunityRepository(),
+                messages = dev.fanstage.android.core.data.FakeMessageRepository())
             val discover = container.viewModelFactory.create(DiscoverViewModel::class.java)
             val community = container.viewModelFactory.create(CommunityViewModel::class.java)
             val messages = container.viewModelFactory.create(dev.fanstage.android.feature.messages.MessagesViewModel::class.java)

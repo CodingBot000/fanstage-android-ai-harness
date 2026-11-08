@@ -59,3 +59,5 @@ M2 player behavior and fixture provenance are documented in the [M2 SDD](../docs
 `scripts/generate-player001-fixture.sh` (run from the repository root) uses FFmpeg's synthetic `testsrc2` source to generate a six-second 360p/720p HLS playlist, a 9:16 MP4, and a synthetic English WebVTT caption under `android/app/src/androidTest/assets/player001`. It contains no third-party footage or audio; the audio is a synthetic 440 Hz tone. The generated fixture is approximately 5.0 MiB with FFmpeg 8.0.1; encoder versions can change its bytes. PLAYER-001 is merged. Its final local run passed 56 live unit tests and 41 API 36 AVD instrumentation tests; the remote emulator job was skipped. See the [PLAYER-001 SDD](../docs/specs/PLAYER-001-player-settings-fullscreen.md) for the exact source revision, test scope and remaining limitations.
 
 The bundled captionless HLS advertises `CLOSED-CAPTIONS=NONE`. For HLS with no caption declaration, an inferred CEA-608 choice is labeled as availability unknown; it may contain no captions.
+
+Hilt 전환 Phase 1에서는 앱 조립에 Repository 주입을 사용하며 ViewModel Factory는 유지한다. 검증 범위와 미실행 기기 검증은 [SDD](../docs/specs/hilt-di-migration-phase1.md)를 참조한다.
