@@ -2,7 +2,7 @@
 
 - Status: IMPLEMENTED / STATIC_GATES_PASS / DEVICE_NOT_RUN_AT_PHASE_1
 - Note: `DEVICE_NOT_RUN`은 **Phase 1 종료 당시** 기록이다. 이후 Phase 3에서 선택된 실기기 계측 39/39, Hilt 바인딩 1/1을 실행한 사실은 [후속 검증 기록](hilt-di-migration-verification.md)과 분리한다.
-- 기준: 2026-11-08, `main` commit `8dd532f2114d8588a4f2e8a21d0844edf01e5014` (Codex 실행 시 HEAD 재확인)
+- 계획 문서의 기준: 2026-11-08, `main` commit `8dd532f2114d8588a4f2e8a21d0844edf01e5014`. 실제 착수 시 확인한 HEAD는 `0451c02817f2ae48e8f7ae5d898c55984e0cf87e`이며 아래 실행 기록과 구분한다.
 - Related ADR: `../adr/ADR-0004-hilt-di-migration.md`
 - 목표: Hilt가 앱 시작점에서 실제로 Repository 의존성을 공급하도록 연결하면서 기존 UI·채팅·Media3 동작을 보존한다.
 
@@ -46,7 +46,7 @@
 
 1. 현행 `main`/작업 브랜치, Gradle/JDK/AGP/Kotlin/KSP/Hilt 버전 확인 및 근거 URL 기록. Kotlin KGP `2.4.21`의 문서상 AGP 완전 지원 최대 `9.3.1`과 저장소 AGP `9.3.3`의 차이는 별도 호환성 리스크로 보고한다. 무근거 일괄 다운그레이드/업그레이드 금지.
 2. `cd android && ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark :app:lintDebug testDebugUnitTest :core:data:test --no-daemon --max-workers=2 --stacktrace`.
-3. 루트에서 `python3 scripts/check-ux-module-boundaries.py`, `python3 scripts/m4-check-manifests.py`, `python3 scripts/m6-check-manifests.py`.
+3. 저장소 루트에서 `python3 scripts/check-ux-module-boundaries.py`를 실행하고, `android/`에서 `python3 ../scripts/m4-check-manifests.py` 및 `python3 ../scripts/m6-check-manifests.py`를 실행한다. 루트에서 Manifest 스크립트를 실행한 초기 실패는 아래 기록을 유지한다.
 4. 가용한 에뮬레이터/실기기에서 기존 `MainActivity` Compose UI smoke 및 Activity 재생성 회귀를 실행. 기기가 없으면 `NOT_RUN`과 사유 기록. 기존 일반 `AndroidJUnitRunner`와 프로덕션 `Application`으로 동작하는 계측은 우선 그대로 둔다.
 5. 변경 범위 `git diff --stat`, 중요 diff 리뷰 및 Gradle 설정·Manifest·DI Graph·라이프사이클 점검. 실제 결과는 PR/CI/실기기 증거로 구분한다.
 

@@ -1,4 +1,4 @@
-name: M4 PostgreSQL and real Android chat
+name: M4 PostgreSQL and WebSocket server integration
 on:
   pull_request:
     branches: [main]
@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   integration:
-    name: PostgreSQL and Android real WebSocket
+    name: PostgreSQL and WebSocket server integration
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:

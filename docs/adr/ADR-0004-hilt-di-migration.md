@@ -68,4 +68,4 @@ ChatViewModel은 Navigation BackStackEntry와 SavedStateHandle을 사용하고 �
 
 ## Phase 3 실행 결과
 
-전용 Hilt 계측 구성과 대체 바인딩 테스트를 추가했고 기본 일반 계측의 러너와 Application은 유지한다. 모든 빌드·정적·단위 게이트 및 전용 테스트 APK 컴파일 PASS. 당시 테스트 실행과 기기 수명주기 회귀는 NOT_RUN이었다. 이후 선택된 실기기 회귀는 통과했고 실제 서버·장시간 검증은 미실행이다. [검증 기록](../verification.md).
+전용 Hilt 계측 구성과 대체 바인딩 테스트를 추가했고 기본 일반 계측의 러너와 Application은 유지한다. 모든 빌드·정적·단위 게이트 및 전용 테스트 APK 컴파일 PASS. 당시 테스트 실행과 기기 수명주기 회귀는 NOT_RUN이었다. 이후 선택된 실기기 회귀와 격리 에뮬레이터의 실제 서버 통합은 통과했다. 실기기의 실제 서버 연결과 장시간 검증은 당시 미실행이었다. [검증 기록](../verification.md).
