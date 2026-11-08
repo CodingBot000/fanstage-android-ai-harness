@@ -59,6 +59,7 @@ import dev.fanstage.android.feature.live.chat.FakeChatTransport
 import androidx.test.platform.app.InstrumentationRegistry
 import dev.fanstage.android.feature.live.Media3PlayerController
 import dev.fanstage.android.feature.live.PlayerPanel
+import dev.fanstage.android.feature.live.PlayerRotationTrace
 import dev.fanstage.android.feature.live.PlayerSurfaceGeneration
 import dev.fanstage.android.feature.live.PlaybackState
 import org.junit.Assert.assertEquals
@@ -269,7 +270,42 @@ class PlayerSettingsTest {
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
     }
 
-    @Test fun fullscreenRestoresAfterActualRotation() {
+    @Test fun fullscreenRestoresAfterActualRotation() = RotationAudit(rule).run {
+        rule.waitUntil(20000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("live_carousel"))
+        rule.onNodeWithTag("live_carousel").performScrollToNode(hasTestTag("room_benchmark"))
+        rule.onNodeWithTag("room_benchmark").performClick()
+        rule.waitUntil(30000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        checkpoint("playing_before_fullscreen")
+        rule.onNodeWithTag("player_fullscreen").performClick()
+        rule.waitUntil(10000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        checkpoint("fullscreen_before_rotation")
+        try {
+            PlayerRotationTrace.emit("event=rotation_requested orientation=landscape")
+            rule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
+            rule.waitUntil(20000) { rule.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
+            checkpoint("landscape_observed")
+            rule.waitUntil(20000) { rule.onAllNodesWithTag("player_fullscreen").fetchSemanticsNodes().isNotEmpty() }
+            rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.player_exit_fullscreen)).assertExists()
+            rule.waitUntil(10000) { rule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
+            checkpoint("landscape_paused")
+            rule.onNodeWithTag("player_fullscreen").performClick()
+            checkpoint("fullscreen_exited")
+        } finally {
+            PlayerRotationTrace.emit("event=rotation_requested orientation=portrait")
+            rule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+            rule.waitUntil(20000) { rule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
+        }
+        checkpoint("portrait_observed")
+        rule.waitUntil(20000) { rule.onAllNodesWithTag("room_back").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithTag("room_back").performClick()
+        rule.waitUntil(10000) { rule.onAllNodesWithTag("player_panel").fetchSemanticsNodes().isEmpty() }
+        checkpoint("room_exited")
+        val ui = InstrumentationRegistry.getInstrumentation().uiAutomation
+        ui.waitForIdle(500, 5000)
+    }
+
+    @Test fun fullscreenSurvivesExplicitActivityRecreation() = RotationAudit(rule).run {
         rule.waitUntil(20000) { rule.onAllNodesWithTag("rooms_content").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("rooms_content").performScrollToNode(hasTestTag("live_carousel"))
         rule.onNodeWithTag("live_carousel").performScrollToNode(hasTestTag("room_benchmark"))
@@ -277,22 +313,19 @@ class PlayerSettingsTest {
         rule.waitUntil(30000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
         rule.onNodeWithTag("player_fullscreen").performClick()
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
-        try {
-            rule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
-            rule.waitUntil(20000) { rule.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
-            rule.waitUntil(20000) { rule.onAllNodesWithTag("player_fullscreen").fetchSemanticsNodes().isNotEmpty() }
-            rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.player_exit_fullscreen)).assertExists()
-            rule.waitUntil(10000) { rule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
-            rule.onNodeWithTag("player_fullscreen").performClick()
-        } finally {
-            rule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
-            rule.waitUntil(20000) { rule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
-        }
-        rule.waitUntil(20000) { rule.onAllNodesWithTag("room_back").fetchSemanticsNodes().isNotEmpty() }
+        checkpoint("fullscreen_before_recreate")
+        val original = rule.activity
+        PlayerRotationTrace.emit("event=activity_recreate_requested")
+        rule.activityRule.scenario.recreate()
+        assertTrue("Activity instance must change", original !== rule.activity)
+        rule.waitUntil(20000) { rule.onAllNodesWithTag("player_fullscreen").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText(rule.activity.getString(dev.fanstage.android.feature.live.R.string.player_exit_fullscreen)).assertExists()
+        rule.waitUntil(10000) { rule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
+        checkpoint("fullscreen_recreated_paused")
+        rule.onNodeWithTag("player_fullscreen").performClick()
         rule.onNodeWithTag("room_back").performClick()
         rule.waitUntil(10000) { rule.onAllNodesWithTag("player_panel").fetchSemanticsNodes().isEmpty() }
-        val ui = InstrumentationRegistry.getInstrumentation().uiAutomation
-        ui.waitForIdle(500, 5000)
+        checkpoint("room_exited")
     }
 
     @Test fun portraitVideoRendersInFitSurface() {
