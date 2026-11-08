@@ -1,0 +1,79 @@
+name: PR quality gate
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review, edited]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: required-quality-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: classify-quality-changes
+    runs-on: ubuntu-24.04
+    outputs:
+      android: ${{ steps.paths.outputs.android }}
+      server: ${{ steps.paths.outputs.server }}
+      docs: ${{ steps.paths.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Test quality gate classification and fail-closed evaluation
+        run: python3 -m unittest discover -s scripts/tests -p 'test_quality_gate.py' -v
+      - name: Classify changed paths
+        id: paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/quality_gate.py classify "$BASE_SHA" "$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+  android:
+    name: Android
+    needs: changes
+    if: needs.changes.outputs.android == 'true'
+    uses: ./.github/workflows/android-ci.yml
+    permissions:
+      contents: read
+
+  server:
+    name: Server
+    needs: changes
+    if: needs.changes.outputs.server == 'true'
+    uses: ./.github/workflows/m4-integration.yml
+    permissions:
+      contents: read
+
+  docs:
+    name: Documentation
+    needs: changes
+    if: needs.changes.outputs.docs == 'true'
+    uses: ./.github/workflows/docs-check.yml
+    permissions:
+      contents: read
+
+  required-quality:
+    name: required-quality
+    if: always()
+    needs: [changes, android, server, docs]
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Enforce selected checks and explicit exclusions
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          ANDROID_NEEDED: ${{ needs.changes.outputs.android }}
+          SERVER_NEEDED: ${{ needs.changes.outputs.server }}
+          DOCS_NEEDED: ${{ needs.changes.outputs.docs }}
+          ANDROID_RESULT: ${{ needs.android.result }}
+          SERVER_RESULT: ${{ needs.server.result }}
+          DOCS_RESULT: ${{ needs.docs.result }}
+        run: python3 scripts/quality_gate.py evaluate

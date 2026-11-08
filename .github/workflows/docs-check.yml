@@ -1,21 +1,7 @@
 name: Portfolio documentation integrity
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - '**/*.md'
-      - 'README.md'
-      - 'AGENTS.md'
-      - 'CLAUDE.md'
-      - 'THIRD_PARTY_NOTICES.md'
-      - 'android/README.md'
-      - 'backend/chat-server/README.md'
-      - 'docs/**'
-      - 'scripts/check-portfolio-docs.py'
-      - 'scripts/check-verification-evidence.py'
-      - 'scripts/tests/test_verification_evidence.py'
-      - '.github/workflows/docs-check.yml'
+  workflow_call:
   push:
     branches: [main]
     paths:
@@ -30,6 +16,8 @@ on:
       - 'scripts/check-portfolio-docs.py'
       - 'scripts/check-verification-evidence.py'
       - 'scripts/tests/test_verification_evidence.py'
+      - 'scripts/quality_gate.py'
+      - 'scripts/tests/test_quality_gate.py'
       - '.github/workflows/docs-check.yml'
   workflow_dispatch:
 
@@ -48,6 +36,6 @@ jobs:
       - name: Verify internal Markdown links and ADR IDs
         run: python3 scripts/check-portfolio-docs.py
       - name: Test evidence checker against invalid fixtures
-        run: python3 -m unittest discover -s scripts/tests -p 'test_verification_evidence.py' -v
+        run: python3 -m unittest discover -s scripts/tests -p 'test_*.py' -v
       - name: Verify published evidence integrity and provenance
         run: python3 scripts/check-verification-evidence.py
