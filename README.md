@@ -6,6 +6,25 @@ FanStage는 가상의 팬 커뮤니티를 배경으로 영상 재생과 채팅�
 
 **기술 스택:** Kotlin · Jetpack Compose · Coroutines/Flow · MVVM/UDF · Media3 · WebSocket/HTTP · Spring Boot · PostgreSQL · GitHub Actions · Codex
 
+## 아키텍처 한눈에 보기
+
+기능별 화면과 공통 코드를 분리해 **11개 Gradle 모듈**로 구성했습니다. `app`은 화면 이동과 의존성 조립을 담당하고, 각 기능 모듈은 필요한 공통 모듈만 참조합니다.
+
+```mermaid
+flowchart TB
+    APP["app<br/>Navigation · 의존성 조립"]
+    FEATURE["feature · 5개<br/>discover · community · media · messages · live"]
+    CORE["core · 4개<br/>model · data · artwork · designsystem"]
+    BENCH["macrobenchmark<br/>앱 성능 계측"]
+
+    APP --> FEATURE
+    APP --> CORE
+    FEATURE -->|"필요한 공통 모듈 참조"| CORE
+    BENCH -.->|"측정 대상"| APP
+```
+
+기능 모듈이 `app`을 역참조하지 않도록 [모듈 의존성 검사](scripts/check-ux-module-boundaries.py)를 GitHub Actions에서 실행합니다. 실제 모듈별 의존 관계와 설계 이유는 [상세 아키텍처](docs/architecture.md) 및 [모듈 분리 PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 기록했습니다.
+
 ## 앱 화면과 시연
 
 Galaxy S22 Ultra(Android 16)에서 촬영한 화면입니다. 앱의 아티스트·게시물·대화는 가상 데이터이며, 영상 시연에는 로컬 서버의 사전 녹화 MP4를 사용했습니다.
@@ -38,9 +57,23 @@ Discover·Community·Media·Messages·LIVE를 기능별로 분리하고 공통 �
 
 ### 4. AI 코딩 에이전트 제어와 코드 품질 검증
 
-Codex의 작업 범위를 기능·모듈·수용 기준으로 제한하고, 변경 후에는 코드 리뷰와 자동 테스트 결과를 확인했습니다. **에이전트 지침과 실제 검증을 분리**해 운영했습니다. 지침은 변경 범위를 안내하고, Gradle·GitHub Actions는 빌드·Lint·단위/서버 통합 테스트를 실행합니다.
+Codex에 작업을 맡기기 전에 **변경 범위·수용 기준을 정하고**, 구현 이후에는 **코드 리뷰와 실행한 테스트 결과**로 품질을 판단했습니다. 에이전트 지침(`AGENTS.md`)은 작업 방향을 안내하고, 빌드·Lint·단위/서버 통합 테스트는 Gradle과 GitHub Actions에서 실행합니다. Android 화면·재생 관련 계측은 변경 내용에 따라 로컬 기기에서 검증했습니다.
 
-플레이어 전체 화면 전환 작업에서는 코드 리뷰로 **이전 Surface의 첫 프레임을 새 출력의 성공으로 잘못 판단할 위험**을 발견했습니다. PlayerView 분리 순서를 조정하고 출력 객체를 확인하는 테스트를 보완한 뒤 다시 검증했습니다. [문제 발견부터 재검증까지의 사례](docs/ai-development-workflow.md)
+```mermaid
+flowchart TB
+    S["① 작업 기준 정의<br/>SDD · 변경 범위 · 수용 조건"]
+    C["② Codex 구현<br/>AGENTS.md 지침"]
+    R["③ 코드 리뷰<br/>생명주기 · 동시성 · 메시지 정합성"]
+    T["④ 자동 검증<br/>빌드 · Lint · 단위/서버 통합 테스트"]
+    V["⑤ 관련 기기 검증<br/>변경된 화면·재생 흐름 계측"]
+    P["⑥ PR 검토·변경 수용<br/>테스트 결과 · CI 근거 확인"]
+
+    S --> C --> R --> T --> V --> P
+```
+
+**검증 보완 사례 — [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47):** 전체 화면 전환에서 이전 Surface의 첫 프레임을 새 출력의 성공으로 잘못 판단할 수 있음을 코드 리뷰에서 확인했습니다. 이전 PlayerView의 분리 순서를 조정하고 출력 객체를 확인하도록 테스트를 보완했습니다. 해당 PR에서 단위 테스트 56개와 로컬 API 36 계측 테스트 41개를 통과했습니다.
+
+[AI 개발 제어·검증 상세 과정](docs/ai-development-workflow.md)
 
 ## 테스트 결과
 
@@ -67,7 +100,7 @@ Android Studio에서 `android/`를 열어 Debug 앱을 실행할 수 있습니�
 
 [Android 빌드 안내](android/README.md) · [로컬 서버 실행 안내](backend/chat-server/README.md)
 
-## 기술 문서
+## 상세 기술 문서
 
 [아키텍처](docs/architecture.md) · [AI 개발 제어·검증 과정](docs/ai-development-workflow.md) · [채팅 장애 주입 시나리오](docs/specs/failure-recovery.md) · [검증 결과](docs/verification.md) · [설계 결정](docs/adr/)
 
