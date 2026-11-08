@@ -12,8 +12,8 @@
 | 범위 | 실제 결과와 한계 |
 |---|---|
 | Hilt | API 36 에뮬레이터의 기존 두 테스트 2/2, Activity Hilt ViewModel 경로 추가 후 에뮬레이터·SM-S908N 실기기 각 3/3 PASS. ViewModelStore 종료 처리 후 실기기 3/3 재검증. [원본](hilt-physical-cleanup.xml) |
-| Android 회귀 | JDK 17 빌드·Lint·단위 및 모듈·Manifest 검사; 선택 실기기 회귀 최초 38/39, 단독 재시도 1/1 및 전체 재시도 39/39 PASS. Activity 재생성과 실제 회전을 포함한다. 실제 프로세스 종료 후 복원은 이 감사에서 NOT_RUN. |
-| 실제 채팅 | SM-S908N에서 일회성 격리 PostgreSQL·WebSocket 서버 및 USB reverse 사용. Android 통합 및 30회 별도 룸 연결에서 Collector 완료, close 호출 및 소켓 참조 해제 검사 2/2 PASS. 서버 측 연결 종료나 OS 소켓 해제 완료는 별도 측정하지 않았다. 서버 동시성·ACK 유실·DB 재시작·연결 단절 테스트 PASS. [Android 원본](real-chat-30-physical.xml) · [서버 출력](backend-regression.json) |
+| Android 회귀 | JDK 17 빌드·Lint·단위 및 모듈·Manifest 검사; 선택 실기기 회귀 최초 38/39, 단독 재시도 1/1 및 전체 재시도 39/39 PASS. 추가 탐색바·상단바 5/5, 로컬 미디어 3/3 PASS. 미디어에는 24초 무음 합성 MP4 한 개를 일곱 경로에 복사해 사용했다. Activity 재생성과 실제 회전을 포함한다. 실제 프로세스 종료 후 복원은 이 감사에서 NOT_RUN. |
+| 실제 채팅 | SM-S908N에서 일회성 격리 PostgreSQL·WebSocket 서버 및 USB reverse 사용. Android 통합 및 30회 별도 룸 연결에서 Collector 완료, close 호출 및 소켓 참조 해제 검사 2/2 PASS. 별도 무음 합성 미디어 테스트에서는 실제 Hilt LIVE 화면의 서버 연결·전송·Fake 복귀도 통과했다. 서버 측 연결 종료나 OS 소켓 해제 완료는 별도 측정하지 않았다. 합성 미디어 테스트 종료 시 자동 정리가 상대 경로 문제로 실패해 이번 임시 Compose 프로젝트와 볼륨만 수동 정리했으며 기존 서버 유지 및 reverse 제거를 확인했다. 서버 동시성·ACK 유실·DB 재시작·연결 단절 테스트 PASS. [Android 원본](real-chat-30-physical.xml) · [서버 출력](backend-regression.json) |
 | 자원 반복 | 실기기 Debug 격리 패키지에서 LIVE 30회, Replay 10회, 전체 화면 및 실제 HOME 복귀 각 10회 PASS. 30개의 이전 Player 약한 참조는 최종 관찰에서 0개였으며 PSS·Java heap·Java thread·GC 관찰값은 [측정값](resource-observations.json)에 기록했다. 이는 Fake 채팅 경로이며 모든 Listener·Surface·Coroutine의 누수 부재나 장시간 안정성의 증명이 아니다. 판정 **INCONCLUSIVE**. 실제 WebSocket 30회 테스트는 별도 소켓 필드와 Collector 종료 확인이다. |
 | 레거시 DI | 런처는 Discover 경로를 사용한다. `RoomListViewModel`·`FakeRoomRepository`는 직접 런처에서 쓰이지 않지만 기존 단위 테스트와 독립 룸 UI 계측 경로에 연관된다. 테스트를 삭제하며 제거하지 않고 유지한다. `ChatViewModel.Factory`는 명시적 Transport를 사용하는 테스트·벤치마크용이다. |
 | CI | Android CI는 일반/Hilt 계측 APK를 각각 컴파일하고 일반 구성을 다시 빌드하지만 원격 기기 실행은 하지 않는다. 서버 workflow는 서버 테스트만 실행하므로 명칭을 서버 범위에 맞게 정정했다. 문서 검사에 모든 Markdown 경로를 추가했다. 보호 정책 변경은 하지 않았다. |

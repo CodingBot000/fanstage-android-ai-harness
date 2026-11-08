@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="5" failures="0" errors="0" skipped="0" time="15.834" timestamp="2026-11-08T13:34:59" hostname="localhost">
+  <testsuite name="dev.fanstage.android.FloatingNavigationTest" tests="1" failures="0" errors="0" skipped="0" time="4.89" timestamp="2026-11-08T13:34:59" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="tabsFloatAndLastContentRemainsReachable" classname="dev.fanstage.android.FloatingNavigationTest" time="4.89" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.CollapsingTitleBarTest" tests="4" failures="0" errors="0" skipped="0" time="9.591" timestamp="2026-11-08T13:34:59" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="mediaAndMessagesBarsRespondToSwipe" classname="dev.fanstage.android.CollapsingTitleBarTest" time="2.747" />
+    <testcase name="detailBackBarHidesAndReturns" classname="dev.fanstage.android.CollapsingTitleBarTest" time="2.08" />
+    <testcase name="replayBarRespondsToSwipe" classname="dev.fanstage.android.CollapsingTitleBarTest" time="1.974" />
+    <testcase name="tabBarHidesOnUpAndReturnsOnDown" classname="dev.fanstage.android.CollapsingTitleBarTest" time="2.79" />
+  </testsuite>
+</testsuites>

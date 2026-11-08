@@ -36,3 +36,18 @@ adb -s "$ANDROID_SERIAL" reverse --remove tcp:18767
 서버 테스트의 기본 포트는 18765이며, 격리 포트 실행 시 Compose의 `FANSTAGE_PORT`와 Python 테스트의 `FANSTAGE_TEST_PORT`를 동일하게 설정한다. Python 서버 회귀는 DB 재시작을 수행하며 허용된 `fanstage-m4-validation` 또는 `fanstage-m5-validation` 프로젝트를 사용한다. 실행 전에 해당 프로젝트에 기존 컨테이너나 볼륨이 없는지 확인한다. Android 계측만 실행할 때는 기존 데이터와 격리된 별도 Compose 프로젝트를 사용할 수 있다.
 
 `unit/`은 JDK 17에서 캐시 재사용 없이 실행한 단위 테스트 XML이다. `historical-manifest-check.json`은 과거 로컬 원본의 해시를 재검사한 파생 요약이다. 각 실행의 현재 공개 파일 해시는 manifest에서 확인할 수 있다.
+
+`additional-ui-physical.xml`은 별도 탐색바·상단바 5건의 결과다. `synthetic-media-physical.xml`은 실제 Hilt 화면·채팅 전환을 포함한 로컬 미디어 3건이다. 테스트에는 24초 무음 합성 MP4 한 개를 일곱 경로에 복사해 사용했으며 사용자 원본 영상은 사용하지 않았다. 인증값은 XML에 포함되지 않았음을 실행 직후 확인했다.
+
+합성 미디어 경로 검증은 `compose.yaml`과 `compose.media.yaml`을 함께 사용한 별도 Compose 프로젝트에서 실행했다. 테스트 영상은 아래처럼 생성한 24초 무음 합성 MP4 한 개를 `demo-01.mp4`부터 `demo-07.mp4`까지 일곱 이름으로 복사했다. 생성 환경에 따라 파일 바이트는 달라질 수 있다.
+
+```sh
+ffmpeg -f lavfi -i 'testsrc2=size=320x180:rate=15' \
+  -f lavfi -i 'anullsrc=r=44100:cl=stereo' -t 24 \
+  -c:v libx264 -preset ultrafast -g 30 -c:a aac -shortest \
+  -movflags +faststart demo-01.mp4
+```
+
+실기기의 앱은 18765 포트를 사용하므로, 예를 들어 격리 서버의 호스트 포트가 18767이라면 기기 측 18765를 호스트 측 18767로 reverse한다. 실제 계측은 `LocalMediaTest`, `fanstageLocalMedia=true`, `fanServerHost=127.0.0.1`, `fanServerPort=18765`와 일회용 `fanTokenA`를 지정했다. 기존 reverse와 Compose 볼륨의 존재를 먼저 확인하고, 종료 시 이 테스트가 만든 리소스만 정리한다.
+
+합성 미디어 실행에서는 테스트 종료 후 자동 Compose 정리가 작업 디렉터리 기준 파일 경로 문제로 실패했다. 즉시 Compose 파일의 절대 경로로 이번 임시 프로젝트의 컨테이너·볼륨을 정리하고 reverse 제거 및 기존 서버 유지 상태를 확인했다.

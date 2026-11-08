@@ -23,7 +23,7 @@
 
 ## Android 최종 감사 실행
 
-PR #68 이후의 소스에서 Hilt 실제 Activity 생성 경로, 실기기 화면·플레이어 회귀와 격리 PostgreSQL·WebSocket 연결을 다시 검증했습니다. 초기 회전 계측 실패와 재실행, 반복 자원 관찰, 성능 원본 해시 및 미해결 위험은 [감사 보고](evidence/verification/audit-20261108/audit-report.md)와 [기계 판독 증거](evidence/verification/audit-20261108/README.md)에 구분해 기록했습니다. `main`에는 확인 시점에 필수 검사 강제 규칙이 없었습니다.
+PR #68 이후의 소스에서 Hilt 실제 Activity 생성 경로, 실기기 화면·플레이어 회귀와 격리 PostgreSQL·WebSocket 연결을 다시 검증했습니다. 추가 로컬 미디어는 무음 합성 영상으로 확인했습니다. 초기 회전 계측 실패와 재실행, 반복 자원 관찰, 성능 원본 해시 및 미해결 위험은 [감사 보고](evidence/verification/audit-20261108/audit-report.md)와 [기계 판독 증거](evidence/verification/audit-20261108/README.md)에 구분해 기록했습니다. `main`에는 확인 시점에 필수 검사 강제 규칙이 없었습니다.
 
 ## 자동화와 기기 검증의 역할
 

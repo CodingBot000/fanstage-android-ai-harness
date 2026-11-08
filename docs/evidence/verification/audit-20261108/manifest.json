@@ -455,6 +455,38 @@
       "failures": 0,
       "errors": 0,
       "skipped": 0
+    },
+    {
+      "file": "additional-ui-physical.xml",
+      "sha256": "6ae9be0f58c193c552ca6130f7d297ca143c7fc0563e5b4fa7d0ce71e780a8ff",
+      "original_sha256": "daec6509b06620e7f2012f23b19b3e2e459cd29c48ad6b69f659b920336211c2",
+      "normalization": "CRLF to LF only; temporary test credentials checked and not present",
+      "tested_code_snapshot_commit": "52d6126230fd0c5cf44c72cde7da6f7120e47e45",
+      "head_at_execution": "52d6126230fd0c5cf44c72cde7da6f7120e47e45",
+      "snapshot_interpretation": "HEAD at execution",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Floating navigation and collapsing title bar regression",
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "file": "synthetic-media-physical.xml",
+      "sha256": "1cd1b3ef25913e8b7461af3092ed8c1f9ab573a113d6eb2c37904b4ae1911b3f",
+      "original_sha256": "04b4d1852365bd1e04b618087a50e7cacc6b534e5805bf5a4dcea5395e111856",
+      "normalization": "CRLF to LF only; temporary test credentials checked and not present",
+      "tested_code_snapshot_commit": "fd6790e81162d905f4629f207c8ac7554e5d5f06",
+      "head_at_execution": "52d6126230fd0c5cf44c72cde7da6f7120e47e45",
+      "snapshot_interpretation": "Relevant LocalMediaTest host change was uncommitted at execution and committed afterwards; no clean whole-repository checkout is claimed.",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Seven synthetic media paths and actual Hilt UI real-chat switching",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
     }
   ]
 }
