@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="1" failures="1" errors="0" skipped="0" time="5.641" timestamp="2026-11-08T15:25:39" hostname="localhost">
+  <testsuite name="dev.fanstage.android.RotationAuditFailureProbe" tests="1" failures="1" errors="0" skipped="0" time="4.477" timestamp="2026-11-08T15:25:39" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="controlledFailureCarriesRotationEvents" classname="dev.fanstage.android.RotationAuditFailureProbe" time="4.477">
+      <failure>java.lang.AssertionError: intentional rotation diagnostic probe
+at dev.fanstage.android.RotationAuditFailureProbe.controlledFailureCarriesRotationEvents$lambda$0(RotationAuditFailureProbe.kt:32)
+at dev.fanstage.android.RotationAuditFailureProbe$$ExternalSyntheticLambda7.invoke(D8$$SyntheticClass:0)
+at dev.fanstage.android.RotationAudit.run(RotationAudit.kt:98)
+at dev.fanstage.android.RotationAuditFailureProbe.controlledFailureCarriesRotationEvents(RotationAuditFailureProbe.kt:19)
+Suppressed: java.lang.AssertionError: rotation diagnostic events:
+event=trace_summary dropped=0
+run=negatived9c94fe954c54d10 ns=2013613411665773 event=test_start activity=822897 orientation=1
+run=negatived9c94fe954c54d10 ns=2013613412058169 event=player_snapshot name=start views=0
+run=negatived9c94fe954c54d10 ns=2013613666302335 event=ui_checkpoint name=start states=playing:0,paused:0,loading:0,buffering:0,error:0 frame=0 fullscreenControl=0
+run=negatived9c94fe954c54d10 ns=2013614258425720 event=listener_registered controller=180630411 player=39662867 listener=96500840
+run=negatived9c94fe954c54d10 ns=2013614374833741 event=surface_replace controller=180630411 player=39662867 oldView=0 newView=134306116
+run=negatived9c94fe954c54d10 ns=2013614375523272 event=surface_attached controller=180630411 player=39662867 view=134306116 generation=1 attached=false surfaceType=TextureView surface=6154797 available=false
+run=negatived9c94fe954c54d10 ns=2013614398031502 event=owner_lifecycle controller=180630411 lifecycle=ON_CREATE
+run=negatived9c94fe954c54d10 ns=2013614398149939 event=owner_lifecycle controller=180630411 lifecycle=ON_START
+run=negatived9c94fe954c54d10 ns=2013614399360616 event=compose_recompose controller=180630411 state=Loading fullscreen=false compact=false pausedTag=false
+run=negatived9c94fe954c54d10 ns=2013614465355824 event=compose_state_observed controller=180630411 state=Loading
+run=negatived9c94fe954c54d10 ns=2013614553126397 event=owner_lifecycle controller=180630411 lifecycle=ON_RESUME
+run=negatived9c94fe954c54d10 ns=2013614560281762 event=compose_recompose controller=180630411 state=Loading fullscreen=false compact=false pausedTag=false
+run=negatived9c94fe954c54d10 ns=2013614562742231 event=player_events controller=180630411 player=39662867 playback=2 ready=true playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013614576452387 event=player_events controller=180630411 player=39662867 playback=2 ready=true playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013614577235043 event=player_events controller=180630411 player=39662867 playback=2 ready=true playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013614583013324 event=player_events controller=180630411 player=39662867 playback=3 ready=true playing=true error=none flow=Playing
+run=negatived9c94fe954c54d10 ns=2013614584891866 event=player_events controller=180630411 player=39662867 playback=3 ready=true playing=true error=none flow=Playing
+run=negatived9c94fe954c54d10 ns=2013614585095512 event=first_frame controller=180630411 player=39662867 generation=1 surfaceType=TextureView surface=6154797 available=true
+run=negatived9c94fe954c54d10 ns=2013614585675929 event=player_events controller=180630411 player=39662867 playback=3 ready=true playing=true error=none flow=Playing
+run=negatived9c94fe954c54d10 ns=2013614627999054 event=player_events controller=180630411 player=39662867 playback=3 ready=true playing=true error=none flow=Playing
+run=negatived9c94fe954c54d10 ns=2013614645586866 event=compose_recompose controller=180630411 state=Playing fullscreen=false compact=false pausedTag=false
+run=negatived9c94fe954c54d10 ns=2013614654651814 event=compose_state_observed controller=180630411 state=Playing
+run=negatived9c94fe954c54d10 ns=2013614877919314 event=owner_lifecycle controller=180630411 lifecycle=ON_PAUSE
+run=negatived9c94fe954c54d10 ns=2013614879973168 event=activity_paused activity=822897 orientation=1 lifecycle=STARTED
+run=negatived9c94fe954c54d10 ns=2013614884710720 event=owner_lifecycle controller=180630411 lifecycle=ON_STOP
+run=negatived9c94fe954c54d10 ns=2013614899828220 event=activity_stopped activity=822897 orientation=1 lifecycle=CREATED
+run=negatived9c94fe954c54d10 ns=2013614900413741 event=activity_save_state activity=822897 orientation=1 lifecycle=CREATED
+run=negatived9c94fe954c54d10 ns=2013614902454314 event=owner_lifecycle controller=180630411 lifecycle=ON_DESTROY
+run=negatived9c94fe954c54d10 ns=2013614940472439 event=surface_detached controller=180630411 player=39662867 view=134306116 current=true surfaceType=TextureView surface=6154797 available=false
+run=negatived9c94fe954c54d10 ns=2013614941117387 event=compose_dispose controller=180630411
+run=negatived9c94fe954c54d10 ns=2013614941422751 event=player_events controller=180630411 player=39662867 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013614941473324 event=listener_removed controller=180630411 player=39662867 listener=96500840
+run=negatived9c94fe954c54d10 ns=2013614958082283 event=player_released controller=180630411 player=39662867
+run=negatived9c94fe954c54d10 ns=2013614961194939 event=activity_destroyed activity=822897 orientation=1 lifecycle=DESTROYED
+run=negatived9c94fe954c54d10 ns=2013614972793533 event=activity_created activity=149100446 orientation=2 lifecycle=INITIALIZED
+run=negatived9c94fe954c54d10 ns=2013614976090980 event=activity_started activity=149100446 orientation=2 lifecycle=CREATED
+run=negatived9c94fe954c54d10 ns=2013614976490303 event=activity_resumed activity=149100446 orientation=2 lifecycle=STARTED
+run=negatived9c94fe954c54d10 ns=2013615031233324 event=listener_registered controller=22460496 player=11521555 listener=200608329
+run=negatived9c94fe954c54d10 ns=2013615071887022 event=compose_state_observed controller=22460496 state=Loading
+run=negatived9c94fe954c54d10 ns=2013615072773064 event=owner_lifecycle controller=22460496 lifecycle=ON_CREATE
+run=negatived9c94fe954c54d10 ns=2013615072805512 event=owner_lifecycle controller=22460496 lifecycle=ON_START
+run=negatived9c94fe954c54d10 ns=2013615072850147 event=owner_lifecycle controller=22460496 lifecycle=ON_RESUME
+run=negatived9c94fe954c54d10 ns=2013615072891085 event=dialog_created controller=22460496
+run=negatived9c94fe954c54d10 ns=2013615095805355 event=compose_recompose controller=22460496 state=Loading fullscreen=true compact=false pausedTag=false
+run=negatived9c94fe954c54d10 ns=2013615183904522 event=player_events controller=22460496 player=11521555 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013615214434418 event=surface_replace controller=22460496 player=11521555 oldView=0 newView=189899996
+run=negatived9c94fe954c54d10 ns=2013615215152074 event=surface_attached controller=22460496 player=11521555 view=189899996 generation=1 attached=false surfaceType=TextureView surface=12389562 available=false
+run=negatived9c94fe954c54d10 ns=2013615249041710 event=player_events controller=22460496 player=11521555 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013615249382282 event=player_events controller=22460496 player=11521555 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013615250181814 event=player_events controller=22460496 player=11521555 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013615251094730 event=player_events controller=22460496 player=11521555 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013615252202647 event=player_events controller=22460496 player=11521555 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013615256127647 event=player_events controller=22460496 player=11521555 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013615264892126 event=player_events controller=22460496 player=11521555 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013615267015928 event=first_frame controller=22460496 player=11521555 generation=1 surfaceType=TextureView surface=12389562 available=true
+run=negatived9c94fe954c54d10 ns=2013615268183897 event=player_events controller=22460496 player=11521555 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013615271753793 event=player_events controller=22460496 player=11521555 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013615283029262 event=compose_recompose controller=22460496 state=Paused fullscreen=true compact=false pausedTag=true
+run=negatived9c94fe954c54d10 ns=2013615288296501 event=compose_state_observed controller=22460496 state=Paused
+run=negatived9c94fe954c54d10 ns=2013615295210616 event=compose_recompose controller=22460496 state=Paused fullscreen=true compact=false pausedTag=true
+run=negatived9c94fe954c54d10 ns=2013615300405980 event=player_events controller=22460496 player=11521555 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013615335839470 event=player_snapshot name=probe_before_cleanup view=189899996 attached=true player=11521555 playback=3 ready=false playing=false error=none surfaceType=TextureView surface=12389562 available=true
+run=negatived9c94fe954c54d10 ns=2013615392591084 event=ui_checkpoint name=probe_before_cleanup states=playing:0,paused:1,loading:0,buffering:0,error:0 frame=1 fullscreenControl=1
+run=negatived9c94fe954c54d10 ns=2013615392680772 event=controlled_failure_probe
+run=negatived9c94fe954c54d10 ns=2013615661325720 event=owner_lifecycle controller=22460496 lifecycle=ON_PAUSE
+run=negatived9c94fe954c54d10 ns=2013615661784366 event=activity_paused activity=149100446 orientation=2 lifecycle=STARTED
+run=negatived9c94fe954c54d10 ns=2013615662777595 event=owner_lifecycle controller=22460496 lifecycle=ON_STOP
+run=negatived9c94fe954c54d10 ns=2013615669465720 event=activity_stopped activity=149100446 orientation=2 lifecycle=CREATED
+run=negatived9c94fe954c54d10 ns=2013615669896032 event=activity_save_state activity=149100446 orientation=2 lifecycle=CREATED
+run=negatived9c94fe954c54d10 ns=2013615689056345 event=surface_detached controller=22460496 player=11521555 view=189899996 current=true surfaceType=TextureView surface=12389562 available=false
+run=negatived9c94fe954c54d10 ns=2013615690428741 event=owner_lifecycle controller=22460496 lifecycle=ON_DESTROY
+run=negatived9c94fe954c54d10 ns=2013615730429678 event=dialog_disposed controller=22460496
+run=negatived9c94fe954c54d10 ns=2013615730501136 event=compose_dispose controller=22460496
+run=negatived9c94fe954c54d10 ns=2013615731021241 event=player_events controller=22460496 player=11521555 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013615731090095 event=listener_removed controller=22460496 player=11521555 listener=200608329
+run=negatived9c94fe954c54d10 ns=2013615749469314 event=player_released controller=22460496 player=11521555
+run=negatived9c94fe954c54d10 ns=2013615754184730 event=activity_destroyed activity=149100446 orientation=2 lifecycle=DESTROYED
+run=negatived9c94fe954c54d10 ns=2013615763558376 event=activity_created activity=7411297 orientation=1 lifecycle=INITIALIZED
+run=negatived9c94fe954c54d10 ns=2013615768701241 event=activity_started activity=7411297 orientation=1 lifecycle=CREATED
+run=negatived9c94fe954c54d10 ns=2013615769198584 event=activity_resumed activity=7411297 orientation=1 lifecycle=STARTED
+run=negatived9c94fe954c54d10 ns=2013615830109730 event=listener_registered controller=136437595 player=211832426 listener=64750584
+run=negatived9c94fe954c54d10 ns=2013615867058063 event=compose_state_observed controller=136437595 state=Loading
+run=negatived9c94fe954c54d10 ns=2013615867929938 event=owner_lifecycle controller=136437595 lifecycle=ON_CREATE
+run=negatived9c94fe954c54d10 ns=2013615867963636 event=owner_lifecycle controller=136437595 lifecycle=ON_START
+run=negatived9c94fe954c54d10 ns=2013615867981449 event=owner_lifecycle controller=136437595 lifecycle=ON_RESUME
+run=negatived9c94fe954c54d10 ns=2013615868013741 event=dialog_created controller=136437595
+run=negatived9c94fe954c54d10 ns=2013615887106813 event=compose_recompose controller=136437595 state=Loading fullscreen=true compact=false pausedTag=false
+run=negatived9c94fe954c54d10 ns=2013615973542074 event=player_events controller=136437595 player=211832426 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013616005561397 event=surface_replace controller=136437595 player=211832426 oldView=0 newView=16788038
+run=negatived9c94fe954c54d10 ns=2013616006304626 event=surface_attached controller=136437595 player=211832426 view=16788038 generation=1 attached=false surfaceType=TextureView surface=44534068 available=false
+run=negatived9c94fe954c54d10 ns=2013616038841293 event=player_events controller=136437595 player=211832426 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013616039544626 event=player_events controller=136437595 player=211832426 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013616040377543 event=player_events controller=136437595 player=211832426 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013616041177022 event=player_events controller=136437595 player=211832426 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013616042234105 event=player_events controller=136437595 player=211832426 playback=2 ready=false playing=false error=none flow=Buffering
+run=negatived9c94fe954c54d10 ns=2013616044660459 event=player_events controller=136437595 player=211832426 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013616048161970 event=player_events controller=136437595 player=211832426 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013616048295824 event=first_frame controller=136437595 player=211832426 generation=1 surfaceType=TextureView surface=44534068 available=true
+run=negatived9c94fe954c54d10 ns=2013616048906657 event=player_events controller=136437595 player=211832426 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013616061772855 event=player_events controller=136437595 player=211832426 playback=3 ready=false playing=false error=none flow=Paused
+run=negatived9c94fe954c54d10 ns=2013616063563897 event=player_snapshot name=failure_after_cleanup view=16788038 attached=true player=211832426 playback=3 ready=false playing=false error=none surfaceType=TextureView surface=44534068 available=true
+run=negatived9c94fe954c54d10 ns=2013616074005511 event=compose_recompose controller=136437595 state=Paused fullscreen=true compact=false pausedTag=true
+run=negatived9c94fe954c54d10 ns=2013616078734938 event=compose_state_observed controller=136437595 state=Paused
+run=negatived9c94fe954c54d10 ns=2013616083359938 event=compose_recompose controller=136437595 state=Paused fullscreen=true compact=false pausedTag=true
+run=negatived9c94fe954c54d10 ns=2013616167427959 event=ui_checkpoint name=failure_after_cleanup states=playing:0,paused:1,loading:0,buffering:0,error:0 frame=1 fullscreenControl=1
+at dev.fanstage.android.RotationAudit.run(RotationAudit.kt:105)
+at dev.fanstage.android.RotationAuditFailureProbe.controlledFailureCarriesRotationEvents(RotationAuditFailureProbe.kt:19)
+</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

@@ -88,3 +88,5 @@ done
 ```
 
 실행마다 생성되는 JUnit 결과를 다음 실행 전에 별도 보관해야 한다. 진단 이벤트는 `FSRotationAudit` 태그만 수집해 실행 ID로 걸러낸다. `scripts/verify-rotation-diagnostic-failure.sh`는 선택된 기기만 ADB 서버에 보이는지 확인하고 임시 fixture의 의도적 실패 XML에 진단이 있는지 확인한 뒤 fixture를 삭제한다.
+
+`rotation-negative-unique-run.xml`은 추가 보완된 runner로 실제 기기에서 실행한 의도적 실패다. runner는 매 실행의 임의 ID에 속한 이벤트만 수용하고 단조 시각과 복구 전 Player/Surface snapshot → checkpoint → 의도적 실패 → 복구 후 checkpoint 순서를 검사한다. 미래 시각의 오래된 XML, 서로 다른 실행의 이벤트 혼합, 잘못된 이벤트 순서와 다중 기기 노출을 격리 fixture로 거부했다. 당시 실행 HEAD와 코드 스냅샷은 같고 임시 probe 소스는 추적된 fixture에서 복사됐다.

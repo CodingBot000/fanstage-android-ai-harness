@@ -56,4 +56,4 @@ Galaxy S22 Ultra/API 36에서 진단 도입 초기와 보강 후의 회전 테�
 
 초기 실기기 전체 회귀의 한 차례 시간 초과는 당시 진단이 없었고 이번 40회에서 재현되지 않았다. **FLAKY / ROOT_CAUSE_UNCONFIRMED**로 유지하며 제품 결함이나 단순 기기 문제 어느 쪽으로도 확정하지 않는다. 진단은 Debug에서만 켤 수 있고 RcLocal·Release에서는 no-op이다. API 24–28에서는 별도 Dialog window의 Player를 직접 찾지 못할 수 있다. 로깅은 타이밍에 영향을 줄 수 있다. JUnit XML에는 실행 ID가 없으므로 XML과 trace의 개별 대응은 수집 순번에 의존하고 파일만으로 동일 실행임을 암호학적으로 증명하지 못한다.
 
-`rotation-intentional-negative.xml`은 오류 보고에 진단이 남는지 확인하려고 별도 fixture에서 의도적으로 실패시킨 결과다. 실제 결함으로 집계하지 않는다. 기존의 실제 초기 실패 `ui-physical-initial.xml`은 별도로 유지한다. 테스트 전 작업 트리에 있던 소스와 사후 생성한 커밋의 관계는 [manifest](manifest.json)에 기록한다.
+`rotation-intentional-negative.xml`, `rotation-negative-fresh.xml`, `rotation-negative-unique-run.xml`은 오류 보고에 진단이 남는지 확인하려고 별도 fixture에서 의도적으로 실패시킨 결과다. 실제 결함으로 집계하지 않는다. 최신 runner는 실행별 임의 ID, 단조 시간과 이벤트 순서를 확인하며 오래된 XML·다른 실행의 로그 혼합을 격리 fixture에서 거부했다. 기존의 실제 초기 실패 `ui-physical-initial.xml`은 별도로 유지한다. 테스트 전 작업 트리에 있던 소스와 사후 생성한 커밋의 관계는 [manifest](manifest.json)에 기록한다.

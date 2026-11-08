@@ -54,11 +54,12 @@ REQUIRED = {'additional-ui-physical.xml',
  'unit/feature/live/TEST-dev.fanstage.android.feature.live.chat.ChatViewModelTest.xml'}
 REQUIRED |= {'unit-rotation-final/' + path.removeprefix('unit/') for path in REQUIRED if path.startswith('unit/')}
 REQUIRED |= {f'rotation-instrumented-{phase}-{index:02}.xml' for phase in ('initial', 'final') for index in range(1, 21)}
-REQUIRED |= {'rotation-diagnostic-preflight.xml', 'rotation-intentional-negative.xml', 'rotation-initial-trace.json', 'rotation-final-trace.json', 'rotation-source-fingerprints.json', 'rotation-final-regression.xml', 'rotation-final-hilt.xml', 'rotation-negative-fresh.xml'}
+REQUIRED |= {'rotation-diagnostic-preflight.xml', 'rotation-intentional-negative.xml', 'rotation-initial-trace.json', 'rotation-final-trace.json', 'rotation-source-fingerprints.json', 'rotation-final-regression.xml', 'rotation-final-hilt.xml', 'rotation-negative-fresh.xml', 'rotation-negative-unique-run.xml'}
 PINNED_FAILURE_HASHES = {
     'ui-physical-initial.xml': '3e8079711b8f95475e3e6c2cc1ee174b203dc70ea854a6672660c890f926f18a',
     'rotation-intentional-negative.xml': '1bbb14e078cc84e9680d82b9d9024d37e56bc17147083a8bdbe47b1c3bf5097d',
     'rotation-negative-fresh.xml': '25f7555fee38aba1a787c9a6db6b46037d2f30016196e2e9b0048510461643ae',
+    'rotation-negative-unique-run.xml': 'eb50d607825e866a5f82f7f4313137d5f7f00e643011b71ef09d6f37024fa95a',
 }
 PINNED_FAILURES = {
     'ui-physical-initial.xml': {
@@ -68,6 +69,9 @@ PINNED_FAILURES = {
         ('dev.fanstage.android.RotationAuditFailureProbe', 'controlledFailureCarriesRotationEvents', 'failure')
     },
     'rotation-negative-fresh.xml': {
+        ('dev.fanstage.android.RotationAuditFailureProbe', 'controlledFailureCarriesRotationEvents', 'failure')
+    },
+    'rotation-negative-unique-run.xml': {
         ('dev.fanstage.android.RotationAuditFailureProbe', 'controlledFailureCarriesRotationEvents', 'failure')
     },
 }

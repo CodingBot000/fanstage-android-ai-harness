@@ -1505,6 +1505,30 @@
           "kind": "failure"
         }
       ]
+    },
+    {
+      "file": "rotation-negative-unique-run.xml",
+      "sha256": "eb50d607825e866a5f82f7f4313137d5f7f00e643011b71ef09d6f37024fa95a",
+      "original_sha256": "0141a27b053ca95015b4c7c242fcd5006fe350eead3618d0de5f26f61cbbdfd8",
+      "normalization": "CRLF to LF only",
+      "head_at_execution": "d6c7517677a5567cbab747069855374b3c7f8c28",
+      "tested_code_snapshot_commit": "d6c7517677a5567cbab747069855374b3c7f8c28",
+      "snapshot_interpretation": "HEAD at execution; the controlled fixture was temporarily copied byte-for-byte from the tracked fixture during the test.",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Controlled intentional failure; unique run ID, monotonic and semantic event order, current Player/Surface evidence; not a product failure",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "outcome": "FAIL",
+      "expected_failure_cases": [
+        {
+          "classname": "dev.fanstage.android.RotationAuditFailureProbe",
+          "name": "controlledFailureCarriesRotationEvents",
+          "kind": "failure"
+        }
+      ]
     }
   ],
   "schema_version": 2
