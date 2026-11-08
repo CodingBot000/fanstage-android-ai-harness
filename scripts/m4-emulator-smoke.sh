@@ -25,18 +25,22 @@ suites = root.findall("testsuite")
 if root.tag != "testsuites" or len(suites) != 1:
     sys.exit("FAIL: unexpected real-chat XML")
 for node in (root, suites[0]):
-    for key, expected in {"tests":"1", "failures":"0", "errors":"0", "skipped":"0"}.items():
+    for key, expected in {"tests":"2", "failures":"0", "errors":"0", "skipped":"0"}.items():
         if node.get(key) != expected:
             sys.exit(f"FAIL: {node.tag} {key}={node.get(key)!r}")
 cases = suites[0].findall("testcase")
-if len(cases) != 1 or (cases[0].get("classname"), cases[0].get("name")) != (
-    "dev.fanstage.android.RealChatIntegrationTest", "androidRealWebSocketHistoryReconnectAndPlayerIsolation"
+expected = {
+    "androidRealWebSocketHistoryReconnectAndPlayerIsolation",
+    "thirtyRealRoomSubscriptionsCloseTheirSocketsAndCollectors",
+}
+if len(cases) != len(expected) or {case.get("name") for case in cases} != expected or any(
+    case.get("classname") != "dev.fanstage.android.RealChatIntegrationTest" for case in cases
 ):
-    sys.exit("FAIL: exact real-chat test missing")
-if any(cases[0].find(tag) is not None for tag in ("failure", "error", "skipped")):
+    sys.exit("FAIL: expected real-chat integration cases missing")
+if any(case.find(tag) is not None for case in cases for tag in ("failure", "error", "skipped")):
     sys.exit("FAIL: real-chat case failed or skipped")
 codes = list(base.rglob("test-result-exit-code.txt"))
 if len(codes) != 1 or codes[0].read_text().strip() != "0":
     sys.exit("FAIL: missing/nonzero instrumentation exit code")
-print("PASS: real Android WebSocket/reconnect UI case and runner exit")
+print("PASS: both real Android WebSocket cases and runner exit")
 PY
