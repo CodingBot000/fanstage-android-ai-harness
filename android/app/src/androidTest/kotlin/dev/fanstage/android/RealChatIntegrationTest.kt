@@ -334,8 +334,8 @@ class RealChatIntegrationTest {
         }
     }
 
-    private fun verifyM5RepeatedRealSubscriptions(token: String) = runBlocking {
-        repeat(5) { index ->
+    private fun verifyM5RepeatedRealSubscriptions(token: String, iterations: Int = 5) = runBlocking {
+        repeat(iterations) { index ->
             val transport = RealChatTransport(base, token, allowInsecure = true)
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
             val job = scope.launch { transport.events("m5-cycle-$index").collect() }
@@ -391,6 +391,11 @@ class RealChatIntegrationTest {
             composeRule.runOnUiThread { store.clear() }
             server.close(); worker.join(2_000)
         }
+    }
+
+    @Test fun thirtyRealRoomSubscriptionsCloseTheirSocketsAndCollectors() {
+        val token = requireNotNull(InstrumentationRegistry.getArguments().getString("fanTokenA")) { "Missing temporary test token A" }
+        verifyM5RepeatedRealSubscriptions(token, iterations = 30)
     }
 
     @Test fun androidRealWebSocketHistoryReconnectAndPlayerIsolation() {
