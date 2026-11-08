@@ -54,7 +54,7 @@ REQUIRED = {'additional-ui-physical.xml',
  'unit/feature/live/TEST-dev.fanstage.android.feature.live.chat.ChatViewModelTest.xml'}
 REQUIRED |= {'unit-rotation-final/' + path.removeprefix('unit/') for path in REQUIRED if path.startswith('unit/')}
 REQUIRED |= {f'rotation-instrumented-{phase}-{index:02}.xml' for phase in ('initial', 'final') for index in range(1, 21)}
-REQUIRED |= {'rotation-diagnostic-preflight.xml', 'rotation-intentional-negative.xml', 'rotation-initial-trace.json', 'rotation-final-trace.json', 'rotation-source-fingerprints.json', 'rotation-final-regression.xml', 'rotation-final-hilt.xml', 'rotation-negative-fresh.xml', 'rotation-negative-unique-run.xml', 'rotation-final-real-chat.xml'}
+REQUIRED |= {'rotation-diagnostic-preflight.xml', 'rotation-intentional-negative.xml', 'rotation-initial-trace.json', 'rotation-final-trace.json', 'rotation-source-fingerprints.json', 'rotation-final-regression.xml', 'rotation-final-hilt.xml', 'rotation-negative-fresh.xml', 'rotation-negative-unique-run.xml', 'rotation-final-real-chat.xml', 'ci-cancel-observation.json'}
 PINNED_FAILURE_HASHES = {
     'ui-physical-initial.xml': '3e8079711b8f95475e3e6c2cc1ee174b203dc70ea854a6672660c890f926f18a',
     'rotation-intentional-negative.xml': '1bbb14e078cc84e9680d82b9d9024d37e56bc17147083a8bdbe47b1c3bf5097d',
@@ -215,6 +215,27 @@ def check_cold(data, git_check=False):
         hashes = x.get('perfetto_trace_sha256')
         if not isinstance(hashes, list) or len(hashes) != 10 or any(not isinstance(h, str) or not SHA256.fullmatch(h) for h in hashes):
             fail('cold-start: invalid private trace hash list')
+
+
+def check_ci_cancellation(data, entry):
+    if not isinstance(data, dict) or data.get('head_sha') != entry.get('head_at_execution'):
+        fail('CI cancellation: execution head mismatch')
+    jobs = data.get('jobs')
+    if not isinstance(jobs, list) or any(not isinstance(job, dict) for job in jobs):
+        fail('CI cancellation: invalid jobs')
+    expected = {
+        'classify-quality-changes': 'success',
+        'Android / build-lint-unit': 'cancelled',
+        'Server / PostgreSQL and WebSocket server integration': 'cancelled',
+        'Documentation / markdown-links-and-adr-ids': 'cancelled',
+        'required-quality': 'failure',
+    }
+    actual = {job.get('name'): job.get('conclusion') for job in jobs}
+    if len(jobs) != len(expected) or actual != expected or any(job.get('status') != 'completed' for job in jobs):
+        fail('CI cancellation: job conclusions do not match observed failure')
+    messages = data.get('gate_failure_messages')
+    if not isinstance(messages, list) or set(messages) != {f'{name}: required workflow is cancelled' for name in ('android','server','docs')}:
+        fail('CI cancellation: failure messages differ')
 
 
 ROTATION_SOURCE_PATHS = {
@@ -385,6 +406,7 @@ def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES
             if name == 'cold-start-observations.json': check_cold(data, git_check=git_check)
             if name in ('rotation-initial-trace.json', 'rotation-final-trace.json'): check_rotation_trace(data, name)
             if name == 'rotation-source-fingerprints.json': check_rotation_fingerprints(data, git_check=git_check)
+            if name == 'ci-cancel-observation.json': check_ci_cancellation(data, entry)
         else:
             fail(f'{name}: unsupported evidence type')
     if 'rotation-source-fingerprints.json' in seen:

@@ -1,0 +1,43 @@
+{
+  "observed_at_utc": "2026-11-08T15:33:23.139214+00:00",
+  "run_url": "https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42495186642",
+  "head_sha": "5c1880b02c8c41970d410a6d28188134ea01fdec",
+  "jobs": [
+    {
+      "name": "classify-quality-changes",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42495186642/job/128775904571"
+    },
+    {
+      "name": "Documentation / markdown-links-and-adr-ids",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "url": "https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42495186642/job/128775954483"
+    },
+    {
+      "name": "Android / build-lint-unit",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "url": "https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42495186642/job/128775954642"
+    },
+    {
+      "name": "Server / PostgreSQL and WebSocket server integration",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "url": "https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42495186642/job/128775954664"
+    },
+    {
+      "name": "required-quality",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42495186642/job/128776018695"
+    }
+  ],
+  "gate_failure_messages": [
+    "android: required workflow is cancelled",
+    "server: required workflow is cancelled",
+    "docs: required workflow is cancelled"
+  ],
+  "interpretation": "Observed CI gate failure after selected jobs were cancelled during a same-head rerun; this is not a branch-protection blocking experiment or a deliberate evidence-tampering CI run."
+}

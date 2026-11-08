@@ -1546,6 +1546,15 @@
       "errors": 0,
       "skipped": 0,
       "outcome": "PASS"
+    },
+    {
+      "file": "ci-cancel-observation.json",
+      "sha256": "4bb5c471fe892daab2dd1de5b08c49b0ea75680dea833529f48c0ff623d594d3",
+      "head_at_execution": "5c1880b02c8c41970d410a6d28188134ea01fdec",
+      "tested_code_snapshot_commit": "5c1880b02c8c41970d410a6d28188134ea01fdec",
+      "snapshot_interpretation": "HEAD at execution; status fields are a sanitized GitHub API observation, not an experiment proving branch-protection enforcement.",
+      "purpose": "Actual GitHub Actions cancellation and fail-closed gate observation",
+      "environment": "GitHub Actions pull_request run"
     }
   ],
   "schema_version": 2

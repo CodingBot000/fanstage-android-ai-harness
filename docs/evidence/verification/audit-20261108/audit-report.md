@@ -63,3 +63,8 @@ Galaxy S22 Ultra/API 36에서 진단 도입 초기와 보강 후의 회전 테�
 회전 진단 보강 후 실기기 선택 회귀 42/42, Hilt 전용 3/3, 격리 실제 서버 Android 통합 2/2가 통과했다. Debug·Release·RcLocal·Benchmark 빌드, Lint, 단위 테스트와 일반/Hilt/RcLocal 계측 APK 컴파일도 통과했다. [최종 실제 서버 JUnit](rotation-final-real-chat.xml). Release/RcLocal 진단은 no-op이며 RcLocal 계측 APK 컴파일은 실행 성공을 뜻하지 않는다.
 
 증거 검사기는 필수 파일 95개의 공개 바이트·JUnit 집계·실패 이력과 출처를 확인한다. 격리 오류 fixture에서는 누락·해시·개수·중복·경로·XML·테스트 ID·소스 지문 변조를 거부했다. 실제 AndroidJUnitRunner에서 일으킨 통제된 실패의 진단도 [별도 XML](rotation-negative-unique-run.xml)에 보존했다. stale XML·다른 실행의 이벤트 혼합·잘못된 이벤트 순서는 runner 단위 fixture에서 거부했다. 비공개 원본 또는 당시에 해시하지 않은 미커밋 파일의 동일성은 이 검사로 증명할 수 없다.
+
+
+## 실제 GitHub Actions 취소 관찰
+
+PR #69의 동일 head에서 후속 실행이 시작되는 과정에 앞선 실행의 세 선택 작업이 취소됐다. 해당 실행의 `required-quality`는 세 취소를 각각 실패로 보고했다. [실제 실행](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42495186642) · [정책 관찰](ci-cancel-observation.json). 이는 **취소된 하위 작업을 게이트가 성공으로 넘기지 않은 실제 사례**다. 증거 파일 조작을 GitHub에서 시도한 실험이나, 보호 정책으로 병합이 차단됐다는 증거는 아니다. PR의 `edited` 이벤트가 제목·본문 수정에도 발생할 수 있으므로 같은 head의 중복 실행과 비용이 생길 수 있다.

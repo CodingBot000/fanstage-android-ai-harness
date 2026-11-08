@@ -92,3 +92,5 @@ done
 `rotation-negative-unique-run.xml`은 추가 보완된 runner로 실제 기기에서 실행한 의도적 실패다. runner는 매 실행의 임의 ID에 속한 이벤트만 수용하고 단조 시각과 복구 전 Player/Surface snapshot → checkpoint → 의도적 실패 → 복구 후 checkpoint 순서를 검사한다. 미래 시각의 오래된 XML, 서로 다른 실행의 이벤트 혼합, 잘못된 이벤트 순서와 다중 기기 노출을 격리 fixture로 거부했다. 당시 실행 HEAD와 코드 스냅샷은 같고 임시 probe 소스는 추적된 fixture에서 복사됐다.
 
 `rotation-final-real-chat.xml`은 회전 진단 보강 후 최종 Android 코드로 다시 실행한 격리 실제 서버 통합 2/2 결과다. 30회 Collector 완료·소켓 참조 해제 검사와 채팅·Player 독립성 시나리오를 포함한다. 테스트 서버와 reverse는 실행 후 정리했고 기존 서버는 유지했다. OS 소켓 해제 완료나 장시간 누수 부재를 뜻하지 않는다.
+
+`ci-cancel-observation.json`은 같은 PR head의 선행 Actions 실행에서 선택된 세 작업이 취소되고 집계 게이트가 실패한 실제 GitHub API 관찰이다. 증거 파일을 실제 GitHub에서 조작한 실험이나 Branch Protection이 병합을 차단했다는 실험으로 해석하지 않는다.

@@ -190,6 +190,13 @@ class EvidenceTests(unittest.TestCase):
         else: self.fail('fullscreen observation missing')
         with self.assertRaises(check.EvidenceError): check.check_rotation_trace(data,'rotation-final-trace.json')
 
+    def test_ci_cancelled_jobs_cannot_be_reported_as_success(self):
+        data=json.loads((check.EVIDENCE/'ci-cancel-observation.json').read_text())
+        entry={'head_at_execution':data['head_sha']}
+        check.check_ci_cancellation(data,entry)
+        next(job for job in data['jobs'] if job['name']=='required-quality')['conclusion']='success'
+        with self.assertRaises(check.EvidenceError): check.check_ci_cancellation(data,entry)
+
     def test_cold_statistics_checked(self):
         values=list(range(1,11)); good={'observations': []}
         for label in ('baseline','candidate'):
