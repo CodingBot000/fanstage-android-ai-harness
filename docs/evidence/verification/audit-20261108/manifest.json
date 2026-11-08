@@ -1,0 +1,131 @@
+{
+  "description": "Actual local test outputs; source commit identifies the tested source, not this evidence commit.",
+  "results": [
+    {
+      "file": "hilt-baseline.xml",
+      "sha256": "98f3340a5d2f6cd95cfffbcd2cb4a781fc8c461042bbb81a845a8db9f4c69ef8",
+      "source_commit": "81701e845edf891569c78a9233ec0c01b231fbe5",
+      "environment": "API 36 emulated device",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Hilt baseline, prior to new Activity graph test",
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "original_sha256": "e37eeb44c6aa24b1111b98586cd35e0b36dfd499291c57e946541bd71298a699",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "file": "hilt-activity.xml",
+      "sha256": "6466bc4946b69237fcbb7f8c39d48099ff5c88e764b8ace065ab484c09910339",
+      "source_commit": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
+      "environment": "API 36 emulated device",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Hilt Activity graph test",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "original_sha256": "6d056025f80d634d8a32003ec39886e8d770fc1ef24ac9a678d6a3565cbe2351",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "file": "hilt-physical.xml",
+      "sha256": "840714f2d658973718d4cf4deeeade213b05e70045372dfa8f34c12c2417c411",
+      "source_commit": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Hilt Activity graph test",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "original_sha256": "595c44cf2a2c907e47cb12f679884a0f2ca45700c03320cf2a411bf3ac0e3231",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "file": "ui-physical-initial.xml",
+      "sha256": "3e8079711b8f95475e3e6c2cc1ee174b203dc70ea854a6672660c890f926f18a",
+      "source_commit": "780de3b95df694a8c5fe5c64fc31b2c046d66768",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Initial selected UI regression; one failure preserved",
+      "tests": 39,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "original_sha256": "3ee905d998f7d775af5756b18bb6740a229569122760dea04070a24e6cdbd7ce",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "file": "rotation-retry.xml",
+      "sha256": "a0bc58def69ce77878dfb8d7efbc1239f62b8f33df57f5112c2b1281aacf66bf",
+      "source_commit": "c109d276f681b97e253707b8f606ad9f1cffa652",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Isolated retry; Android test host change present, backend test changes irrelevant",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "original_sha256": "474782b6c4eaba8362fffbe63a8f818e4067d77478a772c75c66c1dadef881fb",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "file": "real-chat-physical.xml",
+      "sha256": "84e771fa8943f95b47ddf2ab0fe911717b93fb74ce6b80add36e80fd0d7a3209",
+      "source_commit": "c109d276f681b97e253707b8f606ad9f1cffa652",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Isolated real backend; Android test host change present",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "original_sha256": "b981d30c986646a2bfceb81128c2b4ffe6250cd79f3d9746f18edb025090505e",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "file": "resource-lifecycle-physical.xml",
+      "sha256": "880fa501ca1a2f5f3759e6a6ece60bbc05efa5e3dfc71ed4774fcce9c85f5081",
+      "source_commit": "8382bdf8439787ac9e333796872ae3421fecfed4",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Repeated lifecycle observation",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "original_sha256": "8df553690d249313b6804b5d871f28651332de653f5658123d66521382ef89af",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "file": "ui-physical-retry.xml",
+      "sha256": "61798f6ade1d318cde8adbb6c4ad4ee685228ca525d1622cbe724c0e40d4dc42",
+      "source_commit": "d2a8b6c85a98cb9070ecc71549e065d5a51be385",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Full selected UI regression retry",
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "original_sha256": "128586e034abbcf75e8775e51734051214ecd39587ed65bff7865556c3ec31b6",
+      "normalization": "CRLF to LF only"
+    },
+    {
+      "file": "backend-regression.json",
+      "sha256": "79e7017c794c5bd4981a8b777795edf062d37628b205700a28e1ce85bb57c8d1",
+      "source_commit": "c109d276f681b97e253707b8f606ad9f1cffa652",
+      "environment": "isolated local Docker",
+      "purpose": "sanitized captured command output and exit codes"
+    },
+    {
+      "file": "resource-observations.json",
+      "sha256": "1cd84bd7f4077d316e014a17bba37bc2b29a20491630003fb37d5bfcb359a133",
+      "source_commit": "8382bdf8439787ac9e333796872ae3421fecfed4",
+      "environment": "SM-S908N / API 36",
+      "purpose": "filtered measurement records; not proof of no leak"
+    }
+  ]
+}
