@@ -69,6 +69,11 @@ class EvidenceTests(unittest.TestCase):
             outside=Path(d)/'outside.xml'; outside.write_bytes(PASS)
             (self.root/'link.xml').symlink_to(outside)
             self.manifest['results'][0]['file']='link.xml'; self.assert_bad()
+    def test_unregistered_symlink_directory_is_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d)/'hidden.xml').write_bytes(PASS)
+            (self.root/'linked-dir').symlink_to(d, target_is_directory=True)
+            self.assert_bad()
     def test_required_missing_even_when_file_and_entry_removed(self):
         (self.root/'pass.xml').unlink(); self.manifest['results'].pop(0); self.assert_bad()
     def test_unregistered_evidence(self): (self.root/'extra.json').write_text('{}'); self.assert_bad()

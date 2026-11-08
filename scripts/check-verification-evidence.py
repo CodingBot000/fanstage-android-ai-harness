@@ -261,7 +261,10 @@ def validate(directory: Path, required=REQUIRED, pinned_failures=PINNED_FAILURES
             fail(f'{name}: unsupported evidence type')
     if not set(required).issubset(seen):
         fail('manifest: missing required evidence: ' + ', '.join(sorted(set(required)-seen)))
-    public = {str(p.relative_to(directory)) for p in directory.rglob('*') if p.is_file() and p.suffix in ('.xml','.json') and p != directory / 'manifest.json'}
+    items = list(directory.rglob('*'))
+    if any(item.is_symlink() for item in items):
+        fail('evidence tree contains a symlink')
+    public = {str(p.relative_to(directory)) for p in items if p.is_file() and p.suffix in ('.xml','.json') and p != directory / 'manifest.json'}
     if public != seen:
         fail('manifest: unregistered or missing public evidence: ' + ', '.join(sorted(public ^ seen)))
     return len(seen)
