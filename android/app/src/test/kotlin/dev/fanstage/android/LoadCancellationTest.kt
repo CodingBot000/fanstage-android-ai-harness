@@ -83,16 +83,14 @@ class LoadCancellationTest {
     @Test fun discoverFailureDoesNotEraseOtherTabsCatalog() = runTest {
         Dispatchers.setMain(StandardTestDispatcher(testScheduler))
         try {
-            val container = AppContainer(discover = object : DiscoverRepository {
+            val discover = DiscoverViewModel(object : DiscoverRepository {
                 override suspend fun load(): DiscoverData = throw IllegalStateException()
-            }, community = dev.fanstage.android.core.data.FakeCommunityRepository(),
-                messages = dev.fanstage.android.core.data.FakeMessageRepository())
-            val discover = container.viewModelFactory.create(DiscoverViewModel::class.java)
-            val community = container.viewModelFactory.create(CommunityViewModel::class.java)
-            val messages = container.viewModelFactory.create(dev.fanstage.android.feature.messages.MessagesViewModel::class.java)
+            })
+            val community = CommunityViewModel(dev.fanstage.android.core.data.FakeCommunityRepository())
+            val messages = dev.fanstage.android.feature.messages.MessagesViewModel(dev.fanstage.android.core.data.FakeMessageRepository())
             runCurrent()
             assertEquals(DiscoverState.Error, discover.state.value)
-            assertEquals(3, container.artists.size)
+            assertEquals(3, dev.fanstage.android.core.data.FakeCatalog.artists().size)
             assertEquals(3, (community.state.value as CommunityState.Ready).posts.size)
             assertEquals(3, messages.state.value.conversations.size)
         } finally { Dispatchers.resetMain() }

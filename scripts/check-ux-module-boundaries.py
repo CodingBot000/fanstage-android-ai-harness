@@ -26,7 +26,7 @@ for path in (root / "core/model/src/main").rglob("*.kt"):
     if re.search(r'^import\s+(?:android|androidx)\.|\bR\.drawable\b|\bContext\b', path.read_text(), re.M):
         errors.append(f"Android UI reference in pure model: {path.relative_to(root)}")
 app_files = {p.name for p in (root / "app/src/main/kotlin/dev/fanstage/android").glob("*.kt")}
-if app_files != {"MainActivity.kt", "AppContainer.kt", "FanStageApplication.kt"}:
+if app_files != {"MainActivity.kt", "FanStageApplication.kt"}:
     errors.append(f"unexpected app product source: {sorted(app_files)}")
 if errors:
     print("FAIL\n" + "\n".join(errors)); sys.exit(1)

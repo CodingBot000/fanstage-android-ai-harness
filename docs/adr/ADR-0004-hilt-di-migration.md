@@ -45,3 +45,7 @@ Hilt 전환의 Stage 1 작업 diff만 되돌려 수동 `AppContainer` 조립으�
 ## Phase 1 실행 결과
 
 Hilt 2.60.1과 KSP 2.3.10으로 Repository를 unscoped 제공하고 Activity의 AppContainer에 주입했다. 순수 JVM core:data 및 기존 Factory, Chat/Player 수명주기는 유지한다. 빌드 및 정적 게이트는 PASS, 연결 기기가 없어 기기 검증은 NOT_RUN. 상세 명령·호환성 위험은 Phase 1 SDD 참조.
+
+## Phase 2A 실행 결과
+
+일반 ViewModel 네 개를 Activity 소유 `@HiltViewModel`로 전환하고 AppContainer의 수동 Factory를 제거했다. Discover Fake는 무상태이며 가변 Fake는 해당 ViewModel 수명에 묶인다. 기기 회귀는 NOT_RUN.

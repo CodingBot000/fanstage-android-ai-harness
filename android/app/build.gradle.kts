@@ -59,6 +59,7 @@ kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
 dependencies {
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.viewmodel.compose)
     ksp(libs.hilt.compiler)
     implementation(libs.haze.blur)
     add("benchmarkImplementation", libs.androidx.profileinstaller)

@@ -1,11 +1,14 @@
 package dev.fanstage.android.feature.messages
 
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import dev.fanstage.android.core.model.MessageRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class MessagesViewModel(private val repository: MessageRepository) : ViewModel() {
+@HiltViewModel
+class MessagesViewModel @Inject constructor(private val repository: MessageRepository) : ViewModel() {
     private val mutableState = MutableStateFlow(MessagesUiState(repository.snapshot()))
     val state = mutableState.asStateFlow()
 

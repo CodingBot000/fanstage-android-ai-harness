@@ -1,5 +1,7 @@
 package dev.fanstage.android.feature.community
 
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.fanstage.android.core.model.CommunityRepository
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CommunityViewModel(private val repository: CommunityRepository) : ViewModel() {
+@HiltViewModel
+class CommunityViewModel @Inject constructor(private val repository: CommunityRepository) : ViewModel() {
     private val mutableState = MutableStateFlow<CommunityState>(CommunityState.Loading)
     val state = mutableState.asStateFlow()
     private var loadJob: Job? = null

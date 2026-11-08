@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- 2026-11-08 Hilt Phase 2A: 일반 ViewModel 네 개 Activity 소유 범위를 유지해 Hilt로 전환, 로컬 빌드·lint·단위·모듈/manifest PASS. 기기 UI·재생성 NOT_RUN. [SDD](specs/hilt-di-migration-phase2a.md).
+
 - 2026-11-08 Hilt Phase 1: 앱 시작점 및 Repository 주입 전환, 필수 로컬 빌드·lint·단위·모듈/manifest 검사 PASS. 기기 계측 NOT_RUN; 나머지 ViewModel 및 테스트 전환은 진행 전. [SDD](specs/hilt-di-migration-phase1.md).
 
 - 2026-11-08: Galaxy S22 Ultra/API 36에서 실제 로컬 서버 MP4와 가상 화면 데이터로 README 미리보기·무음 시연을 재촬영했다. 실제 영상 화면 공개 권한은 사용자 확인, 원본 MP4는 저장소 미포함. 기존 시스템 UI·폰트 권리 감사의 미확인 항목은 유지한다.

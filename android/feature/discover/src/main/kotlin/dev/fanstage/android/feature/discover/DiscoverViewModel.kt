@@ -1,5 +1,7 @@
 package dev.fanstage.android.feature.discover
 
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.fanstage.android.core.model.DiscoverRepository
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class DiscoverViewModel(private val repository: DiscoverRepository) : ViewModel() {
+@HiltViewModel
+class DiscoverViewModel @Inject constructor(private val repository: DiscoverRepository) : ViewModel() {
     private val mutableState = MutableStateFlow<DiscoverState>(DiscoverState.Loading)
     val state = mutableState.asStateFlow()
     private var loadJob: Job? = null

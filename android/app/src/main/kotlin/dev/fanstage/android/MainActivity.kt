@@ -41,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -53,25 +54,24 @@ import dev.fanstage.android.feature.live.chat.ChatViewModel
 
 @dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @javax.inject.Inject lateinit var container: AppContainer
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            dev.fanstage.android.core.designsystem.FanStageTheme { FanStageApp(container) }
+            dev.fanstage.android.core.designsystem.FanStageTheme { FanStageApp() }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FanStageApp(container: AppContainer) {
+private fun FanStageApp() {
     val navController = rememberNavController()
-    val communityViewModel: CommunityViewModel = viewModel(factory = container.viewModelFactory)
-    val discoverViewModel: DiscoverViewModel = viewModel(factory = container.viewModelFactory)
-    val messagesViewModel: MessagesViewModel = viewModel(factory = container.viewModelFactory)
-    val mediaViewModel: MediaViewModel = viewModel(factory = container.viewModelFactory)
-    val artists = container.artists
+    val communityViewModel: CommunityViewModel = hiltViewModel()
+    val discoverViewModel: DiscoverViewModel = hiltViewModel()
+    val messagesViewModel: MessagesViewModel = hiltViewModel()
+    val mediaViewModel: MediaViewModel = hiltViewModel()
+    val artists = remember { dev.fanstage.android.core.data.FakeCatalog.artists() }
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
