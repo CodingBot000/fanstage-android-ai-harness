@@ -1,6 +1,6 @@
 # Hilt DI Migration — Phase 3
 
-상태: 빌드·정적 게이트 및 선택 실기기 계측 PASS; 실제 서버·장시간 검증 NOT_RUN. Hilt 테스트 전용 선택적 계측 구성에서 Repository 바인딩 대체를 검증하고 기본 일반 계측 러너 및 애플리케이션은 유지한다. Hilt 테스트 러너는 전용 Gradle 속성으로만 활성화하고 해당 테스트 클래스만 실행한다. 전체 빌드·lint·단위·모듈/manifest·benchmark 서명과 기기가 있으면 계측 및 재생/채팅 수명주기 회귀를 수행한다. 기기가 없으면 계측은 NOT_RUN. 테스트용 명시적 Transport Factory는 유지하고 프로덕션 중복 조립을 제거한다. Media3 소유권 변경은 범위 밖이다.
+상태: 빌드·정적 게이트, 선택 실기기 계측 및 격리 서버 Android 통합 PASS; 실기기 서버 연결·장시간 검증 NOT_RUN. Hilt 테스트 전용 선택적 계측 구성에서 Repository 바인딩 대체를 검증하고 기본 일반 계측 러너 및 애플리케이션은 유지한다. Hilt 테스트 러너는 전용 Gradle 속성으로만 활성화하고 해당 테스트 클래스만 실행한다. 전체 빌드·lint·단위·모듈/manifest·benchmark 서명과 기기가 있으면 계측 및 재생/채팅 수명주기 회귀를 수행한다. 기기가 없으면 계측은 NOT_RUN. 테스트용 명시적 Transport Factory는 유지하고 프로덕션 중복 조립을 제거한다. Media3 소유권 변경은 범위 밖이다.
 
 Open Questions: 없음.
 
@@ -17,3 +17,7 @@ Hilt 대체 바인딩 및 별도 룸 재생성/재진입 각 1/1 PASS. 일반 �
 ## 회귀 수정 후 재검증
 
 실제 Player로 재생 상태를 확인하고 회전 후 일시정지 재생 버튼 표시를 복구했다. 수정된 LIVE 통합 테스트와 선택 실기기 회귀 39/39, 별도 Hilt 바인딩 1/1 및 빌드·lint·단위·경계 검사 PASS. 서버·장시간 검증은 NOT_RUN. [결과](../verification.md).
+
+## 격리 서버 Android 통합 후속 검증
+
+API 36 전용 에뮬레이터와 격리된 PostgreSQL·WebSocket 서버에서 `RealChatIntegrationTest` 1/1 PASS. ACK 유실·재전송, 지연 응답, 재연결과 재생 분리 시나리오를 실행했다. 실기기의 실제 서버 연결과 장시간 누수·성능은 NOT_RUN. 상세는 [작업 검증 기록](hilt-di-migration-verification.md).

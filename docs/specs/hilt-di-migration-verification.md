@@ -12,7 +12,7 @@ python3 ../scripts/m6-check-manifests.py
 
 결과: Gradle PASS (825 tasks), 경계·manifest PASS, 앱 및 macrobenchmark APK 서명 검사 PASS. JUnit 결과 app 6, live 58, core:data 4건 모두 PASS. Hilt 전용 계측 APK `:app:assembleDebugAndroidTest -PfanstageHiltInstrumentation=true` PASS. 전용 빌드 다음 일반 계측 APK를 다시 빌드해 전환 PASS. 최초 전용 소스 등록 및 그 후 일반 빌드에서 생성 코드 잔존으로 실패했고 소스 등록과 KSP 설정을 수정해 재실행했다.
 
-최초 검증 시 기기가 없어 Hilt 바인딩 대체 테스트, 일반 UI·Activity 재생성·룸 재진입 및 Media3/Socket 계측은 **NOT_RUN**이었다. 이후 실기기 실행 결과는 아래 참조. 실제 서버 검증은 계속 NOT_RUN이다. 단위 테스트나 컴파일은 이 기기 검증을 대신하지 않는다. 원격 CI 및 성능·장시간 누수 측정도 NOT_RUN이다.
+최초 검증 시 기기가 없어 Hilt 바인딩 대체 테스트, 일반 UI·Activity 재생성·룸 재진입 및 Media3/Socket 계측은 **NOT_RUN**이었다. 이후 실기기 및 격리 서버 실행 결과는 아래 참조. 단위 테스트나 컴파일은 이 기기 검증을 대신하지 않는다. 원격 CI 및 성능·장시간 누수 측정도 NOT_RUN이다.
 
 기기 연결 시 Hilt 테스트는 기존 일반 테스트와 분리해 다음 명령으로 실행한다. 전용 러너는 HiltTestApplication을 사용하므로 일반 계측 테스트를 이 명령으로 함께 실행하지 않는다.
 
@@ -49,3 +49,7 @@ SM-S908N/API 36의 수정된 `roomListOpensDetailAndReturns` 단독 PASS 후 일
 ## 최신 main 문서 통합 후 검증
 
 최신 main `8dd532f`의 포트폴리오 문서를 유지하고 Hilt 설명 및 회귀 검증만 추가했다. Android 코드·테스트는 직전 실기기 계측 시점과 동일하다. 통합 작업 트리에서 JDK 21 및 JDK 17로 전체 Gradle 빌드·Lint·단위 테스트 PASS, 모듈·Manifest·benchmark 서명 검사 및 Markdown 링크·ADR 번호 검사 PASS. 실제 서버 통합·장시간 누수·원격 PR CI는 NOT_RUN.
+
+## 격리 서버 Android 통합 (2026-11-08)
+
+기준 코드 `88330d1`에서 API 36 전용 에뮬레이터와 일회성 PostgreSQL·WebSocket 서버를 별도 프로젝트·포트로 실행했다. `:app:connectedDebugAndroidTest`에서 `RealChatIntegrationTest`를 지정해 1/1 PASS (skipped 0). ACK 유실, 지연 응답, 재연결 및 재생 분리 시나리오를 포함한다. 종료 후 이 테스트의 에뮬레이터와 임시 컨테이너·데이터를 정리했으며 기존 서버는 사용하지 않았다. 테스트 자격값은 임시 생성했고 기록하지 않았다. 실기기의 실제 서버 연결, 장시간 누수·성능은 NOT_RUN.

@@ -15,9 +15,9 @@
 
 ## Hilt 전환 및 플레이어 실기기 회귀
 
-로컬 JDK 21과 JDK 17·Android SDK에서 Debug·Release 계열 빌드, Lint, 단위 테스트와 모듈·Manifest 검사를 실행했습니다. Galaxy S22 Ultra / API 36에서 선택한 화면·플레이어·채팅 계측 39/39와 Hilt 테스트 바인딩 교체 1/1이 통과했습니다. 실제 백엔드 연동, 장시간 누수와 성능 검증은 이번 변경 기준 **NOT_RUN**입니다.
+로컬 JDK 21과 JDK 17·Android SDK에서 Debug·Release 계열 빌드, Lint, 단위 테스트와 모듈·Manifest 검사를 실행했습니다. Galaxy S22 Ultra / API 36에서 선택한 화면·플레이어·채팅 계측 39/39와 Hilt 테스트 바인딩 교체 1/1이 통과했습니다. 별도 API 36 에뮬레이터와 격리된 PostgreSQL·WebSocket 서버를 사용한 Android 연결·복구 통합 테스트도 1/1 통과했습니다. 실제 백엔드의 실기기 연결, 장시간 누수와 성능 검증은 **NOT_RUN**입니다.
 
-기기 계측 이후 최신 main을 통합했으며 Android 코드·테스트는 계측 당시와 같습니다. 최초 LIVE 테스트 실패, 원인 조사, 일시정지 버튼 수정과 재검증의 명령·범위는 [작업 검증 기록](specs/hilt-di-migration-verification.md)에 남겼습니다. GitHub PR·CI는 아직 실행하지 않았습니다.
+기기 계측 이후 최신 main을 통합했으며 Android 코드·테스트는 계측 당시와 같습니다. 최초 LIVE 테스트 실패, 원인 조사, 일시정지 버튼 수정과 재검증의 명령·범위는 [작업 검증 기록](specs/hilt-di-migration-verification.md)에 남겼습니다. GitHub PR·CI 결과는 해당 PR에서 별도로 확인합니다.
 
 
 ## 자동화와 기기 검증의 역할
