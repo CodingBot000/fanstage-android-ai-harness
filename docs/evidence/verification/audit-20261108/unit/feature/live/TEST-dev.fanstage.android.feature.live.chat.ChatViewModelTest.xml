@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.fanstage.android.feature.live.chat.ChatViewModelTest" tests="42" skipped="0" failures="0" errors="0" timestamp="2026-11-08T13:23:19.907Z" hostname="[redacted]" time="0.669">
+  <properties/>
+  <testcase name="display tail includes newest confirmed messages followed by pending in insertion order" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.069"/>
+  <testcase name="echo preceding delayed ack reconciles the same stable message" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="clearing viewmodel cancels subscription and unfinished send" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.003"/>
+  <testcase name="fictional arrival remains localizable after an earlier user send" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.009"/>
+  <testcase name="confirmed server timestamp survives into display state" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="old room delayed recovery and noncancellable send cannot modify new room" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.002"/>
+  <testcase name="alternate transports without local cache still share process screen budget" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.046"/>
+  <testcase name="fake retries same client id idempotently and rejects changed content" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.002"/>
+  <testcase name="manual reconnect retains uncertain pending message and its id" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.002"/>
+  <testcase name="conflicting payload does not reconcile pending id" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="m5 NET-05 stale snapshot cannot overwrite later events or cursor" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="out of order duplicates and repeated ack fill gaps without skipping" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="failed send retries with identical client id and converges on ack" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="only explicit removal of a rejected message frees its slot" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="draft remains in memory, rejects oversized edits, and clears on room change" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="uncertain delivery remains pending across unrelated events until ack" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="large gap recovers in bounded pages without advancing across missing sequence" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.052"/>
+  <testcase name="overlapping rooms share process budget and release slots on close" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.112"/>
+  <testcase name="uncertain send may be retried with the same id without duplicate" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="fake transport supports switching rooms while cancelling old send" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.002"/>
+  <testcase name="fake seed sends pending then ack and duplicate echo converge" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="display tail keeps newest pending items if pending alone exceeds display limit" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.016"/>
+  <testcase name="terminal authentication failure differs from message gap" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="injected construction uses navigation room and distinct transports" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.003"/>
+  <testcase name="m5 NET-06 bounded virtual traffic retains limits at 10 50 and 100 per second" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.14"/>
+  <testcase name="transport switch rejects unresolved sends and closes unused transport" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="closed screen ignores a transport that converts cancellation to rejection" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="duplicate sequence with different identity is rejected" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="a new fake room does not crash when all shared slots are pinned" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="missing page remains visible and retry completes contiguous gap" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="gap flag clears when missing event arrives without explicit retry" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.0"/>
+  <testcase name="connection status distinguishes reconnection from uncertain message" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="eviction respects both limits and does not lose cursor progress" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.045"/>
+  <testcase name="m5 NET-01 pending outcome remains uncertain after ten second disconnect and retries same id" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.002"/>
+  <testcase name="seeded synthetic arrival uses reproducible virtual time" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.0"/>
+  <testcase name="combined fake and screen share at most 1000 logical messages" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.119"/>
+  <testcase name="1000 pending records are retained and a new send is explicitly rejected" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.02"/>
+  <testcase name="room switch cancels several pending sends safely" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.002"/>
+  <testcase name="switch clears confirmed history and subscribes to replacement" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.0"/>
+  <testcase name="message length counts unicode code points and rejects oversized input and events" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="definite rejection fails but unknown result remains pending" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <testcase name="injected construction rejects missing navigation room" classname="dev.fanstage.android.feature.live.chat.ChatViewModelTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,68 @@
+{
+  "kind": "derived local verification of prior raw file hashes; original files remain private",
+  "runs": [
+    {
+      "run_label": "20261105-001656",
+      "source_commit": "66fa029497fac181caf54818c19ab38238260925",
+      "manifest_sha256": "1dc9ef9093a8e9480c15df73ec22ed5410316100bbd3ed69d2fdede8e08b24bd",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    },
+    {
+      "run_label": "20261105-014714",
+      "source_commit": "30c8068312d05942c38170ebac0e77cdac3f61c2",
+      "manifest_sha256": "6b0b2be40d59050c10cc7a41993b318ff7e77530afbf13fb888ba51b0982ef5f",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    },
+    {
+      "run_label": "20261105-015351",
+      "source_commit": "30c8068312d05942c38170ebac0e77cdac3f61c2",
+      "manifest_sha256": "ce0a2849218fdda8102b37d1ac8ae449c71d6e64cee435560f1a492abce2778d",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    },
+    {
+      "run_label": "20261105-020333",
+      "source_commit": "1f7401721a5678ba3e5d4a4acc8ba2dc0604ec51",
+      "manifest_sha256": "97a386db1165b80d2c5a67c2ad294155758afadbbf2d047b7aff8cf9bff07a0c",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    },
+    {
+      "run_label": "20261105-021245",
+      "source_commit": "1f7401721a5678ba3e5d4a4acc8ba2dc0604ec51",
+      "manifest_sha256": "898acfadbb1a1ee1196d970f1ce16015abbe0e609926cb52f2930b8e1881ab80",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    },
+    {
+      "run_label": "20261105-022842",
+      "source_commit": "7e38fa5f06055877cb1749053421bfa95799572a",
+      "manifest_sha256": "a3ea675791a58aad9be279bcebb0905057b9febff4fdce632472938798acf877",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    },
+    {
+      "run_label": "20261105-024047",
+      "source_commit": "7e38fa5f06055877cb1749053421bfa95799572a",
+      "manifest_sha256": "04dae5f856d5250039be80986edf549d32148c19fc55fa7591fac97b76ddd27d",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    },
+    {
+      "run_label": "20261105-025115",
+      "source_commit": "b3c9c996d89b65802bc37f14be497dff77c5f260",
+      "manifest_sha256": "720554e486a3c47a3f99bc0b39f0da86a02fb4fe430ee71540dfdf5b97027e32",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    },
+    {
+      "run_label": "20261105-025949",
+      "source_commit": "b3c9c996d89b65802bc37f14be497dff77c5f260",
+      "manifest_sha256": "2aa5a51d3f29b9a653ef09452fc806cb1175425d7ac20727f9291773c1f706b9",
+      "raw_files_checked": 21,
+      "missing_or_mismatched": 0
+    }
+  ]
+}

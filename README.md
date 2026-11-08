@@ -88,7 +88,7 @@ flowchart TB
 | Hilt DI·룸 수명주기 | 선택된 실기기 계측 39/39, 바인딩 대체 1/1, 격리 서버 Android 통합 1/1 PASS | [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) · [실행 이력](docs/specs/hilt-di-migration-verification.md) |
 | WebSocket·PostgreSQL 복구 | 서버 통합·장애 주입 CI 통과 | [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) |
 
-숫자는 링크된 **각 PR의 코드 버전에서 실행한 결과**입니다. Android 기기 계측은 로컬 에뮬레이터·실기기에서, 빌드·단위 테스트와 서버 통합 검사는 GitHub Actions에서 수행했습니다. [검증 환경과 테스트 항목](docs/verification.md)
+숫자는 링크된 **각 PR의 코드 버전에서 실행한 결과**입니다. Android 기기 계측은 로컬 에뮬레이터·실기기에서, 빌드·단위 테스트와 서버 통합 검사는 GitHub Actions에서 수행했습니다. [검증 환경과 테스트 항목](docs/verification.md) · [최종 검증 감사와 실행 증거](docs/evidence/verification/audit-20261108/audit-report.md)
 
 ## 실행 방법
 
