@@ -18,10 +18,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.runtime.CompositionLocalProvider
+import dev.fanstage.android.core.designsystem.CollapsingTitleBarState
 import dev.fanstage.android.core.designsystem.LocalCollapsingTitleBar
 import dev.fanstage.android.core.designsystem.rememberCollapsingTitleBarState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeInput
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -41,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -80,6 +83,23 @@ private fun FanStageApp() {
     val isPlaybackRoute = currentRoute == "rooms/{roomId}" ||
         currentRoute == "local-video/{videoId}" || currentRoute == "replay"
     val titleBarState = rememberCollapsingTitleBarState(entry)
+    FanStageAppShell(navController, currentRoute, tabs, isTab, isPlaybackRoute, titleBarState, hazeState) {
+        FanStageNavHost(navController, hazeState, communityViewModel, discoverViewModel, messagesViewModel, mediaViewModel, artists)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FanStageAppShell(
+    navController: NavHostController,
+    currentRoute: String?,
+    tabs: List<String>,
+    isTab: Boolean,
+    isPlaybackRoute: Boolean,
+    titleBarState: CollapsingTitleBarState,
+    hazeState: HazeState,
+    content: @Composable () -> Unit,
+) {
     CompositionLocalProvider(LocalCollapsingTitleBar provides titleBarState) {
     Scaffold(modifier = Modifier.nestedScroll(titleBarState.connection), containerColor = if (isPlaybackRoute) Color.Black else MaterialTheme.colorScheme.background, topBar = {
         if (isTab) Column(Modifier.statusBarsPadding()) {
@@ -89,6 +109,47 @@ private fun FanStageApp() {
         }
     }) { shellPadding ->
     Box(Modifier.fillMaxSize().padding(shellPadding).consumeWindowInsets(shellPadding)) {
+    content()
+    if (isTab) {
+        val shape = RoundedCornerShape(50)
+        NavigationBar(
+            modifier = Modifier.align(Alignment.BottomCenter).padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+                .fillMaxWidth().height(72.dp).clip(shape)
+                .hazeBlur(input = HazeInput.Backdrop(hazeState))
+                .background(Color(0xFFDDE6E7).copy(alpha = 0.62f))
+                .border(1.dp, Color.White.copy(alpha = 0.55f), shape)
+                .testTag("floating_navigation"),
+            containerColor = Color.Transparent,
+            tonalElevation = 0.dp,
+            windowInsets = WindowInsets(0, 0, 0, 0),
+        ) {
+            tabs.forEachIndexed { index, route ->
+                val label = stringResource(listOf(R.string.discover, R.string.community, R.string.media, R.string.messages)[index])
+                NavigationBarItem(selected = currentRoute == route, onClick = {
+                    navController.navigate(route) {
+                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }, icon = { Icon(painterResource(listOf(R.drawable.nav_discover, R.drawable.nav_community, R.drawable.nav_media, R.drawable.nav_messages)[index]), contentDescription = null) }, label = { Text(label) }, modifier = Modifier.testTag("tab_$route"), colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Black.copy(alpha = 0.08f), selectedIconColor = Color(0xFF172022), selectedTextColor = Color(0xFF172022), unselectedIconColor = Color(0xFF172022), unselectedTextColor = Color(0xFF172022)))
+            }
+        }
+    }
+    }
+    }
+    }
+}
+
+@Composable
+private fun FanStageNavHost(
+    navController: NavHostController,
+    hazeState: HazeState,
+    communityViewModel: CommunityViewModel,
+    discoverViewModel: DiscoverViewModel,
+    messagesViewModel: MessagesViewModel,
+    mediaViewModel: MediaViewModel,
+    artists: List<dev.fanstage.android.core.model.FictionalArtist>,
+) {
     NavHost(navController = navController, startDestination = "rooms", modifier = Modifier.fillMaxSize().hazeSource(hazeState)) {
         composable("rooms") {
             DiscoverRoute(viewModel = discoverViewModel, localVideos = BuildConfig.DEBUG, onRoomClick = { roomId ->
@@ -146,34 +207,6 @@ private fun FanStageApp() {
                 onBack = { navController.popBackStack() },
             )
         }
-    }
-    if (isTab) {
-        val shape = RoundedCornerShape(50)
-        NavigationBar(
-            modifier = Modifier.align(Alignment.BottomCenter).padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
-                .fillMaxWidth().height(72.dp).clip(shape)
-                .hazeBlur(input = HazeInput.Backdrop(hazeState))
-                .background(Color(0xFFDDE6E7).copy(alpha = 0.62f))
-                .border(1.dp, Color.White.copy(alpha = 0.55f), shape)
-                .testTag("floating_navigation"),
-            containerColor = Color.Transparent,
-            tonalElevation = 0.dp,
-            windowInsets = WindowInsets(0, 0, 0, 0),
-        ) {
-            tabs.forEachIndexed { index, route ->
-                val label = stringResource(listOf(R.string.discover, R.string.community, R.string.media, R.string.messages)[index])
-                NavigationBarItem(selected = currentRoute == route, onClick = {
-                    navController.navigate(route) {
-                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                }, icon = { Icon(painterResource(listOf(R.drawable.nav_discover, R.drawable.nav_community, R.drawable.nav_media, R.drawable.nav_messages)[index]), contentDescription = null) }, label = { Text(label) }, modifier = Modifier.testTag("tab_$route"), colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Black.copy(alpha = 0.08f), selectedIconColor = Color(0xFF172022), selectedTextColor = Color(0xFF172022), unselectedIconColor = Color(0xFF172022), unselectedTextColor = Color(0xFF172022)))
-            }
-        }
-    }
-    }
-    }
     }
 }
 
