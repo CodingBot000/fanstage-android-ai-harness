@@ -24,6 +24,10 @@ SM-S908N/API 36, non-debuggable `benchmark`, JDK 17, `CompilationMode.None`, 동
 
 각 실행의 원본 Macrobenchmark JSON과 Perfetto trace 10개는 기기 시스템 정보가 포함될 수 있어 비공개 로컬에 보존한다. 공개 JSON은 실제 원본에서 추출한 값과 원본 해시를 담은 **파생 자료**다. 이전 다른 모델 실기기의 M6 기준 원본도 로컬에 존재했다. 과거 manifest 9개와 각 manifest가 가리키는 원본 189개를 해시 검증했고, 10회 반복값의 중앙값·nearest-rank p95를 재계산해 과거 기록과 일치함을 확인했다. [검사 요약](historical-manifest-check.json). 기기가 달라 이번 결과와 개선율을 계산하지 않는다.
 
+## 도구 체인 공식 지원 범위
+
+Hilt 2.60.1과 KSP 2.3.10을 사용한다. [Dagger KSP 안내](https://dagger.dev/dev-guide/ksp.html)는 Dagger 2.60 이상과 KSP 2.3.9 이상의 안정 지원을 설명하고, [Kotlin KSP 예제](https://kotlinlang.org/docs/ksp-quickstart.html)는 Kotlin 2.4.21과 KSP 2.3.10을 함께 사용한다. 다만 [Kotlin 호환표](https://kotlinlang.org/docs/gradle-configure-project.html)는 Kotlin 2.4.21의 AGP 완전 지원 상한을 9.3.1로 기재하며 현재 AGP는 9.3.3이다. 로컬 빌드 성공은 이 조합에 대한 공식 완전 지원 보증이 아니다.
+
 ## GitHub 정책 권고 — 설정은 변경하지 않음
 
 현재는 어떤 체크도 필수로 강제된다는 근거가 없다. 관리자에게 main 대상 Ruleset/Branch Protection, PR 필수, 관리자 우회 여부, 필수 검사의 출처를 검토하도록 제안한다. 현 상태의 `build-lint-unit`, `PostgreSQL and WebSocket server integration`, `markdown-links-and-adr-ids`는 workflow 경로 필터가 있어 그대로 필수로 지정하면 해당 workflow가 실행되지 않는 PR이 대기 상태에 남을 수 있다. 모든 PR에서 실행되는 안정적인 집계 체크를 먼저 설계하고 경로별 작업의 성공·실패·정당한 미실행을 명시한 뒤 그 체크를 필수화하는 것을 권장한다. [GitHub 필수 검사 문서](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
