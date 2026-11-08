@@ -4,7 +4,7 @@
 
 FanStage는 가상의 팬 커뮤니티를 배경으로 영상 재생과 채팅을 구현한 Android 앱입니다. Media3 플레이어의 수명주기, WebSocket 메시지의 중복·누락 복구, Compose 멀티모듈 설계를 중점적으로 다뤘습니다. **Codex로 구현한 코드를 테스트와 리뷰로 검증하고, 결과를 PR·CI 기록에 연결한 개발 과정**도 함께 공개합니다.
 
-**기술 스택:** Kotlin · Jetpack Compose · Coroutines/Flow · MVVM/UDF · Media3 · WebSocket/HTTP · Spring Boot · PostgreSQL · GitHub Actions · Codex
+**기술 스택:** Kotlin · Jetpack Compose · Coroutines/Flow · MVVM/UDF · Hilt · Media3 · WebSocket/HTTP · Spring Boot · PostgreSQL · GitHub Actions · Codex
 
 ## 아키텍처 한눈에 보기
 
@@ -53,7 +53,7 @@ Galaxy S22 Ultra(Android 16)에서 촬영한 화면입니다. 앱의 아티스�
 
 ### 3. Compose·MVVM 멀티모듈 구조
 
-Discover·Community·Media·Messages·LIVE를 기능별로 분리하고 공통 모델·데이터·디자인 시스템·이미지 리소스를 별도 모듈로 구성했습니다. 앱은 총 **11개 Gradle 모듈**로 이루어져 있으며, ViewModel 상태 관리와 모듈 간 의존 방향을 테스트·검사 스크립트로 확인합니다.
+Discover·Community·Media·Messages·LIVE를 기능별로 분리하고 공통 모델·데이터·디자인 시스템·이미지 리소스를 별도 모듈로 구성했습니다. 앱은 총 **11개 Gradle 모듈**로 이루어져 있으며, Hilt로 Repository와 ViewModel을 주입합니다. 일반 ViewModel은 Activity 범위에서 공유하고 채팅은 룸별 수명주기를 유지합니다. ViewModel 상태 관리와 모듈 간 의존 방향은 테스트·검사 스크립트로 확인합니다.
 
 ### 4. AI 코딩 에이전트 제어와 코드 품질 검증
 

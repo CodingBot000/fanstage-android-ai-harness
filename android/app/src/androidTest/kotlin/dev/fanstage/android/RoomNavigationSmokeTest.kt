@@ -27,10 +27,15 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.Uri
 import android.os.SystemClock
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assert.assertTrue
 import java.io.File
@@ -45,6 +50,7 @@ import dev.fanstage.android.feature.live.chat.ChatPanel
 import dev.fanstage.android.feature.live.chat.ChatViewModel
 import dev.fanstage.android.feature.live.chat.FakeChatTransport
 import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertSame
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -53,6 +59,23 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class RoomNavigationSmokeTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()
+
+    private fun findPlayerView(view: View): PlayerView? {
+        if (view is PlayerView) return view
+        if (view is ViewGroup) for (index in 0 until view.childCount) {
+            findPlayerView(view.getChildAt(index))?.let { return it }
+        }
+        return null
+    }
+
+    private fun hideKeyboard() {
+        composeRule.runOnUiThread {
+            ViewCompat.getWindowInsetsController(composeRule.activity.window.decorView)?.hide(WindowInsetsCompat.Type.ime())
+        }
+        composeRule.waitUntil(10_000L) {
+            ViewCompat.getRootWindowInsets(composeRule.activity.window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == false
+        }
+    }
 
     @Test fun rcFaultUiAndReleasedListener() {
         verifyErrorRetryUi()
@@ -118,18 +141,33 @@ class RoomNavigationSmokeTest {
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
         composeRule.waitUntil(30_000L) { composeRule.onAllNodesWithTag("player_first_frame").fetchSemanticsNodes().isNotEmpty() }
+        lateinit var originalPlayer: Player
+        composeRule.runOnUiThread { originalPlayer = requireNotNull(findPlayerView(composeRule.activity.window.decorView)?.player) }
         // Chat is independent of playback: send via Fake, then verify the player is still playing.
         composeRule.onNodeWithTag("chat_input").performTextInput("Hello from test")
         composeRule.onNodeWithTag("chat_send").performClick()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithText(composeRule.activity.getString(dev.fanstage.android.feature.live.R.string.chat_sent)).fetchSemanticsNodes().isNotEmpty() }
         composeRule.onNodeWithTag("chat_messages").performScrollTo()
         composeRule.onNodeWithText("Hello from test").assertExists()
-        composeRule.onNodeWithTag("player_state_playing").assertExists()
+        composeRule.runOnUiThread {
+            val currentPlayer = requireNotNull(findPlayerView(composeRule.activity.window.decorView)?.player)
+            assertSame("chat must not replace the player", originalPlayer, currentPlayer)
+            assertTrue("player must keep playing after chat send", currentPlayer.isPlaying)
+        }
+        hideKeyboard()
         composeRule.activityRule.scenario.moveToState(Lifecycle.State.CREATED)
         composeRule.activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
+        hideKeyboard()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
-        composeRule.onNodeWithTag("player_play").performScrollTo().performClick()
-        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_playing").fetchSemanticsNodes().isNotEmpty() }
+        composeRule.onNodeWithTag("player_play").assertIsDisplayed().performClick()
+        composeRule.waitUntil(10_000L) {
+            var resumed = false
+            composeRule.runOnUiThread {
+                val currentPlayer = findPlayerView(composeRule.activity.window.decorView)?.player
+                resumed = currentPlayer === originalPlayer && currentPlayer.isPlaying
+            }
+            resumed
+        }
         // Draft stays in the retained ViewModel, not saved-state storage.
         composeRule.onNodeWithTag("chat_input").performTextInput("draft survives")
         // ActivityScenario.recreate() verifies Activity/nav state restoration, not rotation or process death.
@@ -139,12 +177,12 @@ class RoomNavigationSmokeTest {
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.onNodeWithTag("chat_input").assertTextContains("draft survives").performTextClearance()
+        hideKeyboard()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
         // The controls must remain reachable after a real device orientation change.
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
         composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE }
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_play").fetchSemanticsNodes().isNotEmpty() }
-        composeRule.onNodeWithTag("player_play").performScrollTo()
         composeRule.waitUntil(10_000L) { runCatching { composeRule.onNodeWithTag("player_play").assertIsDisplayed() }.isSuccess }
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
         composeRule.waitUntil(20_000L) { composeRule.activity.resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT }

@@ -81,12 +81,10 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
     val ui = playerUi.copy(fullscreen = fullscreen)
     val state = ui.playback
     var playbackControlsVisible by remember(controller) { mutableStateOf(false) }
-    var hasPlayed by remember(controller) { mutableStateOf(false) }
     var controlInteraction by remember(controller) { mutableLongStateOf(0L) }
     LaunchedEffect(state) {
         when (state) {
-            PlaybackState.Playing -> hasPlayed = true
-            PlaybackState.Paused -> if (hasPlayed) playbackControlsVisible = true
+            PlaybackState.Paused -> playbackControlsVisible = true
             else -> Unit
         }
     }

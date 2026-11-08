@@ -1,6 +1,9 @@
 package dev.fanstage.android.feature.live.chat
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import java.util.TreeMap
@@ -15,7 +18,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+@HiltViewModel
 class ChatViewModel(private var transport: ChatTransport, initialRoomId: String) : ViewModel() {
+    @Inject constructor(savedStateHandle: SavedStateHandle, factory: ChatTransportFactory) : this(
+        factory.create(requireNotNull(savedStateHandle["roomId"]) { "roomId is required" }),
+        requireNotNull(savedStateHandle["roomId"]) { "roomId is required" },
+    )
+
     private val mutableState = MutableStateFlow(ChatUiState(initialRoomId))
     val uiState: StateFlow<ChatUiState> = mutableState.asStateFlow()
     private var budget = transport.memoryBudget ?: ProcessChatMemory.budget
@@ -296,9 +305,9 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
         super.onCleared()
     }
 
-    class Factory(private val roomId: String, private val transport: ChatTransport? = null) : ViewModelProvider.Factory {
+    class Factory(private val roomId: String, private val transport: ChatTransport) : ViewModelProvider.Factory {
         // Do not allocate a second fake store when a retained ViewModel is reused after recreation.
         override fun <T : ViewModel> create(modelClass: Class<T>): T =
-            modelClass.cast(ChatViewModel(transport ?: FakeChatTransport(roomId, memoryBudget = ProcessChatMemory.budget), roomId))!!
+            modelClass.cast(ChatViewModel(transport, roomId))!!
     }
 }

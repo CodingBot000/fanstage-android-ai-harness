@@ -9,6 +9,7 @@ FanStage는 변경된 코드의 역할에 따라 테스트를 선택합니다. G
 | Compose 화면·ViewModel | 빌드·Lint·관련 단위 테스트 | 탐색·IME·회전 등 변경 화면의 로컬 계측 |
 | Media3·Player | 빌드·Lint·Player 단위 테스트 | 실제 첫 프레임, 전체 화면 전환, Listener·Surface 해제 |
 | ChatTransport·메시지 모델 | 관련 단위 테스트·서버 통합·장애 주입 | ACK 유실, 중복·역순·누락 및 Android 상태 전이 |
+| Hilt 주입·ViewModel 범위 | 빌드·단위 테스트·모듈 경계 검사 | 바인딩 교체, 화면 재생성 및 룸 재진입 계측 |
 | 모듈·Gradle 의존성 | 빌드·단위 테스트·모듈 경계 검사 | 의존 방향과 공개 API 영향 |
 | 문서·설계 결정 | Markdown 링크·ADR 번호 검사 | 실제 구현·PR 근거와 내용 일치 여부 |
 | 성능 계측 | 동일 기기·빌드·측정 시나리오의 반복 실행 | Macrobenchmark·Perfetto 결과 비교 |

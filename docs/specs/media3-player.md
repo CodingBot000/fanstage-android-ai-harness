@@ -23,3 +23,7 @@
 **시연 영상:** 기본 Replay 화면은 앱에 포함된 합성 HLS VOD를 재생합니다. Debug의 LIVE 룸 세 곳과 로컬 영상 항목은 로컬 서버에서 녹화 MP4를 받아 재생합니다. [실기기 시연 PR #61](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/61)
 
 [플레이어 설계 결정](../adr/ADR-0002-player-lifecycle.md) · [Android 실행 안내](../../android/README.md)
+
+## 일시정지 화면의 재생 버튼
+
+Activity 재생성이나 회전으로 새 화면이 만들어진 뒤에도 플레이어가 일시정지 상태라면 재생 버튼을 표시합니다. 기존 자동 재생·수동 재개와 Player 소유권 정책은 유지합니다. 실기기 회귀 범위와 이전 실패는 [검증 결과](../verification.md)를 참조합니다.

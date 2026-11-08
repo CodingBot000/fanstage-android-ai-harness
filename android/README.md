@@ -50,3 +50,7 @@ Android 계측 테스트에는 합성 HLS·MP4·WebVTT 자산을 사용합니다
 - [PR #59](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59): IME와 입력창 배치, 로컬 API 36 관련 계측 **24/24**, 실기기 **3/3** 통과
 
 각 PR에 연결된 단위 테스트와 CI 결과는 [검증 문서](../docs/verification.md)에 모았습니다.
+
+## Hilt 의존성 주입
+
+일반 ViewModel은 Activity 범위에서 공유하며, ChatViewModel은 룸별 Navigation 항목에 속합니다. 테스트용 바인딩 교체와 기기 검증 범위는 [검증 문서](../docs/verification.md)를 참조하세요.

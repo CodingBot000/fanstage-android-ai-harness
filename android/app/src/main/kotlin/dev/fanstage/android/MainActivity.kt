@@ -40,7 +40,7 @@ import dev.fanstage.android.feature.live.ReplayScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -51,6 +51,7 @@ import androidx.navigation.navArgument
 import dev.fanstage.android.feature.live.RoomDetailScreen
 import dev.fanstage.android.feature.live.chat.ChatViewModel
 
+@dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,12 +66,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun FanStageApp() {
     val navController = rememberNavController()
-    val container = remember { AppContainer() }
-    val communityViewModel: CommunityViewModel = viewModel(factory = container.viewModelFactory)
-    val discoverViewModel: DiscoverViewModel = viewModel(factory = container.viewModelFactory)
-    val messagesViewModel: MessagesViewModel = viewModel(factory = container.viewModelFactory)
-    val mediaViewModel: MediaViewModel = viewModel(factory = container.viewModelFactory)
-    val artists = container.artists
+    val communityViewModel: CommunityViewModel = hiltViewModel()
+    val discoverViewModel: DiscoverViewModel = hiltViewModel()
+    val messagesViewModel: MessagesViewModel = hiltViewModel()
+    val mediaViewModel: MediaViewModel = hiltViewModel()
+    val artists = remember { dev.fanstage.android.core.data.FakeCatalog.artists() }
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
@@ -129,8 +129,7 @@ private fun FanStageApp() {
             arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
         ) { entry ->
             val roomId = requireNotNull(entry.arguments?.getString("roomId"))
-            val chatFactory = remember(roomId) { ChatViewModel.Factory(roomId) }
-            val chatViewModel: ChatViewModel = viewModel(viewModelStoreOwner = entry, factory = chatFactory)
+            val chatViewModel: ChatViewModel = hiltViewModel(viewModelStoreOwner = entry)
             val demoVideoId = when (roomId) {
                 "studio-session" -> "demo-01"
                 "sketch-break" -> "demo-02"

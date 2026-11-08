@@ -13,7 +13,7 @@ FanStage는 **앱 진입점 1개, 기능 모듈 5개, 공통 모듈 4개, 벤치
 
 ~~~mermaid
 flowchart TB
-  APP["app · Navigation / AppContainer"] --> DISC["feature:discover"]
+  APP["app · Navigation / Hilt"] --> DISC["feature:discover"]
   APP --> COMM["feature:community"]
   APP --> MEDIA["feature:media"]
   APP --> MSG["feature:messages"]
@@ -32,6 +32,12 @@ flowchart TB
 ~~~
 
 다이어그램은 `android/`의 Gradle 프로젝트 의존 관계를 요약한 것입니다. [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)는 각 기능 모듈의 허용 의존성과 `core:model`의 Android UI 참조 여부를 검사합니다. 기능 분리 과정과 검증 결과는 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 남겼습니다.
+
+## Hilt 의존성 주입
+
+`FanStageApplication`에서 Hilt를 초기화하고 `MainActivity`가 일반 ViewModel을 Activity 범위로 공유합니다. `ChatViewModel`은 Navigation BackStackEntry에 속하며 `SavedStateHandle`의 룸 ID로 룸별 Transport를 생성합니다. Repository 인터페이스는 `app` 모듈에서 Fake 구현으로 연결하며 가변 저장소나 Transport를 전역 Singleton으로 지정하지 않습니다. `core:data`는 순수 Kotlin 모듈로 유지합니다.
+
+DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hilt-di-migration.md)과 [검증 결과](verification.md)를 참조합니다.
 
 ## 2. Compose 상태 관리
 

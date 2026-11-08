@@ -1,5 +1,6 @@
 package dev.fanstage.android.feature.live.chat
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import kotlinx.coroutines.CancellationException
@@ -49,6 +50,28 @@ class ChatViewModelTest {
         }
         override suspend fun send(roomId: String, clientMessageId: String, text: String) = sendAction(roomId, clientMessageId, text)
         override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = fetchAction(roomId, afterSequence, upperSequence, limit)
+    }
+
+    @Test fun `injected construction uses navigation room and distinct transports`() {
+        val factory = ChatTransportFactory()
+        val first = factory.create("room-a")
+        val second = factory.create("room-b")
+        assertNotSame(first, second)
+        first.close(); second.close()
+        val vmFactory = object : ViewModelProvider.Factory {
+            override fun <T : androidx.lifecycle.ViewModel> create(modelClass: Class<T>): T =
+                modelClass.cast(ChatViewModel(SavedStateHandle(mapOf("roomId" to "room-a")), factory))!!
+        }
+        val vm = ViewModelProvider(store, vmFactory)[ChatViewModel::class.java]
+        assertEquals("room-a", vm.uiState.value.roomId)
+        assertTrue(vm.uiState.value.fictionalFixtures)
+    }
+
+    @Test fun `injected construction rejects missing navigation room`() {
+        val error = assertThrows(IllegalArgumentException::class.java) {
+            ChatViewModel(SavedStateHandle(), ChatTransportFactory())
+        }
+        assertEquals("roomId is required", error.message)
     }
 
     @Test fun `confirmed server timestamp survives into display state`() = runTest {
