@@ -17,7 +17,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = if (providers.gradleProperty("fanstageHiltInstrumentation").orNull == "true")
+            "dev.fanstage.android.HiltTestRunner" else "androidx.test.runner.AndroidJUnitRunner"
     }
 
     // Opt in only for local instrumentation against the installed release-like RC.
@@ -48,6 +49,9 @@ android {
             matchingFallbacks += listOf("release")
         }
     }
+    if (providers.gradleProperty("fanstageHiltInstrumentation").orNull == "true") {
+        sourceSets.named("androidTest") { kotlin.directories += "src/hiltAndroidTest/kotlin" }
+    }
     buildFeatures { compose = true; buildConfig = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -55,7 +59,9 @@ android {
     }
 }
 
-kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
+kotlin {
+    compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+}
 
 dependencies {
     implementation(libs.hilt.android)
@@ -87,6 +93,8 @@ dependencies {
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
 
+    androidTestImplementation(libs.hilt.testing)
+    add("kspAndroidTest", libs.hilt.compiler)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)

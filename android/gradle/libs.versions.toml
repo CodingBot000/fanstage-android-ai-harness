@@ -20,6 +20,7 @@ ksp = "2.3.10"
 
 [libraries]
 androidx-hilt-viewmodel-compose = { module = "androidx.hilt:hilt-lifecycle-viewmodel-compose", version.ref = "androidx-hilt" }
+hilt-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
 haze-blur = { module = "dev.chrisbanes.haze:haze-blur", version.ref = "haze" }

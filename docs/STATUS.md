@@ -1,5 +1,7 @@
 # FanStage 작업 현황
 
+- 2026-11-08 Hilt Phase 3: 전용 Hilt 계측 APK 구성 및 로컬 전체 빌드·lint·단위·모듈/manifest PASS. 기기 미연결로 Hilt 바인딩 실행·UI·Activity 재생성·Chat/Media3 계측 NOT_RUN. [검증 기록](verification.md).
+
 - 2026-11-08 Hilt Phase 2B: 룸별 ChatViewModel 주입 및 SavedStateHandle 인자 전환, 로컬 빌드·lint·단위·모듈/manifest PASS. 기기 계측 NOT_RUN. [SDD](specs/hilt-di-migration-phase2b.md).
 
 - 2026-11-08 Hilt Phase 2A: 일반 ViewModel 네 개 Activity 소유 범위를 유지해 Hilt로 전환, 로컬 빌드·lint·단위·모듈/manifest PASS. 기기 UI·재생성 NOT_RUN. [SDD](specs/hilt-di-migration-phase2a.md).

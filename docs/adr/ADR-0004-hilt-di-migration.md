@@ -1,6 +1,6 @@
 # ADR-0004 · Hilt 기반 의존성 주입으로의 점진적 전환
 
-- Status: PHASE_1_IMPLEMENTED / DEVICE_VERIFICATION_NOT_RUN
+- Status: MIGRATED / DEVICE_VERIFICATION_NOT_RUN
 - Date: 2026-11-08
 - Related SDD: `../specs/hilt-di-migration-phase1.md`
 
@@ -53,3 +53,7 @@ Hilt 2.60.1과 KSP 2.3.10으로 Repository를 unscoped 제공하고 Activity의 
 ## Phase 2B 실행 결과
 
 ChatViewModel은 Navigation BackStackEntry와 SavedStateHandle을 사용하고 룸별 Transport를 생성한다. 테스트·벤치마크의 명시적 Transport Factory는 보존한다. 기기 회귀는 NOT_RUN.
+
+## Phase 3 실행 결과
+
+전용 Hilt 계측 구성과 대체 바인딩 테스트를 추가했고 기본 일반 계측의 러너와 Application은 유지한다. 모든 빌드·정적·단위 게이트 및 전용 테스트 APK 컴파일 PASS. 테스트 실행 및 기기 수명주기 회귀는 NOT_RUN. [검증 기록](../verification.md).

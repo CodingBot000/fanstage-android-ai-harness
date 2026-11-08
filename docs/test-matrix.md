@@ -25,3 +25,7 @@ G 계층은 검증 종류, P 등급은 영향과 차단 여부를 뜻한다. 변
 
 ## 원격 에뮬레이터 임시 중지 (2026-11-06)
 사용자 요청으로 GitHub Actions의 Android 에뮬레이터 실행만 임시 중지한다. 워크플로와 테스트 코드는 보존하고 false 조건 제거 시 복원한다. Android 빌드·lint·단위·계측 APK 컴파일과 서버 통합·장애 주입은 원격에서 계속한다. 영향을 받는 에뮬레이터/실제 서버 Android 검증은 병합 전 로컬 전용 에뮬레이터에서 실행하고 결과를 기록하며 미실행은 NOT_RUN이다. 원격 에뮬레이터 검증은 OFF로 기록한다.
+
+## Hilt 마이그레이션 (2026-11-08)
+
+로컬 빌드·lint·단위 및 모듈/manifest PASS; Hilt 전용 계측 APK 컴파일 PASS. 실행 기기 미연결로 Hilt 바인딩 교체, UI, Activity 재생성 및 Chat/Media3 수명주기 계측은 NOT_RUN. [실행 명령·상세](verification.md).
