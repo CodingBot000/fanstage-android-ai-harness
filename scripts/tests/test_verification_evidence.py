@@ -4,6 +4,9 @@ import copy
 import hashlib
 import importlib.util
 import json
+import shutil
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -44,6 +47,15 @@ class EvidenceTests(unittest.TestCase):
     def rehash(self, name):
         entry = next(e for e in self.manifest['results'] if e['file']==name)
         entry['sha256'] = hashlib.sha256((self.root/name).read_bytes()).hexdigest()
+
+    def test_cli_rejects_tampered_copy_of_public_evidence(self):
+        copy_root = self.root / 'public-copy'
+        shutil.copytree(check.EVIDENCE, copy_root)
+        target = copy_root / 'hilt-physical.xml'
+        target.write_bytes(target.read_bytes() + b' ')
+        result = subprocess.run([sys.executable, str(SCRIPT), '--directory', str(copy_root)], capture_output=True, text=True)
+        self.assertNotEqual(0, result.returncode)
+        self.assertIn('SHA-256 mismatch', result.stderr)
 
     def test_valid_pass_and_historical_failure(self): self.assertEqual(2, self.validate())
     def test_v1_legacy_failure_compatibility(self):

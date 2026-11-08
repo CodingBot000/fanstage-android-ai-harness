@@ -6,7 +6,7 @@
 
 모든 main 대상 PR에서 경로 필터 없이 `PR quality gate`가 시작된다. `classify-quality-changes`가 PR의 base·head SHA와 변경 경로를 확인하고 Android·서버·문서 검사를 선택한다. 기존 세 워크플로는 PR에서는 재사용 워크플로로 한 번만 실행하고, main push에서는 기존 경로 필터를 유지한다. 분류기·집계기나 게이트 워크플로 자체가 바뀌거나 분류되지 않은 경로가 있으면 세 검사를 모두 실행한다. 이름이 `required-quality`인 마지막 작업은 변경 분류 성공과 **선택된 모든 검사 성공**을 요구한다. 선택된 작업의 실패·취소·누락·예상치 못한 skipped는 실패다. 선택되지 않은 작업만 명시적 `NOT_APPLICABLE`로 처리한다.
 
-권장 Required Check 후보는 GitHub Actions 출처의 **`required-quality`** 하나다. 실제 GitHub PR에서 표시되는 이름과 출처, 성공·실패·누락 처리까지 확인한 뒤에만 설정한다. 기존 `build-lint-unit`, 서버, 문서 체크를 경로 필터가 있는 workflow 상태 그대로 필수로 지정하면 실행되지 않는 PR이 Pending에 머물 수 있다. [GitHub 공식 설명](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
+권장 Required Check 후보는 GitHub Actions 출처의 **`required-quality`** 하나다. PR #69의 `c8f1a98`에서 이름 `required-quality`, 출처 `github-actions`(App ID 15368), 성공 결과가 실제 생성됐음을 조회했다. 이는 필수 정책이 적용됐다는 뜻은 아니다. 실제 GitHub PR에서 표시되는 이름과 출처, 성공·실패·누락 처리까지 확인한 뒤에만 설정한다. 기존 `build-lint-unit`, 서버, 문서 체크를 경로 필터가 있는 workflow 상태 그대로 필수로 지정하면 실행되지 않는 PR이 Pending에 머물 수 있다. [GitHub 공식 설명](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
 
 ## 적용 전 사용자 검토 사항
 
