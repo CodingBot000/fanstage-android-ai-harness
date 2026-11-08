@@ -47,6 +47,10 @@ FanStage에서는 Codex를 코드 작성과 리팩토링에 사용했습니다. 
 
 **검증:** [`check-ux-module-boundaries.py`](../scripts/check-ux-module-boundaries.py)는 기능·공통 모듈의 허용 의존 관계와 순수 Kotlin 모델의 Android UI 참조 여부를 검사합니다. 이 스크립트를 Android GitHub Actions에서 실행합니다. 기능별 분리와 검증 이력은 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 남겼습니다.
 
+## 최종 검증 감사의 범위
+
+별도 에이전트 세션이 코드와 증거를 재검토했고, Hilt ViewModel의 실제 Activity 생성 경로와 실기기 서버 연결을 추가로 검증했습니다. 같은 모델 계열의 별도 리뷰이며 다른 모델의 평가로 주장하지 않습니다. 실패·미실행과 GitHub 병합 정책의 한계는 [감사 보고](evidence/verification/audit-20261108/audit-report.md)에 기록했습니다.
+
 ## 검증 결과를 읽는 기준
 
 GitHub Actions는 Android 빌드·Lint·단위 테스트와 서버 통합·장애 주입 테스트를 실행합니다. Android 계측은 로컬 에뮬레이터·실기기에서 수행해 해당 PR에 연결했습니다. **테스트 수와 통과 여부는 각 PR에 표시된 코드 버전 기준**입니다.

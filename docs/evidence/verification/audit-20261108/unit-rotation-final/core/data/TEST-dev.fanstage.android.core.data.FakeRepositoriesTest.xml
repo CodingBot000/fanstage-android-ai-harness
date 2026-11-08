@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.fanstage.android.core.data.FakeRepositoriesTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-11-08T15:11:44.788Z" hostname="[redacted]" time="0.053">
+  <properties/>
+  <testcase name="messagesAreSessionScopedAndBlankInputIgnored" classname="dev.fanstage.android.core.data.FakeRepositoriesTest" time="0.011"/>
+  <testcase name="catalogIdsJoinAcrossFixtures" classname="dev.fanstage.android.core.data.FakeRepositoriesTest" time="0.04"/>
+  <testcase name="communityRetryDoesNotDiscardLocalChanges" classname="dev.fanstage.android.core.data.FakeRepositoriesTest" time="0.001"/>
+  <testcase name="communityMutationsPersistAndAreScoped" classname="dev.fanstage.android.core.data.FakeRepositoriesTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

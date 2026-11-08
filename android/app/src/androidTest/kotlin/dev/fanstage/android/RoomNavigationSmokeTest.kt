@@ -55,7 +55,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
-/** Exercises the real MainActivity and its production FakeRoomRepository on a connected Android device. */
+/** Exercises the real MainActivity, navigation, chat, and player on a connected Android device. */
 @RunWith(AndroidJUnit4::class)
 class RoomNavigationSmokeTest {
     @get:Rule val composeRule = createAndroidComposeRule<MainActivity>()

@@ -32,6 +32,7 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
@@ -82,7 +83,11 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
     val state = ui.playback
     var playbackControlsVisible by remember(controller) { mutableStateOf(false) }
     var controlInteraction by remember(controller) { mutableLongStateOf(0L) }
+    if (PlayerRotationTrace.enabled) SideEffect {
+        PlayerRotationTrace.emit("event=compose_recompose controller=${System.identityHashCode(controller)} state=${state.javaClass.simpleName} fullscreen=$fullscreen compact=$compact pausedTag=${!compact && state == PlaybackState.Paused}")
+    }
     LaunchedEffect(state) {
+        if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=compose_state_observed controller=${System.identityHashCode(controller)} state=${state.javaClass.simpleName}")
         when (state) {
             PlaybackState.Paused -> playbackControlsVisible = true
             else -> Unit
@@ -116,6 +121,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
 
     DisposableEffect(owner, session) {
         val observer = LifecycleEventObserver { _, event ->
+            if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=owner_lifecycle controller=${System.identityHashCode(controller)} lifecycle=$event")
             when (event) {
                 Lifecycle.Event.ON_RESUME -> { session.onResume(); autoPlay = false }
                 Lifecycle.Event.ON_PAUSE -> { session.onPause(); autoPlay = false }
@@ -128,6 +134,7 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
             autoPlay = false
         }
         onDispose {
+            if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=compose_dispose controller=${System.identityHashCode(controller)}")
             owner.lifecycle.removeObserver(observer)
             session.release()
         }
@@ -209,6 +216,10 @@ fun PlayerPanel(roomId: String, sourceUri: String = "asset:///hls/captionless.m3
     }
     }
     if (fullscreen) {
+        if (PlayerRotationTrace.enabled) DisposableEffect(controller) {
+            PlayerRotationTrace.emit("event=dialog_created controller=${System.identityHashCode(controller)}")
+            onDispose { PlayerRotationTrace.emit("event=dialog_disposed controller=${System.identityHashCode(controller)}") }
+        }
         Dialog(onDismissRequest = { fullscreen = false }, properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)) { playerContent(true) }
     } else {
         playerContent(false)

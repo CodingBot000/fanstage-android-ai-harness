@@ -6,7 +6,7 @@ import struct
 import threading
 import time
 import uuid
-from integration import WS, A, B, history, send
+from integration import WS, A, B, PORT, history, send
 
 SCENARIO = 'm5-net02-seed-73'
 
@@ -32,7 +32,7 @@ class DropFirstAck:
 
     def run(self):
         client, _ = self.listener.accept()
-        upstream = socket.socket(); upstream.connect(('127.0.0.1', 18765))
+        upstream = socket.socket(); upstream.connect(('127.0.0.1', PORT))
         client.settimeout(None); upstream.settimeout(None)
         self.sockets = (client, upstream)
         def upstream_copy():

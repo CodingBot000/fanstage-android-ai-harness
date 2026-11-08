@@ -14,7 +14,10 @@ import urllib.parse
 import urllib.request
 import uuid
 
-BASE = "http://127.0.0.1:18765"
+PORT = int(os.environ.get("FANSTAGE_TEST_PORT", "18765"))
+if not 1 <= PORT <= 65535:
+    raise ValueError("invalid isolated server port")
+BASE = f"http://127.0.0.1:{PORT}"
 A, B = os.environ["FANSTAGE_TOKEN_ALICE"], os.environ["FANSTAGE_TOKEN_BOB"]
 ROOM = "test-" + uuid.uuid4().hex[:16]
 PROJECT = os.environ.get("FANSTAGE_TEST_COMPOSE_PROJECT", "fanstage-m4-validation")
@@ -34,9 +37,9 @@ def history(token, after=0, upper=9223372036854775807, limit=1000, room=ROOM):
 
 class WS:
     def __init__(self, token, room=ROOM):
-        self.s = socket.create_connection(("127.0.0.1", 18765), timeout=10)
+        self.s = socket.create_connection(("127.0.0.1", PORT), timeout=10)
         key = base64.b64encode(os.urandom(16)).decode()
-        req = (f"GET /ws/rooms/{room} HTTP/1.1\r\nHost: 127.0.0.1:18765\r\nUpgrade: websocket\r\n"
+        req = (f"GET /ws/rooms/{room} HTTP/1.1\r\nHost: 127.0.0.1:{PORT}\r\nUpgrade: websocket\r\n"
                f"Connection: Upgrade\r\nSec-WebSocket-Key: {key}\r\nSec-WebSocket-Version: 13\r\nAuthorization: Bearer {token}\r\n\r\n")
         self.s.sendall(req.encode())
         head = b""

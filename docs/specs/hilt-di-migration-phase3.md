@@ -5,11 +5,11 @@
 - **구현·정적 검사:** PASS. 기본 Android CI와 별도 로컬 Hilt 테스트 APK 컴파일 근거를 구분한다.
 - **기기 회귀:** Galaxy S22 Ultra/API 36 선택 일반 계측 39/39 및 Hilt 바인딩 1/1 PASS(로컬 기록).
 - **실제 프로토콜 연결:** API 36 에뮬레이터의 격리 PostgreSQL·WebSocket Android 통합 1/1 PASS(로컬 기록).
-- **미실행:** 실기기의 실제 서버 연결, 장시간 누수·정량 성능과 전 기기 검증은 `NOT_RUN`.
+- **당시 미실행:** PR #67 시점의 실기기 실제 서버 연결, 장시간 누수·정량 성능과 전 기기 검증은 `NOT_RUN`이었다. 후속 감사 결과는 아래를 참조한다.
 - **추적:** [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67) · [명령·실패·수정 이력](hilt-di-migration-verification.md). 아래 기록은 수정 전 실패를 포함한 시간순 이력이다.
 
 
-상태: 빌드·정적 게이트, 선택 실기기 계측 및 격리 서버 Android 통합 PASS; 실기기 서버 연결·장시간 검증 NOT_RUN. Hilt 테스트 전용 선택적 계측 구성에서 Repository 바인딩 대체를 검증하고 기본 일반 계측 러너 및 애플리케이션은 유지한다. Hilt 테스트 러너는 전용 Gradle 속성으로만 활성화하고 해당 테스트 클래스만 실행한다. 전체 빌드·lint·단위·모듈/manifest·benchmark 서명과 기기가 있으면 계측 및 재생/채팅 수명주기 회귀를 수행한다. 기기가 없으면 계측은 NOT_RUN. 테스트용 명시적 Transport Factory는 유지하고 프로덕션 중복 조립을 제거한다. Media3 소유권 변경은 범위 밖이다.
+상태: 빌드·정적 게이트, 선택 실기기 계측 및 격리 서버 Android 통합 PASS. 후속 감사에서 실기기 서버 연결과 30회 Collector 완료·소켓 참조 해제 검사도 통과했으며 장시간 누수 부재는 미확인이다. Hilt 테스트 전용 선택적 계측 구성에서 Repository 바인딩 대체를 검증하고 기본 일반 계측 러너 및 애플리케이션은 유지한다. Hilt 테스트 러너는 전용 Gradle 속성으로만 활성화하고 해당 테스트 클래스만 실행한다. 전체 빌드·lint·단위·모듈/manifest·benchmark 서명과 기기가 있으면 계측 및 재생/채팅 수명주기 회귀를 수행한다. 기기가 없으면 계측은 NOT_RUN. 테스트용 명시적 Transport Factory는 유지하고 프로덕션 중복 조립을 제거한다. Media3 소유권 변경은 범위 밖이다.
 
 Open Questions: 없음.
 
@@ -30,3 +30,7 @@ Hilt 대체 바인딩 및 별도 룸 재생성/재진입 각 1/1 PASS. 일반 �
 ## 격리 서버 Android 통합 후속 검증
 
 API 36 전용 에뮬레이터와 격리된 PostgreSQL·WebSocket 서버에서 `RealChatIntegrationTest` 1/1 PASS. ACK 유실·재전송, 지연 응답, 재연결과 재생 분리 시나리오를 실행했다. 실기기의 실제 서버 연결과 장시간 누수·성능은 NOT_RUN. 상세는 [작업 검증 기록](hilt-di-migration-verification.md).
+
+## 최종 검증 감사
+
+후속 감사에서 실기기 Hilt 생성 경로와 실제 서버 연결, 룸별 반복 연결에서 Collector 완료와 소켓 참조 해제를 확인했다. 초기 회전 실패와 재실행, 성능·정책 한계는 [감사 보고](../evidence/verification/audit-20261108/audit-report.md)에 분리했다.

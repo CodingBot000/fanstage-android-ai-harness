@@ -1,0 +1,47 @@
+[
+  {
+    "run": "audit20261108a",
+    "stage": "before",
+    "pss_kb": "248562",
+    "java_used_kb": "39742",
+    "threads": "20",
+    "gc_count": "0",
+    "reachable_players": "0"
+  },
+  {
+    "run": "audit20261108a",
+    "stage": "live_10",
+    "pss_kb": "284414",
+    "java_used_kb": "17675",
+    "threads": "25",
+    "gc_count": "5",
+    "reachable_players": "1"
+  },
+  {
+    "run": "audit20261108a",
+    "stage": "live_20",
+    "pss_kb": "312521",
+    "java_used_kb": "17507",
+    "threads": "26",
+    "gc_count": "8",
+    "reachable_players": "1"
+  },
+  {
+    "run": "audit20261108a",
+    "stage": "live_30",
+    "pss_kb": "308221",
+    "java_used_kb": "24914",
+    "threads": "26",
+    "gc_count": "11",
+    "reachable_players": "2"
+  },
+  {
+    "run": "audit20261108a",
+    "stage": "after_replay_10",
+    "pss_kb": "318853",
+    "java_used_kb": "21856",
+    "threads": "26",
+    "gc_count": "14",
+    "reachable_players": "0"
+  }
+]

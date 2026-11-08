@@ -1,0 +1,17 @@
+{
+  "observed_at_utc": "2026-11-08T13:20:42.258903+00:00",
+  "branch": "main",
+  "protected": false,
+  "protection_enabled": false,
+  "required_checks": {
+    "enforcement_level": "off",
+    "contexts": [],
+    "checks": []
+  },
+  "effective_rules": [],
+  "repository_rulesets": [],
+  "protection_api_exit_code": 1,
+  "protection_api_result": "404 Branch not protected",
+  "direct_push_or_failed_pr_merge_test": "NOT_RUN; main writes and policy changes were not attempted",
+  "interpretation": "No enforcement was visible to the authenticated repository admin; this does not experimentally prove an individual push or merge would succeed."
+}

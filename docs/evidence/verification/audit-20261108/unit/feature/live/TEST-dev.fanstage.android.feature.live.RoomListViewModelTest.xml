@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.fanstage.android.feature.live.RoomListViewModelTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-08T13:23:19.885Z" hostname="[redacted]" time="0.011">
+  <properties/>
+  <testcase name="retry cancels in flight load and prevents stale result from replacing content" classname="dev.fanstage.android.feature.live.RoomListViewModelTest" time="0.006"/>
+  <testcase name="starts loading then shows fake repository content" classname="dev.fanstage.android.feature.live.RoomListViewModelTest" time="0.001"/>
+  <testcase name="empty fetch is successful empty state" classname="dev.fanstage.android.feature.live.RoomListViewModelTest" time="0.001"/>
+  <testcase name="clearing ViewModel cancels repository without publishing error" classname="dev.fanstage.android.feature.live.RoomListViewModelTest" time="0.001"/>
+  <testcase name="error is safe and retry loads content" classname="dev.fanstage.android.feature.live.RoomListViewModelTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

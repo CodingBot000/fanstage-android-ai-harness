@@ -12,6 +12,7 @@ FanStage는 변경된 코드의 역할에 따라 테스트를 선택합니다. G
 | Hilt 주입·ViewModel 범위 | 빌드·단위 테스트·모듈 경계 검사 | 바인딩 교체, 화면 재생성 및 룸 재진입 계측 |
 | 모듈·Gradle 의존성 | 빌드·단위 테스트·모듈 경계 검사 | 의존 방향과 공개 API 영향 |
 | 문서·설계 결정 | Markdown 링크·ADR 번호 검사 | 실제 구현·PR 근거와 내용 일치 여부 |
+| 공개 검증 증거 | 파일 해시·JUnit 집계·출처 검사 및 오류 fixture | 비공개 원본과 실행 당시 미커밋 상태는 별도 한계 기록 |
 | 성능 계측 | 동일 기기·빌드·측정 시나리오의 반복 실행 | Macrobenchmark·Perfetto 결과 비교 |
 
 ## 실제 자동 검사
@@ -25,3 +26,5 @@ Hilt 전용 `RepositoryBindingsTest`는 `-PfanstageHiltInstrumentation=true`에�
 자동 검사가 실패하면 해당 GitHub Actions 작업이 실패 상태로 표시됩니다. 변경 수용 시 코드 리뷰와 관련 기기 검증 기록을 함께 확인합니다. **에이전트의 작업 보고만으로 테스트 통과를 판단하지 않습니다.**
 
 [실제 실행 결과](verification.md) · [AI 개발·검증 절차](ai-development-workflow.md)
+
+PR에서는 [통합 품질 게이트 제안](specs/ci-required-quality-policy.md)의 `required-quality`가 선택된 검사의 결과를 집계한다. GitHub의 필수 체크 강제 정책은 별도 승인 전이며, CI 성공과 병합 차단을 혼동하지 않는다.

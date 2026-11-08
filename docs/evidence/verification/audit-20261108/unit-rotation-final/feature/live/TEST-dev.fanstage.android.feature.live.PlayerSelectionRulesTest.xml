@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.fanstage.android.feature.live.PlayerSelectionRulesTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-08T15:11:45.350Z" hostname="[redacted]" time="0.001">
+  <properties/>
+  <testcase name="speedChangesRequireSupportedValueAvailableCommandAndLivePlayer" classname="dev.fanstage.android.feature.live.PlayerSelectionRulesTest" time="0.001"/>
+  <testcase name="subtitleStatusFollowsSelectedTracks" classname="dev.fanstage.android.feature.live.PlayerSelectionRulesTest" time="0.0"/>
+  <testcase name="overrideRequiresCurrentGroupAndSupportedIndices" classname="dev.fanstage.android.feature.live.PlayerSelectionRulesTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

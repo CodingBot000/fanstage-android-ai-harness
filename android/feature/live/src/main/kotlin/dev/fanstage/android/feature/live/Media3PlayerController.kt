@@ -42,11 +42,16 @@ class Media3PlayerController(context: Context, uri: String) : PlayerController {
                 else -> PlaybackState.Paused
             }
             mutableUiState.value = mutableUiState.value.copy(playback = mutableState.value)
+            if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=player_events controller=${System.identityHashCode(this@Media3PlayerController)} player=${System.identityHashCode(player)} playback=${player.playbackState} ready=${player.playWhenReady} playing=${player.isPlaying} error=${player.playerError?.errorCodeName ?: "none"} flow=${mutableState.value.javaClass.simpleName}")
         }
         override fun onRenderedFirstFrame() {
+            if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=first_frame controller=${System.identityHashCode(this@Media3PlayerController)} player=${System.identityHashCode(player)} generation=${mutableSurfaceFrame.value.generation} ${attachedView?.let(::surfaceInfo) ?: "surfaceType=none surface=0 available=false"}")
             if (attachedView != null) mutableSurfaceFrame.value = mutableSurfaceFrame.value.copy(rendered = true)
         }
-        override fun onPlayerError(error: PlaybackException) { mutableState.value = PlaybackState.Error }
+        override fun onPlayerError(error: PlaybackException) {
+            if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=player_error controller=${System.identityHashCode(this@Media3PlayerController)} player=${System.identityHashCode(player)} error=${error.errorCodeName}")
+            mutableState.value = PlaybackState.Error
+        }
     }
 
     init {
@@ -61,6 +66,7 @@ class Media3PlayerController(context: Context, uri: String) : PlayerController {
             .createMediaSource(MediaItem.fromUri(uri))
         player.repeatMode = Player.REPEAT_MODE_ONE
         player.addListener(listener)
+        if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=listener_registered controller=${System.identityHashCode(this)} player=${System.identityHashCode(player)} listener=${System.identityHashCode(listener)}")
         player.setMediaSource(source)
         player.prepare()
     }
@@ -135,16 +141,29 @@ class Media3PlayerController(context: Context, uri: String) : PlayerController {
     override fun selectVideo(id: String?) = selectTrack(C.TRACK_TYPE_VIDEO, id)
     override fun selectSubtitle(id: String?) = selectTrack(C.TRACK_TYPE_TEXT, id)
 
+    private fun surfaceInfo(view: androidx.media3.ui.PlayerView): String {
+        val surface = view.videoSurfaceView
+        val available = when (surface) {
+            is android.view.TextureView -> surface.isAvailable
+            is android.view.SurfaceView -> surface.holder.surface.isValid
+            else -> false
+        }
+        return "surfaceType=${surface?.javaClass?.simpleName ?: "none"} surface=${surface?.let(System::identityHashCode) ?: 0} available=$available"
+    }
+
     internal fun attach(view: androidx.media3.ui.PlayerView): Long {
         if (attachedView !== view) {
+            if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=surface_replace controller=${System.identityHashCode(this)} player=${System.identityHashCode(player)} oldView=${attachedView?.let(System::identityHashCode) ?: 0} newView=${System.identityHashCode(view)}")
             attachedView?.player = null
             attachedView = view
             mutableSurfaceFrame.value = SurfaceFrame(mutableSurfaceFrame.value.generation + 1)
             view.player = player
+            if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=surface_attached controller=${System.identityHashCode(this)} player=${System.identityHashCode(player)} view=${System.identityHashCode(view)} generation=${mutableSurfaceFrame.value.generation} attached=${view.isAttachedToWindow} ${surfaceInfo(view)}")
         }
         return mutableSurfaceFrame.value.generation
     }
     internal fun detach(view: androidx.media3.ui.PlayerView) {
+        if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=surface_detached controller=${System.identityHashCode(this)} player=${System.identityHashCode(player)} view=${System.identityHashCode(view)} current=${attachedView === view} ${surfaceInfo(view)}")
         if (attachedView === view) {
             attachedView = null
             mutableSurfaceFrame.value = mutableSurfaceFrame.value.copy(rendered = false)
@@ -176,8 +195,10 @@ class Media3PlayerController(context: Context, uri: String) : PlayerController {
         attachedView = null
         mutableSurfaceFrame.value = mutableSurfaceFrame.value.copy(rendered = false)
         player.removeListener(listener)
+        if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=listener_removed controller=${System.identityHashCode(this)} player=${System.identityHashCode(player)} listener=${System.identityHashCode(listener)}")
         player.clearVideoSurface()
         player.release()
+        if (PlayerRotationTrace.enabled) PlayerRotationTrace.emit("event=player_released controller=${System.identityHashCode(this)} player=${System.identityHashCode(player)}")
     }
 }
 

@@ -1,0 +1,101 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuites tests="42" failures="0" errors="0" skipped="0" time="157.251" timestamp="2026-11-08T15:08:02" hostname="localhost">
+  <testsuite name="dev.fanstage.android.DiscoverTest" tests="9" failures="0" errors="0" skipped="0" time="18.165" timestamp="2026-11-08T15:08:02" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="communityEmptyAndErrorStates" classname="dev.fanstage.android.DiscoverTest" time="1.749" />
+    <testcase name="communityPostLikeAndComment" classname="dev.fanstage.android.DiscoverTest" time="4.117" />
+    <testcase name="loadingAndErrorRetryRender" classname="dev.fanstage.android.DiscoverTest" time="1.07" />
+    <testcase name="tabsRestoreDiscoverScroll" classname="dev.fanstage.android.DiscoverTest" time="2.135" />
+    <testcase name="localMessageCanBeSent" classname="dev.fanstage.android.DiscoverTest" time="2.549" />
+    <testcase name="replayPlaysAndReturns" classname="dev.fanstage.android.DiscoverTest" time="1.734" />
+    <testcase name="koreanLargeTextShowsDiscoverAndCommunity" classname="dev.fanstage.android.DiscoverTest" time="0.958" />
+    <testcase name="liveOpensAndReturns" classname="dev.fanstage.android.DiscoverTest" time="1.549" />
+    <testcase name="mediaFilterAndReplay" classname="dev.fanstage.android.DiscoverTest" time="2.304" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.RoomNavigationSmokeTest" tests="4" failures="0" errors="0" skipped="0" time="47.828" timestamp="2026-11-08T15:08:02" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="sanitizedRcaRetainsLocationsAndCauseTypes" classname="dev.fanstage.android.RoomNavigationSmokeTest" time="0.876" />
+    <testcase name="rcFaultUiAndReleasedListener" classname="dev.fanstage.android.RoomNavigationSmokeTest" time="1.971" />
+    <testcase name="rcUncertainMessageAndChatCleanup" classname="dev.fanstage.android.RoomNavigationSmokeTest" time="0.881" />
+    <testcase name="roomListOpensDetailAndReturns" classname="dev.fanstage.android.RoomNavigationSmokeTest" time="44.1" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.DeviceUiRegressionTest" tests="9" failures="0" errors="0" skipped="0" time="19.461" timestamp="2026-11-08T15:08:02" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="gridCardsHaveEqualHeightsAndLongTextEllipsizes" classname="dev.fanstage.android.DeviceUiRegressionTest" time="1.065" />
+    <testcase name="videoUsesTextureAndLeavesWithDetail" classname="dev.fanstage.android.DeviceUiRegressionTest" time="1.564" />
+    <testcase name="developmentFieldsStayAboveImeWithoutMovingVideo" classname="dev.fanstage.android.DeviceUiRegressionTest" time="2.805" />
+    <testcase name="chatSettingsStartCollapsedAndInvalidConnectionKeepsDemoSelected" classname="dev.fanstage.android.DeviceUiRegressionTest" time="1.677" />
+    <testcase name="detailHeadersUseBackIconAndKeyboardSendWorks" classname="dev.fanstage.android.DeviceUiRegressionTest" time="4.8" />
+    <testcase name="chatModeControlsRemainSeparateAtDoubleFontAndNarrowWidth" classname="dev.fanstage.android.DeviceUiRegressionTest" time="0.907" />
+    <testcase name="messageCardsRemainAlignedWithUnreadAndLongPreview" classname="dev.fanstage.android.DeviceUiRegressionTest" time="0.964" />
+    <testcase name="liveChatKeyboardSendAndBack" classname="dev.fanstage.android.DeviceUiRegressionTest" time="3.307" />
+    <testcase name="chatSettingsSurviveActivityRecreation" classname="dev.fanstage.android.DeviceUiRegressionTest" time="2.372" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.PlayerSettingsTest" tests="14" failures="0" errors="0" skipped="0" time="35.197" timestamp="2026-11-08T15:08:02" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="portraitVideoRendersInFitSurface" classname="dev.fanstage.android.PlayerSettingsTest" time="1.369" />
+    <testcase name="fullscreenRestoresAfterActualRotation" classname="dev.fanstage.android.PlayerSettingsTest" time="3.644" />
+    <testcase name="liveAndReplayFullscreen" classname="dev.fanstage.android.PlayerSettingsTest" time="1.897" />
+    <testcase name="undeclaredCeaCandidateIsExplicitlyUncertainAndSelectable" classname="dev.fanstage.android.PlayerSettingsTest" time="1.103" />
+    <testcase name="homePausesAndRequiresManualResume" classname="dev.fanstage.android.PlayerSettingsTest" time="1.516" />
+    <testcase name="sourceChangeInvalidatesTrackOverrides" classname="dev.fanstage.android.PlayerSettingsTest" time="1.242" />
+    <testcase name="actualTracksAndSpeed" classname="dev.fanstage.android.PlayerSettingsTest" time="1.976" />
+    <testcase name="fullscreenSurvivesExplicitActivityRecreation" classname="dev.fanstage.android.PlayerSettingsTest" time="2.501" />
+    <testcase name="manualSettingsSurviveFullscreenRoundTrip" classname="dev.fanstage.android.PlayerSettingsTest" time="2.894" />
+    <testcase name="doubleFontScaleControlsHaveAccessibleLabels" classname="dev.fanstage.android.PlayerSettingsTest" time="1.402" />
+    <testcase name="captionlessDefaultHlsHasNoSubtitleChoices" classname="dev.fanstage.android.PlayerSettingsTest" time="0.985" />
+    <testcase name="playbackOverlayShowsOnTapAndHidesOnlyWhilePlaying" classname="dev.fanstage.android.PlayerSettingsTest" time="9.057" />
+    <testcase name="removingPlayerAfterFullscreenLeavesNoVideoOverlay" classname="dev.fanstage.android.PlayerSettingsTest" time="1.857" />
+    <testcase name="fullscreenBackAndSpeed" classname="dev.fanstage.android.PlayerSettingsTest" time="3.754" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.UiContractTest" tests="2" failures="0" errors="0" skipped="0" time="2.919" timestamp="2026-11-08T15:08:02" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="conversationScreenEmitsSendWithoutViewModel" classname="dev.fanstage.android.UiContractTest" time="1.553" />
+    <testcase name="postScreenEmitsActionsWithoutViewModel" classname="dev.fanstage.android.UiContractTest" time="1.366" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.HiltRoomLifecycleTest" tests="2" failures="0" errors="0" skipped="0" time="5.043" timestamp="2026-11-08T15:08:02" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="playbackRemainsActiveAfterChatSendWithKeyboardVisible" classname="dev.fanstage.android.HiltRoomLifecycleTest" time="2.66" />
+    <testcase name="roomDraftSurvivesRecreationAndIsClearedAfterReentry" classname="dev.fanstage.android.HiltRoomLifecycleTest" time="2.383" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.RotationAuditTest" tests="1" failures="0" errors="0" skipped="0" time="1.017" timestamp="2026-11-08T15:08:02" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="syntheticFailureRetainsDiagnosticEvents" classname="dev.fanstage.android.RotationAuditTest" time="1.017" />
+  </testsuite>
+  <testsuite name="dev.fanstage.android.ResourceLifecycleAuditTest" tests="1" failures="0" errors="0" skipped="0" time="25.563" timestamp="2026-11-08T15:08:02" hostname="localhost">
+    <properties>
+      <property name="device" value="SM-S908N - 16" />
+      <property name="flavor" value="" />
+      <property name="project" value=":app" />
+    </properties>
+    <testcase name="repeatedNavigationAndLifecycleObservation" classname="dev.fanstage.android.ResourceLifecycleAuditTest" time="25.563" />
+  </testsuite>
+</testsuites>

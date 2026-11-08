@@ -27,3 +27,8 @@
 ## 일시정지 화면의 재생 버튼
 
 Activity 재생성이나 회전으로 새 화면이 만들어진 뒤에도 플레이어가 일시정지 상태라면 재생 버튼을 표시합니다. 기존 자동 재생·수동 재개와 Player 소유권 정책은 유지합니다. 실기기 회귀 범위와 이전 실패는 [검증 결과](../verification.md)를 참조합니다.
+
+
+## 회전 진단
+
+회전 계측은 Debug 전용 진단으로 Lifecycle·Player·Surface·Compose 상태를 기록한다. Release/RcLocal에서는 진단이 비활성이다. 실제 기기 반복 결과와 기존 미확정 실패는 [검증 증거](../evidence/verification/audit-20261108/README.md)를 참조한다.

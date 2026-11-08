@@ -65,7 +65,8 @@ class LocalMediaTest {
         rule.onNodeWithTag("chat_settings_toggle").performScrollTo().performClick()
         InstrumentationRegistry.getArguments().getString("fanServerPort")?.let { port ->
             rule.onNodeWithTag("chat_endpoint").performScrollTo().performTextClearance()
-            rule.onNodeWithTag("chat_endpoint").performTextInput("http://10.0.2.2:$port")
+            val host = InstrumentationRegistry.getArguments().getString("fanServerHost") ?: "10.0.2.2"
+            rule.onNodeWithTag("chat_endpoint").performTextInput("http://$host:$port")
         }
         rule.onNodeWithTag("chat_token").performScrollTo().performTextInput(token)
         rule.onNodeWithTag("chat_use_real").performScrollTo().performClick()

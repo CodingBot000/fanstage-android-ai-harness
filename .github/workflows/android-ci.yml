@@ -1,16 +1,7 @@
 name: Android PR build and unit gates
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'android/**'
-      - 'scripts/m1-004-emulator-smoke.sh'
-      - 'scripts/ux012-emulator-gate.sh'
-      - 'scripts/m4-check-manifests.py'
-      - 'scripts/m6-check-manifests.py'
-      - 'scripts/check-ux-module-boundaries.py'
-      - '.github/workflows/android-ci.yml'
+  workflow_call:
   push:
     branches: [main]
     paths:

@@ -1,0 +1,10 @@
+{
+  "integration": {
+    "exit_code": 0,
+    "output": "PASS: subscription and HTTP snapshot boundary retains both messages\nPASS: concurrent same-ID retries produce one durable message\nPASS: Unicode code-point boundary and invalid ID\nPASS: authenticated WS, ACK/broadcast, idempotency/conflict, length, concurrent sequences and HTTP gaps\nPASS: deferred COMMIT failure produced no ACK and rolled back sequence\nPASS: server restart preserved message ID, sequence and idempotent result\n"
+  },
+  "faults": {
+    "exit_code": 0,
+    "output": "PASS: m5-net02-seed-73 committed ACK dropped; same ID retry: one row, one broadcast\nPASS: m5-net01-seed-73 10s disconnect; HTTP snapshot recovered committed event\n"
+  }
+}

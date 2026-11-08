@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.fanstage.android.feature.live.PlaybackSessionTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-08T13:23:19.879Z" hostname="[redacted]" time="0.002">
+  <properties/>
+  <testcase name="backgroundPauseDoesNotResetPlayerSettings" classname="dev.fanstage.android.feature.live.PlaybackSessionTest" time="0.002"/>
+  <testcase name="recreatedSessionDoesNotAutoplayWhenAlreadyPaused" classname="dev.fanstage.android.feature.live.PlaybackSessionTest" time="0.0"/>
+  <testcase name="backgroundPauseRequiresManualResumeAndReleaseIsIdempotent" classname="dev.fanstage.android.feature.live.PlaybackSessionTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

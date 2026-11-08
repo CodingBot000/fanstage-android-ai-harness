@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.fanstage.android.feature.live.chat.ChatTimestampTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-11-08T13:23:19.900Z" hostname="[redacted]" time="0.004">
+  <properties/>
+  <testcase name="absent invalid or non UTC timestamps are omitted" classname="dev.fanstage.android.feature.live.chat.ChatTimestampTest" time="0.003"/>
+  <testcase name="UTC server instant is formatted in requested locale and zone" classname="dev.fanstage.android.feature.live.chat.ChatTimestampTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
