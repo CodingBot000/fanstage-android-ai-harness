@@ -126,6 +126,20 @@
       "source_commit": "8382bdf8439787ac9e333796872ae3421fecfed4",
       "environment": "SM-S908N / API 36",
       "purpose": "filtered measurement records; not proof of no leak"
+    },
+    {
+      "file": "hilt-physical-cleanup.xml",
+      "sha256": "391c920d38f8e4bb298687d22877d4727af2bdc851e2a51aa083d3aa599cfded",
+      "original_sha256": "b3b198ec5540ba466b9929fe4877895f3c63789e79e356c84b0b462cf774a9c1",
+      "normalization": "CRLF to LF only",
+      "source_commit": "c2f791464aba88444d29a654f936fdb327d3d94d",
+      "environment": "SM-S908N / API 36",
+      "variant": "debug (.devicecheck)",
+      "purpose": "Hilt Activity graph and ViewModelStore cleanup",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
     }
   ]
 }
