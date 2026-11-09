@@ -66,7 +66,6 @@ private fun MediaArtworkCard(
 - Media: `DeviceUiRegressionTest`의 짧은/긴 제목 크기, 큰 글꼴과 단일 줄·말줄임, filter 0/1/2, `media_<id>`/`media_replay` 클릭과 LIVE/VOD 구별, 이미지 Crop과 TopCenter/Center 차이 검증. 기존 `LocalMediaTest`, `DiscoverTest` 경로와 에러/빈 데이터도 확인한다.
 - Shell: `FloatingNavigationTest`, `CollapsingTitleBarTest`, `UiContractTest`, `RoomNavigationSmokeTest`, `DeviceUiRegressionTest`, `PlayerSettingsTest`, `HiltRoomLifecycleTest`의 관련 범위를 실행한다. 탭 복원·뒤로가기, 홈 복귀·회전·Activity 재생성, LIVE/Replay 진입·이탈과 Surface, 채팅 재진입·draft·IME·전송을 확인한다. 실제 서버 연결은 해당 경로에 영향이 있으면 격리 서버로 별도 검증한다.
 - 접근성 설명·semantics tree와 태그가 유지되고, 클릭·레이아웃·색·이미지 정렬 및 글자 크기별 스크린샷이 기준과 일치해야 한다. 확인되지 않은 항목은 `NOT_RUN`. 최초 회전 실패 원인 미확정 및 장시간 누수 `INCONCLUSIVE`는 새 증거 없이 바꾸지 않는다.
-- **Phase 1 설계 문서만 변경하던 당시에는** `python3 scripts/check-portfolio-docs.py`, `git diff --check`와 코드·문서 대조만 요구했다. 이후 Phase 2A·2B에서는 실제 빌드·기기 회귀를 실행했으며 결과는 아래 기록을 따른다.
 
 ## 롤백
 
