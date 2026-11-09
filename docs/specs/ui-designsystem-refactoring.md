@@ -1,8 +1,10 @@
-# UI 재사용 경계 및 앱 조립 책임 분리 · 설계/구현 기록
+# UI 컴포넌트 재사용과 앱 화면 구성 — 설계·구현 기록
 
-상태: **Phase 2A·2B 구현, Phase 3 관련 빌드·에뮬레이터·실기기 회귀 기록 / 스크린샷 비교 `NOT_RUN`**. 착수 분석 기준: [PR #69 병합 `3299c9d`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/3299c9d97cd8a43a3360f4c3c77beac10ce4b22d), 구현 병합: [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70) (`5d335ec`). [ADR-0005](../adr/ADR-0005-ui-component-reuse.md). 아래 구조 분석과 구현 전 제안은 **착수 시점의 역사적 기록**이며 현재 구현은 마지막 절을 따른다.
+**상태:** Phase 2A·2B 구현 완료. Phase 3의 빌드·에뮬레이터·실기기 회귀 결과를 기록했으며 변경 전후 스크린샷 대조는 `NOT_RUN`이다.
 
-## 착수 시점의 구조와 근거 (PR #69 병합 이후)
+설계 기준은 [PR #69 병합 커밋 `3299c9d`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/3299c9d97cd8a43a3360f4c3c77beac10ce4b22d), 구현은 [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70) (`5d335ec`)이다. 아래의 구조 분석은 **리팩토링 착수 당시 코드**를 다루며, 구현 결과는 마지막 절에 정리했다. [ADR-0005](../adr/ADR-0005-ui-component-reuse.md).
+
+## 리팩토링 전 구조와 공통화 대상 (PR #69 기준)
 
 11개 모듈과 의존 방향은 [아키텍처](../architecture.md)를 따른다. `core:designsystem`은 Compose Material3를 `api`로 제공하며 기능·모델·artwork·Navigation을 참조하지 않는다. 신규 Gradle 모듈이나 역방향 의존성을 추가하지 않는다.
 
@@ -72,7 +74,7 @@ private fun MediaArtworkCard(
 
 ## 구현 및 검증 결과 (2026-11-09 · PR #70)
 
-**구현 범위:** `MediaArtworkCard`는 `feature:media` 내부 `private` 함수이며, `FanStageAppShell`과 `FanStageNavHost`도 `MainActivity.kt` 내 `private` 함수다. 공통 API 승격·새 Gradle 모듈 추가·전면 UI 리디자인은 하지 않았다. 기기 PASS 수치는 [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)의 실행 기록으로, CI는 별도로 [필수 게이트](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)에서 확인한다. 현재 `main`의 [Android](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381222)·[서버](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381250)·[문서](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381240) CI도 병합 커밋 기준 PASS다. 화면 캡처 대조, 해당 리팩토링에서 실제 서버 재실행과 장시간 누수 검사는 `NOT_RUN` 그대로다.
+`MediaArtworkCard`는 `feature:media` 안의 `private` 함수이고, `FanStageAppShell`과 `FanStageNavHost`도 `MainActivity.kt` 내부 함수다. 이번 작업에서 새 Gradle 모듈이나 범용 컴포넌트를 추가하지 않았다. 기기 테스트 결과는 [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)에 기록했으며 [PR 필수 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)와 병합 후 [Android](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381222)·[서버](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381250)·[문서](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381240) 검사는 PASS했다. 화면 캡처 비교, 이 리팩토링에 대한 실제 서버 및 장시간 누수 재검사는 수행하지 않았다.
 
 - Media 세 카드는 `MediaArtworkCard`로 feature 내부에서 통합했다. Live/Replay의 TopCenter와 로컬 영상의 Center, 각 태그·콜백·문자열·artwork 조회를 유지한다. Media의 페이지·grid 간격·카드 패딩에 같은 값과 의미의 기존 spacing 토큰을 적용했다.
 - `FanStageApp`에서 `FanStageAppShell`과 `FanStageNavHost`를 app 내부 함수로 분리했다. 네 일반 ViewModel은 기존 상위 위치에서 얻고 ChatViewModel은 해당 BackStackEntry에서 얻는다. route와 graph, haze·스크롤 연결, 배경 및 태그는 유지했다.
