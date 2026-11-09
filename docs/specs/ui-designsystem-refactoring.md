@@ -1,19 +1,21 @@
-# UI 디자인 시스템 정비 · Phase 1 설계
+# UI 컴포넌트 재사용과 앱 화면 구성 — 설계·구현 기록
 
-상태: **Phase 2A·2B 구현 / 에뮬레이터 및 선택 실기기 회귀 실행**. 분석 기준: `main` `3299c9d`; [ADR-0005](../adr/ADR-0005-ui-component-reuse.md). 아래 현재 구조 분석과 제안은 구현 전 기준 이력이며 실제 결과는 마지막 절을 따른다.
+**상태:** Phase 2A·2B 구현 완료. Phase 3의 빌드·에뮬레이터·실기기 회귀 결과를 기록했으며 변경 전후 스크린샷 대조는 `NOT_RUN`이다.
 
-## 현재 구조와 근거
+설계 기준은 [PR #69 병합 커밋 `3299c9d`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/3299c9d97cd8a43a3360f4c3c77beac10ce4b22d), 구현은 [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70) (`5d335ec`)이다. 아래의 구조 분석은 **리팩토링 착수 당시 코드**를 다루며, 구현 결과는 마지막 절에 정리했다. [ADR-0005](../adr/ADR-0005-ui-component-reuse.md).
+
+## 리팩토링 전 구조와 공통화 대상 (PR #69 기준)
 
 11개 모듈과 의존 방향은 [아키텍처](../architecture.md)를 따른다. `core:designsystem`은 Compose Material3를 `api`로 제공하며 기능·모델·artwork·Navigation을 참조하지 않는다. 신규 Gradle 모듈이나 역방향 의존성을 추가하지 않는다.
 
-- [FanStageTheme.kt](../../android/core/designsystem/src/main/kotlin/dev/fanstage/android/core/designsystem/FanStageTheme.kt): light 색상표(Plum, Ink, Canvas 등), Material3 typography의 세 글꼴 가중치, 12/16/24dp shape와 `FanStageSpacing` 8/12/16/20/24dp. 현재 `FanStageSpacing`은 선언 외 Kotlin 사용처가 없다. 같은 숫자가 항상 같은 의미는 아니며 현재는 dark theme 전역 정의도 없다.
+- [FanStageTheme.kt](../../android/core/designsystem/src/main/kotlin/dev/fanstage/android/core/designsystem/FanStageTheme.kt): light 색상표(Plum, Ink, Canvas 등), Material3 typography의 세 글꼴 가중치, 12/16/24dp shape와 `FanStageSpacing` 8/12/16/20/24dp. 착수 당시 `FanStageSpacing`은 선언 외 Kotlin 사용처가 없었다. PR #70 이후 Media에서 기존 토큰을 사용한다. 같은 숫자가 항상 같은 의미는 아니며 현재는 dark theme 전역 정의도 없다.
 - [BackTitleBar.kt](../../android/core/designsystem/src/main/kotlin/dev/fanstage/android/core/designsystem/BackTitleBar.kt): 제목 두 줄 측정·ellipsis·접기 상태·뒤로 접근성 및 `backTag`; Community와 게시물, Messages 대화, LIVE·Replay에서 사용한다. [CollapsingTitleBar.kt](../../android/core/designsystem/src/main/kotlin/dev/fanstage/android/core/designsystem/CollapsingTitleBar.kt)의 `CompositionLocal`과 nested scroll은 app 조립에 연결된다.
 - [CardSingleLineText.kt](../../android/core/designsystem/src/main/kotlin/dev/fanstage/android/core/designsystem/CardSingleLineText.kt): 단일 행, 줄바꿈 방지와 말줄임. Media와 Discover 등에서 사용한다. [SendIcon.kt](../../android/core/designsystem/src/main/kotlin/dev/fanstage/android/core/designsystem/SendIcon.kt)은 댓글·DM·LIVE 전송 아이콘을 공유한다.
 - [MediaScreen.kt](../../android/feature/media/src/main/kotlin/dev/fanstage/android/feature/media/MediaScreen.kt)의 `LiveMediaCard`, `LocalVideoCard`, `ReplayCard`는 클릭 Card, 16:10 Crop 이미지, 12dp 안쪽 여백, label/title/description의 3개 `CardSingleLineText`를 반복한다. Live/Replay는 `Alignment.TopCenter`, 로컬 영상은 기본 Center다. `media_<id>`/`media_replay`, 아티스트 선택과 click 대상도 서로 다르다.
 - [DiscoverScreen.kt](../../android/feature/discover/src/main/kotlin/dev/fanstage/android/feature/discover/DiscoverScreen.kt)은 hero·가로 LIVE 카드·Replay·추천 콘텐츠를 사용한다. [CommunityScreen.kt](../../android/feature/community/src/main/kotlin/dev/fanstage/android/feature/community/CommunityScreen.kt)의 게시물은 작성자·본문·행동, [MessagesListScreen.kt](../../android/feature/messages/src/main/kotlin/dev/fanstage/android/feature/messages/MessagesListScreen.kt)의 대화 항목은 아바타·마지막 메시지·미읽음 상태가 중요하다. 이미지와 텍스트가 함께 있다는 사실만으로 같은 카드 계약으로 취급하지 않는다.
 - Discover 로딩은 중앙 정렬·`discover_loading`, 오류는 텍스트와 재시도·`discover_error`; Media는 기본 spinner 또는 버튼만 표시한다. Community는 목록 항목에 loading/error/empty를 표시하며 `community_loading`, `community_error`, `community_empty`를 사용한다. [RoomScreens.kt](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/RoomScreens.kt)의 별도 `RoomListScreen`에도 `rooms_loading/empty/error/retry`가 있으나 현재 앱 시작 경로는 `DiscoverRoute`다. 사용되지 않는 경로를 근거로 공통화하지 않는다.
 - [PostDetailScreen.kt](../../android/feature/community/src/main/kotlin/dev/fanstage/android/feature/community/PostDetailScreen.kt)와 [ConversationScreen.kt](../../android/feature/messages/src/main/kotlin/dev/fanstage/android/feature/messages/ConversationScreen.kt)은 `OutlinedTextField`의 trailing `IconButton`과 IME Send, 최대 네 줄을 사용하지만 여백·label·이벤트가 다르다. [ChatPanel.kt](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatPanel.kt)의 `ChatComposer`는 별도 `FilledIconButton`, 비어 있으면 비활성화, 성공한 경우에만 draft 초기화한다. 메시지 상태·연결 설정과 수명주기는 각 기능 소유다.
-- [MainActivity.kt](../../android/app/src/main/kotlin/dev/fanstage/android/MainActivity.kt)의 실제 이름은 `FanStageApp` 하나다. 여기서 Activity 범위 Hilt ViewModel 4개, `NavController`, `NavHost`, Scaffold, 접히는 상단 `TopAppBar`, Haze 기반 floating `NavigationBar`, 라우트·URI 변환과 화면 조립을 맡는다. `FanStageAppShell`과 `FanStageNavHost`는 현재 존재하지 않으며 아래의 분리 후보 이름이다. `ChatViewModel`은 `rooms/{roomId}`의 BackStackEntry 소유다.
+- [MainActivity.kt](../../android/app/src/main/kotlin/dev/fanstage/android/MainActivity.kt)의 실제 이름은 `FanStageApp` 하나다. 여기서 Activity 범위 Hilt ViewModel 4개, `NavController`, `NavHost`, Scaffold, 접히는 상단 `TopAppBar`, Haze 기반 floating `NavigationBar`, 라우트·URI 변환과 화면 조립을 맡는다. `FanStageAppShell`과 `FanStageNavHost`는 **착수 당시 존재하지 않았고**, 이후 PR #70에서 같은 파일의 함수로 구현했다. `ChatViewModel`은 `rooms/{roomId}`의 BackStackEntry 소유다.
 - 하드코딩 예: Media grid 20dp 페이지·12dp 간격/카드 여백, Messages 목록 20dp·12dp, 앱의 상단 64dp와 floating bar 72dp·바깥 16dp·색상 alpha, LIVE 입력의 24dp 모양·48dp 버튼. 각 숫자의 기능·기하 의미가 다르므로 일괄 치환하지 않는다. LIVE/Replay의 검은 재생 배경은 전역 light palette로 통일하지 않는다.
 
 ## 분류와 계약
@@ -64,13 +66,15 @@ private fun MediaArtworkCard(
 - Media: `DeviceUiRegressionTest`의 짧은/긴 제목 크기, 큰 글꼴과 단일 줄·말줄임, filter 0/1/2, `media_<id>`/`media_replay` 클릭과 LIVE/VOD 구별, 이미지 Crop과 TopCenter/Center 차이 검증. 기존 `LocalMediaTest`, `DiscoverTest` 경로와 에러/빈 데이터도 확인한다.
 - Shell: `FloatingNavigationTest`, `CollapsingTitleBarTest`, `UiContractTest`, `RoomNavigationSmokeTest`, `DeviceUiRegressionTest`, `PlayerSettingsTest`, `HiltRoomLifecycleTest`의 관련 범위를 실행한다. 탭 복원·뒤로가기, 홈 복귀·회전·Activity 재생성, LIVE/Replay 진입·이탈과 Surface, 채팅 재진입·draft·IME·전송을 확인한다. 실제 서버 연결은 해당 경로에 영향이 있으면 격리 서버로 별도 검증한다.
 - 접근성 설명·semantics tree와 태그가 유지되고, 클릭·레이아웃·색·이미지 정렬 및 글자 크기별 스크린샷이 기준과 일치해야 한다. 확인되지 않은 항목은 `NOT_RUN`. 최초 회전 실패 원인 미확정 및 장시간 누수 `INCONCLUSIVE`는 새 증거 없이 바꾸지 않는다.
-- 문서만인 현재 단계는 `python3 scripts/check-portfolio-docs.py`, `git diff --check` 및 코드·문서 대조를 수행한다. 빌드와 기기 계측은 변경된 UI가 없어 이번 단계에서 실행하지 않는다.
+- **Phase 1 설계 문서만 변경하던 당시에는** `python3 scripts/check-portfolio-docs.py`, `git diff --check`와 코드·문서 대조만 요구했다. 이후 Phase 2A·2B에서는 실제 빌드·기기 회귀를 실행했으며 결과는 아래 기록을 따른다.
 
 ## 롤백
 
 2A의 카드 추출과 토큰 치환, 2B의 shell 분리는 독립 변경으로 유지한다. 회귀 시 해당 단계 커밋을 역순 revert하고 기존 태그·동작 및 위 영향 범위 테스트를 재실행한다. 이미 후속 단계가 해당 API에 의존하면 관련 단계까지 함께 되돌린다. 기록 삭제나 force push로 결과를 감추지 않는다.
 
-## 구현 및 검증 결과 (2026-11-09)
+## 구현 및 검증 결과 (2026-11-09 · PR #70)
+
+`MediaArtworkCard`는 `feature:media` 안의 `private` 함수이고, `FanStageAppShell`과 `FanStageNavHost`도 `MainActivity.kt` 내부 함수다. 이번 작업에서 새 Gradle 모듈이나 범용 컴포넌트를 추가하지 않았다. 기기 테스트 결과는 [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)에 기록했으며 [PR 필수 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)와 병합 후 [Android](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381222)·[서버](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381250)·[문서](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42503381240) 검사는 PASS했다. 화면 캡처 비교, 이 리팩토링에 대한 실제 서버 및 장시간 누수 재검사는 수행하지 않았다.
 
 - Media 세 카드는 `MediaArtworkCard`로 feature 내부에서 통합했다. Live/Replay의 TopCenter와 로컬 영상의 Center, 각 태그·콜백·문자열·artwork 조회를 유지한다. Media의 페이지·grid 간격·카드 패딩에 같은 값과 의미의 기존 spacing 토큰을 적용했다.
 - `FanStageApp`에서 `FanStageAppShell`과 `FanStageNavHost`를 app 내부 함수로 분리했다. 네 일반 ViewModel은 기존 상위 위치에서 얻고 ChatViewModel은 해당 BackStackEntry에서 얻는다. route와 graph, haze·스크롤 연결, 배경 및 태그는 유지했다.

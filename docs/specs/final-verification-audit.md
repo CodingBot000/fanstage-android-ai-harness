@@ -1,6 +1,6 @@
 # Android 최종 검증 감사
 
-- 착수 기준 코드: `4191a1dd1adf9debd95a3cc0c4366943c751f67e` (PR #68 이후 `main`). 후속 검증 대상은 [Draft PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69)이며 최신 코드·CI 결과는 해당 PR의 HEAD를 따른다.
+- 착수 기준 코드: `4191a1dd1adf9debd95a3cc0c4366943c751f67e` (PR #68 이후 `main`). 후속 검증은 [PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69)에서 진행했고, 해당 PR은 [병합 커밋 `3299c9d`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/3299c9d97cd8a43a3360f4c3c77beac10ce4b22d)로 `main`에 반영됐다. 이 문서의 테스트 결과는 당시의 코드/실행 환경에 한정하며 최신 `main`의 상태는 [STATUS](../STATUS.md)를 따른다.
 - 상태: **PARTIAL** — 주요 기기·서버 검증과 PR 통합 품질 게이트는 확인했다. 2026-11-09 `main` Branch Protection 및 `required-quality` 필수 체크를 적용했으나 관리자 우회를 허용한다. 실제 GitHub 병합 차단 실험은 `NOT_RUN`이다. 최초 회전 실패 원인 및 장시간 누수 부재는 미확정이며, 미실행 검증을 PASS로 추정하지 않는다.
 - 범위: Hilt 계측, Android 빌드·UI·생명주기, 격리 서버 연결·복구, 자원 반복 관찰, 기존 성능 근거, 레거시 DI, CI 정책, 원본 증거·문서 정합성.
 - 제외: 상시 인프라, 실제 사용자 데이터, PR 자동 병합. GitHub 보안 설정 변경은 착수 당시 제외했으나, 이후 사용자 승인을 받아 `main` 보호 정책만 별도로 적용했다.
