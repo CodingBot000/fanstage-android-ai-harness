@@ -23,8 +23,6 @@ FanStage에서는 Codex를 코드 작성과 리팩토링에 사용했습니다. 
 
 **재검증:** [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47)에서 플레이어를 포함한 단위 테스트 **56/56**, API 36 로컬 계측 **41/41** 통과를 기록했습니다. 해당 변경의 Android 빌드·Lint·단위 테스트와 서버 통합 CI 결과도 PR에 연결했습니다.
 
-이 사례는 에이전트가 코드를 생성했다는 사실보다 **검증 기준을 구체화하고, 잘못된 성공 판정 가능성을 제거한 과정**을 보여줍니다.
-
 ## 3. 사례: 메시지 전송 중 연결 전환 제어
 
 **문제:** 채팅 서버를 바꿀 때 전송이 확정되지 않은 메시지가 있다면 이전 연결의 결과를 잃거나 화면 상태를 잘못 확정할 수 있습니다.
@@ -49,9 +47,9 @@ FanStage에서는 Codex를 코드 작성과 리팩토링에 사용했습니다. 
 
 ## 6. 사례: UI 공통화 범위 제한과 회귀 보존
 
-**설계:** [UI SDD](specs/ui-designsystem-refactoring.md)와 [ADR-0005](adr/ADR-0005-ui-component-reuse.md)에서 기존 `core:designsystem` 우선 재사용과 **무엇을 공통화하지 않을지**를 함께 결정했습니다. Media 세 카드의 반복 배치만 `feature:media` 내부 `MediaArtworkCard`로 통합하고, `app`의 Shell과 NavHost 구성 책임을 분리했습니다. 불필요한 범용 카드 래퍼나 새 Gradle 모듈은 추가하지 않았습니다.
+**설계·구현:** [UI SDD](specs/ui-designsystem-refactoring.md)와 [ADR-0005](adr/ADR-0005-ui-component-reuse.md)에 따라 Media 카드 3종의 공통 레이아웃만 `feature:media`에서 묶었습니다. 앱의 Scaffold와 NavHost도 함수별로 나눴습니다. 디자인 시스템은 기존 컴포넌트와 간격 토큰을 재사용하고, 동작이 다른 입력창·상태 UI는 각 기능에 남겼습니다.
 
-**검증:** [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)은 기존 API 36 에뮬레이터·실기기 UI 계측 각각 43/43, Hilt 3/3 등을 기록했고 [PR 필수 품질 게이트](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)가 PASS했습니다. 다만 동일 조건의 변경 전후 화면 캡처 비교와 해당 PR의 실제 서버·장시간 누수 재실행은 `NOT_RUN`입니다. 코딩 에이전트의 향후 UI 변경 기준은 [AGENTS.md](../AGENTS.md)에 연결했습니다.
+**검증:** [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)에 API 36 에뮬레이터·실기기 UI 계측 각 43/43, Hilt 3/3 결과를 기록했고, [필수 CI 검사](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)도 통과했습니다. 화면 캡처 전후 비교, 해당 PR의 실제 서버·장시간 누수 재실행은 수행하지 않았습니다. 이후 UI 작업의 기준은 [AGENTS.md](../AGENTS.md)에 반영했습니다.
 
 ## 최종 검증 감사의 범위
 

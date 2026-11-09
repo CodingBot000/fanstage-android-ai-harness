@@ -43,11 +43,11 @@ DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hil
 
 ## 2. UI 디자인 시스템과 화면 조립 책임
 
-- **`core:designsystem`:** `FanStageTheme`, `FanStageSpacing`, `BackTitleBar`, `CardSingleLineText`, `SendIcon`, 접히는 타이틀바 상태 등 **기존 공통 API**를 제공합니다. Feature 도메인 모델·Navigation·ViewModel·Media3 Player에는 의존하지 않습니다. 이번 PR에서 신규 Gradle 모듈이나 범용 카드 래퍼를 추가하지 않았습니다.
+- **`core:designsystem`:** `FanStageTheme`, `FanStageSpacing`, `BackTitleBar`, `CardSingleLineText`, `SendIcon`, 접히는 타이틀바 상태 등 **기존 공통 API**를 제공합니다. Feature 도메인 모델·Navigation·ViewModel·Media3 Player에는 의존하지 않습니다. 공통 컴포넌트와 기능별 UI의 경계를 기존 모듈 안에서 유지합니다.
 - **`feature:media`:** LIVE·로컬 영상·Replay의 카드가 공유하는 16:10 이미지/라벨/제목/설명 레이아웃을 비공개 Composable `MediaArtworkCard`로 통합했습니다. 데이터 매핑, 이미지 리소스, 클릭 행동과 `media_*` 테스트 태그는 각 카드의 호출부에서 유지합니다. 이 컴포넌트는 다른 Feature에서 직접 사용하지 않습니다.
 - **`app`:** `MainActivity.kt`의 `FanStageApp`에서 NavController와 일반 ViewModel 네 개를 생성하고, 같은 파일 안의 `FanStageAppShell`은 Scaffold·상단바·FloatingNavigation을, `FanStageNavHost`는 목적지·화면 조립을 담당합니다. `ChatViewModel`의 룸별 Navigation BackStackEntry 소유권은 변경하지 않았습니다.
 
-복수 Feature가 동일한 UI 표현·상호작용 계약을 공유할 때에만 `core:designsystem`으로 승격합니다. Material3의 단순 일대일 래퍼나 기능별 모델을 받는 공통 컴포넌트는 만들지 않는 기준입니다. [UI 재사용 결정 ADR-0005](adr/ADR-0005-ui-component-reuse.md) · [설계·구현 SDD](specs/ui-designsystem-refactoring.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70).
+둘 이상의 기능에서 표현과 동작이 같고 기능별 모델에 의존하지 않을 때만 `core:designsystem`에 공통 컴포넌트를 둡니다. 그 외 UI는 해당 기능 모듈에서 관리합니다. [UI 재사용 결정 ADR-0005](adr/ADR-0005-ui-component-reuse.md) · [설계·구현 SDD](specs/ui-designsystem-refactoring.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70).
 
 ## 3. Compose 상태 관리
 

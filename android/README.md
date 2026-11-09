@@ -13,9 +13,9 @@ FanStage는 Kotlin·Jetpack Compose·Coroutines/Flow·MVVM/UDF·Hilt·Media3를 
 
 ## UI 재사용과 화면 조립
 
-`core:designsystem`은 Theme·spacing·기존 공통 Composable을 제공하며, 새로운 기능을 만들 때 먼저 재사용 가능성을 검토합니다. `feature:media`의 `MediaArtworkCard`는 LIVE·로컬 영상·Replay 카드 3종이 같은 레이아웃을 공유하는 **Feature 내부** 컴포넌트입니다. `app`의 `FanStageAppShell`과 `FanStageNavHost`는 `MainActivity.kt` 내부에서 Scaffold와 Navigation 책임을 분리합니다. 새 Gradle 모듈이나 범용 UI 래퍼는 만들지 않았습니다.
+`core:designsystem`에는 테마·간격·공통 헤더 등 여러 화면에서 쓰는 UI를 둡니다. Media의 세 카드가 공유하는 이미지·텍스트 레이아웃은 `feature:media`의 `MediaArtworkCard`로 묶었습니다. `MainActivity.kt` 안에서는 `FanStageAppShell`이 Scaffold를, `FanStageNavHost`가 화면 이동 구성을 담당합니다.
 
-[ADR-0005: 공통화 기준](../docs/adr/ADR-0005-ui-component-reuse.md) · [구현·회귀 SDD](../docs/specs/ui-designsystem-refactoring.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70). UI 변경 검증은 관련 Compose 계측과 병합 PR의 CI 결과를 구분해서 확인하며, 변경 전후 시각적 동일성 비교는 별도 실행 전까지 `NOT_RUN`입니다.
+[컴포넌트 재사용 기준](../docs/adr/ADR-0005-ui-component-reuse.md) · [구현 및 검증 기록](../docs/specs/ui-designsystem-refactoring.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70). 변경 전후 화면 캡처 비교는 아직 수행하지 않았으며, 자세한 검증 범위는 SDD에 기록했습니다.
 
 ## 필요한 환경
 
