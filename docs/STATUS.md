@@ -1,6 +1,6 @@
 # FanStage 개발 현황
 
-**구현 기준:** [PR #70 병합 커밋 `5d335ec`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/5d335ec2f26d4655f713083ecded85b06b44806e) (2026-11-09). 이 문서의 변경은 Android 앱 코드를 수정하지 않습니다.
+**구현 기준:** [PR #70 병합 커밋 `5d335ec`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/5d335ec2f26d4655f713083ecded85b06b44806e) (2026-11-09).
 
 ## 현재 구현
 

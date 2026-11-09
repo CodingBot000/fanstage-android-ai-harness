@@ -56,9 +56,9 @@ python3 ../scripts/m6-check-manifests.py
 
 SM-S908N/API 36의 수정된 `roomListOpensDetailAndReturns` 단독 PASS 후 일반 계측 선택 39/39 PASS (Discover 9, RoomNavigationSmoke 4, DeviceUiRegression 9, PlayerSettings 13, UiContract 2, HiltRoomLifecycle 2; skipped 0). 마지막 코드 기준 Hilt RepositoryBindingsTest 1/1 PASS. 전체 Gradle 빌드·lint·단위 (824 tasks), 모듈·manifest 및 두 benchmark APK 서명 검사 PASS. 초기 실패와 재현 이력은 위에 유지한다. 실제 백엔드 연동·장시간 누수·성능·전 기기 검증은 NOT_RUN.
 
-## 최신 main 문서 통합 후 검증
+## PR #67 진행 중 문서 통합 검증 (2026-11-08)
 
-최신 main `8dd532f`의 포트폴리오 문서를 유지하고 Hilt 설명 및 회귀 검증만 추가했다. Android 코드·테스트는 직전 실기기 계측 시점과 동일하다. 통합 작업 트리에서 JDK 21 및 JDK 17로 전체 Gradle 빌드·Lint·단위 테스트 PASS, 모듈·Manifest·benchmark 서명 검사 및 Markdown 링크·ADR 번호 검사 PASS. 실제 서버 통합·장시간 누수·원격 PR CI는 NOT_RUN.
+당시 기준 커밋 `8dd532f`의 포트폴리오 문서를 유지하며 Hilt 설명과 회귀 검증 기록을 추가했다. 이 단계에서 Android 코드·테스트는 직전 실기기 계측 시점과 동일했다. 통합 작업 트리에서 JDK 21 및 JDK 17로 전체 Gradle 빌드·Lint·단위 테스트 PASS, 모듈·Manifest·benchmark 서명 검사 및 Markdown 링크·ADR 번호 검사 PASS. 실제 서버 통합·장시간 누수·원격 PR CI는 NOT_RUN.
 
 ## 격리 서버 Android 통합 (2026-11-08)
 

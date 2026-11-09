@@ -20,7 +20,7 @@
 
 로컬 JDK 21과 JDK 17·Android SDK에서 Debug·Release 계열 빌드, Lint, 단위 테스트와 모듈·Manifest 검사를 실행했습니다. Galaxy S22 Ultra / API 36에서 선택한 화면·플레이어·채팅 계측 39/39와 Hilt 테스트 바인딩 교체 1/1이 통과했습니다. 별도 API 36 에뮬레이터와 격리된 PostgreSQL·WebSocket 서버를 사용한 Android 연결·복구 통합 테스트도 1/1 통과했습니다. PR #67 당시 실제 백엔드의 실기기 연결, 장시간 누수와 성능 검증은 **NOT_RUN**이었습니다. 이후 실기기 서버 연결과 성능 관찰은 아래 최종 감사 결과로 구분합니다.
 
-기기 계측 이후 최신 main을 통합했으며 Android 코드·테스트는 계측 당시와 같습니다. 최초 LIVE 테스트 실패, 원인 조사, 일시정지 버튼 수정과 재검증의 명령·범위는 [작업 검증 기록](specs/hilt-di-migration-verification.md)에 남겼습니다. GitHub [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67)과 병합 후 `main`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874845) · [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874806) · [문서 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874813)가 성공했습니다. CI의 성공은 로컬 기기 테스트 재실행을 의미하지 않으며, PR #67 당시 원본 로컬 계측 로그의 공개 첨부 여부는 별도 확인되지 않았습니다. 이번 감사에서 새로 실행한 기계 판독 증거는 아래에 제공합니다. Hilt 전용 테스트 APK를 별도 컴파일하는 CI 단계는 [워크플로](../.github/workflows/android-ci.yml)에서 확인할 수 있습니다.
+PR #67 검증 당시에는 기기 계측 후 포트폴리오 문서를 통합했으며, 그 단계의 Android 코드·테스트는 계측 시점과 동일하게 유지했습니다. 최초 LIVE 테스트 실패, 원인 조사, 일시정지 버튼 수정과 재검증의 명령·범위는 [작업 검증 기록](specs/hilt-di-migration-verification.md)에 남겼습니다. GitHub [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67)과 병합 후 `main`의 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874845) · [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874806) · [문서 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42474874813)가 성공했습니다. CI의 성공은 로컬 기기 테스트 재실행을 의미하지 않으며, PR #67 당시 원본 로컬 계측 로그의 공개 첨부 여부는 별도 확인되지 않았습니다. Hilt 전용 테스트 APK를 별도 컴파일하는 CI 단계는 [워크플로](../.github/workflows/android-ci.yml)에서 확인할 수 있습니다.
 
 
 ## Android 최종 감사 실행
@@ -29,7 +29,7 @@ PR #68 이후의 소스에서 Hilt 실제 Activity 생성 경로, 실기기 화�
 
 ## 증거 무결성과 회전 진단 후속
 
-공개 증거 파일의 해시·JUnit 집계·실패 이력과 출처를 검사하는 CI를 추가했습니다. 의도적 오류 fixture로 검사 실패도 확인했습니다. Galaxy S22 Ultra에서 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만, 이전에 한 차례 발생한 실패의 원인은 확인되지 않았습니다. [후속 근거와 제한](evidence/verification/audit-20261108/README.md) · [필수 체크 정책 제안](specs/ci-required-quality-policy.md). 2026-11-09 사용자 승인으로 GitHub `main` 보호 정책을 적용했고 관리자 우회는 허용했습니다. 실제 병합 차단 실험은 `NOT_RUN`입니다. 게이트 워크플로는 [PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69)를 통해 이미 `main`에 병합됐고, [PR #70의 `required-quality`](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)가 성공했습니다.
+공개 증거 파일의 해시·JUnit 집계·실패 이력과 출처를 검사하는 CI를 추가했습니다. 의도적 오류 fixture로 검사 실패도 확인했습니다. Galaxy S22 Ultra에서 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만, 이전에 한 차례 발생한 실패의 원인은 확인되지 않았습니다. [후속 근거와 제한](evidence/verification/audit-20261108/README.md) · [적용된 필수 체크 정책](specs/ci-required-quality-policy.md). 2026-11-09 사용자 승인으로 GitHub `main` 보호 정책을 적용했고 관리자 우회는 허용했습니다. 실제 병합 차단 실험은 `NOT_RUN`입니다. 게이트 워크플로는 [PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69)를 통해 이미 `main`에 병합됐고, [PR #70의 `required-quality`](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)가 성공했습니다.
 
 ## 자동화와 기기 검증의 역할
 
