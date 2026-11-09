@@ -42,7 +42,7 @@ Hilt 2.60.1과 KSP 2.3.10을 사용한다. [Dagger KSP 안내](https://dagger.de
 
 ## PR #68 기존 CI와 이번 실행의 구분
 
-[PR #68](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/68)의 기존 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42478684566), [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42478684559), [문서 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42478684603)는 당시 커밋의 결과다. 해당 Android CI는 계측 APK를 컴파일했으며 이번 실기기 실행을 의미하지 않는다. 이번 PR의 CI 결과는 별도로 확인한다.
+[PR #68](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/68)의 기존 [Android CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42478684566), [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42478684559), [문서 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42478684603)는 당시 커밋의 결과다. 해당 Android CI는 계측 APK를 컴파일했으며 이번 실기기 실행을 의미하지 않는다.
 
 ### 추가 성능 범위
 
