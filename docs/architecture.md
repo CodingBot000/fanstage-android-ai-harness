@@ -51,15 +51,15 @@ DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hil
 
 ## 3. Compose 상태 관리
 
-~~~text
-사용자 입력 → ViewModel → Repository/ChatTransport
-                             ↓
-                      StateFlow<UiState>
-                             ↓
-                       Compose 화면
+~~~mermaid
+flowchart LR
+  UI["Compose 화면"] -->|"사용자 동작"| VM["ViewModel<br/>UiState 소유"]
+  VM -->|"요청·구독"| DATA["Repository / ChatTransport"]
+  DATA -->|"데이터·응답·이벤트"| VM
+  VM -->|"StateFlow&lt;UiState&gt;"| UI
 ~~~
 
-ViewModel은 화면에 표시할 상태와 비동기 요청을 관리합니다. Compose는 상태를 읽어 UI를 그리고 사용자 동작을 ViewModel로 전달합니다. 룸이 바뀌거나 요청이 취소되면 이전 응답이 현재 화면에 반영되지 않도록 처리합니다.
+ViewModel이 화면별 `UiState`를 소유하고 `StateFlow`로 공개합니다. Repository/ChatTransport는 데이터·이벤트를 제공하며 UI 상태를 직접 소유하지 않습니다. Compose는 `collectAsStateWithLifecycle`로 상태를 읽고 사용자 동작을 ViewModel에 전달합니다. 룸이 바뀌거나 요청이 취소되면 이전 응답이 현재 화면에 반영되지 않도록 처리합니다. [채팅 ViewModel](../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModel.kt) · [Media 화면 상태 구독](../android/feature/media/src/main/kotlin/dev/fanstage/android/feature/media/MediaRoute.kt).
 
 ## 4. LIVE와 Replay의 역할
 
