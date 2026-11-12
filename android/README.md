@@ -1,75 +1,71 @@
 # Android 앱 실행·테스트 안내
 
-## 프로젝트 구성
+FanStage Android 앱은 Kotlin·Jetpack Compose·Coroutines/Flow·MVVM/UDF·Hilt·Media3 기반으로 구현했습니다. 이 문서는 **앱을 실행하고 실제 화면을 재현하는 방법**에 집중합니다. 기술적 의사결정은 [아키텍처](../docs/architecture.md), 검증 수치는 [검증 결과](../docs/verification.md)에서 확인할 수 있습니다.
 
-FanStage는 Kotlin·Jetpack Compose·Coroutines/Flow·MVVM/UDF·Hilt·Media3를 사용합니다.
-
-- `app`: 화면 이동, ViewModel 생성, 의존성 조립
-- `feature`: discover, community, media, messages, live
-- `core`: model, data, artwork, designsystem
-- `macrobenchmark`: 성능 계측용 모듈
-
-총 **11개 Gradle 모듈**이며 각 기능의 의존 관계는 [아키텍처 문서](../docs/architecture.md)에 정리했습니다.
-
-## UI 재사용과 화면 조립
-
-`core:designsystem`에는 테마·간격·공통 헤더 등 여러 화면에서 쓰는 UI를 둡니다. Media의 세 카드가 공유하는 이미지·텍스트 레이아웃은 `feature:media`의 `MediaArtworkCard`로 묶었습니다. `MainActivity.kt` 안에서는 `FanStageAppShell`이 Scaffold를, `FanStageNavHost`가 화면 이동 구성을 담당합니다.
-
-[컴포넌트 재사용 기준](../docs/adr/ADR-0005-ui-component-reuse.md) · [구현 및 검증 기록](../docs/specs/ui-designsystem-refactoring.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70). 변경 전후 화면 캡처 비교는 아직 수행하지 않았으며, 자세한 검증 범위는 SDD에 기록했습니다.
-
-## 필요한 환경
+## 필요한 환경과 실행
 
 - JDK 17 및 Android Studio 또는 Android SDK
 - Android SDK Platform 37, Build Tools 36.0.0
-- Gradle Wrapper 9.5.0(저장소 포함)
-- `minSdk 24`, `targetSdk 36`, `compileSdk 37`
+- 저장소에 포함된 Gradle Wrapper 9.5.0
+- Android 설정: `minSdk 24`, `targetSdk 36`, `compileSdk 37`
 
-`ANDROID_HOME`을 지정하거나 버전 관리에서 제외한 `local.properties`에 SDK 경로를 설정합니다.
+`ANDROID_HOME`을 지정하거나 버전 관리에서 제외한 `local.properties`에 SDK 경로를 설정합니다. Android Studio에서는 `android/` 폴더를 열고 Debug 앱을 설치합니다.
 
-저장소 루트에서 실행:
-
-~~~bash
+```bash
 cd android
 ./gradlew :app:assembleDebug :app:lintDebug testDebugUnitTest :core:data:test --no-daemon
-~~~
-
-Android Studio에서는 `android/` 폴더를 열어 Debug 앱을 설치합니다.
+```
 
 ## 시연 경로
 
-| 경로 | 데이터·영상 | 필요한 환경 |
-|---|---|---|
-| Discover·Community·Messages | 가상 콘텐츠·메모리 기반 데이터 | Debug 앱 |
-| 기본 Replay | 앱에 포함된 합성 HLS VOD | Debug 앱 |
-| LIVE 상세(지정된 3개 룸) | 로컬 서버의 녹화 MP4 + Fake 채팅 | Debug 앱 + 로컬 미디어 서버 |
-| Media의 로컬 영상 | 로컬 서버의 녹화 MP4를 Replay 화면에서 재생 | Debug 앱 + 로컬 미디어 서버 |
-| 실제 WebSocket 채팅 | 로컬 Spring Boot·PostgreSQL에서 메시지 송수신·복구 | Debug 앱 + 로컬 채팅 서버·테스트 토큰 |
+### 서버 없이 영상 재생하기 — 권장 시작 경로
 
-LIVE 채팅 화면의 개발 설정에서 Fake와 로컬 서버 연결을 선택할 수 있습니다. 서버 설정과 연결 주소는 [로컬 서버 안내](../backend/chat-server/README.md)를 참조하세요.
+1. 설치한 **Debug 앱**을 실행합니다.
+2. 하단 탐색바의 **Media** 탭을 선택합니다.
+3. Media 목록의 **Synthetic HLS** 카드(설명: Paper Lantern)를 누릅니다.
+4. **Replay** 화면으로 이동한 뒤 앱에 포함된 합성 HLS 영상을 재생합니다.
+5. 재생·일시정지·전체 화면 등 플레이어 동작을 확인합니다. 화질·자막 선택은 실제 소스에서 제공하는 트랙에 따라 표시됩니다.
+
+**예상 결과:** 로컬 서버를 실행하지 않아도 Replay 플레이어 화면에서 영상이 재생됩니다. 이 경로는 앱에 포함된 HLS **VOD** 자산을 사용합니다.
+
+**경로 구분:** Debug의 **Discover 화면 일반 다시보기 카드**는 로컬 MP4 영상 경로로 연결됩니다. 서버 없는 HLS 시연은 **Media → Synthetic HLS** 카드를 사용해야 합니다. [화면 이동 구현](../android/app/src/main/kotlin/dev/fanstage/android/MainActivity.kt) · [Media 카드 구현](../android/feature/media/src/main/kotlin/dev/fanstage/android/feature/media/MediaScreen.kt)
+
+### LIVE · 채팅과 로컬 서버 시연
+
+| 화면/기능 | 콘텐츠·동작 | 필요한 환경 |
+|---|---|---|
+| Discover·Community·Messages | 가상 콘텐츠와 화면 탐색 | Debug 앱 |
+| Media → Synthetic HLS → Replay | 앱 내 HLS VOD 재생 | Debug 앱 |
+| LIVE 상세(지정된 3개 룸) | 로컬 서버의 녹화 MP4 + 기본 Fake 채팅 | Debug 앱 + 로컬 미디어 서버 |
+| Media의 로컬 영상 카드 | 로컬 MP4를 Replay 화면으로 재생 | Debug 앱 + 로컬 미디어 서버 |
+| LIVE의 실제 채팅 연결 | 개발 설정에서 로컬 WebSocket·PostgreSQL 서버로 전환 | Debug 앱 + 로컬 채팅 서버·테스트 토큰 |
+
+LIVE 채팅은 기본 Fake 데이터로도 화면 동작을 확인할 수 있습니다. 실제 송수신·재연결을 확인할 때는 [서버 실행·설정 안내](../backend/chat-server/README.md)를 참조하세요.
+
+## 프로젝트 구성
+
+- `app`: Navigation, Hilt 의존성 조립, 화면 진입
+- `feature`: discover, community, media, messages, live
+- `core`: model, data, artwork, designsystem
+- `macrobenchmark`: 성능 계측 전용
+
+총 **11개 Gradle 모듈**입니다. `core:designsystem`은 여러 화면에서 재사용되는 UI를 제공하고, Media 카드 3종의 공통 레이아웃은 `feature:media` 내부 `MediaArtworkCard`로 유지합니다. Scaffold와 NavHost는 `app`의 `FanStageAppShell`·`FanStageNavHost`에서 구성합니다.
+
+[모듈·UI 설계](../docs/architecture.md) · [UI 공통화 결정](../docs/adr/ADR-0005-ui-component-reuse.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)
 
 ## 테스트와 검증
 
-Android 계측 테스트에는 합성 HLS·MP4·WebVTT 자산을 사용합니다. 프로젝트의 Android GitHub Actions는 빌드·Lint·단위 테스트·모듈 경계 검사를 실행하고, Compose 화면·플레이어·채팅 UI 계측은 로컬 AVD나 실기기에서 실행했습니다.
+GitHub Actions는 Android 빌드·Lint·단위 테스트·모듈 경계 검사 및 일반/Hilt 계측 APK **컴파일**을 수행합니다. Compose·플레이어·채팅 UI 계측 **실행**은 로컬 API 36 에뮬레이터나 Galaxy 실기기에서 진행해 해당 PR에 연결했습니다.
 
-- [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47): Media3 설정·전체 화면, 로컬 API 36 계측 **41/41** 통과
-- [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53): 채팅 화면·로컬 서버 연동, 로컬 API 36 계측 **28/28** 통과
-- [PR #59](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59): IME와 입력창 배치, 로컬 API 36 관련 계측 **24/24**, 실기기 **3/3** 통과
+재생·전체 화면은 [PR #47](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/47), 채팅 화면·서버 전환은 [PR #53](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/53), IME/입력 배치는 [PR #59](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/59), Hilt·룸 수명주기는 [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67), 검증 감사와 UI 공통화는 [PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)에 기록했습니다.
 
-각 PR에 연결된 단위 테스트와 CI 결과는 [검증 문서](../docs/verification.md)에 모았습니다.
+Hilt 바인딩 교체 계측은 다음처럼 명시적으로 실행할 수 있습니다.
 
-## Hilt 의존성 주입
-
-일반 ViewModel은 Activity 범위에서 공유하며, ChatViewModel은 룸별 Navigation 항목에 속합니다. 테스트용 바인딩 교체와 기기 검증 범위는 [검증 문서](../docs/verification.md)를 참조하세요.
-
-기본 CI는 `AndroidJUnitRunner`의 일반 계측 APK뿐 아니라 `HiltTestRunner`를 사용하는 Hilt 전용 계측 APK를 **별도로 컴파일**합니다. 전용 소스셋 컴파일 이후 일반 계측 APK도 재컴파일해 전환 과정의 생성 코드 누락·잔존 위험을 확인합니다. CI 작업은 계측 테스트의 **실행**이 아니라 컴파일 검사입니다.
-
-별도 Hilt 계측을 연결된 기기에서 실제 실행하려면:
-
-~~~bash
+```bash
 cd android
 ./gradlew :app:connectedDebugAndroidTest \
   -PfanstageHiltInstrumentation=true \
   -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RepositoryBindingsTest
-~~~
+```
 
-일반 계측은 `-PfanstageHiltInstrumentation=true` 없이 실행합니다. [실행 이력](../docs/specs/hilt-di-migration-verification.md)과 [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67)에서 검증 환경과 미실행 범위를 확인할 수 있습니다.
+일반 계측은 `-PfanstageHiltInstrumentation=true` 없이 실행합니다. 테스트별 환경·커밋·실행 결과는 [검증 결과](../docs/verification.md)에서 확인합니다.
