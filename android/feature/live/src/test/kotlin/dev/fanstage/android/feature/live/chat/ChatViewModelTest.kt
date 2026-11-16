@@ -458,6 +458,84 @@ class ChatViewModelTest {
         assertNull(vm.uiState.value.protocolIssue)
     }
 
+    @Test fun `empty receive flow completion reports only stream failure`() = runTest {
+        val transport = object : ChatTransport by Controlled() {
+            override fun events(roomId: String): Flow<ChatEvent> = kotlinx.coroutines.flow.emptyFlow()
+        }
+        val vm = create(transport); runCurrent()
+        assertTrue(vm.uiState.value.streamError)
+        assertFalse(vm.uiState.value.connectionError)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNull(vm.uiState.value.protocolIssue)
+    }
+
+    @Test fun `finite receive flow completion preserves messages draft and unconfirmed send`() = runTest {
+        val finish = CompletableDeferred<Unit>()
+        val transport = object : ChatTransport by Controlled() {
+            override fun events(roomId: String): Flow<ChatEvent> = flow {
+                finish.await()
+                emit(ChatEvent.Message(msg(1)))
+            }
+        }
+        val vm = create(transport)
+        vm.updateDraft("retained draft")
+        assertTrue(vm.send("unconfirmed")); runCurrent()
+        finish.complete(Unit); runCurrent()
+        assertTrue(vm.uiState.value.streamError)
+        assertEquals("retained draft", vm.uiState.value.draft)
+        assertEquals(listOf("message-1", "unconfirmed"), vm.uiState.value.messages.map { it.text })
+        assertEquals(Delivery.PENDING, vm.uiState.value.messages.last().delivery)
+        assertFalse(vm.uiState.value.connectionError)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNull(vm.uiState.value.protocolIssue)
+    }
+
+    @Test fun `late normal completion of cancelled old room cannot mark new room failed`() = runTest {
+        val finish = CompletableDeferred<Unit>()
+        val transport = object : ChatTransport by Controlled() {
+            override fun events(roomId: String): Flow<ChatEvent> = flow {
+                if (roomId == "a") withContext(NonCancellable) { finish.await() }
+                else awaitCancellation()
+            }
+        }
+        val vm = create(transport); runCurrent()
+        vm.openRoom("b"); runCurrent()
+        finish.complete(Unit); runCurrent()
+        assertEquals("b", vm.uiState.value.roomId)
+        assertFalse(vm.uiState.value.streamError)
+        assertFalse(vm.uiState.value.connectionError)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNull(vm.uiState.value.protocolIssue)
+    }
+
+    @Test fun `normal completion after owner cancellation cannot publish stream failure`() = runTest {
+        val transport = object : ChatTransport by Controlled() {
+            override fun events(roomId: String): Flow<ChatEvent> = flow {
+                try { awaitCancellation() } catch (_: CancellationException) { /* Deliberately returns normally. */ }
+            }
+        }
+        val vm = create(transport); runCurrent()
+        store.clear(); runCurrent()
+        assertFalse(vm.uiState.value.streamError)
+        assertFalse(vm.uiState.value.connectionError)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNull(vm.uiState.value.protocolIssue)
+    }
+
+    @Test fun `transport replacement cancellation returning normally does not mark replacement failed`() = runTest {
+        val old = object : ChatTransport by Controlled() {
+            override fun events(roomId: String): Flow<ChatEvent> = flow {
+                try { awaitCancellation() } catch (_: CancellationException) { /* Normal return after cancellation. */ }
+            }
+        }
+        val vm = create(old); runCurrent()
+        assertTrue(vm.replaceTransport(Controlled())); runCurrent()
+        assertFalse(vm.uiState.value.streamError)
+        assertFalse(vm.uiState.value.connectionError)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNull(vm.uiState.value.protocolIssue)
+    }
+
     @Test fun `combined fake and screen share at most 1000 logical messages`() = runTest {
         val fake = FakeChatTransport("a", seed = 73, simulateIncoming = false)
         val vm = create(fake); runCurrent()

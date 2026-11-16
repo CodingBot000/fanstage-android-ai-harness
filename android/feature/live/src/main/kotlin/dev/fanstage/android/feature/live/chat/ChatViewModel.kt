@@ -67,6 +67,8 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
                     timeline.accept(message)
                     if (timeline.hasGap) recover()
                 }
+                currentCoroutineContext().ensureActive()
+                if (epoch == generation) mutableState.value = mutableState.value.copy(streamError = true)
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: ChatConnectionFailure) {
                 currentCoroutineContext().ensureActive()

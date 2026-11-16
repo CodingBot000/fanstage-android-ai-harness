@@ -260,3 +260,26 @@ D-01 A를 적용했다. 독립 브랜치에서 단위 결과 XML 89/89 PASS, Deb
 ## R-01·R-02 제출 상태
 
 제품 구현 커밋은 각각 R-01 `e940d0c`, R-02 `a4aa026`이다. R-01 구현 head의 [CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43907286851)가 통과했다. 공통 보고 문서 변경 이후의 마지막 제출 head는 [PR #76 Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76/checks)와 [PR #77 Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/77/checks)를 기준으로 확인한다. 기존 결과나 구현 head의 PASS를 이후 CI의 사전 통과로 간주하지 않는다.
+
+## 2026-11-17 PR #76 보완 · 수신 Flow 정상 완료
+
+`1_FanStage PR #76 보완 작업.md`의 범위에 따라 `codex/chat-error-recovery`에서만 보완했다. 프로덕션 변경은 `ChatViewModel`의 collect 반환 뒤 `ensureActive()`와 `epoch == generation` 확인 후 기존 `streamError`를 설정하는 두 줄이다. 기존 예외·취소 처리, 메시지·누락 복구·프로토콜 경고·초안·Transport 소유권은 변경하지 않았다.
+
+| 실행 | 결과 |
+|---|---|
+| 수정 전 새 회귀 재현 | feature:live 73건 중 2건 FAIL. 빈 Flow 및 메시지 이후 정상 완료에서 수신 경고가 누락됨을 확인 |
+| 수정 후 단위 | feature:live 74/74 PASS. 전체 결과 XML 합계 91/91 PASS(app 11, core:data 6 포함) |
+| Android 빌드·Lint | Debug·Release·일반 계측 APK·lintDebug PASS |
+| API 36 계측 | ChatRecoveryUiTest·HiltRoomLifecycleTest·RoomNavigationSmokeTest 8/8 PASS |
+| 정적 검사 | 문서 링크·모듈 경계·공개 증거 무결성·diff 검사 PASS |
+
+단위 회귀는 빈 Flow, 메시지 후 완료 시 메시지·초안·미확정 전송 보존, 취소된 이전 룸의 늦은 정상 완료, ViewModel 종료, Transport 교체 취소를 검증한다. 정상 완료를 인증·실제 누락·프로토콜 충돌로 오분류하지 않는지도 확인했다. 기존 assertion·타임아웃을 완화하지 않았다. 새 UI 사례는 실제 수신 중단 경고와 메시지·초안 보존 및 불필요한 복구·인증·충돌 안내의 부재를 검사한다.
+
+환경은 JBR 17.0.14, Android SDK, FanStage_FloatingNav_20261106/API 36 전용 AVD와 분리된 ADB 5039다. 저장소 루트에서 다음 명령을 실행했다.
+
+```bash
+./android/gradlew -p android :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug testDebugUnitTest :core:data:test -PfanstageDeviceTest=true --no-daemon --max-workers=2 --console=plain
+ANDROID_SERIAL=emulator-5560 ANDROID_ADB_SERVER_PORT=5039 ADB_SERVER_SOCKET=tcp:localhost:5039 ./android/gradlew -p android :app:connectedDebugAndroidTest -PfanstageDeviceTest=true '-Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.ChatRecoveryUiTest,dev.fanstage.android.HiltRoomLifecycleTest,dev.fanstage.android.RoomNavigationSmokeTest' --no-daemon --max-workers=2 --console=plain
+```
+
+수정 전 실패와 이후 로그·JUnit 원본은 로컬 `/tmp/fanstage-pr76-followup-20261117/`에 보존한다. 공개 원본 첨부 묶음으로 주장하지 않는다. 실제 서버 Android 연동·실기기·장시간 누수·성능·시각적 전후 비교는 이번 최소 보완에서 NOT_RUN이며 과거 실행을 합산하지 않는다. 별도 PR 생성, #77 수정, main 병합은 수행하지 않는다. 마지막 제출 head의 필수 CI는 [PR #76 Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76/checks)를 기준으로 확인한다.

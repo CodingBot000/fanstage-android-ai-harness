@@ -9,6 +9,8 @@ import androidx.lifecycle.ViewModelStore
 import dev.fanstage.android.feature.live.chat.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.flow
 import org.junit.Rule
 import org.junit.Test
 
@@ -47,6 +49,33 @@ class ChatRecoveryUiTest {
             rule.onNodeWithTag("chat_input").assertIsEnabled()
             rule.runOnUiThread { vm.openRoom("other") }
             rule.onNodeWithTag("chat_protocol_warning").assertDoesNotExist()
+        } finally { rule.runOnUiThread { store.clear() } }
+    }
+    @Test fun normallyCompletedFlowShowsStreamWarningWithoutClearingContent() {
+        val finish = CompletableDeferred<Unit>()
+        val transport = object : ChatTransport {
+            override fun events(roomId: String) = flow<ChatEvent> {
+                finish.await()
+                emit(ChatEvent.Message(ServerMessage(roomId, "finite", null, 1, "message before completion", false)))
+            }
+            override suspend fun send(roomId: String, clientMessageId: String, text: String) = Unit
+            override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = emptyList<ServerMessage>()
+        }
+        val store = ViewModelStore()
+        rule.runOnUiThread {
+            val vm = ViewModelProvider(store, ChatViewModel.Factory("ui", transport))[ChatViewModel::class.java]
+            rule.activity.setContent { MaterialTheme { ChatPanel(vm) } }
+        }
+        try {
+            rule.onNodeWithTag("chat_stream_error").assertDoesNotExist()
+            rule.onNodeWithTag("chat_input").performTextInput("retained draft")
+            finish.complete(Unit)
+            rule.waitUntil(10_000) { rule.onAllNodesWithTag("chat_stream_error").fetchSemanticsNodes().isNotEmpty() }
+            rule.onNodeWithText("message before completion").assertExists()
+            rule.onNodeWithTag("chat_input").assertTextContains("retained draft")
+            rule.onNodeWithTag("chat_retry_gap").assertDoesNotExist()
+            rule.onNodeWithTag("chat_protocol_warning").assertDoesNotExist()
+            rule.onNodeWithTag("chat_connection_error").assertDoesNotExist()
         } finally { rule.runOnUiThread { store.clear() } }
     }
 }
