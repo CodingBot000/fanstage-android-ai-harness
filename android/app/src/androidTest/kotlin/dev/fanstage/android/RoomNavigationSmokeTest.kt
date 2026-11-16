@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModelProvider
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotFocused
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -68,10 +69,13 @@ class RoomNavigationSmokeTest {
         return null
     }
 
-    private fun hideKeyboard() {
+    private fun clearFocusAndHideKeyboard() {
         composeRule.runOnUiThread {
+            // Retained input focus can reopen IME after resume and hide non-compact state tags.
+            composeRule.activity.currentFocus?.clearFocus()
             ViewCompat.getWindowInsetsController(composeRule.activity.window.decorView)?.hide(WindowInsetsCompat.Type.ime())
         }
+        composeRule.onNodeWithTag("chat_input").assertIsNotFocused()
         composeRule.waitUntil(10_000L) {
             ViewCompat.getRootWindowInsets(composeRule.activity.window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == false
         }
@@ -154,11 +158,23 @@ class RoomNavigationSmokeTest {
             assertSame("chat must not replace the player", originalPlayer, currentPlayer)
             assertTrue("player must keep playing after chat send", currentPlayer.isPlaying)
         }
-        hideKeyboard()
+        clearFocusAndHideKeyboard()
         composeRule.activityRule.scenario.moveToState(Lifecycle.State.CREATED)
         composeRule.activityRule.scenario.moveToState(Lifecycle.State.RESUMED)
-        hideKeyboard()
-        composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
+        clearFocusAndHideKeyboard()
+        try {
+            composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
+        } catch (error: Throwable) {
+            var snapshot = ""
+            composeRule.runOnUiThread {
+                val activity = composeRule.activity
+                val player = findPlayerView(activity.window.decorView)?.player
+                val ime = ViewCompat.getRootWindowInsets(activity.window.decorView)?.isVisible(WindowInsetsCompat.Type.ime())
+                snapshot = "activity=${activity.lifecycle.currentState} samePlayer=${player === originalPlayer} playing=${player?.isPlaying} ready=${player?.playWhenReady} playback=${player?.playbackState} error=${player?.playerError?.errorCodeName} ime=$ime"
+            }
+            error.addSuppressed(AssertionError("pause diagnostic: $snapshot"))
+            throw error
+        }
         composeRule.onNodeWithTag("player_play").assertIsDisplayed().performClick()
         composeRule.waitUntil(10_000L) {
             var resumed = false
@@ -177,7 +193,7 @@ class RoomNavigationSmokeTest {
         composeRule.waitForIdle()
         composeRule.onNodeWithTag("room_detail").assertIsDisplayed()
         composeRule.onNodeWithTag("chat_input").assertTextContains("draft survives").performTextClearance()
-        hideKeyboard()
+        clearFocusAndHideKeyboard()
         composeRule.waitUntil(10_000L) { composeRule.onAllNodesWithTag("player_state_paused").fetchSemanticsNodes().isNotEmpty() }
         // The controls must remain reachable after a real device orientation change.
         composeRule.activityRule.scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
@@ -207,9 +223,12 @@ class RoomNavigationSmokeTest {
     private fun verifyM7LocaleAndLargeText() {
         val language = androidx.compose.runtime.mutableStateOf(java.util.Locale.US)
         val large = androidx.compose.runtime.mutableStateOf(false)
-        val roomState = androidx.compose.runtime.mutableStateOf<dev.fanstage.android.feature.live.RoomUiState>(
-            dev.fanstage.android.feature.live.RoomUiState.Content(listOf(dev.fanstage.android.core.model.Room("studio-session", "Studio session", "Paper Lantern", 128)))
+        val discoverState = androidx.compose.runtime.mutableStateOf<dev.fanstage.android.feature.discover.DiscoverState>(
+            dev.fanstage.android.feature.discover.DiscoverState.Ready(dev.fanstage.android.core.model.DiscoverData(
+                emptyList(), listOf(dev.fanstage.android.core.model.DiscoverContent("studio-session", "Studio session", "Paper Lantern")),
+            ))
         )
+        val showChat = androidx.compose.runtime.mutableStateOf(false)
         val store = androidx.lifecycle.ViewModelStore()
         lateinit var chat: ChatViewModel
         composeRule.activityRule.scenario.onActivity { activity ->
@@ -225,8 +244,8 @@ class RoomNavigationSmokeTest {
                     androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(context.resources.displayMetrics.density, config.fontScale),
                 ) {
                     MaterialTheme {
-                        if (roomState.value is dev.fanstage.android.feature.live.RoomUiState.Content || roomState.value is dev.fanstage.android.feature.live.RoomUiState.Error) {
-                            dev.fanstage.android.feature.live.RoomListScreen(roomState.value, onRetry = {}, onRoomClick = {})
+                        if (!showChat.value) {
+                            dev.fanstage.android.feature.discover.DiscoverScreen(discoverState.value, onRetry = {}, onRoomClick = {})
                         } else {
                             Column(Modifier.verticalScroll(rememberScrollState())) { PlayerPanel("locale"); ChatPanel(chat) }
                         }
@@ -235,14 +254,14 @@ class RoomNavigationSmokeTest {
             }
         }
         try {
-            composeRule.onNodeWithText("Studio session").assertIsDisplayed()
+            composeRule.onAllNodesWithText("Studio session")[0].assertIsDisplayed()
             composeRule.runOnUiThread { language.value = java.util.Locale.KOREA; large.value = true }
             composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("스튜디오 라이브").fetchSemanticsNodes().isNotEmpty() }
-            composeRule.onNodeWithText("스튜디오 라이브").assertIsDisplayed()
-            composeRule.runOnUiThread { roomState.value = dev.fanstage.android.feature.live.RoomUiState.Error("internal") }
-            composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("방 목록을 불러오지 못했습니다. 다시 시도해 주세요.").fetchSemanticsNodes().isNotEmpty() }
+            composeRule.onAllNodesWithText("스튜디오 라이브")[0].assertIsDisplayed()
+            composeRule.runOnUiThread { discoverState.value = dev.fanstage.android.feature.discover.DiscoverState.Error }
+            composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("탐색 화면을 불러오지 못했습니다.").fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithText("다시 시도").assertIsDisplayed()
-            composeRule.runOnUiThread { roomState.value = dev.fanstage.android.feature.live.RoomUiState.Empty }
+            composeRule.runOnUiThread { showChat.value = true }
             composeRule.waitUntil(10_000) { composeRule.onAllNodesWithText("방에 오신 것을 환영합니다!").fetchSemanticsNodes().isNotEmpty() }
             composeRule.onNodeWithTag("chat_input").performScrollTo().performTextInput("테스트")
             composeRule.onNodeWithTag("chat_send").performScrollTo().assertIsDisplayed().performClick()

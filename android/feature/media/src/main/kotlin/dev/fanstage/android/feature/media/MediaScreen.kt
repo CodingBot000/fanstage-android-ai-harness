@@ -122,12 +122,13 @@ private fun LiveMediaCard(
 
 @Composable
 private fun LocalVideoCard(video: DemoVideo, data: DiscoverData, onVideo: (String) -> Unit) {
+    val artist = data.artists.firstOrNull { it.id == video.artistId }
     MediaArtworkCard(
-        image = painterResource(artworkResource(data.artists.first { it.id == video.artistId }.feed)),
+        image = painterResource(artist?.let { artworkResource(it.feed) } ?: R.drawable.media_artwork_placeholder),
         imageAlignment = Alignment.Center,
         label = stringResource(R.string.local_vod),
         title = video.title,
-        description = data.artists.firstOrNull { it.id == video.artistId }?.name.orEmpty(),
+        description = artist?.name ?: stringResource(R.string.unknown_artist),
         onClick = { onVideo(video.id) },
         modifier = Modifier.testTag("media_${video.id}"),
     )

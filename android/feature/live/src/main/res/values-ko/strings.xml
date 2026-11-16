@@ -1,17 +1,5 @@
 <resources>
-    <string name="live_rooms">라이브 방</string>
-    <string name="loading_rooms">방 목록 불러오는 중</string>
-    <string name="no_rooms">현재 참여할 수 있는 방이 없습니다.</string>
-    <string name="retry">다시 시도</string>
-    <string name="refresh">새로고침</string>
-    <string name="room_host">진행: %1$s</string>
-    <plurals name="room_viewers"><item quantity="other">시청자 %1$d명</item></plurals>
     <string name="room_detail">방 상세</string>
-    <string name="room_identifier">방: %1$s</string>
-    <string name="player_placeholder">동영상 플레이어 자리 표시</string>
-    <string name="chat_placeholder">채팅 자리 표시</string>
-    <string name="placeholder_description">이 데모에는 가상의 방과 콘텐츠가 사용됩니다.</string>
-    <string name="back_to_rooms">방 목록으로 돌아가기</string>
     <string name="player_loading">동영상 불러오는 중</string>
     <string name="player_buffering">동영상 버퍼링 중</string>
     <string name="player_playing">재생 중</string>
@@ -47,7 +35,6 @@
     <string name="chat_connection_error">로컬 채팅 서버에서 인증하지 못했습니다.</string>
     <string name="chat_config_error">로컬 서버 주소와 테스트 토큰을 확인해 주세요.</string>
     <string name="chat_switch_blocked">확인되지 않은 메시지를 처리한 뒤 연결을 바꿔 주세요.</string>
-    <string name="room_error">방 목록을 불러오지 못했습니다. 다시 시도해 주세요.</string>
     <string name="room_studio_title">스튜디오 라이브</string>
     <string name="room_sketch_title">오후의 그림 휴식</string>
     <string name="room_tabletop_title">보드게임의 밤</string>

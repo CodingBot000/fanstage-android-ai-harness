@@ -1,20 +1,5 @@
 <resources>
-    <string name="live_rooms">Live rooms</string>
-    <string name="loading_rooms">Loading rooms</string>
-    <string name="no_rooms">No rooms are available yet.</string>
-    <string name="retry">Retry</string>
-    <string name="refresh">Refresh</string>
-    <string name="room_host">Hosted by %1$s</string>
-    <plurals name="room_viewers">
-        <item quantity="one">%1$d viewer</item>
-        <item quantity="other">%1$d viewers</item>
-    </plurals>
     <string name="room_detail">Room detail</string>
-    <string name="room_identifier">Room: %1$s</string>
-    <string name="player_placeholder">Video player placeholder</string>
-    <string name="chat_placeholder">Chat placeholder</string>
-    <string name="placeholder_description">This foundation demo uses fictional room data.</string>
-    <string name="back_to_rooms">Back to rooms</string>
     <string name="player_loading">Loading player</string>
     <string name="player_buffering">Buffering</string>
     <string name="player_playing">Playing</string>
@@ -50,7 +35,6 @@
     <string name="chat_connection_error">Unable to authenticate with the local chat server.</string>
     <string name="chat_config_error">Check the local server URL and test token.</string>
     <string name="chat_switch_blocked">Resolve unconfirmed messages before switching.</string>
-    <string name="room_error">Rooms could not be loaded. Please try again.</string>
     <string name="room_studio_title">Studio session</string>
     <string name="room_sketch_title">Afternoon sketch break</string>
     <string name="room_tabletop_title">Tabletop night</string>
