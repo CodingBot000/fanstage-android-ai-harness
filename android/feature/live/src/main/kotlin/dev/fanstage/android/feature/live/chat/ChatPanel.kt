@@ -3,19 +3,12 @@ package dev.fanstage.android.feature.live.chat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.draw.clip
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Icon
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.Color
 import java.util.Locale
 import androidx.compose.foundation.layout.Column
@@ -24,33 +17,20 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withTimeoutOrNull
-import kotlinx.coroutines.coroutineScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.focus.onFocusChanged
 import dev.fanstage.android.core.designsystem.SendIcon
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -64,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.fanstage.android.feature.live.R
@@ -77,20 +56,11 @@ internal fun fictionalMessageResource(key: String): Int? = when {
     else -> null
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, showComposer: Boolean = true, sendSignal: Int = 0, onDevelopmentFocus: (Boolean) -> Unit = {}, compactDevelopmentControls: Boolean = false) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val locale = LocalConfiguration.current.locales[0]
-    val focusManager = LocalFocusManager.current
-    var endpoint by rememberSaveable { mutableStateOf("http://10.0.2.2:18765") }
-    var settingsExpanded by rememberSaveable { mutableStateOf(false) }
-    var checking by remember { mutableStateOf(false) }
-    var checkJob by remember { mutableStateOf<Job?>(null) }
-    val scope = rememberCoroutineScope()
-    var token by remember { mutableStateOf("") }
-    var configError by remember { mutableStateOf(false) }
     var followLatest by remember(state.roomId) { mutableStateOf(true) }
     var forceLatest by remember(state.roomId) { mutableStateOf(false) }
     LaunchedEffect(listState) {
@@ -147,148 +117,7 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
                 }
             }
         }
-        if (developmentControls) {
-            if (!compactDevelopmentControls) {
-            // The row subtracts space for a shared border; negative space leaves a 4dp gap.
-            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().testTag("chat_mode"), space = (-4).dp) {
-                SegmentedButton(
-                    selected = !state.localServer,
-                    onClick = {
-                        checkJob?.cancel()
-                        checking = false
-                        focusManager.clearFocus()
-                        if (state.localServer && viewModel.useOfflineFake()) {
-                            token = ""
-                            configError = false
-                        }
-                    },
-                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2),
-                    icon = {},
-                    label = {
-                        Text(
-                            stringResource(R.string.chat_mode_fake),
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    },
-                    modifier = Modifier.testTag("chat_use_fake"),
-                )
-                SegmentedButton(
-                    selected = state.localServer,
-                    onClick = { if (!state.localServer) settingsExpanded = true },
-                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2),
-                    icon = {},
-                    label = {
-                        Text(
-                            stringResource(R.string.chat_mode_real),
-                            maxLines = 1,
-                            softWrap = false,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    },
-                    modifier = Modifier.testTag("chat_select_real"),
-                )
-            }
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                TextButton(
-                    onClick = {
-                        if (settingsExpanded) focusManager.clearFocus()
-                        settingsExpanded = !settingsExpanded
-                    },
-                    contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-                    modifier = Modifier.testTag("chat_settings_toggle"),
-                ) {
-                    Icon(painterResource(R.drawable.ic_chat_settings), contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text(stringResource(R.string.chat_settings), style = MaterialTheme.typography.labelMedium)
-                    Spacer(Modifier.width(4.dp))
-                    Text(if (settingsExpanded) "⌃" else "⌄", style = MaterialTheme.typography.labelMedium)
-                }
-            }
-            }
-            if (settingsExpanded) {
-                Surface(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
-                ) {
-                    Column(
-                        Modifier.fillMaxWidth().padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        OutlinedTextField(
-                            value = endpoint,
-                            onValueChange = { endpoint = it },
-                            label = { Text(stringResource(R.string.chat_endpoint)) },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                                .onFocusChanged { onDevelopmentFocus(it.isFocused) }
-                                .testTag("chat_endpoint"),
-                        )
-                        OutlinedTextField(
-                            value = token,
-                            onValueChange = { token = it },
-                            label = { Text(stringResource(R.string.chat_token)) },
-                            visualTransformation = PasswordVisualTransformation(),
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                                .onFocusChanged { onDevelopmentFocus(it.isFocused) }
-                                .testTag("chat_token"),
-                        )
-                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                            Button(enabled = !checking, onClick = {
-                                focusManager.clearFocus()
-                                val target = endpoint
-                                val credential = token
-                                val room = state.roomId
-                                val probe = runCatching { RealChatTransport(target, credential, allowInsecure = true) }.getOrNull()
-                                configError = probe == null
-                                if (probe != null) {
-                                    checking = true
-                                    checkJob = scope.launch {
-                                        try {
-                                            val valid = try {
-                                                withTimeoutOrNull(10_000) {
-                                                    coroutineScope {
-                                                        val reader = async { probe.events(room).collect {} }
-                                                        try { probe.connectionState.first { it == ChatConnectionStatus.CONNECTED }; true }
-                                                        finally { reader.cancelAndJoin() }
-                                                    }
-                                                } == true
-                                            } catch (cancelled: CancellationException) { throw cancelled }
-                                            catch (_: Exception) { false }
-                                            if (valid) {
-                                                val next = RealChatTransport(target, credential, allowInsecure = true)
-                                                if (viewModel.replaceTransport(next)) {
-                                                    token = ""
-                                                    settingsExpanded = false
-                                                    configError = false
-                                                }
-                                            } else configError = true
-                                        } finally {
-                                            probe.close()
-                                            checking = false
-                                        }
-                                    }
-                                }
-                            }, modifier = Modifier.testTag("chat_use_real")) {
-                                Text(stringResource(if (checking) R.string.chat_connecting else R.string.chat_use_real))
-                            }
-                        }
-                    }
-                }
-            }
-            if (configError) Text(
-                stringResource(R.string.chat_config_error),
-                modifier = Modifier.testTag("chat_connection_error"),
-                color = MaterialTheme.colorScheme.error,
-            )
-            if (state.switchBlocked) Text(
-                stringResource(R.string.chat_switch_blocked),
-                color = MaterialTheme.colorScheme.error,
-            )
-        }
+        ChatConnectionSettings(viewModel, state, developmentControls, compactDevelopmentControls, onDevelopmentFocus)
         LazyColumn(
             Modifier.fillMaxWidth().height(200.dp).testTag("chat_messages"),
             state = listState,

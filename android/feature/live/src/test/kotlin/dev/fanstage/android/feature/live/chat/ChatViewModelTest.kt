@@ -389,6 +389,25 @@ class ChatViewModelTest {
         assertTrue(vm.uiState.value.gapUnresolved)
     }
 
+    @Test fun `conflict warning remains without fetching when there is no sequence gap`() = runTest {
+        val transport = Controlled()
+        var fetches = 0
+        transport.fetchAction = { _, _, _, _ -> fetches++; emptyList() }
+        val vm = create(transport)
+        runCurrent()
+        transport.stream.emit(ChatEvent.Message(msg(1)))
+        transport.stream.emit(ChatEvent.Message(ServerMessage("a", "conflict", null, 1, "different", false)))
+        runCurrent()
+
+        vm.retryGap()
+        runCurrent()
+
+        // Characterize existing behavior; changing the recovery UI is a separate task.
+        assertEquals(0, fetches)
+        assertTrue(vm.uiState.value.gapUnresolved)
+        assertEquals("message-1", vm.uiState.value.messages.single().text)
+    }
+
     @Test fun `combined fake and screen share at most 1000 logical messages`() = runTest {
         val fake = FakeChatTransport("a", seed = 73, simulateIncoming = false)
         val vm = create(fake); runCurrent()

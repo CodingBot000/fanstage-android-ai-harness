@@ -61,6 +61,12 @@ flowchart LR
 
 ViewModel이 화면별 `UiState`를 소유하고 `StateFlow`로 공개합니다. Repository/ChatTransport는 데이터·이벤트를 제공하며 UI 상태를 직접 소유하지 않습니다. Compose는 `collectAsStateWithLifecycle`로 상태를 읽고 사용자 동작을 ViewModel에 전달합니다. 룸이 바뀌거나 요청이 취소되면 이전 응답이 현재 화면에 반영되지 않도록 처리합니다. [채팅 ViewModel](../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModel.kt) · [Media 화면 상태 구독](../android/feature/media/src/main/kotlin/dev/fanstage/android/feature/media/MediaRoute.kt).
 
+### 채팅 내부 책임
+
+`ChatPanel`은 메시지 목록·입력 UI를 조립하고 [ChatConnectionSettings](../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatConnectionSettings.kt)는 개발용 연결 설정을 표시합니다. 연결 검증은 [LocalChatConnectionCoordinator](../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/LocalChatConnectionCoordinator.kt)가 담당하며 해당 Compose 화면과 같은 수명을 사용합니다. 임시 연결은 검증 종료·취소 때 정리하고, 인계된 활성 Transport는 `ChatViewModel`이 소유합니다. 토큰은 메모리에만 두고 저장 상태나 로그로 옮기지 않습니다.
+
+메시지 저장·중복·순번·충돌 판정과 공유 메모리 임대는 [ChatTimelineStore](../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatTimelineStore.kt)에 둡니다. 저장소는 주 스레드에서 직렬로 사용하며 Coroutine·Socket·Android Context를 소유하지 않습니다. 룸의 `generation`, 수신·전송·복구 Job, `StateFlow` 발행과 활성 Transport 해제는 기존 `ChatViewModel`에 남깁니다. 이 책임 분리는 기존 오류 안내나 초안 보존 정책을 변경하지 않습니다.
+
 ## 4. LIVE와 Replay의 역할
 
 **LIVE 상세**에는 영상 플레이어와 채팅 화면이 있습니다. **Replay**는 영상 재생 화면이며 채팅 입력 기능을 제공하지 않습니다. 두 화면은 Media3 재생 컴포넌트를 재사용합니다.

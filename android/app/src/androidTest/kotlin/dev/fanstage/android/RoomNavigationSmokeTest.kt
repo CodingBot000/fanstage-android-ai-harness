@@ -428,7 +428,9 @@ class RoomNavigationSmokeTest {
     private fun verifyM5BoundedTraffic() {
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val stream = kotlinx.coroutines.flow.MutableSharedFlow<dev.fanstage.android.feature.live.chat.ChatEvent>()
+        val budget = dev.fanstage.android.feature.live.chat.ChatMemoryBudget()
         val transport = object : dev.fanstage.android.feature.live.chat.ChatTransport {
+            override val memoryBudget = budget
             override fun events(roomId: String) = stream
             override suspend fun send(roomId: String, clientMessageId: String, text: String) = Unit
             override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = emptyList<dev.fanstage.android.feature.live.chat.ServerMessage>()
@@ -473,11 +475,13 @@ class RoomNavigationSmokeTest {
                 }
                 instrumentation.runOnMainSync { }
                 assertTrue("display limit exceeded", chat.uiState.value.messages.size <= 500)
-                val confirmed = ChatViewModel::class.java.getDeclaredField("confirmed").apply { isAccessible = true }.get(chat) as Map<*, *>
-                assertTrue("retention limit exceeded", confirmed.size <= 1_000)
+                assertTrue("retention limit exceeded", budget.size <= 1_000)
                 assertTrue("last message was not consumed", chat.uiState.value.messages.last().sequence == seq)
             }
-        } finally { instrumentation.runOnMainSync { store.clear() } }
+        } finally {
+            instrumentation.runOnMainSync { store.clear() }
+            org.junit.Assert.assertEquals("retained message leases after close", 0, budget.size)
+        }
     }
 
     private fun verifyLivePlaylistRefresh() {
