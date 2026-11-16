@@ -69,3 +69,7 @@ ChatViewModel은 Navigation BackStackEntry와 SavedStateHandle을 사용하고 �
 ## Phase 3 실행 결과
 
 전용 Hilt 계측 구성과 대체 바인딩 테스트를 추가했고 기본 일반 계측의 러너와 Application은 유지한다. 모든 빌드·정적·단위 게이트 및 전용 테스트 APK 컴파일 PASS. 당시 테스트 실행과 기기 수명주기 회귀는 NOT_RUN이었다. 이후 선택된 실기기 회귀와 격리 에뮬레이터의 실제 서버 통합은 통과했다. 실기기의 실제 서버 연결과 장시간 검증은 당시 미실행이었다. [검증 기록](../verification.md).
+
+## 후속 정리 · 2026-11-16
+
+이 문서의 단계별 잔존 Factory 설명은 Hilt 전환 당시의 기록이다. 후속 리팩토링 작업 B에서는 실제 런처가 사용하지 않는 독립 `RoomListViewModel`·Factory와 관련 모델·Repository·화면을 정리하고, 의미 있는 테스트를 현재 Discover 경로로 옮겼다. 테스트·벤치마크의 `ChatViewModel.Factory`와 기존 일반 ViewModel의 Activity 범위는 유지한다. [현재 구조](../architecture.md) · [실행 계획](../specs/android-refactoring-plan.md).

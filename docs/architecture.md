@@ -39,7 +39,7 @@ flowchart TB
 
 DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hilt-di-migration.md)과 [검증 결과](verification.md)를 참조합니다.
 
-**수동 Factory 잔존 범위:** `ChatViewModel.Factory`는 테스트·벤치마크에서 명시적 Transport를 주입하기 위해 유지합니다. `RoomListViewModel.Factory`는 초기 독립 룸 목록 구현과 단위 테스트에 남아 있지만, 현재 `MainActivity`가 실제 화면 진입에 사용하는 것은 `DiscoverRoute`입니다. 따라서 일반 ViewModel 네 개의 Hilt 전환과 혼동하지 않으며, 미사용 경로 정리는 테스트 보존 여부를 검토한 별도 작업으로 다룹니다.
+**수동 Factory 유지 범위:** `ChatViewModel.Factory`는 테스트·벤치마크에서 명시적 Transport를 주입하기 위해 유지합니다. 초기 독립 룸 목록의 `RoomListViewModel`·Factory·Repository·모델과 `RoomListScreen`은 실제 진입 경로인 `DiscoverRoute`와 중복되어 정리했습니다. 로딩·빈 결과·재시도·취소·늦은 응답 검증은 `DiscoverViewModelTest`로, Fake 데이터 계약은 `FakeRepositoriesTest`로 옮겼고 현지화 계측은 실제 `DiscoverScreen`을 사용합니다. 일반 ViewModel의 Activity 소유 범위는 바꾸지 않았습니다.
 
 ## 2. UI 디자인 시스템과 화면 조립 책임
 
@@ -90,3 +90,7 @@ flowchart TB
 실제 재생 소스는 화면 경로와 Debug 설정에 따라 선택됩니다. 기본 Replay 경로는 합성 HLS VOD를 사용하고, Debug의 지정된 LIVE 룸과 로컬 영상 항목은 로컬 MP4를 사용합니다.
 
 **설계 근거:** [기능 모듈 분리](adr/ADR-0001-module-boundaries.md) · [Media3 플레이어 소유권](adr/ADR-0002-player-lifecycle.md) · [채팅 메시지 정합성](adr/ADR-0003-chat-consistency.md)
+
+## 누락된 로컬 영상 아티스트
+
+로컬 영상의 아티스트는 ID로 조회합니다. 항목이 없으면 Media 기능의 중립적인 벡터 대체 이미지와 현지화한 `unknown_artist` 이름을 표시하고 카드·제목·영상 열기 동작을 유지합니다. 다른 아티스트를 임의로 연결하지 않습니다. 이 처리는 [실행 계획 D-03](specs/android-refactoring-plan.md)의 사용자 선택을 따르며, 정상 항목의 artwork·이름·정렬·필터는 유지합니다.
