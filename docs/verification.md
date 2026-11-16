@@ -154,8 +154,11 @@ adb -s emulator-5554 shell settings get secure stylus_handwriting_enabled
 격리 ADB와 기기를 준비한 후 아래 클래스 필터로 각각 실행했다. 실제 서버 계측은 일회용 토큰을 별도 환경에서 전달하며 값은 문서에 보존하지 않는다.
 
 ```bash
+export ANDROID_SERIAL=emulator-5560
+export ANDROID_ADB_SERVER_PORT=5039
+export ADB_SERVER_SOCKET=tcp:localhost:5039
 review_a_classes='dev.fanstage.android.RoomNavigationSmokeTest,dev.fanstage.android.DeviceUiRegressionTest,dev.fanstage.android.HiltRoomLifecycleTest,dev.fanstage.android.PlayerSettingsTest'
-ANDROID_SERIAL=emulator-5560 ANDROID_ADB_SERVER_PORT=5039   ADB_SERVER_SOCKET=tcp:localhost:5039 ./gradlew :app:connectedDebugAndroidTest   -PfanstageDeviceTest=true   "-Pandroid.testInstrumentationRunnerArguments.class=$review_a_classes"   --no-daemon --max-workers=2 --console=plain
+./gradlew :app:connectedDebugAndroidTest   -PfanstageDeviceTest=true   "-Pandroid.testInstrumentationRunnerArguments.class=$review_a_classes"   --no-daemon --max-workers=2 --console=plain
 
 # 같은 기기·ADB 환경에서 Hilt 전용 러너와 실제 서버 테스트도 각각 실행
 ./gradlew :app:connectedDebugAndroidTest -PfanstageDeviceTest=true   -PfanstageHiltInstrumentation=true   -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RepositoryBindingsTest   --no-daemon --max-workers=2 --console=plain
@@ -172,7 +175,7 @@ ANDROID_SERIAL=emulator-5560 ANDROID_ADB_SERVER_PORT=5039   ADB_SERVER_SOCKET=tc
 
 ## 2026-11-16 작업 B · 누락 아티스트와 잔존 코드 정리 검증
 
-작업 A와 같은 계획 기준 `46fa30b`에서 별도 브랜치로 진행했다. 작업 A의 제품 코드는 이 브랜치에 섞지 않았으며 그 결과는 별도 PR의 이력으로 기록한다. 사용자가 선택한 D-03에 따라 아티스트가 없는 로컬 영상은 중립적인 벡터 이미지와 현지화한 `unknown_artist` 이름으로 표시하고 영상 카드·클릭을 유지한다.
+작업 A와 같은 계획 기준 `46fa30b`에서 별도 브랜치로 진행했다. 제품 구현은 커밋 `2bf7554d0a9367b17e7157290d401f042c695ce1`이며 [PR #75](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75)로 제출했다. 해당 head의 [통합 품질 게이트](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43866791104)는 PASS다. 최종 보고 문서 변경 이후 head의 CI는 [PR Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75/checks)를 따른다. 작업 A의 제품 코드는 이 브랜치에 섞지 않았으며 그 결과는 별도 PR의 이력으로 기록한다. 사용자가 선택한 D-03에 따라 아티스트가 없는 로컬 영상은 중립적인 벡터 이미지와 현지화한 `unknown_artist` 이름으로 표시하고 영상 카드·클릭을 유지한다.
 
 | 검사 | 결과·범위 |
 |---|---|
@@ -213,7 +216,7 @@ review_b_classes='dev.fanstage.android.MediaMissingArtistTest,dev.fanstage.andro
 ./gradlew :app:assembleDebugAndroidTest -PfanstageDeviceTest=true   --no-daemon --max-workers=2 --console=plain
 ```
 
-원본 로그와 JUnit은 로컬 `/tmp/fanstage-refactor-execution-20261116/`에 보존했으며 공개 원본 묶음으로 간주하지 않는다. 실제 서버 Android 계측은 작업 A에서 수행했으며 작업 B에서 다시 실행하지 않았다. 시각적 전후 캡처 비교·실기기·장시간 누수·정량 성능은 이번 작업에서도 **NOT_RUN**이다. R-01·R-02는 계속 보류하며 두 작업 제출·CI 확인 후 후속 작업을 일시 정지한다.
+원본 로그와 JUnit은 로컬 `/tmp/fanstage-refactor-execution-20261116/`에 보존했으며 공개 원본 묶음으로 간주하지 않는다. 실제 서버 Android 계측은 작업 A에서 수행했으며 작업 B에서 다시 실행하지 않았다. 시각적 전후 캡처 비교·실기기·장시간 누수·정량 성능은 이번 작업에서도 **NOT_RUN**이다. R-01·R-02는 계속 보류하며 두 작업 제출·구현 head CI 확인을 마쳤고 후속 작업은 일시 정지한다. 보고 문서 변경 후의 최종 head는 각 PR Checks에서 마지막으로 확인한다.
 
 ## 자동화와 기기 검증의 역할
 
@@ -233,3 +236,7 @@ Android 기기 계측 결과는 PR에 별도로 기록하며, GitHub Actions의 
 메시지의 ACK 유실·재전송, 역순·누락 복구, 오래된 HTTP 응답, HLS 오류를 독립된 테스트 시나리오로 구성했습니다. 구현 계약과 재현 조건은 [장애 주입 테스트](specs/failure-recovery.md)에 정리했습니다.
 
 [테스트 매트릭스](test-matrix.md) · [Android 실행 안내](../android/README.md) · [AI 개발·검증 과정](ai-development-workflow.md)
+
+## 두 리팩토링 작업의 보고 마무리
+
+작업 A·B의 구현 결과는 서로 다른 PR·구현 커밋을 기준으로 보존했다. 공통 계획·현황·검증 보고는 양쪽 브랜치에서 동일하게 정리하고, 보고 문서 커밋 후에도 각 PR의 마지막 head에 대한 필수 CI를 확인한다. 위의 실행 수치와 CI 링크는 명시한 구현 검증 시점의 기록이며 이후 CI 결과를 사전에 PASS로 간주하는 근거가 아니다. 원래 기기 설정은 복원했고 테스트용 전용 AVD·격리 서버는 종료했다. 사용자 재개 지시 전에는 후속 제품 변경을 진행하지 않는다.
