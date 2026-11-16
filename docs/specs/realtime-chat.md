@@ -47,3 +47,7 @@ FanStage 채팅은 **전송 결과가 불확실한 상황에서도 메시지의 
 - **`ChatViewModel`:** 전송 상태, 확인 순번, 보관 한도, 룸 전환과 화면 `UiState`의 소유자
 
 [설계 결정 ADR-0003](../adr/ADR-0003-chat-consistency.md) · [장애 주입 시나리오](failure-recovery.md) · [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) · [검증 결과](../verification.md) · [서버 실행](../../backend/chat-server/README.md)
+
+## R-01 · 오류 안내와 복구 범위 (2026-11-17)
+
+사용자 선택 A에 따라 `ChatUiState.gapUnresolved`는 실제 확인 순번의 누락만 나타내고 `protocolIssue`는 잘못된 순번·길이·충돌·미확정 전송 불일치를 구분한다. 충돌만 있을 때 누락 복구 버튼을 표시하지 않는다. 누락과 충돌이 함께 있으면 누락 조회를 허용하며 성공해도 프로토콜 경고는 룸 세션 동안 유지한다. 정상 메시지·전송·초안과 미확정 전송 보호는 유지한다. 예상 밖 수신 흐름 종료는 `streamError`로 구분해 인증 실패나 실제 누락으로 오인하지 않는다. 새로운 재동기화나 경고 닫기 기능은 추가하지 않았다.

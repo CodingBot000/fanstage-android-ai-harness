@@ -16,8 +16,9 @@ internal class ChatTimelineStore(
         private set
     var highestObserved = 0L
         private set
-    var invalidEvent = false
+    var protocolIssue: ChatProtocolIssue? = null
         private set
+    val invalidEvent: Boolean get() = protocolIssue != null
     val hasGap: Boolean get() = highestObserved > cursor
     val pendingCount: Int get() = pending.size
     val retainedMessageCount: Int get() = confirmed.size + pending.size
@@ -32,7 +33,7 @@ internal class ChatTimelineStore(
         uncertainIds.clear()
         cursor = 0
         highestObserved = 0
-        invalidEvent = false
+        protocolIssue = null
         this.roomId = roomId
         this.budget = budget
     }
@@ -82,7 +83,7 @@ internal class ChatTimelineStore(
     fun accept(message: ServerMessage) {
         if (message.roomId != roomId) return
         if (message.serverSequence <= 0 || message.text.chatCodePoints() > ChatLimits.MAX_CODE_POINTS) {
-            invalidEvent = true
+            recordIssue(if (message.serverSequence <= 0) ChatProtocolIssue.INVALID_SEQUENCE else ChatProtocolIssue.INVALID_LENGTH)
             onChanged(null)
             return
         }
@@ -90,13 +91,13 @@ internal class ChatTimelineStore(
         if ((existing != null && existing != message) || confirmed.values.any {
                 (it.messageId == message.messageId || (message.clientMessageId != null && it.clientMessageId == message.clientMessageId)) && it.serverSequence != message.serverSequence
             }) {
-            invalidEvent = true
+            recordIssue(ChatProtocolIssue.CONFLICTING_MESSAGE)
             onChanged(null)
             return
         }
         val matchingPending = message.clientMessageId?.let { pending[it] }
         if (matchingPending != null && (!message.isOwn || matchingPending.text != message.text)) {
-            invalidEvent = true
+            recordIssue(ChatProtocolIssue.MISMATCHED_PENDING)
             onChanged(null)
             return
         }
@@ -125,6 +126,8 @@ internal class ChatTimelineStore(
         trim()
         onChanged(hasGap)
     }
+
+    private fun recordIssue(issue: ChatProtocolIssue) { if (protocolIssue == null) protocolIssue = issue }
 
     fun displayedMessages(): List<ChatMessage> {
         val resolved = confirmed.values.map {

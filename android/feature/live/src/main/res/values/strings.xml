@@ -14,7 +14,7 @@
     <string name="chat_pending">Sending</string>
     <string name="chat_sent">Sent</string>
     <string name="chat_failed">Failed</string>
-    <string name="chat_gap">Some messages are missing or inconsistent.</string>
+    <string name="chat_gap">Some messages are missing.</string>
     <string name="chat_capacity">Too many unconfirmed messages. Try again after delivery.</string>
     <string name="chat_uncertain">Delivery is unconfirmed.</string>
     <string name="chat_message_label">Message</string>
@@ -67,4 +67,7 @@
     <string name="vod_chat_unavailable">Chat is not available for replay videos.</string>
     <string name="live_demo_recording">LIVE demo · chat with a local prerecorded stream</string>
     <string name="benchmark_stream">Benchmark · test video</string>
+
+<string name="chat_protocol_issue">Some chat messages were rejected because their data was inconsistent.</string>
+<string name="chat_stream_error">Unable to receive chat updates.</string>
 </resources>
