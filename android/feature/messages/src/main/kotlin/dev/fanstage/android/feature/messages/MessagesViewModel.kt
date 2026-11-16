@@ -12,6 +12,19 @@ class MessagesViewModel @Inject constructor(private val repository: MessageRepos
     private val mutableState = MutableStateFlow(MessagesUiState(repository.snapshot()))
     val state = mutableState.asStateFlow()
 
+    fun submitMessage(artistId: String, text: String): Boolean {
+        val clean = text.trim()
+        val before = mutableState.value.conversations.firstOrNull { it.artistId == artistId } ?: return false
+        if (clean.isEmpty()) return false
+        val result = repository.send(artistId, clean)
+        val oldIds = before.messages.map { it.id }.toSet()
+        val accepted = result.firstOrNull { it.artistId == artistId }?.messages?.any {
+            it.fromMe && it.text == clean && it.id !in oldIds
+        } == true
+        mutableState.value = MessagesUiState(result)
+        return accepted
+    }
+
     fun onAction(action: MessagesUiAction) {
         mutableState.value =
             MessagesUiState(

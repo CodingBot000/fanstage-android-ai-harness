@@ -3,9 +3,6 @@ package dev.fanstage.android.feature.messages
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.fanstage.android.core.model.FictionalArtist
 
@@ -15,17 +12,18 @@ fun ConversationRoute(
     artistId: String,
     artists: List<FictionalArtist>,
     onBack: () -> Unit,
+    draftViewModel: ConversationDraftViewModel,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var draft by remember(artistId) { mutableStateOf("") }
+    val draft by draftViewModel.text.collectAsStateWithLifecycle()
     LaunchedEffect(artistId) { viewModel.onAction(MessagesUiAction.ConversationOpened(artistId)) }
     ConversationScreen(
         state.conversations.firstOrNull { it.artistId == artistId },
         artistId,
         artists,
         draft,
-        { draft = it },
-        viewModel::onAction,
+        draftViewModel::update,
+        { draftViewModel.submit { viewModel.submitMessage(artistId, it) } },
         onBack,
     )
 }

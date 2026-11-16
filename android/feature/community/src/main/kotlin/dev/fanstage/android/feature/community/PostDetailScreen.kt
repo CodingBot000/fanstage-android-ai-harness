@@ -50,6 +50,7 @@ fun PostDetailScreen(
     onCommentChange: (String) -> Unit,
     onAction: (CommunityUiAction) -> Unit,
     onBack: () -> Unit,
+    onSubmit: () -> Unit,
 ) {
     val density = LocalDensity.current
     val imeShift = if (WindowInsets.ime.getBottom(density) > 0) with(density) { 32.dp.roundToPx() } else 0
@@ -110,10 +111,7 @@ fun PostDetailScreen(
                 } else item { Text(stringResource(R.string.community_empty)) }
             }
             if (post != null) {
-                val submit: () -> Unit = {
-                    onAction(CommunityUiAction.CommentSubmitted(post.id, comment))
-                    onCommentChange("")
-                }
+                val submit = onSubmit
                 val sendDescription = stringResource(R.string.send_comment)
                 OutlinedTextField(
                     value = comment,
