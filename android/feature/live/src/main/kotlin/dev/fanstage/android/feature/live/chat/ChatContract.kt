@@ -14,6 +14,8 @@ data class ServerMessage(
     val sentAt: String? = null,
 )
 
+enum class ChatProtocolIssue { INVALID_SEQUENCE, INVALID_LENGTH, CONFLICTING_MESSAGE, MISMATCHED_PENDING }
+
 enum class Delivery { PENDING, SENT, FAILED }
 
 data class ChatMessage(
@@ -62,11 +64,13 @@ data class ChatUiState(
     val roomId: String,
     val messages: List<ChatMessage> = emptyList(),
     val gapUnresolved: Boolean = false,
+    val protocolIssue: ChatProtocolIssue? = null,
     val sendBlocked: Boolean = false,
     val transportUncertain: Boolean = false,
     val inputTooLong: Boolean = false,
     val switchBlocked: Boolean = false,
     val connectionError: Boolean = false,
+    val streamError: Boolean = false,
     val connectionStatus: ChatConnectionStatus? = null,
     val localServer: Boolean = false,
     val fictionalFixtures: Boolean = false,

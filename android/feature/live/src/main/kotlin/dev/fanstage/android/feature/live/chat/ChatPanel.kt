@@ -133,15 +133,19 @@ fun ChatPanel(viewModel: ChatViewModel, developmentControls: Boolean = false, sh
                 )
             }
         }
+        if (state.protocolIssue != null) {
+            Text(stringResource(R.string.chat_protocol_issue), Modifier.testTag("chat_protocol_warning"))
+        }
         if (state.gapUnresolved) {
-            Text(stringResource(R.string.chat_gap))
-            TextButton(onClick = viewModel::retryGap) { Text(stringResource(R.string.chat_retry_gap)) }
+            Text(stringResource(R.string.chat_gap), Modifier.testTag("chat_gap_warning"))
+            TextButton(onClick = viewModel::retryGap, modifier = Modifier.testTag("chat_retry_gap")) { Text(stringResource(R.string.chat_retry_gap)) }
         }
         if (state.localServer && state.connectionStatus == ChatConnectionStatus.DISCONNECTED && !state.connectionError) {
             TextButton(onClick = viewModel::retryConnection, modifier = Modifier.testTag("chat_retry_connection")) {
                 Text(stringResource(R.string.chat_retry_connection))
             }
         }
+        if (state.streamError) Text(stringResource(R.string.chat_stream_error), Modifier.testTag("chat_stream_error"))
         if (state.connectionError) Text(stringResource(R.string.chat_connection_error), Modifier.testTag("chat_connection_error"))
         if (state.sendBlocked) Text(stringResource(R.string.chat_capacity))
         if (state.inputTooLong) Text(stringResource(R.string.chat_too_long))

@@ -378,7 +378,8 @@ class ChatViewModelTest {
         val id = vm.uiState.value.messages.single().clientMessageId!!
         t.stream.emit(ChatEvent.Ack(ServerMessage("a", "bad", id, 1, "other", true))); advanceUntilIdle()
         assertEquals(Delivery.PENDING, vm.uiState.value.messages.single().delivery)
-        assertTrue(vm.uiState.value.gapUnresolved)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNotNull(vm.uiState.value.protocolIssue)
     }
 
     @Test fun `duplicate sequence with different identity is rejected`() = runTest {
@@ -386,7 +387,8 @@ class ChatViewModelTest {
         t.stream.emit(ChatEvent.Message(msg(1))); runCurrent()
         t.stream.emit(ChatEvent.Message(ServerMessage("a", "conflict", null, 1, "wrong", false))); advanceUntilIdle()
         assertEquals("message-1", vm.uiState.value.messages.single().text)
-        assertTrue(vm.uiState.value.gapUnresolved)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNotNull(vm.uiState.value.protocolIssue)
     }
 
     @Test fun `conflict warning remains without fetching when there is no sequence gap`() = runTest {
@@ -402,10 +404,58 @@ class ChatViewModelTest {
         vm.retryGap()
         runCurrent()
 
-        // Characterize existing behavior; changing the recovery UI is a separate task.
+        // A protocol warning does not expose a gap recovery action without a real gap.
         assertEquals(0, fetches)
-        assertTrue(vm.uiState.value.gapUnresolved)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNotNull(vm.uiState.value.protocolIssue)
         assertEquals("message-1", vm.uiState.value.messages.single().text)
+    }
+
+    @Test fun `gap recovery retains protocol warning and draft while normal sends continue`() = runTest {
+        val t = Controlled(); val vm = create(t); runCurrent()
+        vm.updateDraft("keep draft")
+        t.stream.emit(ChatEvent.Message(msg(2)))
+        t.stream.emit(ChatEvent.Message(ServerMessage("a", "bad", null, 2, "conflict", false)))
+        advanceUntilIdle()
+        assertTrue(vm.uiState.value.gapUnresolved)
+        assertEquals(ChatProtocolIssue.CONFLICTING_MESSAGE, vm.uiState.value.protocolIssue)
+        t.history = listOf(msg(1), msg(2))
+        vm.retryGap(); advanceUntilIdle()
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNotNull(vm.uiState.value.protocolIssue)
+        assertEquals("keep draft", vm.uiState.value.draft)
+        t.sendAction = { room, id, text -> t.stream.emit(ChatEvent.Ack(ServerMessage(room, "own", id, 3, text, true))) }
+        assertTrue(vm.send("normal send")); advanceUntilIdle()
+        assertEquals(Delivery.SENT, vm.uiState.value.messages.last().delivery)
+        assertNotNull(vm.uiState.value.protocolIssue)
+        vm.openRoom("b"); runCurrent()
+        assertNull(vm.uiState.value.protocolIssue)
+        assertFalse(vm.uiState.value.gapUnresolved)
+    }
+
+    @Test fun `invalid sequence and length are protocol issues without invented gaps`() = runTest {
+        val t = Controlled(); val vm = create(t); runCurrent()
+        t.stream.emit(ChatEvent.Message(msg(0))); runCurrent()
+        assertEquals(ChatProtocolIssue.INVALID_SEQUENCE, vm.uiState.value.protocolIssue)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        vm.openRoom("b"); runCurrent()
+        t.stream.emit(ChatEvent.Message(ServerMessage("b", "long", null, 1, "x".repeat(ChatLimits.MAX_CODE_POINTS + 1), false)))
+        runCurrent()
+        assertEquals(ChatProtocolIssue.INVALID_LENGTH, vm.uiState.value.protocolIssue)
+        assertFalse(vm.uiState.value.gapUnresolved)
+    }
+
+    @Test fun `unexpected stream failure is not authentication or a fabricated gap`() = runTest {
+        val transport = object : ChatTransport {
+            override fun events(roomId: String): Flow<ChatEvent> = flow { throw java.io.IOException() }
+            override suspend fun send(roomId: String, clientMessageId: String, text: String) = Unit
+            override suspend fun fetchAfter(roomId: String, afterSequence: Long, upperSequence: Long, limit: Int) = emptyList<ServerMessage>()
+        }
+        val vm = create(transport); runCurrent()
+        assertTrue(vm.uiState.value.streamError)
+        assertFalse(vm.uiState.value.connectionError)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNull(vm.uiState.value.protocolIssue)
     }
 
     @Test fun `combined fake and screen share at most 1000 logical messages`() = runTest {
@@ -556,7 +606,8 @@ class ChatViewModelTest {
         assertTrue(vm.uiState.value.inputTooLong)
         t.stream.emit(ChatEvent.Message(ServerMessage("a", "oversize", null, 1, "x".repeat(1_001), false)))
         advanceUntilIdle()
-        assertTrue(vm.uiState.value.gapUnresolved)
+        assertFalse(vm.uiState.value.gapUnresolved)
+        assertNotNull(vm.uiState.value.protocolIssue)
         assertEquals(1, vm.retainedMessageCount)
     }
 

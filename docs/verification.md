@@ -240,3 +240,9 @@ Android 기기 계측 결과는 PR에 별도로 기록하며, GitHub Actions의 
 ## 두 리팩토링 작업의 보고 마무리
 
 작업 A·B의 구현 결과는 서로 다른 PR·구현 커밋을 기준으로 보존했다. 공통 계획·현황·검증 보고는 양쪽 브랜치에서 동일하게 정리하고, 보고 문서 커밋 후에도 각 PR의 마지막 head에 대한 필수 CI를 확인한다. 위의 실행 수치와 CI 링크는 명시한 구현 검증 시점의 기록이며 이후 CI 결과를 사전에 PASS로 간주하는 근거가 아니다. 원래 기기 설정은 복원했고 테스트용 전용 AVD·격리 서버는 종료했다. 사용자 재개 지시 전에는 후속 제품 변경을 진행하지 않는다.
+
+## 2026-11-17 R-01 오류·복구 구현 검증
+
+정책 기준은 D-02 A다. 프로토콜 경고·실제 누락·인증·예상 밖 수신 종료를 분리하고 기존 전송 보호와 순번 복구를 유지했다. 단위 결과 XML 86/86 PASS, Debug·Release 빌드·일반 계측 APK·Lint PASS다. API 36 전용 AVD/ADB 5039에서 `ChatRecoveryUiTest`, `HiltRoomLifecycleTest`, `RoomNavigationSmokeTest` 7/7 PASS를 확인했고, 수신 종료 상태를 추가한 뒤 새 UI 검사를 1/1 재실행해 PASS였다.
+
+실행 명령은 `./android/gradlew -p android :feature:live:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug`, 이어 `testDebugUnitTest :core:data:test :app:connectedDebugAndroidTest -PfanstageDeviceTest=true`에 위 클래스 필터를 적용했다. Release는 `:app:assembleRelease`를 실행했다. JBR 17과 Android SDK를 지정했고 원본은 로컬 `/tmp/fanstage-r01-r02-20261117/`에 보존했다. 실제 서버·실기기·장시간 누수·정량 성능·시각적 전후 비교는 이 단계에서 재실행하지 않았다. 기존 실제 서버 검증을 이번 실행으로 합산하지 않는다.

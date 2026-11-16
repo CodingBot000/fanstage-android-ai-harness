@@ -14,7 +14,7 @@
     <string name="chat_pending">전송 중</string>
     <string name="chat_sent">전송됨</string>
     <string name="chat_failed">전송 실패</string>
-    <string name="chat_gap">일부 메시지가 누락됐거나 일치하지 않습니다.</string>
+    <string name="chat_gap">일부 메시지가 누락되었습니다.</string>
     <string name="chat_capacity">확인되지 않은 메시지가 너무 많습니다. 전송 결과를 확인한 뒤 다시 시도해 주세요.</string>
     <string name="chat_uncertain">메시지 전송 결과를 확인하지 못했습니다.</string>
     <string name="chat_message_label">메시지</string>
@@ -67,4 +67,7 @@
     <string name="vod_chat_unavailable">다시보기 영상에서는 채팅을 제공하지 않습니다.</string>
     <string name="live_demo_recording">LIVE 데모 · 로컬 서버 녹화 영상으로 채팅 시연</string>
     <string name="benchmark_stream">벤치마크 · 테스트 영상</string>
+
+<string name="chat_protocol_issue">일부 채팅 메시지의 데이터가 일치하지 않아 표시하지 않았습니다.</string>
+<string name="chat_stream_error">채팅 메시지 수신을 계속할 수 없습니다.</string>
 </resources>
