@@ -27,7 +27,7 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
     private val mutableState = MutableStateFlow(ChatUiState(initialRoomId))
     val uiState: StateFlow<ChatUiState> = mutableState.asStateFlow()
     private val timeline = ChatTimelineStore(initialRoomId, transport.memoryBudget ?: ProcessChatMemory.budget) { gap ->
-        publish(gap = gap ?: mutableState.value.gapUnresolved)
+        publish(gap = gap ?: timelineGap())
     }
     private var generation = 0L
     private var roomJob: Job? = null
@@ -67,6 +67,8 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
                     timeline.accept(message)
                     if (timeline.hasGap) recover()
                 }
+                currentCoroutineContext().ensureActive()
+                if (epoch == generation) mutableState.value = mutableState.value.copy(streamError = true)
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: ChatConnectionFailure) {
                 currentCoroutineContext().ensureActive()
@@ -74,7 +76,7 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
             }
             catch (_: Exception) {
                 currentCoroutineContext().ensureActive()
-                if (epoch == generation) mutableState.value = mutableState.value.copy(gapUnresolved = true)
+                if (epoch == generation) mutableState.value = mutableState.value.copy(streamError = true)
             }
         }
     }
@@ -194,10 +196,13 @@ class ChatViewModel(private var transport: ChatTransport, initialRoomId: String)
         }
     }
 
-    private fun publish(gap: Boolean = mutableState.value.gapUnresolved, sendBlocked: Boolean = false) {
+    private fun timelineGap(): Boolean = timeline.hasGap
+
+    private fun publish(gap: Boolean = timeline.hasGap, sendBlocked: Boolean = false) {
         mutableState.value = mutableState.value.copy(
             messages = timeline.displayedMessages(),
-            gapUnresolved = gap || timeline.invalidEvent,
+            gapUnresolved = gap && timeline.hasGap,
+            protocolIssue = timeline.protocolIssue,
             sendBlocked = sendBlocked,
             transportUncertain = timeline.transportUncertain,
         )
