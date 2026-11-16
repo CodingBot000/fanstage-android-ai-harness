@@ -23,7 +23,7 @@ class UiContractTest {
         val post = CommunityPost("post", "artist", "Title", "Body", ArtworkKey.PAPER_FEED)
         rule.activityRule.scenario.onActivity { activity -> activity.setContent { FanStageTheme {
             var draft by remember { mutableStateOf("") }
-            PostDetailScreen(post, draft, { draft = it }, { actions.add(it) }, {})
+            PostDetailScreen(post, draft, { draft = it }, { actions.add(it) }, {}, onSubmit = { actions.add(CommunityUiAction.CommentSubmitted(post.id, draft)) })
         } } }
         rule.onNodeWithTag("post_like").performScrollTo().performClick()
         rule.onNodeWithTag("comment_input").performTextInput("Hello")
@@ -36,7 +36,7 @@ class UiContractTest {
         val id = "paper-lantern"
         rule.activityRule.scenario.onActivity { activity -> activity.setContent { FanStageTheme {
             var draft by remember { mutableStateOf("") }
-            ConversationScreen(LocalConversation(id, emptyList()), id, FakeCatalog.artists(), draft, { draft = it }, { actions.add(it) }, {})
+            ConversationScreen(LocalConversation(id, emptyList()), id, FakeCatalog.artists(), draft, { draft = it }, { actions.add(MessagesUiAction.SendClicked(id, draft)) }, {})
         } } }
         rule.onNodeWithTag("dm_input").performTextInput("Hi")
         rule.onNodeWithTag("dm_send").performClick()

@@ -44,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -158,7 +159,8 @@ private fun FanStageNavHost(
         }
         composable("messages") { MessagesListRoute(messagesViewModel, artists, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
         composable("messages/{artistId}") { messageEntry ->
-            ConversationRoute(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() })
+            val draftViewModel: ConversationDraftViewModel = viewModel(viewModelStoreOwner = messageEntry)
+            ConversationRoute(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() }, draftViewModel = draftViewModel)
         }
         composable("media") {
             MediaRoute(mediaViewModel, onLive = { roomId -> navController.navigate("rooms/${Uri.encode(roomId)}") { launchSingleTop = true } }, onReplay = { navController.navigate("replay") }, videos = if (BuildConfig.DEBUG) DemoVideos.all else emptyList(), onVideo = { navController.navigate("local-video/$it") })
@@ -171,7 +173,8 @@ private fun FanStageNavHost(
             CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, onBack = { navController.popBackStack() }, artists = artists)
         }
         composable("community/post/{postId}") { postEntry ->
-            PostDetailRoute(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() })
+            val draftViewModel: PostDraftViewModel = viewModel(viewModelStoreOwner = postEntry)
+            PostDetailRoute(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() }, draftViewModel = draftViewModel)
         }
         // These cards are explicitly VOD regardless of video ID or MP4 file number.
         composable("local-video/{videoId}") { videoEntry ->

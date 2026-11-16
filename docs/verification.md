@@ -240,3 +240,19 @@ Android 기기 계측 결과는 PR에 별도로 기록하며, GitHub Actions의 
 ## 두 리팩토링 작업의 보고 마무리
 
 작업 A·B의 구현 결과는 서로 다른 PR·구현 커밋을 기준으로 보존했다. 공통 계획·현황·검증 보고는 양쪽 브랜치에서 동일하게 정리하고, 보고 문서 커밋 후에도 각 PR의 마지막 head에 대한 필수 CI를 확인한다. 위의 실행 수치와 CI 링크는 명시한 구현 검증 시점의 기록이며 이후 CI 결과를 사전에 PASS로 간주하는 근거가 아니다. 원래 기기 설정은 복원했고 테스트용 전용 AVD·격리 서버는 종료했다. 사용자 재개 지시 전에는 후속 제품 변경을 진행하지 않는다.
+
+## 2026-11-17 R-01 오류·복구 구현 검증
+
+정책 기준은 D-02 A다. 프로토콜 경고·실제 누락·인증·예상 밖 수신 종료를 분리하고 기존 전송 보호와 순번 복구를 유지했다. 단위 결과 XML 86/86 PASS, Debug·Release 빌드·일반 계측 APK·Lint PASS다. API 36 전용 AVD/ADB 5039에서 `ChatRecoveryUiTest`, `HiltRoomLifecycleTest`, `RoomNavigationSmokeTest` 7/7 PASS를 확인했고, 수신 종료 상태를 추가한 뒤 새 UI 검사를 1/1 재실행해 PASS였다.
+
+실행 명령은 `./android/gradlew -p android :feature:live:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :app:lintDebug`, 이어 `testDebugUnitTest :core:data:test :app:connectedDebugAndroidTest -PfanstageDeviceTest=true`에 위 클래스 필터를 적용했다. Release는 `:app:assembleRelease`를 실행했다. JBR 17과 Android SDK를 지정했고 원본은 로컬 `/tmp/fanstage-r01-r02-20261117/`에 보존했다. 실제 서버·실기기·장시간 누수·정량 성능·시각적 전후 비교는 이 단계에서 재실행하지 않았다. 기존 실제 서버 검증을 이번 실행으로 합산하지 않는다.
+
+## 2026-11-17 R-02 초안 보존 구현 검증
+
+D-01 A를 적용했다. 독립 브랜치에서 단위 결과 XML 89/89 PASS, Debug·Release 빌드·Lint·일반 계측 APK 컴파일 PASS를 확인했다. API 36 전용 AVD에서 `DraftLifecycleTest`의 DM·댓글 재생성·백그라운드·접수·pop 검증과 `UiContractTest`, `DiscoverTest`, `DeviceUiRegressionTest` 묶음은 22/22 PASS였다. 저장된 목적지 복원·동일 VM 유지·최종 제거 후 빈 신규 VM은 별도 1/1 PASS였다. Hilt 바인딩 3/3 PASS 뒤 일반 계측 APK를 다시 컴파일해 PASS를 확인했다.
+
+단위 검사는 두 초안 소유자의 재사용·분리·최종 제거·새 소유자 초기화, 빈 입력·거절·예외·CancellationException·접수 성공과 제출 중 변경된 초안 보존을 검사했다. 메시지의 실제 신규 Repository 항목 확인, 댓글의 로딩/없는 대상 거절·동일 본문 반복 접수도 검증했다.
+
+주요 명령은 브랜치 루트에서 `./android/gradlew -p android :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug testDebugUnitTest :core:data:test -PfanstageDeviceTest=true --no-daemon --max-workers=2`다. 기기는 `ANDROID_SERIAL=emulator-5560`, `ANDROID_ADB_SERVER_PORT=5039`, `ADB_SERVER_SOCKET=tcp:localhost:5039`로 지정하고 `:app:connectedDebugAndroidTest`에 위 클래스 필터를 적용했다. Hilt 실행에는 `-PfanstageHiltInstrumentation=true`와 `RepositoryBindingsTest`를 지정했다. JBR 17·Android SDK를 사용했고 원본 로그는 로컬 `/tmp/fanstage-r01-r02-20261117/`에 보존했다.
+
+프로세스 종료 정책은 새 ViewModelStore/소유자의 빈 상태와 저장 코드 부재를 검사했으며 실제 OS 프로세스 강제 종료·복원 계측은 NOT_RUN이다. 실기기·장시간 누수·정량 성능·시각적 전후 캡처 비교·실제 서버 Android 연동도 이번 R-02 단계에서 재실행하지 않았다. 이전 검증을 이번 실행으로 합산하지 않는다.

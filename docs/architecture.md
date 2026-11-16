@@ -94,3 +94,9 @@ flowchart TB
 ## 누락된 로컬 영상 아티스트
 
 로컬 영상의 아티스트는 ID로 조회합니다. 항목이 없으면 Media 기능의 중립적인 벡터 대체 이미지와 현지화한 `unknown_artist` 이름을 표시하고 카드·제목·영상 열기 동작을 유지합니다. 다른 아티스트를 임의로 연결하지 않습니다. 이 처리는 [실행 계획 D-03](specs/android-refactoring-plan.md)의 사용자 선택을 따르며, 정상 항목의 artwork·이름·정렬·필터는 유지합니다.
+
+## R-02 · 목적지 초안 수명 (2026-11-17)
+
+`ConversationDraftViewModel`과 `PostDraftViewModel`은 각 Navigation BackStackEntry가 소유한다. app은 목적지 안에서 명시적 entry 소유자로 생성해 Route로 전달하고 기존 일반 ViewModel 네 개의 Activity 범위는 유지한다. 초안은 StateFlow의 메모리 문자열이며 SavedStateHandle이나 영속 저장소에 기록하지 않는다. 저장된 목적지에서는 유지하고 최종 제거 시 clear하며 새 프로세스 소유자는 빈 값으로 시작한다.
+
+Screen은 입력·전송 이벤트만 전달하며 전송 성공을 추정해 초안을 지우지 않는다. 목적지 소유자가 실제 Repository 반영 여부를 확인한 뒤 제출한 초안만 초기화한다. 빈 입력·거절·오류·취소에는 초안을 유지한다. 현재 Fake 동기 접수와 서버 전달 확정은 구분한다.

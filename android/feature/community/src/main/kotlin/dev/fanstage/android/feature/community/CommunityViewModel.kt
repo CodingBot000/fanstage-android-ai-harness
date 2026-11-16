@@ -49,6 +49,18 @@ class CommunityViewModel @Inject constructor(private val repository: CommunityRe
             }
     }
 
+    fun submitComment(postId: String, text: String): Boolean {
+        val ready = mutableState.value as? CommunityState.Ready ?: return false
+        val before = ready.posts.firstOrNull { it.id == postId } ?: return false
+        val clean = text.trim()
+        if (clean.isEmpty()) return false
+        val result = repository.addComment(postId, clean)
+        val after = result.firstOrNull { it.id == postId }
+        val accepted = after != null && after.comments.count { it == clean } > before.comments.count { it == clean }
+        mutableState.value = CommunityState.Ready(result)
+        return accepted
+    }
+
     fun like(id: String) {
         if (mutableState.value is CommunityState.Ready)
             mutableState.value = CommunityState.Ready(repository.toggleLike(id))

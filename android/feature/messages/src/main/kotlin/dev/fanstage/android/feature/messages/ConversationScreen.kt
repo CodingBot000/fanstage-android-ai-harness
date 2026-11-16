@@ -57,7 +57,7 @@ fun ConversationScreen(
     artists: List<FictionalArtist>,
     draft: String,
     onDraftChange: (String) -> Unit,
-    onAction: (MessagesUiAction) -> Unit,
+    onSubmit: () -> Unit,
     onBack: () -> Unit,
 ) {
     val artist = artists.firstOrNull { it.id == artistId }
@@ -112,7 +112,7 @@ fun ConversationScreen(
         ) {
             items(transcript, key = { it.id }) { message -> ConversationBubble(message) }
         }
-        ConversationComposer(artistId, draft, onDraftChange, onAction)
+        ConversationComposer(draft, onDraftChange, onSubmit)
     }
 }
 
@@ -145,15 +145,11 @@ private fun ConversationBubble(message: LocalMessage) {
 
 @Composable
 private fun ConversationComposer(
-    artistId: String,
     draft: String,
     onDraftChange: (String) -> Unit,
-    onAction: (MessagesUiAction) -> Unit,
+    onSubmit: () -> Unit,
 ) {
-    val submit: () -> Unit = {
-        onAction(MessagesUiAction.SendClicked(artistId, draft))
-        onDraftChange("")
-    }
+    val submit = onSubmit
     val sendDescription = stringResource(R.string.send_comment)
     OutlinedTextField(
         value = draft,
