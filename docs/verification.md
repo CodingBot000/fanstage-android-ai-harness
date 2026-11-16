@@ -256,3 +256,7 @@ D-01 A를 적용했다. 독립 브랜치에서 단위 결과 XML 89/89 PASS, Deb
 주요 명령은 브랜치 루트에서 `./android/gradlew -p android :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug testDebugUnitTest :core:data:test -PfanstageDeviceTest=true --no-daemon --max-workers=2`다. 기기는 `ANDROID_SERIAL=emulator-5560`, `ANDROID_ADB_SERVER_PORT=5039`, `ADB_SERVER_SOCKET=tcp:localhost:5039`로 지정하고 `:app:connectedDebugAndroidTest`에 위 클래스 필터를 적용했다. Hilt 실행에는 `-PfanstageHiltInstrumentation=true`와 `RepositoryBindingsTest`를 지정했다. JBR 17·Android SDK를 사용했고 원본 로그는 로컬 `/tmp/fanstage-r01-r02-20261117/`에 보존했다.
 
 프로세스 종료 정책은 새 ViewModelStore/소유자의 빈 상태와 저장 코드 부재를 검사했으며 실제 OS 프로세스 강제 종료·복원 계측은 NOT_RUN이다. 실기기·장시간 누수·정량 성능·시각적 전후 캡처 비교·실제 서버 Android 연동도 이번 R-02 단계에서 재실행하지 않았다. 이전 검증을 이번 실행으로 합산하지 않는다.
+
+## R-01·R-02 제출 상태
+
+제품 구현 커밋은 각각 R-01 `e940d0c`, R-02 `a4aa026`이다. R-01 구현 head의 [CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43907286851)가 통과했다. 공통 보고 문서 변경 이후의 마지막 제출 head는 [PR #76 Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76/checks)와 [PR #77 Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/77/checks)를 기준으로 확인한다. 기존 결과나 구현 head의 PASS를 이후 CI의 사전 통과로 간주하지 않는다.
