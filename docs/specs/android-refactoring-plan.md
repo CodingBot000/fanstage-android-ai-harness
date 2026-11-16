@@ -4,8 +4,8 @@
 |---|---|
 | 작성일 | 2026-11-16 |
 | 분석 기준 | 로컬 `main` · `5d335ec2f26d4655f713083ecded85b06b44806e` |
-| 문서 상태 | 사용자 실행 지시 반영 · 작업 A PR 제출·CI 확인 중 · 작업 B 대기 |
-| 현재 실행 범위 | 사용자 실행 지시에 따라 작업 A·B 구현·검증·개별 커밋·푸시·PR·CI 확인 후 일시 정지 |
+| 문서 상태 | 사용자 실행 지시 반영 · 지정 두 작업 완료 · 후속 작업 일시 정지 |
+| 현재 실행 상태 | 작업 A·B 구현·검증·개별 커밋·푸시·PR 및 구현 head CI 완료. 최종 보고 후 사용자 재개 지시 대기 |
 | 우선 실행 | 작업 A: 채팅 책임 분리 → 작업 B: 누락 데이터 처리·잔존 코드 정리 |
 | 제출 단위 | 작업별 개별 브랜치·커밋·푸시·PR. 작업 A와 B에 각각 PR 1개 |
 | 종료 조건 | 두 작업의 구현·검증·커밋·푸시·PR·해당 CI 확인 완료 후 일시 정지하고 보고 |
@@ -421,7 +421,7 @@ R-01·R-02와 기타 신규 개선은 이 실행 순서에 추가하지 않는�
 3. **구현·검증:** 해당 작업의 범위와 완료 기준을 충족한다. 검증 결과·실패 이력·남은 확인을 [검증 문서](../verification.md)에 기록하고 이 문서와 현황 문서의 진행 상태를 갱신한다.
 4. **개별 커밋:** 각 작업에 대응하는 독립적인 커밋을 만든다. 예시 메시지는 A의 `refactor: separate chat responsibilities`, B의 `refactor: handle missing media data and remove unused code`다. 필요한 검증 보완은 같은 작업의 추가 커밋으로 남길 수 있으며 A와 B를 하나의 커밋으로 합치지 않는다.
 5. **개별 푸시:** 해당 작업 브랜치를 원격에 푸시하고 로컬·원격 head SHA가 일치하는지 확인한다. `main` 직접 푸시나 이력 강제 재작성으로 제출을 대신하지 않는다.
-6. **개별 PR 생성:** 작업 A·B에 각각 PR 하나를 생성한다. 문제와 결과 동작, 변경 범위, 검증 명령·환경·결과, 미실행 항목과 남은 문제를 한국어로 설명하고 관련 계약·검증 기록을 연결한다. 공유 계획 문서의 커밋 기반과 충돌은 분리 과정에서 보존·정리한다.
+6. **개별 PR 생성:** 작업 A·B에 각각 PR 하나를 생성한다. 문제와 결과 동작, 변경 범위, 검증 명령·환경·결과, 미실행 항목과 남은 문제를 한국어로 설명하고 관련 계약·검증 기록을 연결한다. 공유 계획 문서의 커밋 기반과 충돌은 분리 과정에서 보존·정리한다. 두 작업의 최종 공통 계획·현황·검증 보고는 양쪽 PR에서 같은 내용으로 맞추고, 그 보고 변경 이후 각 PR의 마지막 head CI도 다시 확인한다. 제품 변경의 작업별 분리는 유지한다.
 7. **CI 확인:** 각 PR의 마지막 head SHA에서 필요한 검사가 실제 실행되어 통과했는지 확인하고 실행 링크를 기록한다. 현재 [통합 품질 게이트](../../.github/workflows/required-quality.yml)는 `main` 대상 PR에 동작하므로 두 PR의 제출·검증 기준도 `main` 대상으로 구성한다. 다른 base에서 CI가 생기지 않은 상태를 PASS로 간주하지 않는다.
 8. **다음 작업 또는 정지:** A의 제출·확인을 마치면 B를 진행한다. B까지 완료하면 8.4절에 따라 일시 정지하고 보고한다.
 
@@ -431,8 +431,8 @@ R-01·R-02와 기타 신규 개선은 이 실행 순서에 추가하지 않는�
 
 | 작업 | 브랜치 후보 | 구현·검증 | 커밋·푸시 | PR·CI |
 |---|---|---|---|---|
-| A · 채팅 책임 분리 | `codex/refactor-chat-responsibilities` | 구현·로컬 검증 완료. [검증 기록](../verification.md#android-refactor-a-20261116) | 구현 `31dac1486631a7dd881bc49188870aa3871a67e1` 커밋·원격 푸시 확인 | [PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74) · [최신 head CI](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74/checks) 확인 중 |
-| B · 누락 데이터·잔존 코드 정리 | `codex/refactor-media-data-cleanup` | 대기. D-03 A 확정 | 미생성·미실행 | 미생성·미실행 |
+| A · 채팅 책임 분리 | `codex/refactor-chat-responsibilities` | 완료. [검증 기록](../verification.md#android-refactor-a-20261116) | 구현 `31dac1486631a7dd881bc49188870aa3871a67e1` 커밋·원격 푸시 확인 | [PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74) · [CI PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43861023966), head `b725c09d2691ad374afa764f3c76803a0f069296` |
+| B · 누락 데이터·잔존 코드 정리 | `codex/refactor-media-data-cleanup` | 완료. [검증 기록](../verification.md#android-refactor-b-20261116) | 구현 `2bf7554d0a9367b17e7157290d401f042c695ce1` 커밋·원격 푸시 확인 | [PR #75](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75) · [구현 head CI PASS](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43866791104) |
 
 | 별도 항목 | 현재 상태 |
 |---|---|
@@ -440,7 +440,7 @@ R-01·R-02와 기타 신규 개선은 이 실행 순서에 추가하지 않는�
 | D-03 누락 아티스트 표시 방식 | 사용자 선택 A 확정: 대체 이미지·이름으로 카드 유지 |
 | R-01·D-02 오류 상태·복구 동작 | 이번 실행에서 보류 |
 | R-02·D-01 초안 보존 | 이번 실행에서 보류 |
-| 일시 정지 시점 | A·B가 모두 완료된 뒤. 현재는 작업 A 진행 중 |
+| 일시 정지 시점 | A·B가 모두 완료된 뒤. 현재는 지정 두 작업 완료 후 후속 작업 일시 정지 |
 
 다음 조건을 모두 충족해야 각 작업을 완료로 표시한다.
 
@@ -488,4 +488,20 @@ R-01·R-02와 기타 신규 개선은 이 실행 순서에 추가하지 않는�
 - `ChatTimelineStore`는 메시지·순번·충돌·공유 메모리 임대와 표시 snapshot을 담당한다. 기존 오류 표현을 유지하는 변경 알림을 ViewModel로 전달한다.
 - `ChatViewModel`은 룸 세대, 수신·전송·복구 Coroutine과 활성 Transport 수명을 유지한다. 새 오류 상태나 초안 영속 보관을 도입하지 않았다.
 - 반사 접근에 의존하던 계측의 보관 수량 검증을 전용 예산 관찰로 옮기고 종료 후 해제도 확인했다.
-- 실행 명령·결과·환경·최초 ADB 중단과 재실행·남은 제한은 [작업 A 검증](../verification.md#android-refactor-a-20261116)에 기록했다. 구현 커밋은 `31dac1486631a7dd881bc49188870aa3871a67e1`이며 [PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74)로 제출했다. 최신 head의 CI를 확인 중이며 통과한 뒤 작업 B를 시작한다.
+- 실행 명령·결과·환경·최초 ADB 중단과 재실행·남은 제한은 [작업 A 검증](../verification.md#android-refactor-a-20261116)에 기록했다. 구현 커밋은 `31dac1486631a7dd881bc49188870aa3871a67e1`이며 [PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74)로 제출했다. 구현 검증 head `b725c09d2691ad374afa764f3c76803a0f069296`의 CI가 통과해 작업 B를 진행했다. 작업 A 제품 변경은 별도 PR에 있으며 작업 B 브랜치에 섞지 않는다.
+
+## 11. 작업 B 구현 결과
+
+- 사용자 선택 D-03에 따라 누락 아티스트는 Media 기능의 중립 벡터와 한국어·영어 이름으로 표시한다. 카드·영상 ID 클릭과 정상 아티스트 artwork·이름은 유지한다.
+- 사용하지 않는 독립 룸 목록과 관련 모델·Repository·Factory·전용 리소스를 정리했다. 의미 있는 검증은 실제 Discover ViewModel·화면과 Fake 데이터 계약으로 이관했다.
+- 앱의 미사용 중복 문자열은 기능 모듈의 값·속성과 대조한 뒤 정리했다. 과거 공개 증거와 실행 당시 설명은 보존한다.
+- 화면 재개 후 IME 재표시가 간섭한 기존 계측은 테스트 입력 포커스·키보드 사전 조건과 실패 진단을 보강했다. 제품 Player와 원래 검증 조건·제한 시간은 유지했다.
+- 실행 명령·이관 범위·최초 실패·진단·재실행·제한은 [작업 B 검증](../verification.md#android-refactor-b-20261116)을 따른다. 구현 커밋 `2bf7554d0a9367b17e7157290d401f042c695ce1`을 푸시하고 [PR #75](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75)로 제출했으며 해당 head의 CI가 통과했다. 후속 작업은 일시 정지한다.
+
+## 12. 두 작업 완료·일시 정지 보고
+
+작업 A와 B는 각각 구현·검증·커밋·원격 푸시·PR 생성과 구현 head의 필수 CI 통과를 확인했다. 두 PR은 사용자 검토를 위해 열어 두며 직접 병합하지 않았다. R-01·R-02와 추가 기능·정리는 시작하지 않고 사용자 재개 지시를 기다린다.
+
+공통 계획·현황·검증 문서는 양쪽 PR에 같은 최종 보고 내용으로 보존한다. 보고 문서 변경이 들어간 뒤의 최종 head CI는 [PR #74 Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74/checks)와 [PR #75 Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75/checks)를 확인한다. 이 마지막 확인은 두 작업의 보고 마무리 범위이며 후속 제품 작업 재개를 의미하지 않는다.
+
+검증 명령·원본 실패·재실행·제한은 [작업 A](../verification.md#android-refactor-a-20261116)와 [작업 B](../verification.md#android-refactor-b-20261116) 기록으로 연결한다. 실기기·장시간 누수·정량 성능·시각적 전후 비교의 미실행 상태는 변경하지 않는다. 테스트용 기기 설정은 원래 값으로 복원하고 전용 AVD와 격리 서버를 종료했다.

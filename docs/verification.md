@@ -127,7 +127,7 @@ adb -s emulator-5554 shell settings get secure stylus_handwriting_enabled
 
 ## 2026-11-16 작업 A · 채팅 책임 분리 검증
 
-`origin/main` `deb6be0`와 실행 계획 기준 커밋 `46fa30b`에서 시작했다. `ChatConnectionSettings`·`LocalChatConnectionCoordinator`·`ChatTimelineStore`로 책임을 나누고, 룸의 Job·generation·활성 Transport는 `ChatViewModel`에 유지했다. 검증은 구현 작업 트리에서 실행했고 제품 구현은 커밋 `31dac1486631a7dd881bc49188870aa3871a67e1`에 보존했다. [PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74)의 [Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74/checks)에서 최종 제출 head의 CI 상태를 확인한다.
+`origin/main` `deb6be0`와 실행 계획 기준 커밋 `46fa30b`에서 시작했다. `ChatConnectionSettings`·`LocalChatConnectionCoordinator`·`ChatTimelineStore`로 책임을 나누고, 룸의 Job·generation·활성 Transport는 `ChatViewModel`에 유지했다. 검증은 구현 작업 트리에서 실행했고 제품 구현은 커밋 `31dac1486631a7dd881bc49188870aa3871a67e1`에 보존했다. [PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74)의 [Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74/checks)에서 최종 제출 head의 CI 상태를 확인한다. 제출 head `b725c09d2691ad374afa764f3c76803a0f069296`의 [통합 품질 게이트](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43861023966)는 PASS다.
 
 | 검사 | 결과·범위 |
 |---|---|
@@ -154,8 +154,11 @@ adb -s emulator-5554 shell settings get secure stylus_handwriting_enabled
 격리 ADB와 기기를 준비한 후 아래 클래스 필터로 각각 실행했다. 실제 서버 계측은 일회용 토큰을 별도 환경에서 전달하며 값은 문서에 보존하지 않는다.
 
 ```bash
+export ANDROID_SERIAL=emulator-5560
+export ANDROID_ADB_SERVER_PORT=5039
+export ADB_SERVER_SOCKET=tcp:localhost:5039
 review_a_classes='dev.fanstage.android.RoomNavigationSmokeTest,dev.fanstage.android.DeviceUiRegressionTest,dev.fanstage.android.HiltRoomLifecycleTest,dev.fanstage.android.PlayerSettingsTest'
-ANDROID_SERIAL=emulator-5560 ANDROID_ADB_SERVER_PORT=5039   ADB_SERVER_SOCKET=tcp:localhost:5039 ./gradlew :app:connectedDebugAndroidTest   -PfanstageDeviceTest=true   "-Pandroid.testInstrumentationRunnerArguments.class=$review_a_classes"   --no-daemon --max-workers=2 --console=plain
+./gradlew :app:connectedDebugAndroidTest   -PfanstageDeviceTest=true   "-Pandroid.testInstrumentationRunnerArguments.class=$review_a_classes"   --no-daemon --max-workers=2 --console=plain
 
 # 같은 기기·ADB 환경에서 Hilt 전용 러너와 실제 서버 테스트도 각각 실행
 ./gradlew :app:connectedDebugAndroidTest -PfanstageDeviceTest=true   -PfanstageHiltInstrumentation=true   -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RepositoryBindingsTest   --no-daemon --max-workers=2 --console=plain
@@ -167,6 +170,53 @@ ANDROID_SERIAL=emulator-5560 ANDROID_ADB_SERVER_PORT=5039   ADB_SERVER_SOCKET=tc
 추가 단위 테스트는 연결 성공·인증 실패·타임아웃·늦은 취소 응답·인계 거절·화면 종료·취소된 scope·인계 직전 취소와, 정렬·충돌·불확실 전송·복수 룸 메모리 경쟁·보호된 슬롯을 검사한다. 계측의 `confirmed` 반사 접근은 전용 `ChatMemoryBudget` 관찰로 바꾸고 종료 후 임대 해제 검증을 유지했다.
 
 원본 로그·JUnit·일회용 실행 설정은 로컬 `/tmp/fanstage-refactor-execution-20261116/`에 있으며 공개 첨부 묶음으로 주장하지 않는다. 시각적 전후 캡처 비교, 장시간 누수, 실기기와 정량 성능 측정은 이번 작업에서 **NOT_RUN**이다. 반복 구독 종료나 배치 계측 통과를 장시간 누수 부재로 확대하지 않는다. R-01의 오류 안내·복구 변경과 R-02 초안 보존 변경은 수행하지 않았다.
+
+<a id="android-refactor-b-20261116"></a>
+
+## 2026-11-16 작업 B · 누락 아티스트와 잔존 코드 정리 검증
+
+작업 A와 같은 계획 기준 `46fa30b`에서 별도 브랜치로 진행했다. 제품 구현은 커밋 `2bf7554d0a9367b17e7157290d401f042c695ce1`이며 [PR #75](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75)로 제출했다. 해당 head의 [통합 품질 게이트](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43866791104)는 PASS다. 최종 보고 문서 변경 이후 head의 CI는 [PR Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75/checks)를 따른다. 작업 A의 제품 코드는 이 브랜치에 섞지 않았으며 그 결과는 별도 PR의 이력으로 기록한다. 사용자가 선택한 D-03에 따라 아티스트가 없는 로컬 영상은 중립적인 벡터 이미지와 현지화한 `unknown_artist` 이름으로 표시하고 영상 카드·클릭을 유지한다.
+
+| 검사 | 결과·범위 |
+|---|---|
+| Debug·Release·Lint·일반 계측 APK | 모두 PASS. Lint 오류 0개·경고 15개. 앱의 미사용 중복 문자열 경고 29개 정리 |
+| 단위 | 68/68 PASS. 작업 A와 다른 브랜치의 결과이므로 단순 건수 비교로 커버리지 감소를 판단하지 않음 |
+| 새 누락 데이터 계측 | 3/3 PASS. 빈 아티스트 목록의 카드·클릭, 다른 아티스트로 잘못 연결하지 않음, 한국어·큰 글꼴에서 높이·클릭 유지 |
+| 일반 기기 회귀 | API 36에서 새 계측을 포함한 24/24 PASS. 최초 실행의 실패와 보정은 아래에 별도 기록 |
+| Hilt | 바인딩 기기 3/3 PASS. 전용 소스셋 이후 일반 계측 APK 재컴파일 PASS |
+| 정적·자료 대조 | 모듈 경계·문서 링크·공개 증거 무결성·diff 검사 PASS. 제거한 앱 재정의와 남긴 기능 문자열의 값·속성이 두 언어에서 같음을 확인 |
+
+구형 테스트를 비활성화하거나 기능 검사를 삭제해서 통과시키지 않았다. 이관한 계약은 다음과 같다.
+
+| 이전 대상 | 현재 검증 대상 | 유지한 검사 |
+|---|---|---|
+| `RoomListViewModelTest`의 사례 | app 단위 `DiscoverViewModelTest` | 초기 Loading→콘텐츠, 빈 결과 성공, 안전한 오류·재시도, 취소 뒤 늦은 성공 제외, 소유자 종료 시 취소·오류 미발행 |
+| `FakeRoomRepositoryTest`의 사례 | core:data `FakeRepositoriesTest` | 가상 콘텐츠의 고정 순서·고유 ID·아티스트 연결과 반환 snapshot 변경의 다음 조회 격리 |
+| 구형 `RoomListScreen`의 현지화 계측 | 실제 `DiscoverScreen` | 영어·한국어 제목, 큰 글꼴, 안전한 오류·재시도 안내. 이후 Player·채팅 현지화·전송 검사는 유지 |
+
+삭제한 것은 런처가 사용하지 않는 독립 `RoomListRoute`·`RoomListScreen`·ViewModel·Factory·Repository·Room 모델과 관련 전용 리소스다. `RoomDetailScreen` 본문은 기준 소스와 동일함을 대조했다. 실제 사용 중인 `ChatViewModel.Factory`, 일반 ViewModel 범위, Player·Socket 정책, Gradle 모듈 의존성은 유지했다. 과거 감사의 JUnit·해시·출처 파일은 삭제하거나 재작성하지 않았다.
+
+### 최초 실패, 진단과 재실행
+
+최초 일반 계측은 23/24 PASS였으며 `RoomNavigationSmokeTest.roomListOpensDetailAndReturns`의 백그라운드·복귀 후 일시정지 태그 대기에서 시간 초과가 발생했다. 단독 재실행에서도 반복됐다. 원래 태그 조건과 제한 시간을 유지한 채 진단을 추가했고, 같은 Player가 `playing=false`, `playWhenReady=false`, `STATE_READY`, 오류 없음인 동시에 IME가 다시 표시된 상태를 확인했다. compact UI가 해당 상태 태그를 표시하지 않는 조건과 충돌한 것이다.
+
+테스트의 `clearFocusAndHideKeyboard()`가 입력 포커스를 먼저 해제하고 `assertIsNotFocused()`와 기존 IME 숨김 조건을 모두 확인하도록 보강했다. Player와 제품의 포커스·IME 코드는 변경하지 않았으며, 원래 일시정지 태그·재생 버튼·동일 Player 재개·회전·이탈 검사를 유지했다. 진단 보강 중 누락된 테스트 import를 수정한 뒤 APK를 재컴파일했다. 보강 후 단독 사례 1/1과 전체 묶음 재실행이 통과했고 실제 Discover를 사용하는 현지화 검사까지 도달·통과했다.
+
+환경은 작업 A와 같은 JBR 17/API 36 전용 AVD·ADB 포트 5039이며 주요 실행 명령의 작업 디렉터리는 `android/`다.
+
+```bash
+./gradlew :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest   :app:lintDebug testDebugUnitTest :core:data:test -PfanstageDeviceTest=true   --no-daemon --max-workers=2 --console=plain
+
+export ANDROID_SERIAL=emulator-5560
+export ANDROID_ADB_SERVER_PORT=5039
+export ADB_SERVER_SOCKET=tcp:localhost:5039
+review_b_classes='dev.fanstage.android.MediaMissingArtistTest,dev.fanstage.android.DiscoverTest,dev.fanstage.android.DeviceUiRegressionTest,dev.fanstage.android.HiltRoomLifecycleTest,dev.fanstage.android.RoomNavigationSmokeTest#roomListOpensDetailAndReturns'
+./gradlew :app:connectedDebugAndroidTest -PfanstageDeviceTest=true   "-Pandroid.testInstrumentationRunnerArguments.class=$review_b_classes"   --no-daemon --max-workers=2 --console=plain
+./gradlew :app:connectedDebugAndroidTest -PfanstageDeviceTest=true   -PfanstageHiltInstrumentation=true   -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RepositoryBindingsTest   --no-daemon --max-workers=2 --console=plain
+./gradlew :app:assembleDebugAndroidTest -PfanstageDeviceTest=true   --no-daemon --max-workers=2 --console=plain
+```
+
+원본 로그와 JUnit은 로컬 `/tmp/fanstage-refactor-execution-20261116/`에 보존했으며 공개 원본 묶음으로 간주하지 않는다. 실제 서버 Android 계측은 작업 A에서 수행했으며 작업 B에서 다시 실행하지 않았다. 시각적 전후 캡처 비교·실기기·장시간 누수·정량 성능은 이번 작업에서도 **NOT_RUN**이다. R-01·R-02는 계속 보류하며 두 작업 제출·구현 head CI 확인을 마쳤고 후속 작업은 일시 정지한다. 보고 문서 변경 후의 최종 head는 각 PR Checks에서 마지막으로 확인한다.
 
 ## 자동화와 기기 검증의 역할
 
@@ -186,3 +236,7 @@ Android 기기 계측 결과는 PR에 별도로 기록하며, GitHub Actions의 
 메시지의 ACK 유실·재전송, 역순·누락 복구, 오래된 HTTP 응답, HLS 오류를 독립된 테스트 시나리오로 구성했습니다. 구현 계약과 재현 조건은 [장애 주입 테스트](specs/failure-recovery.md)에 정리했습니다.
 
 [테스트 매트릭스](test-matrix.md) · [Android 실행 안내](../android/README.md) · [AI 개발·검증 과정](ai-development-workflow.md)
+
+## 두 리팩토링 작업의 보고 마무리
+
+작업 A·B의 구현 결과는 서로 다른 PR·구현 커밋을 기준으로 보존했다. 공통 계획·현황·검증 보고는 양쪽 브랜치에서 동일하게 정리하고, 보고 문서 커밋 후에도 각 PR의 마지막 head에 대한 필수 CI를 확인한다. 위의 실행 수치와 CI 링크는 명시한 구현 검증 시점의 기록이며 이후 CI 결과를 사전에 PASS로 간주하는 근거가 아니다. 원래 기기 설정은 복원했고 테스트용 전용 AVD·격리 서버는 종료했다. 사용자 재개 지시 전에는 후속 제품 변경을 진행하지 않는다.
