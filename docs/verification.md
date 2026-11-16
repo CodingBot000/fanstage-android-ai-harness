@@ -31,6 +31,98 @@ PR #68 이후의 소스에서 Hilt 실제 Activity 생성 경로, 실기기 화�
 
 공개 증거 파일의 해시·JUnit 집계·실패 이력과 출처를 검사하는 CI를 추가했습니다. 의도적 오류 fixture로 검사 실패도 확인했습니다. Galaxy S22 Ultra에서 회전 테스트는 두 진단 버전에서 각 20/20 통과했지만, 이전에 한 차례 발생한 실패의 원인은 확인되지 않았습니다. [후속 근거와 제한](evidence/verification/audit-20261108/README.md) · [적용된 필수 체크 정책](specs/ci-required-quality-policy.md). 2026-11-09 사용자 승인으로 GitHub `main` 보호 정책을 적용했고 관리자 우회는 허용했습니다. 실제 병합 차단 실험은 `NOT_RUN`입니다. 게이트 워크플로는 [PR #69](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/69)를 통해 이미 `main`에 병합됐고, [PR #70의 `required-quality`](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42502757479)가 성공했습니다.
 
+<a id="android-review-20261116"></a>
+
+## 2026-11-16 Android 코드 리뷰 검증
+
+**소스:** 로컬 `main` `5d335ec2f26d4655f713083ecded85b06b44806e`. 제품 코드는 변경하지 않았고 추가 진단 테스트는 로컬 임시 소스셋에서 실행했다. **환경:** macOS arm64, JBR 17.0.14, Android SDK, Pixel 9 에뮬레이터/API 36. 실제 기기·실제 서버 검증과 구분한다. [상세 리팩토링 계획](specs/android-refactoring-plan.md).
+
+| 검사 | 실제 결과와 범위 |
+|---|---|
+| Debug·Release 빌드 | PASS |
+| Android Lint | 오류 0개, 경고 44개. 미사용 리소스 29개 외 버전 알림·플랫폼 관련 경고 포함 |
+| 기존 단위 테스트 | 강제 재실행 포함 68/68 PASS |
+| 임시 채팅 진단 단위 테스트 | 1/1 PASS. 충돌 뒤 복구 경고가 유지되면서 조회가 실행되지 않는 **현재 동작**을 확인한 결과이며, 문제가 수정됐다는 의미는 아님 |
+| 일반 계측 최초 실행 | 선택한 8개 클래스의 45건 중 41 PASS, 4 FAIL, skip 없음 |
+| 임시 화면 진단 | 4/4 PASS. DM·댓글 초안의 재생성 후 유실, Compose 시계 진행 후 컨트롤 숨김, IME 화면·좌표 관찰을 수행. 유실 확인의 PASS는 초안 보존 기능의 PASS가 아님 |
+| 최초 실패 항목 재검증 | 아래 환경 보정 후 4/4 PASS. 전체 45건을 한 묶음으로 다시 실행한 결과는 아님 |
+| 모듈 경계·문서 링크 | PASS. 문서 검사는 상대 링크와 ADR 식별자 범위이며 내용 전체의 최신성을 보장하지 않음 |
+
+### 실행 명령과 초기 실행 오류
+
+첫 Gradle 시도는 SDK 경로 미설정으로 작업 시작 전에 실패했다. 설치된 SDK와 JDK 17을 환경 변수로 지정한 후 다시 실행했다. 아래 Android 명령의 작업 디렉터리는 `android/`다.
+
+```bash
+./gradlew :app:assembleDebug :app:assembleRelease :app:lintDebug \
+  testDebugUnitTest :core:data:test --no-daemon --max-workers=2 --console=plain
+```
+
+최초 일반 계측의 클래스 선택은 다음과 같다. 실행 기기는 `ANDROID_SERIAL=emulator-5554`로 지정했다.
+
+```bash
+review_test_classes='dev.fanstage.android.FloatingNavigationTest,dev.fanstage.android.CollapsingTitleBarTest,dev.fanstage.android.UiContractTest,dev.fanstage.android.DiscoverTest,dev.fanstage.android.DeviceUiRegressionTest,dev.fanstage.android.PlayerSettingsTest,dev.fanstage.android.RoomNavigationSmokeTest,dev.fanstage.android.HiltRoomLifecycleTest'
+
+./gradlew :app:connectedDebugAndroidTest -PfanstageDeviceTest=true \
+  "-Pandroid.testInstrumentationRunnerArguments.class=$review_test_classes" \
+  --no-daemon --max-workers=2 --console=plain
+```
+
+기존 단위 테스트의 강제 재실행과 임시 진단에는 로컬 init script를 사용했다. 해당 script는 `Test` 작업의 up-to-date 처리를 해제하고 임시 Kotlin 테스트 디렉터리를 추가했다. 최초에는 Android의 Java 소스 경로로 잘못 지정해 진단 클래스 로드 오류가 발생했으며, `.kotlin.srcDir`로 수정한 뒤 다시 실행했다. 클래스 로드 오류 실행은 제품 통과 집계에 포함하지 않는다.
+
+```bash
+./gradlew -I /tmp/fanstage-review-20261116/review.init.gradle \
+  :app:testDebugUnitTest :feature:live:testDebugUnitTest :core:data:test \
+  :app:connectedDebugAndroidTest -PfanstageDeviceTest=true \
+  '-Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.ReviewDraftObservationTest,dev.fanstage.android.DeviceUiRegressionTest#developmentFieldsStayAboveImeWithoutMovingVideo,dev.fanstage.android.DeviceUiRegressionTest#detailHeadersUseBackIconAndKeyboardSendWorks,dev.fanstage.android.DeviceUiRegressionTest#liveChatKeyboardSendAndBack,dev.fanstage.android.PlayerSettingsTest#playbackOverlayShowsOnTapAndHidesOnlyWhilePlaying' \
+  --no-daemon --max-workers=2 --console=plain
+```
+
+`ReviewGapObservationTest`는 임시 단위 테스트, `ReviewDraftObservationTest`는 임시 계측 테스트다. 둘과 init script는 제품 저장소에 추가하지 않았다. 임시 경로가 없어지면 해당 명령을 그대로 재현할 수 없으며, 절차를 정식 테스트로 옮기는 작업은 계획서 R-00에 남겨 두었다.
+
+저장소 루트에서 실행한 정적 검사는 다음과 같다.
+
+```bash
+python3 scripts/check-ux-module-boundaries.py
+python3 scripts/check-portfolio-docs.py
+git diff --check
+```
+
+### 최초 계측 실패와 환경 보정
+
+| 최초 실패 테스트 | 조사·재실행 결과 |
+|---|---|
+| `DeviceUiRegressionTest.developmentFieldsStayAboveImeWithoutMovingVideo` | IME 표시 이후 입력창 위치 검증에서 시간 초과. 개별 재실행에서도 반복 |
+| `DeviceUiRegressionTest.detailHeadersUseBackIconAndKeyboardSendWorks` | 같은 위치 검증에서 시간 초과. 개별 재실행에서도 반복 |
+| `DeviceUiRegressionTest.liveChatKeyboardSendAndBack` | 같은 위치 검증에서 시간 초과. 개별 재실행에서도 반복 |
+| `PlayerSettingsTest.playbackOverlayShowsOnTapAndHidesOnlyWhilePlaying` | 자동 숨김 대기에서 시간 초과. 개별 재실행과 Compose 시계 진단에서는 통과. 최초 실패 원인은 미확정 |
+
+화면 캡처에서 Google 키보드의 **Try out your stylus** 초기 안내가 앱 입력 영역을 가리는 것을 확인했다. 좌표 진단에서는 IME 표시를 관측한 뒤 안내 화면에서 IME inset이 사라졌다. 이를 확인한 후 테스트 기기의 `secure stylus_handwriting_enabled`를 임시로 `0`으로 바꾸고 해당 실패 항목들을 재실행했다. 제품 코드나 assertion은 수정하지 않았다.
+
+```bash
+adb -s emulator-5554 shell settings get secure stylus_handwriting_enabled
+adb -s emulator-5554 shell settings put secure stylus_handwriting_enabled 0
+
+./gradlew -I /tmp/fanstage-review-20261116/review.init.gradle \
+  :app:connectedDebugAndroidTest -PfanstageDeviceTest=true \
+  '-Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.DeviceUiRegressionTest#developmentFieldsStayAboveImeWithoutMovingVideo,dev.fanstage.android.DeviceUiRegressionTest#detailHeadersUseBackIconAndKeyboardSendWorks,dev.fanstage.android.DeviceUiRegressionTest#liveChatKeyboardSendAndBack,dev.fanstage.android.PlayerSettingsTest#playbackOverlayShowsOnTapAndHidesOnlyWhilePlaying' \
+  --no-daemon --max-workers=2 --console=plain
+
+adb -s emulator-5554 shell settings delete secure stylus_handwriting_enabled
+adb -s emulator-5554 shell settings get secure stylus_handwriting_enabled
+```
+
+이 기기의 원래 값은 미설정(`null`)이었으며 종료 후 미설정으로 복원된 것을 확인했다. 위 `delete`는 당시 원래 상태를 복원한 명령이다. 다른 기기에서도 원래 값이 미설정이라고 가정하거나 설정을 일괄 삭제하면 안 된다.
+
+### 근거 보존과 한계
+
+- 원본 Gradle 로그, JUnit XML, 화면 캡처와 임시 테스트는 당시 로컬 `/tmp/fanstage-review-20261116/` 및 관련 실행 로그에 보관했다. 이 절은 실행 당시 결과 요약을 저장소에 보존한 것이며 원본 전체를 공개 첨부한 증거 묶음은 아니다.
+- 환경 보정 후 전체 최초 계측 묶음의 단일 재실행은 **NOT_RUN**이다. 최초 실패와 재실행 통과를 합쳐 전체 묶음이 한 번에 통과했다고 주장하지 않는다.
+- 실제 기기, 실제 백엔드 연결, 별도 Hilt 바인딩 교체 계측, 장시간 누수 분석, Macrobenchmark는 이번 리뷰에서 **NOT_RUN**이다. 일반 계측의 `HiltRoomLifecycleTest`와 전용 러너의 바인딩 교체 검증을 구분한다.
+- 재생 자동 숨김의 최초 실패 원인은 미확정이며, 기존 회전 감사의 미확정 원인·장시간 누수 판단도 변경하지 않는다.
+- 신규 PR·CI 실행은 없다. 위 결과는 해당 SHA와 로컬 환경의 리뷰 근거이며 리팩토링 구현 후 검증을 대신하지 않는다.
+
+계획서 보존 작업에서는 `check-portfolio-docs.py`, `check-ux-module-boundaries.py`, `git diff --check`와 문서 Bash 예제의 `bash -n` 구문 검사가 PASS였다. 이때 변경한 것은 계획서·현황·검증 문서이며 Android 빌드·계측은 다시 실행하지 않았다.
+
 ## 자동화와 기기 검증의 역할
 
 **GitHub Actions**
