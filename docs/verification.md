@@ -127,7 +127,7 @@ adb -s emulator-5554 shell settings get secure stylus_handwriting_enabled
 
 ## 2026-11-16 작업 A · 채팅 책임 분리 검증
 
-`origin/main` `deb6be0`와 실행 계획 기준 커밋 `46fa30b`에서 시작했다. `ChatConnectionSettings`·`LocalChatConnectionCoordinator`·`ChatTimelineStore`로 책임을 나누고, 룸의 Job·generation·활성 Transport는 `ChatViewModel`에 유지했다. 검증은 구현 작업 트리에서 실행했으며 제출 커밋과 CI는 해당 PR에서 확인한다.
+`origin/main` `deb6be0`와 실행 계획 기준 커밋 `46fa30b`에서 시작했다. `ChatConnectionSettings`·`LocalChatConnectionCoordinator`·`ChatTimelineStore`로 책임을 나누고, 룸의 Job·generation·활성 Transport는 `ChatViewModel`에 유지했다. 검증은 구현 작업 트리에서 실행했고 제품 구현은 커밋 `31dac1486631a7dd881bc49188870aa3871a67e1`에 보존했다. [PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74)의 [Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74/checks)에서 최종 제출 head의 CI 상태를 확인한다.
 
 | 검사 | 결과·범위 |
 |---|---|
