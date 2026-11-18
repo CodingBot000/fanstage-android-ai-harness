@@ -54,11 +54,11 @@ FanStage는 팬 커뮤니티를 소재로 만든 Android 앱입니다. Media3 �
 
 ## Android 아키텍처
 
-**11개 Gradle 모듈**을 앱 진입점, 기능 5개, 공통 4개, 성능 계측 1개로 분리했습니다. `app`이 Navigation과 Hilt 조립을 담당하고, 각 Feature는 필요한 공통 모듈만 참조합니다.
+**11개 Gradle 모듈**을 앱 진입점, 기능 5개, 공통 4개, 성능 계측 1개로 분리했습니다. `app`이 Navigation 구성과 Hilt 기반 의존성 주입 설정을 담당하고, 각 Feature는 필요한 공통 모듈만 참조합니다.
 
 ```mermaid
 flowchart TB
-    APP["app<br/>Navigation · Hilt 조립"]
+    APP["app<br/>Navigation · Hilt DI 구성"]
     FEATURE["feature<br/>discover · community · media · messages · live"]
     CORE["core<br/>model · data · artwork · designsystem"]
     BENCH["macrobenchmark<br/>성능 계측"]
