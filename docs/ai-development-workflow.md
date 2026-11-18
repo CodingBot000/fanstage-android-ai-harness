@@ -39,6 +39,14 @@ FanStage는 **사람이 기술적 요구사항과 검증 기준을 정하고, Co
 
 [UI 설계 결정](adr/ADR-0005-ui-component-reuse.md) · [구현 PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)
 
+## 대표 판단 4. 채팅 책임 분리와 오류 계약의 회귀 검증
+
+기존 `ChatPanel`의 개발용 연결 검증과 `ChatViewModel`의 메시지 정합성 처리 책임이 집중돼 있어, UI 설정은 `ChatConnectionSettings`, 임시 검증·취소는 `LocalChatConnectionCoordinator`, 순번·중복·충돌·메모리 임대는 `ChatTimelineStore`로 분리했습니다. 룸의 Coroutine Job·세대·활성 Transport 소유권은 `ChatViewModel`에 남겨 수명 경계를 유지했습니다.
+
+이후 오류 표시를 실제 순번 누락과 프로토콜 충돌로 분리하고, 예외 없이 Flow가 조기에 완료되는 누락된 경계 조건을 **수정 전 회귀 실패 → 최소 변경 → 단위·기기 계측 재검증**으로 보완했습니다. DM·댓글 초안은 목적지 수명 ViewModel로 옮기되 최종 제거·전송 접수 확인 전에는 임의 삭제하지 않도록 계약을 고정했습니다.
+
+**근거:** [채팅 책임 분리 PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74) · [오류·Flow 완료 PR #76](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76) · [초안 수명 PR #77](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/77) · [구체적 검증 결과](verification.md). 실제 OS 프로세스 강제 종료·복원과 최신 상태의 실기기 회귀는 수행하지 않았으므로 통과했다고 주장하지 않습니다.
+
 ## 검증 결과와 원본
 
 테스트 수치, 실행한 기기·커밋, CI 결과와 증거 파일은 [검증 결과](verification.md)에 모았습니다. 실제 기기 계측과 GitHub Actions의 계측 APK 컴파일은 서로 다른 검증으로 구분합니다.
