@@ -8,8 +8,10 @@ FanStage 채팅은 **전송 결과가 불확실한 상황에서도 메시지의 
 |---|---|---|
 | `ServerMessage` | `roomId`, `messageId`, `clientMessageId`, `serverSequence` | 서버가 확정한 메시지와 룸 내 순서 |
 | `ChatMessage` | `key`, `clientMessageId`, `sequence`, `delivery`, `isUncertain` | 화면 표시 메시지·전송 상태 |
+| `ChatTimelineStore` | `cursor`, `highestObserved`, `protocolIssue`, `pendingCount` | 룸별 메시지 수락·중복/충돌 판정·Pending·메모리 임대 |
+| `ChatMemoryBudget` | `size` 및 논리 메시지 임대 | Fake와 화면·여러 룸 사이의 제한된 메시지 슬롯 공유 |
 | `ChatTransport` | `connectionState` | 연결 상태를 제공하는 `StateFlow<ChatConnectionStatus>` |
-| `ChatUiState` | `messages`, `connectionStatus`, `gapUnresolved` | `ChatViewModel`이 소유하며 Compose가 구독하는 UI 상태 |
+| `ChatUiState` | `messages`, `connectionStatus`, `gapUnresolved`, `protocolIssue`, `connectionError`, `streamError` | `ChatViewModel`이 발행하며 Compose가 구독하는 화면 상태 |
 
 전송 상태는 `PENDING`, `SENT`, `FAILED`, 연결 상태는 `CONNECTING`, `CONNECTED`, `RECONNECTING`, `DISCONNECTED`로 구분합니다.
 
@@ -29,7 +31,7 @@ FanStage 채팅은 **전송 결과가 불확실한 상황에서도 메시지의 
 
 **선택:** `serverSequence`의 **연속 확인 순번**과 **최대 관측 순번**을 구분합니다. 이벤트를 병합·중복 제거하고 비어 있는 범위는 HTTP로 보충합니다. 오래된 룸의 지연 응답은 새 룸에 적용하지 않습니다.
 
-**확인 경로:** [ChatViewModel 메시지 병합·recover](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModel.kt) → [RealChatTransport.fetchAfter](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/RealChatTransport.kt) → [ChatViewModelTest의 순서·누락 검증](../../android/feature/live/src/test/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModelTest.kt) → [서버 통합 테스트](../../backend/chat-server/tests/integration.py)
+**확인 경로:** [ChatTimelineStore의 순번·중복 수락](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatTimelineStore.kt) → [ChatViewModel.recover](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModel.kt) → [RealChatTransport.fetchAfter](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/RealChatTransport.kt) → [ChatViewModelTest의 순서·누락 검증](../../android/feature/live/src/test/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModelTest.kt) → [서버 통합 테스트](../../backend/chat-server/tests/integration.py)
 
 ### 3. 전송 중 Transport 변경
 
@@ -44,10 +46,22 @@ FanStage 채팅은 **전송 결과가 불확실한 상황에서도 메시지의 
 - **`FakeChatTransport`:** 서버 없이 채팅을 시연하고 지연·중복·누락을 제어하는 테스트 전송 계층
 - **`RealChatTransport`:** Android Debug의 WebSocket 수신·전송과 HTTP 누락 조회 계층
 - **Spring Boot·PostgreSQL:** 룸별 순번, 멱등 키, 메시지 저장, ACK·조회 API
-- **`ChatViewModel`:** 전송 상태, 확인 순번, 보관 한도, 룸 전환과 화면 `UiState`의 소유자
+- **`ChatConnectionSettings` / `LocalChatConnectionCoordinator`:** 개발용 설정 UI와 임시 연결·인증 검증·취소·활성 Transport 인계 분리
+- **`ChatViewModel`:** 룸 세대(`generation`), 전송·수신·HTTP 복구 Job, 활성 Transport의 수명과 `ChatUiState` 발행
+- **`ChatTimelineStore`:** 확정/미확정 메시지, `cursor`·`highestObserved`, 중복·충돌·불확실 전송·표시 snapshot과 메모리 임대 처리
+- **`ChatMemoryBudget`:** 공유 논리 메시지 수와 미확정 슬롯 보호. Store는 메인 스레드에서 직렬로 변경하며 Socket·Coroutine Job을 소유하지 않음
 
 [설계 결정 ADR-0003](../adr/ADR-0003-chat-consistency.md) · [장애 주입 시나리오](failure-recovery.md) · [서버 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/42240984227) · [검증 결과](../verification.md) · [서버 실행](../../backend/chat-server/README.md)
 
 ## R-01 · 오류 안내와 복구 범위 (2026-11-17)
 
 사용자 선택 A에 따라 `ChatUiState.gapUnresolved`는 실제 확인 순번의 누락만 나타내고 `protocolIssue`는 잘못된 순번·길이·충돌·미확정 전송 불일치를 구분한다. 충돌만 있을 때 누락 복구 버튼을 표시하지 않는다. 누락과 충돌이 함께 있으면 누락 조회를 허용하며 성공해도 프로토콜 경고는 룸 세션 동안 유지한다. 정상 메시지·전송·초안과 미확정 전송 보호는 유지한다. 예상 밖 수신 흐름 종료는 `streamError`로 구분해 인증 실패나 실제 누락으로 오인하지 않는다. 새로운 재동기화나 경고 닫기 기능은 추가하지 않았다.
+
+## 2026-11 리팩토링 후 오류·종료 계약
+
+- `gapUnresolved`는 `highestObserved > cursor`에 대응하는 실제 누락을 표시합니다. 복구는 `fetchAfter()`로 누락된 순번을 조회하며, 충돌만 존재할 때는 복구 버튼을 제공하지 않습니다.
+- `protocolIssue`는 `INVALID_SEQUENCE`, `INVALID_LENGTH`, `CONFLICTING_MESSAGE`, `MISMATCHED_PENDING`를 구분합니다. 문제 메시지를 수락하지 않고 경고를 해당 룸 세션 동안 유지합니다.
+- `ChatConnectionFailure`는 인증·연결 설정 실패로, 일반 수신 오류와 예외 없는 비정상 Flow 완료는 `streamError`로 표시합니다. 정상적인 룸 전환·화면 종료·Transport 교체의 취소는 오류로 보지 않습니다.
+- Pending 전송과 확정 메시지·채팅 입력 초안은 프로토콜 경고 때문에 자동 삭제하지 않습니다. 실제 누락 복구가 끝나도 프로토콜 경고는 유지합니다.
+
+**회귀 근거:** [연결·정합성 분리 PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74) · [오류·복구 PR #76](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76) · [Flow 정상 완료 보완 CI](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43922328335).

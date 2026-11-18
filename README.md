@@ -34,7 +34,7 @@ FanStage는 팬 커뮤니티를 소재로 만든 Android 앱입니다. Media3 �
 
 **설계 판단:** 결과가 불확실한 동안 Pending을 유지하고, 재시도 시 동일한 `clientMessageId`를 사용하도록 했습니다. 서버에서는 멱등 키로 중복 저장·방송을 방지합니다. 클라이언트는 `serverSequence`를 기준으로 WebSocket 이벤트와 HTTP 조회 결과를 합쳐 순서·누락을 복구합니다.
 
-**구현·검증:** [채팅 상태 처리](android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModel.kt) · [재전송 단위 테스트](android/feature/live/src/test/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModelTest.kt) · [ACK 유실 주입 테스트](backend/chat-server/tests/m5_faults.py) · [설계와 테스트 연결](docs/specs/realtime-chat.md)
+**구현·검증:** [전송·룸 수명 처리](android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModel.kt) · [순번·중복·임대 관리](android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/chat/ChatTimelineStore.kt) · [재전송 단위 테스트](android/feature/live/src/test/kotlin/dev/fanstage/android/feature/live/chat/ChatViewModelTest.kt) · [ACK 유실 주입 테스트](backend/chat-server/tests/m5_faults.py) · [설계와 테스트 연결](docs/specs/realtime-chat.md)
 
 ### 2. 전체 화면 전환 중 영상 출력은 누가 소유할까?
 
@@ -68,9 +68,23 @@ flowchart TB
     BENCH -.->|"계측 대상"| APP
 ```
 
-ViewModel이 화면별 `UiState`를 소유하고 Compose가 이를 구독합니다. 일반 ViewModel은 Activity 범위를 사용하며 채팅 ViewModel은 룸별 Navigation 진입 항목에 연결했습니다. 모듈 경계는 [자동 검사 스크립트](scripts/check-ux-module-boundaries.py)로 확인합니다.
+ViewModel이 화면별 `UiState`를 소유하고 Compose가 이를 구독합니다. 일반 ViewModel 네 개는 Activity 범위, `ChatViewModel`은 룸별 Navigation 진입 항목, DM·댓글 초안 전용 ViewModel은 각각의 목적지 BackStackEntry 범위를 사용합니다. 모듈 경계는 [자동 검사 스크립트](scripts/check-ux-module-boundaries.py)로 확인합니다.
 
 [아키텍처 상세](docs/architecture.md) · [모듈 분리 PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) · [UI 재사용 결정](docs/adr/ADR-0005-ui-component-reuse.md)
+
+### 최근 리팩토링: 채팅 정합성과 목적지별 상태 소유권
+
+| 책임 | 현재 구현 |
+|---|---|
+| 채팅 UI·개발 설정 | `ChatPanel`, `ChatConnectionSettings` |
+| 임시 연결 확인·취소 | `LocalChatConnectionCoordinator` (Composition 수명) |
+| 룸·전송·수신·복구 Job·Transport 소유 | `ChatViewModel` (룸별 BackStackEntry) |
+| 순번·중복·충돌·Pending·공유 메모리 임대 | `ChatTimelineStore` (메인 스레드 직렬 처리) |
+| DM·댓글 입력 초안 | `ConversationDraftViewModel`, `PostDraftViewModel` (목적지별 BackStackEntry) |
+
+실제 순번 누락에만 HTTP 복구를 제공하고 프로토콜 충돌·인증 실패·예상 밖 수신 종료는 별도 경고로 구분합니다. DM·댓글 초안은 회전·Activity 재생성·저장된 목적지 복원 중 유지되지만, 최종 목적지 제거 후에는 삭제되고 OS 프로세스 종료 뒤에는 복원하지 않습니다. Fake Repository의 접수 반영을 확인한 경우에만 제출한 초안을 비웁니다. 이 확인은 실제 서버 ACK를 뜻하지 않습니다.
+
+**변경·회귀 근거:** [PR #74 연결·정합성 분리](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74) · [PR #75 누락 데이터·잔존 코드](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75) · [PR #76 오류·누락 복구](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76) · [PR #77 초안 수명](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/77). [책임 구조 상세](docs/architecture.md) · [채팅 계약](docs/specs/realtime-chat.md).
 
 ## 검증 요약
 
@@ -81,7 +95,7 @@ ViewModel이 화면별 `UiState`를 소유하고 Compose가 이를 구독합니�
 | Android · GitHub Actions | 빌드·Lint·단위 테스트, 모듈 경계 검사, 일반/Hilt 계측 APK 컴파일 |
 | 변경 품질 게이트 | PR의 `required-quality` 검사와 검증 증거 무결성 확인 |
 
-검증 결과는 **각 PR의 코드 버전과 실행 환경**을 기준으로 기록했습니다. 실행 수치·원본 증거·검증 범위는 [검증 결과](docs/verification.md)에 모았습니다. [Android CI](.github/workflows/android-ci.yml) · [서버 CI](.github/workflows/m4-integration.yml)
+검증 결과는 **각 PR의 코드 버전과 실행 환경**을 기준으로 기록했습니다. PR #74~#77은 모두 병합됐으며 #76의 Flow 종료 보완과 #77의 통합 PR 품질 게이트도 통과했습니다. CI의 계측 APK **컴파일**과 로컬 기기 계측 **실행**은 구분합니다. 실행 수치·원본 증거·미실시 항목은 [검증 결과](docs/verification.md)에 모았습니다. [Android CI](.github/workflows/android-ci.yml) · [서버 CI](.github/workflows/m4-integration.yml)
 
 ## 실행 방법
 

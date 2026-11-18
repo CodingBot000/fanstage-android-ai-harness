@@ -283,3 +283,18 @@ ANDROID_SERIAL=emulator-5560 ANDROID_ADB_SERVER_PORT=5039 ADB_SERVER_SOCKET=tcp:
 ```
 
 수정 전 실패와 이후 로그·JUnit 원본은 로컬 `/tmp/fanstage-pr76-followup-20261117/`에 보존한다. 공개 원본 첨부 묶음으로 주장하지 않는다. 실제 서버 Android 연동·실기기·장시간 누수·성능·시각적 전후 비교는 이번 최소 보완에서 NOT_RUN이며 과거 실행을 합산하지 않는다. 별도 PR 생성, #77 수정, main 병합은 수행하지 않는다. 마지막 제출 head의 필수 CI는 [PR #76 Checks](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76/checks)를 기준으로 확인한다.
+
+## 2026-11-18 리팩토링 병합 최종 확인
+
+R-03·R-04([PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74))와 R-05·R-06([PR #75](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75))에 이어 R-01([PR #76](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76)) 및 R-02([PR #77](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/77))의 병합을 확인했습니다. 최종 리팩토링 구현 기준 `main`은 [cf4b731](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/cf4b7311182b95cadbe41d4d59cc558692b63382)입니다.
+
+| 확인 항목 | 결과·근거 |
+|---|---|
+| R-01 Flow 정상 완료 보완 | 최종 head `97eb05db25fb56af729431f1ded5fcd0988d7385`, [PR CI 성공](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43922328335) |
+| R-02 최신 main 동기화 | 통합 head `f8e7da8cb2431dae3dc67b4ba3433fc7e7c1228b`, [PR CI 성공](https://github.com/CodingBot000/fanstage-android-ai-harness/actions/runs/43926318804) |
+| R-01·R-02 통합 문서 보존 | #77 동기화 시 #76 Flow 종료 보완 기록과 #77 제품·테스트 변경 유지 |
+| 최종 main 병합 | #74 `623feb4`, #75 `3fdfaef`, #76 `71644df`, #77 `cf4b731` 모두 병합 확인 |
+
+위 CI는 각 PR head에 대한 빌드·Lint·단위·서버 통합·문서/품질 게이트이며 **CI에서 실제 Android 기기 계측을 수행했다는 뜻은 아닙니다**. 기존 본문의 로컬 API 36 계측과 실기기 검증은 실행 당시 SHA·환경을 유지해 해석합니다. R-01·R-02를 합친 최신 상태에서의 실제 OS 프로세스 강제 종료·복원, 새 실기기 계측, 장시간 Player/Socket 누수, 정량 성능·시각적 전후 비교는 `NOT_RUN`이며 향후 별도 검증 대상입니다.
+
+이번 항목은 GitHub 병합·CI 확인을 추가하는 **문서 갱신**으로, 새 Android/서버 테스트를 실행했다는 뜻이 아닙니다.

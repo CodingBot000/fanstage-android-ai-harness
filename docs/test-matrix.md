@@ -9,6 +9,10 @@ FanStage는 변경된 코드의 역할에 따라 테스트를 선택합니다. G
 | Compose 화면·ViewModel | 빌드·Lint·관련 단위 테스트 | 탐색·IME·회전 등 변경 화면의 로컬 계측 |
 | UI 공통 컴포넌트·디자인 토큰 | 영향받는 feature/app 빌드·Lint·기존 Compose 계측 및 모듈 경계 검사 | 호출처·접근성·testTag·카드 배치·Navigation/IME 확인; 시각적 동일성은 별도 캡처 대조 |
 | Media3·Player | 빌드·Lint·Player 단위 테스트 | 실제 첫 프레임, 전체 화면 전환, Listener·Surface 해제 |
+| 채팅 연결 설정·검증 Coordinator | `LocalChatConnectionCoordinatorTest` 및 채팅 UI 관련 단위 검사 | 인증 실패·타임아웃·늦은 응답·취소·probe/활성 Transport 해제·룸 교체 |
+| `ChatTimelineStore`·`ChatViewModel` | `ChatTimelineStoreTest`·`ChatViewModelTest`, 서버 장애 주입 | ACK/echo·중복·역순·누락·Pending 보호·공유 메모리 경쟁·룸 수명 |
+| 채팅 오류 안내·수신 Flow 종료 | `ChatViewModelTest`, `ChatRecoveryUiTest` | 프로토콜 경고와 실제 누락 분리, Flow 정상 반환·예외·정상 취소의 UI 차이 |
+| DM·댓글 목적지별 초안 | `DestinationDraftTest`·`DraftAcceptanceTest` | `DraftLifecycleTest`, 회전·Activity 재생성·BackStack 저장/복원·최종 pop, 접수 성공/거절·수정 중 제출 |
 | ChatTransport·메시지 모델 | 관련 단위 테스트·서버 통합·장애 주입 | ACK 유실, 중복·역순·누락 및 Android 상태 전이 |
 | Hilt 주입·ViewModel 범위 | 빌드·단위 테스트·모듈 경계 검사 | 바인딩 교체, 화면 재생성 및 룸 재진입 계측 |
 | 모듈·Gradle 의존성 | 빌드·단위 테스트·모듈 경계 검사 | 의존 방향과 공개 API 영향 |
@@ -26,6 +30,6 @@ Hilt 전용 `RepositoryBindingsTest`는 `-PfanstageHiltInstrumentation=true`에�
 
 자동 검사가 실패하면 해당 GitHub Actions 작업이 실패 상태로 표시됩니다. 변경 수용 시 코드 리뷰와 관련 기기 검증 기록을 함께 확인합니다. **에이전트의 작업 보고만으로 테스트 통과를 판단하지 않습니다.**
 
-[실제 실행 결과](verification.md) · [AI 개발·검증 절차](ai-development-workflow.md)
+[실제 실행 결과](verification.md) · [AI 개발·검증 절차](ai-development-workflow.md) · [리팩토링 최종 상태](STATUS.md)
 
 PR에서는 [적용된 통합 품질 게이트](specs/ci-required-quality-policy.md)의 `required-quality`가 변경 범위별 선택 검사를 집계한다. `main` Branch Protection에서 이 체크를 필수로 지정했으나 관리자는 우회할 수 있다. 실제 고의 실패 PR의 병합 거부 실험은 `NOT_RUN`이며 CI 통과와 강제 정책의 실험적 검증은 구분한다.

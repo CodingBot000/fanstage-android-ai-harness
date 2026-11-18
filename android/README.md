@@ -51,6 +51,8 @@ LIVE 채팅은 기본 Fake 데이터로도 화면 동작을 확인할 수 있습
 
 총 **11개 Gradle 모듈**입니다. `core:designsystem`은 여러 화면에서 재사용되는 UI를 제공하고, Media 카드 3종의 공통 레이아웃은 `feature:media` 내부 `MediaArtworkCard`로 유지합니다. Scaffold와 NavHost는 `app`의 `FanStageAppShell`·`FanStageNavHost`에서 구성합니다.
 
+채팅의 연결 검증(`LocalChatConnectionCoordinator`), 룸별 전송·복구(`ChatViewModel`), 메시지 정합성(`ChatTimelineStore`)은 `feature:live` 내부에서 분리되어 있습니다. DM과 댓글의 입력 초안은 각 목적지 BackStackEntry가 소유하는 `ConversationDraftViewModel`·`PostDraftViewModel`에 보관합니다. 상세 계약은 [현재 아키텍처](../docs/architecture.md)와 [채팅 설계](../docs/specs/realtime-chat.md)를 참조하세요.
+
 [모듈·UI 설계](../docs/architecture.md) · [UI 공통화 결정](../docs/adr/ADR-0005-ui-component-reuse.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)
 
 ## 테스트와 검증
@@ -68,4 +70,4 @@ cd android
   -Pandroid.testInstrumentationRunnerArguments.class=dev.fanstage.android.RepositoryBindingsTest
 ```
 
-일반 계측은 `-PfanstageHiltInstrumentation=true` 없이 실행합니다. 테스트별 환경·커밋·실행 결과는 [검증 결과](../docs/verification.md)에서 확인합니다.
+일반 계측은 `-PfanstageHiltInstrumentation=true` 없이 실행합니다. 테스트별 환경·커밋·실행 결과는 [검증 결과](../docs/verification.md)에서 확인합니다. 최근 리팩토링의 변경·검증은 [PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/74)·[#75](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/75)·[#76](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76)·[#77](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/77)을 따릅니다.
