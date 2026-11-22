@@ -47,7 +47,7 @@ LIVE 영상에는 개발용 로컬 MP4가 필요합니다. 채팅은 기본 Fake
 |---|---|
 | **작업 범위** | 기능별 정상·오류 시나리오와 완료 조건을 정의하고, `AGENTS.md`로 범위 밖 변경·테스트 무력화를 금지 |
 | **변경 검토** | Player/Surface 수명, Coroutine 취소, 채팅 ACK·순번·중복 등 기능별 위험을 코드와 테스트로 대조 |
-| **자동 검증** | Gradle 빌드·Lint·단위 테스트, PostgreSQL/WebSocket 통합 테스트, 변경 경로별 PR `required-quality` 체크 |
+| **자동 검증** | Gradle 빌드·Lint·단위 테스트·모듈 경계 검사, PostgreSQL/WebSocket 통합 테스트, 변경 경로별 PR `required-quality` 체크 |
 | **기기 검증·수용** | 화면·재생·입력 변경은 로컬 에뮬레이터/실기기 계측 결과를 별도로 확인; 미실행 항목은 PASS로 간주하지 않음 |
 
 이 프로젝트의 검증 대상은 **AI 모델의 답변 품질이 아니라 AI가 생성·수정한 Android 코드의 동작과 회귀**입니다. 구체적인 작업 지침과 판단 사례는 [AGENTS.md](AGENTS.md) · [AI 개발·검증 과정](docs/ai-development-workflow.md) · [검증 정책](docs/specs/ci-required-quality-policy.md)에 기록했습니다.
@@ -80,7 +80,7 @@ LIVE 영상에는 개발용 로컬 MP4가 필요합니다. 채팅은 기본 Fake
 
 ## Android 아키텍처
 
-**11개 Gradle 모듈:** 앱 진입점 1개, 기능 5개, 공통 4개, 성능 계측 1개로 분리했습니다. `app`은 Navigation 구성과 Hilt DI 설정을 담당하고, Feature는 필요한 Core 모듈을 참조합니다.
+**11개 Gradle 모듈:** 앱 진입점 1개, 기능 5개, 공통 4개, 성능 계측 1개로 분리했습니다. `app`은 공통 화면 틀·루트 Navigation·Hilt DI 구성을 맡고, 각 Feature는 자신의 화면 목적지와 인자를 관리합니다. 기능 사이의 이동은 `app`에서 연결합니다.
 
 ```mermaid
 flowchart TB
@@ -93,6 +93,8 @@ flowchart TB
     FEATURE -->|"허용된 의존성"| CORE
     BENCH -.->|"계측 대상"| APP
 ```
+
+**최근 멀티모듈 개선:** 기능별 Navigation 등록과 단위 테스트를 각 Feature로 옮기고, Discover·Media의 카탈로그 조회와 Community·Messages의 아티스트 조회를 분리했습니다. Gradle이 평가한 의존성으로 모듈 경계를 검사합니다. 기존 탭 전환과 ViewModel 수명은 유지했습니다. [변경·검증 근거](docs/verification.md#2026-11-23-android-멀티모듈-리팩토링)
 
 Compose는 ViewModel의 `UiState`를 구독합니다. 채팅은 **룸별 ViewModel**이 연결·전송 수명을 관리하고, 별도 저장소가 순번·중복·Pending을 처리하도록 분리했습니다. DM·댓글 초안은 각각의 화면 목적지에서 관리해 회전·Activity 재생성 중 유지하고, 해당 목적지가 최종 제거되면 비웁니다. OS 프로세스 종료 이후의 초안 복원은 지원하지 않습니다.
 
