@@ -34,8 +34,8 @@ import dev.fanstage.android.core.designsystem.CardSingleLineText
 import dev.fanstage.android.core.designsystem.FanStageSpacing
 import dev.fanstage.android.core.model.ArtworkKey
 import dev.fanstage.android.core.model.DemoVideo
-import dev.fanstage.android.core.model.DiscoverContent
-import dev.fanstage.android.core.model.DiscoverData
+import dev.fanstage.android.core.model.CatalogContent
+import dev.fanstage.android.core.model.CatalogSnapshot
 
 @Composable
 fun MediaScreen(
@@ -79,7 +79,7 @@ fun MediaScreen(
 }
 
 @Composable
-private fun mediaContentTitle(content: DiscoverContent): String =
+private fun mediaContentTitle(content: CatalogContent): String =
     when (content.id) {
         "studio-session" -> stringResource(R.string.room_studio_title)
         "sketch-break" -> stringResource(R.string.room_sketch_title)
@@ -104,8 +104,8 @@ private fun MediaFilterRow(filter: Int, onFilterSelected: (Int) -> Unit) {
 
 @Composable
 private fun LiveMediaCard(
-    content: DiscoverContent,
-    data: DiscoverData,
+    content: CatalogContent,
+    data: CatalogSnapshot,
     videos: List<DemoVideo>,
     onLive: (String) -> Unit,
 ) {
@@ -121,7 +121,7 @@ private fun LiveMediaCard(
 }
 
 @Composable
-private fun LocalVideoCard(video: DemoVideo, data: DiscoverData, onVideo: (String) -> Unit) {
+private fun LocalVideoCard(video: DemoVideo, data: CatalogSnapshot, onVideo: (String) -> Unit) {
     val artist = data.artists.firstOrNull { it.id == video.artistId }
     MediaArtworkCard(
         image = painterResource(artist?.let { artworkResource(it.feed) } ?: R.drawable.media_artwork_placeholder),

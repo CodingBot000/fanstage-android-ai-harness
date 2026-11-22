@@ -51,7 +51,7 @@ Discover의 로딩·실패·재시도, Community의 게시물 동작, Media의 �
 
 ## 4. 공유 카탈로그 계약 정리
 
-Discover와 Media는 모두 `DiscoverRepository.load()`로 같은 데이터 구조를 읽는다. Community·Messages에 전달하는 아티스트 목록은 `app`이 `FakeCatalog`에서 직접 읽는다. Discover·Media의 공통 조회 계약을 카탈로그 역할에 맞게 표현하고, Community·Messages가 사용하는 아티스트 조회도 교체 가능한 바인딩으로 제공하는 방안을 검토한다. `app`의 Hilt 모듈은 구현을 선택하고, 탭별 화면 상태와 재시도는 각 ViewModel이 관리한다. [MediaViewModel](../../android/feature/media/src/main/kotlin/dev/fanstage/android/feature/media/MediaViewModel.kt) · [Fake 데이터 구현](../../android/core/data/src/main/kotlin/dev/fanstage/android/core/data/FakeRepositories.kt) · [Hilt 바인딩](../../android/app/src/main/kotlin/dev/fanstage/android/di/RepositoryModule.kt)
+검토 기준 커밋에서 Discover와 Media는 모두 `DiscoverRepository.load()`로 같은 데이터 구조를 읽었고, `app`은 Community·Messages에 전달할 아티스트 목록을 `FakeCatalog`에서 직접 읽었다. Discover·Media의 공통 조회 계약을 카탈로그 역할에 맞게 표현하고, Community·Messages가 사용하는 아티스트 조회도 교체 가능한 바인딩으로 제공하는 방안을 검토한다. `app`의 Hilt 모듈은 구현을 선택하고, 탭별 화면 상태와 재시도는 각 ViewModel이 관리한다. [MediaViewModel](../../android/feature/media/src/main/kotlin/dev/fanstage/android/feature/media/MediaViewModel.kt) · [Fake 데이터 구현](../../android/core/data/src/main/kotlin/dev/fanstage/android/core/data/FakeRepositories.kt) · [Hilt 바인딩](../../android/app/src/main/kotlin/dev/fanstage/android/di/RepositoryModule.kt)
 
 **완료 기준.** 가짜 카탈로그를 교체해 각 사용처에 반영되는지 확인한다. Discover 로딩 실패 이후에도 Community·Messages의 아티스트 표시는 유지되고, Media의 누락 아티스트 대체 표시와 영상 클릭이 동작한다. 공유 캐시와 갱신 정책이 필요해지면 데이터의 원본과 실패 시 표시 기준을 먼저 결정한다. [탭 오류 격리](../../android/app/src/test/kotlin/dev/fanstage/android/CatalogIsolationTest.kt) · [Media 누락 아티스트 계측](../../android/app/src/androidTest/kotlin/dev/fanstage/android/MediaMissingArtistTest.kt)
 

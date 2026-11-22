@@ -46,8 +46,8 @@ import dev.fanstage.android.core.designsystem.CardSingleLineText
 import dev.fanstage.android.core.designsystem.FanStageTheme
 import dev.fanstage.android.core.designsystem.Plum
 import dev.fanstage.android.core.model.ArtworkKey
-import dev.fanstage.android.core.model.DiscoverContent
-import dev.fanstage.android.core.model.DiscoverData
+import dev.fanstage.android.core.model.CatalogContent
+import dev.fanstage.android.core.model.CatalogSnapshot
 
 @Composable
 fun DiscoverScreen(
@@ -110,9 +110,9 @@ private fun DiscoverReadyPreview() {
     FanStageTheme {
         DiscoverScreen(
             DiscoverState.Ready(
-                DiscoverData(
+                CatalogSnapshot(
                     emptyList(),
-                    listOf(DiscoverContent("studio-session", "Studio session", "Paper Lantern")),
+                    listOf(CatalogContent("studio-session", "Studio session", "Paper Lantern")),
                 )
             ),
             {},
@@ -134,7 +134,7 @@ private fun DiscoverErrorPreview() {
 }
 
 @Composable
-fun localizedContentTitle(content: DiscoverContent): String =
+fun localizedContentTitle(content: CatalogContent): String =
     when (content.id) {
         "studio-session" -> stringResource(R.string.room_studio_title)
         "sketch-break" -> stringResource(R.string.room_sketch_title)
@@ -160,7 +160,7 @@ private fun DiscoverHeading() {
 }
 
 @Composable
-private fun FeaturedHeroCarousel(data: DiscoverData, onRoomClick: (String) -> Unit) {
+private fun FeaturedHeroCarousel(data: CatalogSnapshot, onRoomClick: (String) -> Unit) {
 
     LazyRow(
         contentPadding = PaddingValues(horizontal = 20.dp),
@@ -214,7 +214,7 @@ private fun FeaturedHeroCarousel(data: DiscoverData, onRoomClick: (String) -> Un
 }
 
 @Composable
-private fun CommunityAvatarRow(data: DiscoverData, onArtistClick: (String) -> Unit) {
+private fun CommunityAvatarRow(data: CatalogSnapshot, onArtistClick: (String) -> Unit) {
 
     Column {
         SectionTitle(stringResource(R.string.communities))
@@ -251,7 +251,7 @@ private fun CommunityAvatarRow(data: DiscoverData, onArtistClick: (String) -> Un
 }
 
 @Composable
-private fun LiveCarousel(data: DiscoverData, localVideos: Boolean, onRoomClick: (String) -> Unit) {
+private fun LiveCarousel(data: CatalogSnapshot, localVideos: Boolean, onRoomClick: (String) -> Unit) {
 
     LazyRow(
         modifier = Modifier.testTag("live_carousel"),
@@ -368,7 +368,7 @@ private fun ReplaySection(
 }
 
 @Composable
-private fun RecommendedContentRow(data: DiscoverData, onRoomClick: (String) -> Unit) {
+private fun RecommendedContentRow(data: CatalogSnapshot, onRoomClick: (String) -> Unit) {
 
     LazyRow(
         modifier = Modifier.testTag("recommended_carousel"),

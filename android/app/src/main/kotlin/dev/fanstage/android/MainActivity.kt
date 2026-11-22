@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import dev.fanstage.android.core.model.ArtistCatalog
 import dev.fanstage.android.feature.community.COMMUNITY_ROUTE
 import dev.fanstage.android.feature.community.CommunityViewModel
 import dev.fanstage.android.feature.discover.DISCOVER_ROUTE
@@ -47,27 +48,30 @@ import dev.fanstage.android.feature.media.MediaViewModel
 import dev.fanstage.android.feature.messages.MESSAGES_ROUTE
 import dev.fanstage.android.feature.messages.MessagesViewModel
 import dev.fanstage.android.navigation.FanStageNavHost
+import javax.inject.Inject
 
 @dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var artistCatalog: ArtistCatalog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            dev.fanstage.android.core.designsystem.FanStageTheme { FanStageApp() }
+            dev.fanstage.android.core.designsystem.FanStageTheme { FanStageApp(artistCatalog) }
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FanStageApp() {
+private fun FanStageApp(artistCatalog: ArtistCatalog) {
     val navController = rememberNavController()
     val communityViewModel: CommunityViewModel = hiltViewModel()
     val discoverViewModel: DiscoverViewModel = hiltViewModel()
     val messagesViewModel: MessagesViewModel = hiltViewModel()
     val mediaViewModel: MediaViewModel = hiltViewModel()
-    val artists = remember { dev.fanstage.android.core.data.FakeCatalog.artists() }
+    val artists = remember(artistCatalog) { artistCatalog.artists() }
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route

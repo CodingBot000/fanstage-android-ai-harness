@@ -1,7 +1,7 @@
 package dev.fanstage.android.feature.discover
 
-import dev.fanstage.android.core.model.DiscoverData
-import dev.fanstage.android.core.model.DiscoverRepository
+import dev.fanstage.android.core.model.CatalogSnapshot
+import dev.fanstage.android.core.model.CatalogRepository
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,9 +22,9 @@ class LoadCancellationTest {
         try {
             val release = CompletableDeferred<Unit>()
             var calls = 0
-            val latest = DiscoverData(emptyList(), emptyList())
-            val vm = DiscoverViewModel(object : DiscoverRepository {
-                override suspend fun load(): DiscoverData {
+            val latest = CatalogSnapshot(emptyList(), emptyList())
+            val vm = DiscoverViewModel(object : CatalogRepository {
+                override suspend fun load(): CatalogSnapshot {
                     calls++
                     if (calls == 1) withContext(NonCancellable) { release.await(); throw IllegalStateException() }
                     return latest

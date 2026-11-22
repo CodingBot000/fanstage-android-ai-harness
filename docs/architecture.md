@@ -33,7 +33,7 @@ flowchart TB
 
 ## Hilt 의존성 주입
 
-`FanStageApplication`에서 Hilt를 초기화하고 `MainActivity`가 일반 ViewModel을 Activity 범위로 공유합니다. `ChatViewModel`은 Navigation BackStackEntry에 속하며 `SavedStateHandle`의 룸 ID로 룸별 Transport를 생성합니다. DM·댓글 입력 초안은 별도의 `ConversationDraftViewModel`·`PostDraftViewModel`을 해당 목적지 BackStackEntry 소유자로 생성하며, 문자열을 `SavedStateHandle`·영속 저장소에 기록하지 않습니다. Repository 인터페이스는 `app` 모듈에서 Fake 구현으로 연결하며 가변 저장소나 Transport를 전역 Singleton으로 지정하지 않습니다. `core:data`는 순수 Kotlin 모듈로 유지합니다.
+`FanStageApplication`에서 Hilt를 초기화하고 `MainActivity`가 일반 ViewModel을 Activity 범위로 공유합니다. `ChatViewModel`은 Navigation BackStackEntry에 속하며 `SavedStateHandle`의 룸 ID로 룸별 Transport를 생성합니다. DM·댓글 입력 초안은 별도의 `ConversationDraftViewModel`·`PostDraftViewModel`을 해당 목적지 BackStackEntry 소유자로 생성하며, 문자열을 `SavedStateHandle`·영속 저장소에 기록하지 않습니다. `app`의 Hilt 모듈은 Discover·Media가 읽는 `CatalogRepository`와 Community·Messages에 제공하는 `ArtistCatalog`를 Fake 구현에 연결합니다. 카탈로그 조회 실패 시 기능별 화면 상태와 재시도를 유지하고, 아티스트 조회는 독립적으로 동작합니다. 가변 저장소와 룸 Transport는 기존 소유 범위를 사용합니다. `core:data`는 순수 Kotlin 모듈로 유지합니다.
 
 DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hilt-di-migration.md)과 [검증 결과](verification.md)를 참조합니다.
 

@@ -14,7 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import dev.fanstage.android.core.data.FakeCatalog
 import dev.fanstage.android.core.designsystem.FanStageTheme
 import dev.fanstage.android.core.model.DemoVideo
-import dev.fanstage.android.core.model.DiscoverData
+import dev.fanstage.android.core.model.CatalogSnapshot
 import dev.fanstage.android.feature.media.MediaScreen
 import dev.fanstage.android.feature.media.MediaState
 import org.junit.Assert.assertEquals
@@ -43,7 +43,7 @@ class MediaMissingArtistTest {
         val video = DemoVideo("missing-video", "Available video", "missing-artist", "demo-01.mp4")
         setEnglishContent {
             FanStageTheme {
-                MediaScreen(MediaState.Ready(DiscoverData(emptyList(), emptyList())), 0, {}, {}, {}, {}, listOf(video), { opened.set(it) })
+                MediaScreen(MediaState.Ready(CatalogSnapshot(emptyList(), emptyList())), 0, {}, {}, {}, {}, listOf(video), { opened.set(it) })
             }
         }
         rule.onNodeWithTag("media_missing-video").assertIsDisplayed().assertTextContains("Unknown artist").performClick()
@@ -56,7 +56,7 @@ class MediaMissingArtistTest {
         val missing = DemoVideo("missing-video", "Other video", "absent", "demo-02.mp4")
         setEnglishContent {
             FanStageTheme {
-                MediaScreen(MediaState.Ready(DiscoverData(listOf(artist), emptyList())), 2, {}, {}, {}, {}, listOf(valid, missing))
+                MediaScreen(MediaState.Ready(CatalogSnapshot(listOf(artist), emptyList())), 2, {}, {}, {}, {}, listOf(valid, missing))
             }
         }
         rule.onNodeWithTag("media_valid-video").assertTextContains(artist.name).assert(!hasText("Unknown artist"))
@@ -79,7 +79,7 @@ class MediaMissingArtistTest {
                 LocalDensity provides Density(context.resources.displayMetrics.density, config.fontScale),
             ) {
                 FanStageTheme {
-                    MediaScreen(MediaState.Ready(DiscoverData(listOf(artist), emptyList())), 0, {}, {}, {}, {}, videos, { opened.set(it) })
+                    MediaScreen(MediaState.Ready(CatalogSnapshot(listOf(artist), emptyList())), 0, {}, {}, {}, {}, videos, { opened.set(it) })
                 }
             }
         }
