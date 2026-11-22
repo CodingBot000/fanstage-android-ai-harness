@@ -43,7 +43,12 @@ class DraftLifecycleTest {
         rule.onNodeWithTag("dm_send").performClick(); empty("dm_input")
         rule.onNodeWithTag("dm_input").performTextInput("discard on pop")
         rule.onNodeWithTag("messages_back").performClick()
-        rule.onNodeWithTag("conversation_paper-lantern").performClick(); empty("dm_input")
+        rule.onNodeWithTag("conversation_paper-lantern").performClick()
+        empty("dm_input")
+        rule.onNodeWithTag("dm_input").performTextInput("draft for Paper Lantern")
+        rule.onNodeWithTag("messages_back").performClick()
+        rule.onNodeWithTag("conversation_blue-pencil").performClick()
+        empty("dm_input")
     }
     @Test fun commentDraftSurvivesRecreationAndClearsAfterAcceptanceAndPop() {
         openPost()

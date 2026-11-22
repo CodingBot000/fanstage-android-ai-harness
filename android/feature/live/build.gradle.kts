@@ -20,6 +20,8 @@ android {
 kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
 dependencies {
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.viewmodel.compose)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(project(":core:designsystem"))

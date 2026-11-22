@@ -1,15 +1,5 @@
 package dev.fanstage.android
 
-import dev.fanstage.android.feature.messages.*
-import dev.fanstage.android.core.data.DemoVideos
-
-import dev.fanstage.android.feature.media.*
-
-import dev.fanstage.android.feature.community.*
-
-import dev.fanstage.android.feature.discover.*
-
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +15,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeInput
-import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import dev.chrisbanes.haze.blur.hazeBlur
 import android.os.Bundle
@@ -38,22 +27,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.painterResource
-import dev.fanstage.android.feature.live.ReplayScreen
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.navArgument
-import dev.fanstage.android.feature.live.RoomDetailScreen
-import dev.fanstage.android.feature.live.chat.ChatViewModel
+import dev.fanstage.android.feature.community.COMMUNITY_ROUTE
+import dev.fanstage.android.feature.community.CommunityViewModel
+import dev.fanstage.android.feature.discover.DISCOVER_ROUTE
+import dev.fanstage.android.feature.discover.DiscoverViewModel
+import dev.fanstage.android.feature.live.LIVE_ROOM_ROUTE
+import dev.fanstage.android.feature.live.LOCAL_VIDEO_ROUTE
+import dev.fanstage.android.feature.live.REPLAY_ROUTE
+import dev.fanstage.android.feature.media.MEDIA_ROUTE
+import dev.fanstage.android.feature.media.MediaViewModel
+import dev.fanstage.android.feature.messages.MESSAGES_ROUTE
+import dev.fanstage.android.feature.messages.MessagesViewModel
+import dev.fanstage.android.navigation.FanStageNavHost
 
 @dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -78,11 +71,11 @@ private fun FanStageApp() {
 
     val entry by navController.currentBackStackEntryAsState()
     val currentRoute = entry?.destination?.route
-    val tabs = listOf("rooms", "community", "media", "messages")
+    val tabs = listOf(DISCOVER_ROUTE, COMMUNITY_ROUTE, MEDIA_ROUTE, MESSAGES_ROUTE)
     val hazeState = rememberHazeState()
     val isTab = currentRoute in tabs
-    val isPlaybackRoute = currentRoute == "rooms/{roomId}" ||
-        currentRoute == "local-video/{videoId}" || currentRoute == "replay"
+    val isPlaybackRoute = currentRoute == LIVE_ROOM_ROUTE ||
+        currentRoute == LOCAL_VIDEO_ROUTE || currentRoute == REPLAY_ROUTE
     val titleBarState = rememberCollapsingTitleBarState(entry)
     FanStageAppShell(navController, currentRoute, tabs, isTab, isPlaybackRoute, titleBarState, hazeState) {
         FanStageNavHost(navController, hazeState, communityViewModel, discoverViewModel, messagesViewModel, mediaViewModel, artists)
@@ -139,84 +132,4 @@ private fun FanStageAppShell(
     }
     }
     }
-}
-
-@Composable
-private fun FanStageNavHost(
-    navController: NavHostController,
-    hazeState: HazeState,
-    communityViewModel: CommunityViewModel,
-    discoverViewModel: DiscoverViewModel,
-    messagesViewModel: MessagesViewModel,
-    mediaViewModel: MediaViewModel,
-    artists: List<dev.fanstage.android.core.model.FictionalArtist>,
-) {
-    NavHost(navController = navController, startDestination = "rooms", modifier = Modifier.fillMaxSize().hazeSource(hazeState)) {
-        composable("rooms") {
-            DiscoverRoute(viewModel = discoverViewModel, localVideos = BuildConfig.DEBUG, onRoomClick = { roomId ->
-                navController.navigate("rooms/${Uri.encode(roomId)}") { launchSingleTop = true }
-            }, onReplayClick = { navController.navigate(if (BuildConfig.DEBUG) "local-video/${DemoVideos.all[3 % DemoVideos.all.size].id}" else "replay") { launchSingleTop = true } }, onBenchmarkClick = { navController.navigate("replay") }, onArtistClick = { navController.navigate("community/artist/${Uri.encode(it)}") })
-        }
-        composable("messages") { MessagesListRoute(messagesViewModel, artists, onOpen = { navController.navigate("messages/${Uri.encode(it)}") }) }
-        composable("messages/{artistId}") { messageEntry ->
-            val draftViewModel: ConversationDraftViewModel = viewModel(viewModelStoreOwner = messageEntry)
-            ConversationRoute(messagesViewModel, requireNotNull(messageEntry.arguments?.getString("artistId")), artists, onBack = { navController.popBackStack() }, draftViewModel = draftViewModel)
-        }
-        composable("media") {
-            MediaRoute(mediaViewModel, onLive = { roomId -> navController.navigate("rooms/${Uri.encode(roomId)}") { launchSingleTop = true } }, onReplay = { navController.navigate("replay") }, videos = if (BuildConfig.DEBUG) DemoVideos.all else emptyList(), onVideo = { navController.navigate("local-video/$it") })
-        }
-        composable("community") {
-            CommunityRoute(communityViewModel, null, onArtist = { navController.navigate("community/artist/${Uri.encode(it)}") }, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, artists = artists)
-        }
-        composable("community/artist/{artistId}") { artistEntry ->
-            val artistId = requireNotNull(artistEntry.arguments?.getString("artistId"))
-            CommunityRoute(communityViewModel, artistId, onArtist = {}, onPost = { navController.navigate("community/post/${Uri.encode(it)}") }, onBack = { navController.popBackStack() }, artists = artists)
-        }
-        composable("community/post/{postId}") { postEntry ->
-            val draftViewModel: PostDraftViewModel = viewModel(viewModelStoreOwner = postEntry)
-            PostDetailRoute(communityViewModel, requireNotNull(postEntry.arguments?.getString("postId")), onBack = { navController.popBackStack() }, draftViewModel = draftViewModel)
-        }
-        // These cards are explicitly VOD regardless of video ID or MP4 file number.
-        composable("local-video/{videoId}") { videoEntry ->
-            val video = DemoVideos.all.firstOrNull { it.id == videoEntry.arguments?.getString("videoId") }
-            if (BuildConfig.DEBUG && video != null) {
-                ReplayScreen(
-                    onBack = { navController.popBackStack() },
-                    sourceUri = localDemoVideoUrl(video.fileName),
-                    title = video.title,
-                )
-            }
-        }
-        composable("replay") { ReplayScreen(onBack = { navController.popBackStack() }) }
-        composable(
-            route = "rooms/{roomId}",
-            arguments = listOf(navArgument("roomId") { type = NavType.StringType }),
-        ) { entry ->
-            val roomId = requireNotNull(entry.arguments?.getString("roomId"))
-            val chatViewModel: ChatViewModel = hiltViewModel(viewModelStoreOwner = entry)
-            val demoVideoId = when (roomId) {
-                "studio-session" -> "demo-01"
-                "sketch-break" -> "demo-02"
-                "tabletop-night" -> "demo-03"
-                else -> null
-            }
-            // A LIVE demo may use a prerecorded stream, but navigation remains LIVE + chat.
-            val liveDemoVideo = if (BuildConfig.DEBUG) DemoVideos.all.firstOrNull { it.id == demoVideoId } else null
-            RoomDetailScreen(
-                roomId = roomId,
-                chatViewModel = chatViewModel,
-                developmentControls = BuildConfig.DEBUG,
-                sourceUri = liveDemoVideo?.let { localDemoVideoUrl(it.fileName) } ?: "asset:///hls/captionless.m3u8",
-                onBack = { navController.popBackStack() },
-            )
-        }
-    }
-}
-
-/** Emulators use the host bridge; devices can access the same host through an explicit ADB reverse port. */
-private fun localDemoVideoUrl(fileName: String): String {
-    val emulator = android.os.Build.HARDWARE.contains("ranchu", ignoreCase = true) ||
-        android.os.Build.HARDWARE.contains("goldfish", ignoreCase = true)
-    val host = if (emulator) "10.0.2.2" else "127.0.0.1"
-    return "http://$host:18765/demo-media/$fileName"
 }
