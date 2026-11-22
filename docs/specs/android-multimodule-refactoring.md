@@ -1,10 +1,10 @@
-# FanStage Android 멀티모듈 리팩토링 제안
+# FanStage Android 멀티모듈 리팩토링 — 계획과 실행 기록
 
-**2026-11-23 · 검토안** · 분석 기준 [원격 `main`의 `b47256c`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/b47256c8f955096e9e0429de4b431045167771f0)
+**상태: 2026-11-23 PR #81 병합 완료.** 아래 1~4절은 변경 전 설계·수용 기준을 보존한 기록입니다. 분석 기준은 [변경 전 `main`의 `b47256c`](https://github.com/CodingBot000/fanstage-android-ai-harness/commit/b47256c8f955096e9e0429de4b431045167771f0)이며, 실제 구현·검증 결과는 [PR #81](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/81) · [검증 기록](../verification.md#2026-11-23-android-멀티모듈-리팩토링)에서 확인할 수 있습니다.
 
 FanStage의 11개 Gradle 모듈을 유지하면서 `app`이 알아야 하는 기능 내부 구현을 줄인다. 첫 변경은 불필요한 의존성 두 개를 제거하고 모듈 경계 검사를 보완하는 작업이다. 이후 기능별 단위 테스트를 제자리로 옮기고, Messages를 시작으로 목적지 구현을 각 기능에 둔다. 카탈로그 계약 정리와 재생 모듈 분리는 앞 단계와 독립적으로 검토할 수 있다. [모듈 경계 결정](../adr/ADR-0001-module-boundaries.md)
 
-## 단계별 커밋과 연속 진행
+## 당시 실행 계획: 단계별 커밋과 연속 진행
 
 **구현을 시작하면 1~4단계를 중단 없이 끝까지 진행한다.** 각 단계에서 `구현 → 검증 → 해당 단계 커밋 → 원격 작업 브랜치 푸시 → 원격 반영 확인` 순서를 반드시 완료한다. 서로 다른 단계의 변경은 각각 별도 커밋으로 남긴다.
 
@@ -63,7 +63,7 @@ Discover의 로딩·실패·재시도, Community의 게시물 동작, Media의 �
 | 공용 재생 모듈 | LIVE와 Replay·로컬 VOD는 `PlayerPanel`을 공유한다. VOD 목적지를 `feature:media`가 소유할 필요가 생기면 두 기능의 공용 재생 모듈을 검토한다. 첫 프레임, 회전·전체 화면, 화면 이탈 시 해제와 벤치마크 진입을 수용 기준으로 삼는다. |
 | Gradle convention plugin | Discover·Community·Media·Messages는 namespace를 제외한 Gradle 설정이 동일하다. 공통 설정의 변경이 반복되거나 적용 모듈이 늘어날 때 SDK·JVM 대상·Compose 설정부터 묶고, 기능별 라이브러리 의존성은 각 모듈에서 확인할 수 있게 둔다. |
 
-[앱의 ViewModel 조립](../../android/app/src/main/kotlin/dev/fanstage/android/MainActivity.kt) · [Replay 화면](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/ReplayScreen.kt) · [벤치마크 진입점](../../android/app/src/benchmark/kotlin/dev/fanstage/android/BenchmarkRoomActivity.kt) · [Gradle convention plugin 가이드](https://docs.gradle.org/current/userguide/implementing_gradle_plugins_convention.html)
+[앱의 일반 ViewModel 생성](../../android/app/src/main/kotlin/dev/fanstage/android/MainActivity.kt) · [Replay 화면](../../android/feature/live/src/main/kotlin/dev/fanstage/android/feature/live/ReplayScreen.kt) · [벤치마크 진입점](../../android/app/src/benchmark/kotlin/dev/fanstage/android/BenchmarkRoomActivity.kt) · [Gradle convention plugin 가이드](https://docs.gradle.org/current/userguide/implementing_gradle_plugins_convention.html)
 
 ## 검증과 제출 기준
 

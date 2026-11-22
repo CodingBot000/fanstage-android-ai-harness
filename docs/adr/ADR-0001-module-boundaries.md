@@ -2,7 +2,7 @@
 
 ## 결정
 
-`app`은 Navigation과 의존성 조립을 맡고, Discover·Community·Media·Messages·LIVE는 각각 기능 모듈로 분리했습니다. 공통 도메인 모델·Fake 데이터·이미지 매핑·디자인 시스템은 실제 재사용 범위에 따라 `core`에 배치했습니다.
+`app`은 공통 화면 틀·루트 Navigation·Hilt DI 구성을 맡고, Discover·Community·Media·Messages·LIVE는 각자의 화면 목적지와 인자를 관리하는 기능 모듈로 분리했습니다. 공통 도메인 모델·Fake 데이터·이미지 매핑·디자인 시스템은 실제 재사용 범위에 따라 `core`에 배치했습니다.
 
 ## 선택 이유
 
@@ -12,4 +12,4 @@
 
 모듈이 늘어나면 Gradle 설정과 API 경계 관리 비용이 생깁니다. 따라서 추상화를 무조건 추가하기보다 역할이 분명한 공통 책임만 분리하고, [모듈 의존성 검사](../../scripts/check-ux-module-boundaries.py)로 실제 경계를 확인합니다.
 
-**구현·검증:** [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) · [아키텍처](../architecture.md).
+**구현·검증:** [최초 모듈 분리 PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) · [기능별 책임·경계 강화 PR #81](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/81) · [아키텍처](../architecture.md).
