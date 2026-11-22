@@ -20,18 +20,16 @@ flowchart TB
   APP --> LIVE["feature:live"]
   APP --> MODEL["core:model"]
   APP --> DATA["core:data"]
-  APP --> ART["core:artwork"]
   APP --> DESIGN["core:designsystem"]
   DISC & COMM & MEDIA & MSG --> MODEL
-  DISC & COMM & MEDIA & MSG --> ART
+  DISC & COMM & MEDIA & MSG --> ART["core:artwork"]
   DISC & COMM & MEDIA & MSG --> DESIGN
-  LIVE --> MODEL
   LIVE --> DESIGN
   DATA --> MODEL
   ART --> MODEL
 ~~~
 
-다이어그램은 `android/`의 Gradle 프로젝트 의존 관계를 요약한 것입니다. [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)는 각 기능 모듈의 허용 의존성과 `core:model`의 Android UI 참조 여부를 검사합니다. 기능 분리 과정과 검증 결과는 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 남겼습니다.
+다이어그램은 `android/`의 Gradle 프로젝트 의존 관계를 요약한 것입니다. [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)는 Gradle이 평가한 제품·테스트 프로젝트 의존성과 프로젝트 API 공개 범위를 검사합니다. `app`의 제품 소스 배치와 `core:model`의 Android 참조도 검사합니다. 기능 분리 과정과 검증 결과는 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 남겼습니다.
 
 ## Hilt 의존성 주입
 
