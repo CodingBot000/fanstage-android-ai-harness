@@ -6,7 +6,7 @@ import kotlinx.coroutines.test.runTest
 
 class FakeRepositoriesTest {
     @Test fun discoverReturnsStableFictionalContentInDeterministicOrder() = runTest {
-        val repo = FakeDiscoverRepository()
+        val repo = FakeCatalogRepository()
         val first = repo.load()
         assertEquals(listOf("studio-session", "sketch-break", "tabletop-night"), first.content.map { it.id })
         assertEquals(first, repo.load())
@@ -15,15 +15,15 @@ class FakeRepositoriesTest {
     }
 
     @Test fun modifyingReturnedContentCannotChangeSubsequentLoads() = runTest {
-        val repo = FakeDiscoverRepository()
+        val repo = FakeCatalogRepository()
         val first = repo.load()
         val expected = first.content.toList()
-        (first.content as MutableList<dev.fanstage.android.core.model.DiscoverContent>)[0] = first.content[0].copy(title = "caller change")
+        (first.content as MutableList<dev.fanstage.android.core.model.CatalogContent>)[0] = first.content[0].copy(title = "caller change")
         assertEquals(expected, repo.load().content)
     }
 
     @Test fun catalogIdsJoinAcrossFixtures() = runTest {
-        val catalog = FakeDiscoverRepository().load()
+        val catalog = FakeCatalogRepository().load()
         val posts = FakeCommunityRepository().posts()
         val conversations = FakeMessageRepository().snapshot()
         val ids = FakeCatalog.artists().map { it.id }.toSet()

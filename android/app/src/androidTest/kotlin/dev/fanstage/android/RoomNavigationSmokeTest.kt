@@ -224,8 +224,8 @@ class RoomNavigationSmokeTest {
         val language = androidx.compose.runtime.mutableStateOf(java.util.Locale.US)
         val large = androidx.compose.runtime.mutableStateOf(false)
         val discoverState = androidx.compose.runtime.mutableStateOf<dev.fanstage.android.feature.discover.DiscoverState>(
-            dev.fanstage.android.feature.discover.DiscoverState.Ready(dev.fanstage.android.core.model.DiscoverData(
-                emptyList(), listOf(dev.fanstage.android.core.model.DiscoverContent("studio-session", "Studio session", "Paper Lantern")),
+            dev.fanstage.android.feature.discover.DiscoverState.Ready(dev.fanstage.android.core.model.CatalogSnapshot(
+                emptyList(), listOf(dev.fanstage.android.core.model.CatalogContent("studio-session", "Studio session", "Paper Lantern")),
             ))
         )
         val showChat = androidx.compose.runtime.mutableStateOf(false)

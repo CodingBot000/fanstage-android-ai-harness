@@ -77,7 +77,6 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:model"))
-    implementation(project(":core:artwork"))
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)

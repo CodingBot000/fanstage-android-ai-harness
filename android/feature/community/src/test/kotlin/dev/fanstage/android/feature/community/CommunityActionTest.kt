@@ -1,7 +1,6 @@
-package dev.fanstage.android
+package dev.fanstage.android.feature.community
 
 import dev.fanstage.android.core.data.FakeCommunityRepository
-import dev.fanstage.android.feature.community.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.*

@@ -20,8 +20,10 @@ import dev.fanstage.android.feature.live.chat.ChatComposer
 import dev.fanstage.android.feature.live.chat.ChatPanel
 import dev.fanstage.android.feature.live.chat.ChatViewModel
 
+internal const val DEFAULT_LIVE_SOURCE_URI = "asset:///hls/captionless.m3u8"
+
 @Composable
-fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, sourceUri: String = "asset:///hls/captionless.m3u8", onBack: () -> Unit) {
+fun RoomDetailScreen(roomId: String, chatViewModel: ChatViewModel, developmentControls: Boolean = false, sourceUri: String = DEFAULT_LIVE_SOURCE_URI, onBack: () -> Unit) {
     VideoPlaybackTheme {
     val title = when (roomId) {
         "studio-session" -> stringResource(R.string.room_studio_title)

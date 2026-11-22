@@ -18,6 +18,7 @@ ANDROID_SCRIPTS = {
     'scripts/m1-004-emulator-smoke.sh', 'scripts/ux012-emulator-gate.sh',
     'scripts/m4-check-manifests.py', 'scripts/m6-check-manifests.py',
     'scripts/check-ux-module-boundaries.py',
+    'scripts/tests/test_module_boundaries.py',
 }
 DOC_SCRIPTS = {
     'scripts/check-portfolio-docs.py', 'scripts/check-verification-evidence.py',

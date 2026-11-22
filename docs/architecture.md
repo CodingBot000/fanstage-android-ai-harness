@@ -20,22 +20,20 @@ flowchart TB
   APP --> LIVE["feature:live"]
   APP --> MODEL["core:model"]
   APP --> DATA["core:data"]
-  APP --> ART["core:artwork"]
   APP --> DESIGN["core:designsystem"]
   DISC & COMM & MEDIA & MSG --> MODEL
-  DISC & COMM & MEDIA & MSG --> ART
+  DISC & COMM & MEDIA & MSG --> ART["core:artwork"]
   DISC & COMM & MEDIA & MSG --> DESIGN
-  LIVE --> MODEL
   LIVE --> DESIGN
   DATA --> MODEL
   ART --> MODEL
 ~~~
 
-다이어그램은 `android/`의 Gradle 프로젝트 의존 관계를 요약한 것입니다. [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)는 각 기능 모듈의 허용 의존성과 `core:model`의 Android UI 참조 여부를 검사합니다. 기능 분리 과정과 검증 결과는 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 남겼습니다.
+다이어그램은 `android/`의 Gradle 프로젝트 의존 관계를 요약한 것입니다. [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)는 Gradle이 평가한 제품·테스트 프로젝트 의존성과 프로젝트 API 공개 범위를 검사합니다. `app`의 제품 소스 배치와 `core:model`의 Android 참조도 검사합니다. 기능 분리 과정과 검증 결과는 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38)에 남겼습니다.
 
 ## Hilt 의존성 주입
 
-`FanStageApplication`에서 Hilt를 초기화하고 `MainActivity`가 일반 ViewModel을 Activity 범위로 공유합니다. `ChatViewModel`은 Navigation BackStackEntry에 속하며 `SavedStateHandle`의 룸 ID로 룸별 Transport를 생성합니다. DM·댓글 입력 초안은 별도의 `ConversationDraftViewModel`·`PostDraftViewModel`을 해당 목적지 BackStackEntry 소유자로 생성하며, 문자열을 `SavedStateHandle`·영속 저장소에 기록하지 않습니다. Repository 인터페이스는 `app` 모듈에서 Fake 구현으로 연결하며 가변 저장소나 Transport를 전역 Singleton으로 지정하지 않습니다. `core:data`는 순수 Kotlin 모듈로 유지합니다.
+`FanStageApplication`에서 Hilt를 초기화하고 `MainActivity`가 일반 ViewModel을 Activity 범위로 공유합니다. `ChatViewModel`은 Navigation BackStackEntry에 속하며 `SavedStateHandle`의 룸 ID로 룸별 Transport를 생성합니다. DM·댓글 입력 초안은 별도의 `ConversationDraftViewModel`·`PostDraftViewModel`을 해당 목적지 BackStackEntry 소유자로 생성하며, 문자열을 `SavedStateHandle`·영속 저장소에 기록하지 않습니다. `app`의 Hilt 모듈은 Discover·Media가 읽는 `CatalogRepository`와 Community·Messages에 제공하는 `ArtistCatalog`를 Fake 구현에 연결합니다. 카탈로그 조회 실패 시 기능별 화면 상태와 재시도를 유지하고, 아티스트 조회는 독립적으로 동작합니다. 가변 저장소와 룸 Transport는 기존 소유 범위를 사용합니다. `core:data`는 순수 Kotlin 모듈로 유지합니다.
 
 DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hilt-di-migration.md)과 [검증 결과](verification.md)를 참조합니다.
 
@@ -45,7 +43,7 @@ DI 구조와 선택한 테스트 범위는 [Hilt 설계 결정](adr/ADR-0004-hil
 
 - **`core:designsystem`:** `FanStageTheme`, `FanStageSpacing`, `BackTitleBar`, `CardSingleLineText`, `SendIcon`, 접히는 타이틀바 상태 등 **기존 공통 API**를 제공합니다. Feature 도메인 모델·Navigation·ViewModel·Media3 Player에는 의존하지 않습니다. 공통 컴포넌트와 기능별 UI의 경계를 기존 모듈 안에서 유지합니다.
 - **`feature:media`:** LIVE·로컬 영상·Replay의 카드가 공유하는 16:10 이미지/라벨/제목/설명 레이아웃을 비공개 Composable `MediaArtworkCard`로 통합했습니다. 데이터 매핑, 이미지 리소스, 클릭 행동과 `media_*` 테스트 태그는 각 카드의 호출부에서 유지합니다. 이 컴포넌트는 다른 Feature에서 직접 사용하지 않습니다.
-- **`app`:** `MainActivity.kt`의 `FanStageApp`에서 NavController와 일반 ViewModel 네 개를 생성하고, 같은 파일 안의 `FanStageAppShell`은 Scaffold·상단바·FloatingNavigation을, `FanStageNavHost`는 목적지·화면 조립을 담당합니다. `ChatViewModel`의 룸별 Navigation BackStackEntry 소유권은 유지하고, DM·댓글 목적지의 초안 ViewModel만 해당 entry에 명시적으로 연결했습니다.
+- **`app`:** `MainActivity.kt`의 `FanStageApp`에서 NavController와 일반 ViewModel 네 개를 생성하고, 같은 파일 안의 `FanStageAppShell`은 Scaffold·상단바·FloatingNavigation을, 별도 파일의 `FanStageNavHost`는 루트 그래프와 기능 간 이동, Debug용 재생 소스 선택을 조립합니다. 각 기능 모듈에서 자기 목적지를 등록하고 인자를 읽습니다. 룸과 DM·댓글 목적지의 ViewModel은 해당 기능의 등록 코드에서 기존 BackStackEntry에 연결합니다.
 
 둘 이상의 기능에서 표현과 동작이 같고 기능별 모델에 의존하지 않을 때만 `core:designsystem`에 공통 컴포넌트를 둡니다. 그 외 UI는 해당 기능 모듈에서 관리합니다. [UI 재사용 결정 ADR-0005](adr/ADR-0005-ui-component-reuse.md) · [설계·구현 SDD](specs/ui-designsystem-refactoring.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70).
 

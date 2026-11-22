@@ -12,7 +12,7 @@ FanStage는 변경된 코드의 역할에 따라 테스트를 선택합니다. G
 | 채팅 연결 설정·검증 Coordinator | `LocalChatConnectionCoordinatorTest` 및 채팅 UI 관련 단위 검사 | 인증 실패·타임아웃·늦은 응답·취소·probe/활성 Transport 해제·룸 교체 |
 | `ChatTimelineStore`·`ChatViewModel` | `ChatTimelineStoreTest`·`ChatViewModelTest`, 서버 장애 주입 | ACK/echo·중복·역순·누락·Pending 보호·공유 메모리 경쟁·룸 수명 |
 | 채팅 오류 안내·수신 Flow 종료 | `ChatViewModelTest`, `ChatRecoveryUiTest` | 프로토콜 경고와 실제 누락 분리, Flow 정상 반환·예외·정상 취소의 UI 차이 |
-| DM·댓글 목적지별 초안 | `DestinationDraftTest`·`DraftAcceptanceTest` | `DraftLifecycleTest`, 회전·Activity 재생성·BackStack 저장/복원·최종 pop, 접수 성공/거절·수정 중 제출 |
+| DM·댓글 목적지별 초안 | `ConversationDraftViewModelTest`·`PostDraftViewModelTest` 및 기능별 접수 테스트 | `DraftLifecycleTest`, 회전·Activity 재생성·BackStack 저장/복원·최종 pop, 접수 성공/거절·수정 중 제출 |
 | ChatTransport·메시지 모델 | 관련 단위 테스트·서버 통합·장애 주입 | ACK 유실, 중복·역순·누락 및 Android 상태 전이 |
 | Hilt 주입·ViewModel 범위 | 빌드·단위 테스트·모듈 경계 검사 | 바인딩 교체, 화면 재생성 및 룸 재진입 계측 |
 | 모듈·Gradle 의존성 | 빌드·단위 테스트·모듈 경계 검사 | 의존 방향과 공개 API 영향 |

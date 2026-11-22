@@ -3,7 +3,7 @@ package dev.fanstage.android
 import dev.fanstage.android.feature.community.*
 
 import dev.fanstage.android.feature.discover.*
-import dev.fanstage.android.core.model.DiscoverData
+import dev.fanstage.android.core.model.CatalogSnapshot
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -52,7 +52,7 @@ class DiscoverTest {
                 ) {
                     FanStageTheme {
                         if (showCommunity.value) CommunityScreen(CommunityState.Ready(emptyList()), null, 0, {}, {}, {}, {})
-                        else DiscoverScreen(DiscoverState.Ready(DiscoverData(emptyList(), emptyList())), {}, {})
+                        else DiscoverScreen(DiscoverState.Ready(CatalogSnapshot(emptyList(), emptyList())), {}, {})
                     }
                 }
             }

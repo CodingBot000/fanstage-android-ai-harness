@@ -7,13 +7,15 @@ internal val fictionalArtists: List<FictionalArtist> = listOf(
     FictionalArtist("blue-pencil", "Blue Pencil", ArtworkKey.BLUE_HERO, ArtworkKey.BLUE_COVER, ArtworkKey.BLUE_FEED),
     FictionalArtist("dice-garden", "Dice Garden", ArtworkKey.DICE_HERO, ArtworkKey.DICE_COVER, ArtworkKey.DICE_FEED),
 )
-object FakeCatalog { fun artists(): List<FictionalArtist> = fictionalArtists.toList() }
+object FakeCatalog : ArtistCatalog {
+    override fun artists(): List<FictionalArtist> = fictionalArtists.toList()
+}
 
-class FakeDiscoverRepository : DiscoverRepository {
-    override suspend fun load() = DiscoverData(fictionalArtists, listOf(
-        DiscoverContent("studio-session", "Studio session", "Paper Lantern", "paper-lantern", ArtworkKey.PAPER_HERO),
-        DiscoverContent("sketch-break", "Afternoon sketch break", "Blue Pencil", "blue-pencil", ArtworkKey.BLUE_HERO),
-        DiscoverContent("tabletop-night", "Tabletop night", "Dice Garden", "dice-garden", ArtworkKey.DICE_HERO),
+class FakeCatalogRepository : CatalogRepository {
+    override suspend fun load() = CatalogSnapshot(fictionalArtists, listOf(
+        CatalogContent("studio-session", "Studio session", "Paper Lantern", "paper-lantern", ArtworkKey.PAPER_HERO),
+        CatalogContent("sketch-break", "Afternoon sketch break", "Blue Pencil", "blue-pencil", ArtworkKey.BLUE_HERO),
+        CatalogContent("tabletop-night", "Tabletop night", "Dice Garden", "dice-garden", ArtworkKey.DICE_HERO),
     ))
 }
 class FakeCommunityRepository : CommunityRepository {

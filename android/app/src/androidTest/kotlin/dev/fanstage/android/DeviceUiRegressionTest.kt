@@ -28,8 +28,8 @@ import dev.fanstage.android.feature.messages.MessagesListRoute
 import dev.fanstage.android.feature.messages.MessagesUiAction
 import dev.fanstage.android.feature.messages.MessagesViewModel
 import dev.fanstage.android.core.model.ArtworkKey
-import dev.fanstage.android.core.model.DiscoverContent
-import dev.fanstage.android.core.model.DiscoverData
+import dev.fanstage.android.core.model.CatalogContent
+import dev.fanstage.android.core.model.CatalogSnapshot
 import dev.fanstage.android.feature.media.MediaScreen
 import dev.fanstage.android.feature.media.MediaState
 import org.junit.Assert.*
@@ -44,8 +44,8 @@ class DeviceUiRegressionTest {
     @get:Rule val rule = createAndroidComposeRule<MainActivity>()
 
     @Test fun gridCardsHaveEqualHeightsAndLongTextEllipsizes() {
-        val first = DiscoverContent("short", "Short", "Artist", "artist", ArtworkKey.PAPER_HERO)
-        val second = DiscoverContent("long", "A very long title that must occupy two lines and never change card height", "An exceptionally long artist name that also wraps", "artist", ArtworkKey.BLUE_HERO)
+        val first = CatalogContent("short", "Short", "Artist", "artist", ArtworkKey.PAPER_HERO)
+        val second = CatalogContent("long", "A very long title that must occupy two lines and never change card height", "An exceptionally long artist name that also wraps", "artist", ArtworkKey.BLUE_HERO)
         for (scale in listOf(1f, 2f)) {
             val layout = AtomicReference<TextLayoutResult>()
             rule.activityRule.scenario.onActivity { activity -> activity.setContent {
@@ -53,7 +53,7 @@ class DeviceUiRegressionTest {
                 CompositionLocalProvider(LocalDensity provides Density(current.density, scale)) {
                     FanStageTheme { Column {
                         CardSingleLineText("A deliberately long line of words that cannot fit into the two available rows of this narrow card", TextStyle(fontSize = 20.sp, lineHeight = 24.sp), Modifier.width(120.dp), onTextLayout = { layout.set(it) })
-                        MediaScreen(MediaState.Ready(DiscoverData(emptyList(), listOf(first, second))), 0, {}, {}, {}, {})
+                        MediaScreen(MediaState.Ready(CatalogSnapshot(emptyList(), listOf(first, second))), 0, {}, {}, {}, {})
                     } }
                 }
             } }

@@ -298,3 +298,31 @@ R-03·R-04([PR #74](https://github.com/CodingBot000/fanstage-android-ai-harness/
 위 CI는 각 PR head에 대한 빌드·Lint·단위·서버 통합·문서/품질 게이트이며 **CI에서 실제 Android 기기 계측을 수행했다는 뜻은 아닙니다**. 기존 본문의 로컬 API 36 계측과 실기기 검증은 실행 당시 SHA·환경을 유지해 해석합니다. R-01·R-02를 합친 최신 상태에서의 실제 OS 프로세스 강제 종료·복원, 새 실기기 계측, 장시간 Player/Socket 누수, 정량 성능·시각적 전후 비교는 `NOT_RUN`이며 향후 별도 검증 대상입니다.
 
 이번 항목은 GitHub 병합·CI 확인을 추가하는 **문서 갱신**으로, 새 Android/서버 테스트를 실행했다는 뜻이 아닙니다.
+
+## 2026-11-23 Android 멀티모듈 리팩토링
+
+기준은 원격 `main`의 `b47256c`다. 각 단계의 커밋을 `codex/android-multimodule-refactoring`에 따로 푸시하고 원격 SHA를 확인했다. [리팩토링 제안서](specs/android-multimodule-refactoring.md) · [PR #81](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/81)
+
+| 단계 | 변경과 로컬 검증 |
+|---|---|
+| 1 · `815976c` | 직접 의존성 두 개를 제거하고 Gradle이 평가한 프로젝트 의존성과 app 소스 경계를 검사했다. Debug·Release·RcLocal·Benchmark와 벤치마크 APK, 일반·Hilt 계측 APK 및 Hilt 이후 일반 APK 재컴파일, Lint·단위 테스트·경계 검사와 실패 사례를 통과했다. |
+| 2 · `8339f4d` | ViewModel·취소·초안 단위 테스트를 각 기능으로 이관하고 카탈로그 오류 격리는 app에 유지했다. Debug·Lint·경계 검사와 Discover·Community·Media·Messages의 개별 단위 테스트, 앱·LIVE·`core:data`를 포함한 전체 단위 테스트가 통과했다. |
+| 3 · `c994067` | 목적지 등록과 인자를 각 기능으로 옮겼다. Debug·Lint·단위 테스트와 일반·Hilt 계측 APK 컴파일을 통과했다. API 36 AVD에서 탭·초안·IME·LIVE 수명·회전·로컬 재생 일반 계측을 실행했다. 첫 실행에서 13건 중 IME 관련 3건이 시간 초과했다. System UI 응답 없음 창을 닫은 뒤 같은 APK와 assertion으로 세 사례를 재실행해 통과했다. Hilt 바인딩도 별도 러너에서 통과했다. |
+| 4 · 공유 카탈로그 | Discover·Media는 `CatalogRepository`를 사용한다. Community·Messages의 아티스트 조회는 독립된 `ArtistCatalog` 바인딩을 사용한다. 최종 Debug·Release·RcLocal·Benchmark와 벤치마크 APK, Lint, 모듈 경계 검사, 일반·Hilt 계측 APK 및 Hilt 이후 일반 APK 재컴파일을 통과했다. |
+
+대상 기기는 헤드리스 `FanStage_FloatingNav_20261106` AVD의 격리 실행(`emulator-5580`, API 36)이다. 빌드에는 Android SDK 경로와 `-PfanstageDeviceTest=true`를 지정했고, Hilt 계측 APK에는 `-PfanstageHiltInstrumentation=true`를 추가했다. 계측은 `adb -s emulator-5580 shell am instrument -w`에 테스트 클래스와 필요한 메서드를 지정해 실행했다. 로컬 미디어 계측은 실행 중인 로컬 영상 서버에서 테스트 MP4를 읽었다.
+
+최종 제품 소스에서 단위 테스트 **97건**, API 36 일반 계측 **27건**, Hilt 전용 계측 **4건**이 통과했다. 최종 Hilt 테스트는 Discover와 Media에 같은 교체 카탈로그가 반영되고, Discover 조회가 실패해도 Community와 Messages에서 교체한 아티스트가 표시되는 것을 확인했다. 실기기 계측과 Android 앱의 실제 채팅 서버 연동 및 정량 성능 측정은 이번 변경에서 미실행이다. [PR 검사](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/81/checks)
+
+최종 Gradle 명령은 `android/`에서 다음과 같이 실행했다.
+
+```bash
+./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :app:assembleRelease \
+  :app:assembleRcLocal :app:assembleBenchmark :macrobenchmark:assembleBenchmark \
+  :app:lintDebug testDebugUnitTest :core:data:test -PfanstageDeviceTest=true \
+  --console=plain --max-workers=2
+./gradlew :app:assembleDebugAndroidTest -PfanstageDeviceTest=true \
+  -PfanstageHiltInstrumentation=true --console=plain --max-workers=2
+./gradlew :app:assembleDebugAndroidTest -PfanstageDeviceTest=true \
+  --console=plain --max-workers=2
+```

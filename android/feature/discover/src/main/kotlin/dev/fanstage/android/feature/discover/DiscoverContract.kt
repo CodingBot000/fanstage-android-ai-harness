@@ -1,13 +1,13 @@
 package dev.fanstage.android.feature.discover
 
-import dev.fanstage.android.core.model.DiscoverData
+import dev.fanstage.android.core.model.CatalogSnapshot
 
 sealed interface DiscoverState {
     data object Loading : DiscoverState
 
     data object Error : DiscoverState
 
-    data class Ready(val data: DiscoverData) : DiscoverState
+    data class Ready(val data: CatalogSnapshot) : DiscoverState
 }
 
 sealed interface DiscoverUiAction {

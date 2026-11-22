@@ -68,3 +68,7 @@
 사용자가 승인한 A 기준으로 두 과제를 각각 구현·로컬 검증·커밋·푸시했다. R-01은 `e940d0c`와 [PR #76](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76), R-02는 `a4aa026`과 [PR #77](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/77)로 제출했다. 당시 제출 head CI는 각각의 PR Checks로 확인했고, 그 제출 단계에서는 PR 병합을 수행하지 않았다. 이후 두 PR 모두 병합됐으며 최신 상태는 상단 완료 표를 따른다.
 
 실제 누락 복구와 프로토콜·수신·인증 오류를 구분했고, 목적지 메모리 초안은 실제 접수 성공 때만 초기화한다. 초안은 회전·재생성·저장 목적지 복원에서 유지하고 최종 pop·새 프로세스 소유자에서는 비운다. 기존 일반 ViewModel·Player·Socket 소유권과 채팅 보호 규칙을 유지한다. [전체 명령·결과·제한](verification.md) · [현재 실행 계획](specs/android-refactoring-plan.md#13-2026-11-17-r-01r-02-구현제출).
+
+## 2026-11-23 Android 멀티모듈 리팩토링 제출
+
+Android 프로젝트 의존성 검사 보완, 기능별 단위 테스트 이관, 기능별 Navigation 목적지 등록, 공유 카탈로그·아티스트 조회 계약 정리를 네 개의 커밋으로 제출했다. 일반 ViewModel의 Activity 범위와 룸·초안 목적지 수명, 기존 탭·재생 경로를 보존했다. [PR #81](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/81) · [단계별 검증](verification.md#2026-11-23-android-멀티모듈-리팩토링)

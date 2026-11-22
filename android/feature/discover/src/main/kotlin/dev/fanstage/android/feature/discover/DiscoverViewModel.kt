@@ -4,7 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.fanstage.android.core.model.DiscoverRepository
+import dev.fanstage.android.core.model.CatalogRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.currentCoroutineContext
@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class DiscoverViewModel @Inject constructor(private val repository: DiscoverRepository) : ViewModel() {
+class DiscoverViewModel @Inject constructor(private val repository: CatalogRepository) : ViewModel() {
     private val mutableState = MutableStateFlow<DiscoverState>(DiscoverState.Loading)
     val state = mutableState.asStateFlow()
     private var loadJob: Job? = null

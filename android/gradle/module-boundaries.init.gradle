@@ -1,0 +1,18 @@
+import groovy.json.JsonOutput
+import org.gradle.api.artifacts.ProjectDependency
+
+gradle.projectsEvaluated {
+    def dependencies = []
+    gradle.rootProject.allprojects.each { project ->
+        project.configurations.each { configuration ->
+            configuration.dependencies.withType(ProjectDependency).each { dependency ->
+                dependencies.add([project.path, configuration.name, dependency.path])
+            }
+        }
+    }
+    gradle.rootProject.tasks.register('fanStageModuleDependencies') {
+        doLast {
+            println('FANSTAGE_MODULE_DEPENDENCIES=' + JsonOutput.toJson(dependencies))
+        }
+    }
+}
