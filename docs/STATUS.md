@@ -4,7 +4,7 @@
 
 ## 현재 구현
 
-- **UI:** Discover·Community·Media·Messages·LIVE 화면. Kotlin·Compose 기반 11개 Gradle 모듈에서 `core:designsystem`을 재사용합니다. Media 카드 3종은 `MediaArtworkCard`로 묶고, 앱의 `app`의 `FanStageAppShell`·`FanStageNavHost`가 공통 화면 틀과 루트 그래프를 담당하고, 각 Feature가 자기 목적지·인자를 관리합니다. [UI 설계](specs/ui-designsystem-refactoring.md).
+- **UI:** Discover·Community·Media·Messages·LIVE 화면. Kotlin·Compose 기반 11개 Gradle 모듈에서 `core:designsystem`을 재사용합니다. Media 카드 3종은 `MediaArtworkCard`로 묶었습니다. `app`의 `FanStageAppShell`·`FanStageNavHost`가 공통 화면 틀과 루트 그래프를 담당하고, 각 Feature가 자기 목적지·인자를 관리합니다. [UI 설계](specs/ui-designsystem-refactoring.md).
 - **미디어:** Media3를 이용한 HLS·로컬 MP4 재생, 전체 화면·화질·자막·배속 설정과 플레이어 생명주기 관리.
 - **채팅:** Fake·WebSocket/HTTP 채팅. `LocalChatConnectionCoordinator`가 연결 검증을, `ChatViewModel`이 룸·Job·Transport 수명을, `ChatTimelineStore`가 ACK·순번·중복·충돌·메모리 임대를 담당합니다. 실제 누락과 프로토콜 경고·수신 오류를 분리했습니다.
 - **상태 관리:** Hilt로 Repository·일반 ViewModel 네 개를 Activity 범위에서 사용합니다. `ChatViewModel`은 룸별 Navigation 항목에, DM·댓글 초안 ViewModel은 해당 대화·게시물 BackStackEntry에 속합니다. 초안은 목적지 최종 제거 시 해제하며 프로세스 종료 후 복원하지 않습니다.
@@ -74,5 +74,3 @@
 사용자가 승인한 A 기준으로 두 과제를 각각 구현·로컬 검증·커밋·푸시했다. R-01은 `e940d0c`와 [PR #76](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/76), R-02는 `a4aa026`과 [PR #77](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/77)로 제출했다. 당시 제출 head CI는 각각의 PR Checks로 확인했고, 그 제출 단계에서는 PR 병합을 수행하지 않았다. 이후 두 PR 모두 병합됐으며 최신 상태는 상단 완료 표를 따른다.
 
 실제 누락 복구와 프로토콜·수신·인증 오류를 구분했고, 목적지 메모리 초안은 실제 접수 성공 때만 초기화한다. 초안은 회전·재생성·저장 목적지 복원에서 유지하고 최종 pop·새 프로세스 소유자에서는 비운다. 기존 일반 ViewModel·Player·Socket 소유권과 채팅 보호 규칙을 유지한다. [전체 명령·결과·제한](verification.md) · [현재 실행 계획](specs/android-refactoring-plan.md#13-2026-11-17-r-01r-02-구현제출).
-
-
