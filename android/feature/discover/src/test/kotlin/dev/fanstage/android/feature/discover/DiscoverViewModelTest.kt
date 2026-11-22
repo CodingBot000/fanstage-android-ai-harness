@@ -1,4 +1,4 @@
-package dev.fanstage.android
+package dev.fanstage.android.feature.discover
 
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
@@ -6,8 +6,6 @@ import dev.fanstage.android.core.data.FakeDiscoverRepository
 import dev.fanstage.android.core.model.DiscoverContent
 import dev.fanstage.android.core.model.DiscoverData
 import dev.fanstage.android.core.model.DiscoverRepository
-import dev.fanstage.android.feature.discover.DiscoverState
-import dev.fanstage.android.feature.discover.DiscoverViewModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

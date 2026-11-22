@@ -37,7 +37,7 @@ FanStage의 11개 Gradle 모듈을 유지하면서 `app`이 알아야 하는 기
 
 ## 2. 기능 단위 테스트 이관
 
-Discover의 로딩·실패·재시도, Community의 게시물 동작, Media의 로딩 취소, Messages의 상태 전이에는 기능별 단위 테스트가 있다. 현재는 `app/src/test`에서 실행된다. 테스트를 관련 `feature`의 `src/test`로 옮기고, DM·댓글 초안 접수 검증도 대상 기능에 둔다. Repository 인터페이스를 구현한 테스트 대역으로 성공·실패·취소를 재현한다. 기능 간 오류 격리, Hilt 그래프, 실제 탭과 BackStack 복원은 앱 수준에서 검증한다. [로딩 취소와 탭 격리 테스트](../../android/app/src/test/kotlin/dev/fanstage/android/LoadCancellationTest.kt) · [초안 접수 테스트](https://github.com/CodingBot000/fanstage-android-ai-harness/blob/b47256c8f955096e9e0429de4b431045167771f0/android/app/src/test/kotlin/dev/fanstage/android/DraftAcceptanceTest.kt)
+Discover의 로딩·실패·재시도, Community의 게시물 동작, Media의 로딩 취소, Messages의 상태 전이에는 기능별 단위 테스트가 있다. 검토 기준 커밋에서는 `app/src/test`에서 실행됐다. 테스트를 관련 `feature`의 `src/test`로 옮기고, DM·댓글 초안 접수 검증도 대상 기능에 둔다. Repository 인터페이스를 구현한 테스트 대역으로 성공·실패·취소를 재현한다. 기능 간 오류 격리, Hilt 그래프, 실제 탭과 BackStack 복원은 앱 수준에서 검증한다. [기존 로딩 취소와 탭 격리 테스트](https://github.com/CodingBot000/fanstage-android-ai-harness/blob/b47256c8f955096e9e0429de4b431045167771f0/android/app/src/test/kotlin/dev/fanstage/android/LoadCancellationTest.kt) · [초안 접수 테스트](https://github.com/CodingBot000/fanstage-android-ai-harness/blob/b47256c8f955096e9e0429de4b431045167771f0/android/app/src/test/kotlin/dev/fanstage/android/DraftAcceptanceTest.kt)
 
 **완료 기준.** Discover·Community·Media·Messages의 `:feature:<이름>:testDebugUnitTest`가 각각 관련 사례를 실행한다. 이관 전후에 늦은 응답 무시, 취소 전파, 대상별 초안 격리, 접수 거절 시 초안 보존을 동일한 조건으로 검증한다. 앱 수준의 교차 기능 검증은 계속 실행된다. [테스트 매트릭스](../test-matrix.md)
 
@@ -53,7 +53,7 @@ Discover의 로딩·실패·재시도, Community의 게시물 동작, Media의 �
 
 Discover와 Media는 모두 `DiscoverRepository.load()`로 같은 데이터 구조를 읽는다. Community·Messages에 전달하는 아티스트 목록은 `app`이 `FakeCatalog`에서 직접 읽는다. Discover·Media의 공통 조회 계약을 카탈로그 역할에 맞게 표현하고, Community·Messages가 사용하는 아티스트 조회도 교체 가능한 바인딩으로 제공하는 방안을 검토한다. `app`의 Hilt 모듈은 구현을 선택하고, 탭별 화면 상태와 재시도는 각 ViewModel이 관리한다. [MediaViewModel](../../android/feature/media/src/main/kotlin/dev/fanstage/android/feature/media/MediaViewModel.kt) · [Fake 데이터 구현](../../android/core/data/src/main/kotlin/dev/fanstage/android/core/data/FakeRepositories.kt) · [Hilt 바인딩](../../android/app/src/main/kotlin/dev/fanstage/android/di/RepositoryModule.kt)
 
-**완료 기준.** 가짜 카탈로그를 교체해 각 사용처에 반영되는지 확인한다. Discover 로딩 실패 이후에도 Community·Messages의 아티스트 표시는 유지되고, Media의 누락 아티스트 대체 표시와 영상 클릭이 동작한다. 공유 캐시와 갱신 정책이 필요해지면 데이터의 원본과 실패 시 표시 기준을 먼저 결정한다. [탭 오류 격리](../../android/app/src/test/kotlin/dev/fanstage/android/LoadCancellationTest.kt) · [Media 누락 아티스트 계측](../../android/app/src/androidTest/kotlin/dev/fanstage/android/MediaMissingArtistTest.kt)
+**완료 기준.** 가짜 카탈로그를 교체해 각 사용처에 반영되는지 확인한다. Discover 로딩 실패 이후에도 Community·Messages의 아티스트 표시는 유지되고, Media의 누락 아티스트 대체 표시와 영상 클릭이 동작한다. 공유 캐시와 갱신 정책이 필요해지면 데이터의 원본과 실패 시 표시 기준을 먼저 결정한다. [탭 오류 격리](../../android/app/src/test/kotlin/dev/fanstage/android/CatalogIsolationTest.kt) · [Media 누락 아티스트 계측](../../android/app/src/androidTest/kotlin/dev/fanstage/android/MediaMissingArtistTest.kt)
 
 ## 별도 판단이 필요한 후속 후보
 
