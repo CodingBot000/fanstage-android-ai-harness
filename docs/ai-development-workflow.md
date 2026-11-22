@@ -33,11 +33,13 @@ FanStage는 **사람이 기술적 요구사항과 검증 기준을 정하고, Co
 - **수정:** 테스트의 관찰 기준을 실제 Player 상태·동일성으로 보강하고, 별도로 발견한 회전 후 일시정지 버튼 표시 문제를 수정했습니다.
 - **확인 경로:** [Hilt 검증 기록](specs/hilt-di-migration-verification.md) → [PR #67](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/67)
 
-## 구조적 품질 기준: 모듈·UI 공통화
+## 구조적 품질 기준: 모듈 경계와 화면 책임
 
-기능별 모듈이 다른 기능의 내부 구현이나 `app`을 직접 참조하지 않도록 [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)를 Android CI에 연결했습니다. UI 리팩토링에서는 Media 카드 세 종류의 공통 표현만 `feature:media` 내부로 추출하고, Navigation·ViewModel·Player 소유권은 기존 모듈에 유지했습니다.
+처음에는 `app`이 여러 기능의 목적지와 인자를 직접 관리하고 일부 기능별 단위 테스트도 보유했습니다. **PR #81에서는 기능별 Navigation 등록·인자 해석과 관련 단위 테스트를 해당 Feature로 이동**했습니다. `app`은 루트 그래프·기능 간 이동·Hilt DI 구성을 담당하며, 기존 Activity·룸·초안별 ViewModel 수명은 유지했습니다.
 
-[UI 설계 결정](adr/ADR-0005-ui-component-reuse.md) · [구현 PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)
+문자열 기반 의존성 검사 대신 **Gradle이 평가한 프로젝트 의존성과 API 공개 범위**를 확인하도록 [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)를 강화하고, 금지된 의존성에 대한 실패 사례도 테스트했습니다. 카탈로그 조회 오류가 Community·Messages의 아티스트 표시까지 영향을 주지 않는지는 교체 가능한 Hilt 바인딩으로 검증했습니다. [PR #81](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/81) · [검증 범위](verification.md#2026-11-23-android-멀티모듈-리팩토링)
+
+UI 공통화에서는 Media 카드 세 종류의 공통 표현만 `feature:media` 내부로 추출했습니다. [UI 재사용 결정](adr/ADR-0005-ui-component-reuse.md) · [PR #70](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/70)
 
 ## 대표 판단 4. 채팅 책임 분리와 오류 계약의 회귀 검증
 
