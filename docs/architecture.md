@@ -13,7 +13,7 @@ FanStage는 **앱 진입점 1개, 기능 모듈 5개, 공통 모듈 4개, 벤치
 
 ~~~mermaid
 flowchart TB
-  APP["app · Navigation / Hilt"] --> DISC["feature:discover"]
+  APP["app<br/>Navigation · Hilt DI 구성"] --> DISC["feature:discover"]
   APP --> COMM["feature:community"]
   APP --> MEDIA["feature:media"]
   APP --> MSG["feature:messages"]
@@ -27,9 +27,10 @@ flowchart TB
   LIVE --> DESIGN
   DATA --> MODEL
   ART --> MODEL
+  BENCH["macrobenchmark<br/>성능 계측"] -.->|"계측 대상"| APP
 ~~~
 
-다이어그램은 `android/`의 Gradle 프로젝트 의존 관계를 요약한 것입니다. [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)는 Gradle이 평가한 제품·테스트 프로젝트 의존성과 프로젝트 API 공개 범위를 검사합니다. `app`의 제품 소스 배치와 `core:model`의 Android 참조도 검사합니다. 최초 기능 분리와 이번 경계 검증 강화는 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) · [PR #81](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/81)에 각각 기록했습니다.
+다이어그램의 **실선은 제품 모듈 간 Gradle 직접 의존성**, **점선은 벤치마크의 계측 대상 관계**입니다. `macrobenchmark`는 `targetProjectPath = ":app"`으로 앱을 측정하며, 제품 코드의 일반적인 모듈 의존성과는 구별됩니다. [벤치마크 설정](../android/macrobenchmark/build.gradle.kts). [모듈 경계 검사](../scripts/check-ux-module-boundaries.py)는 Gradle이 평가한 제품·테스트 프로젝트 의존성과 프로젝트 API 공개 범위를 검사합니다. `app`의 제품 소스 배치와 `core:model`의 Android 참조도 검사합니다. 최초 기능 분리와 이번 경계 검증 강화는 [PR #38](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/38) · [PR #81](https://github.com/CodingBot000/fanstage-android-ai-harness/pull/81)에 각각 기록했습니다.
 
 ## Hilt 의존성 주입
 

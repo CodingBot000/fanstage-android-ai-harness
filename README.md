@@ -84,21 +84,32 @@ LIVE 영상에는 개발용 로컬 MP4가 필요합니다. 채팅은 기본 Fake
 
 ```mermaid
 flowchart TB
-    APP["app<br/>Navigation · Hilt DI 구성"]
-    FEATURE["feature<br/>discover · community · media · messages · live"]
-    CORE["core<br/>model · data · artwork · designsystem"]
-    BENCH["macrobenchmark<br/>성능 계측"]
-    APP --> FEATURE
-    APP --> CORE
-    FEATURE -->|"허용된 의존성"| CORE
-    BENCH -.->|"계측 대상"| APP
+  APP["app<br/>Navigation · Hilt DI 구성"] --> DISC["feature:discover"]
+  APP --> COMM["feature:community"]
+  APP --> MEDIA["feature:media"]
+  APP --> MSG["feature:messages"]
+  APP --> LIVE["feature:live"]
+  APP --> MODEL["core:model"]
+  APP --> DATA["core:data"]
+  APP --> DESIGN["core:designsystem"]
+  DISC & COMM & MEDIA & MSG --> MODEL
+  DISC & COMM & MEDIA & MSG --> ART["core:artwork"]
+  DISC & COMM & MEDIA & MSG --> DESIGN
+  LIVE --> DESIGN
+  DATA --> MODEL
+  ART --> MODEL
+  BENCH["macrobenchmark<br/>성능 계측"] -.->|"계측 대상"| APP
 ```
+
+**도식 읽는 법:** 실선은 제품 모듈 간 직접 Gradle 의존성, 점선은 `macrobenchmark`가 `app`을 계측하는 대상 관계입니다. 기능 모듈끼리는 직접 의존하지 않으며, Gradle이 평가한 의존성과 API 공개 범위를 CI에서 검사합니다.
+
+**[Android 아키텍처 상세 보기 — 기능별 Navigation·Hilt DI·Compose 상태 관리·채팅·미디어 설계](docs/architecture.md)**
 
 **최근 멀티모듈 개선:** 기능별 Navigation 등록과 단위 테스트를 각 Feature로 옮기고, Discover·Media의 카탈로그 조회와 Community·Messages의 아티스트 조회를 분리했습니다. Gradle이 평가한 의존성으로 모듈 경계를 검사합니다. 기존 탭 전환과 ViewModel 수명은 유지했습니다. [변경·검증 근거](docs/verification.md#2026-11-23-android-멀티모듈-리팩토링)
 
 Compose는 ViewModel의 `UiState`를 구독합니다. 채팅은 **룸별 ViewModel**이 연결·전송 수명을 관리하고, 별도 저장소가 순번·중복·Pending을 처리하도록 분리했습니다. DM·댓글 초안은 각각의 화면 목적지에서 관리해 회전·Activity 재생성 중 유지하고, 해당 목적지가 최종 제거되면 비웁니다. OS 프로세스 종료 이후의 초안 복원은 지원하지 않습니다.
 
-**상세 설계와 변경 이력:** [아키텍처](docs/architecture.md) · [모듈 경계 자동 검사](scripts/check-ux-module-boundaries.py) · [최근 리팩토링 완료 기록](docs/STATUS.md)
+**구현·검증 근거:** [모듈 경계 자동 검사](scripts/check-ux-module-boundaries.py) · [최근 리팩토링 완료 기록](docs/STATUS.md)
 
 ## 검증 결과
 
